@@ -282,14 +282,14 @@ void
 DecayLengthAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions) {
   edm::ParameterSetDescription desc;
   // desc.setUnknown();
-  desc.add<edm::InputTag>("_genParticles", "genParticles");
-  desc.add<edm::InputTag>("_tracks", "generalTracks");
-  desc.add<edm::InputTag>("_globalMuons", "globalMuons");
-  desc.add<edm::InputTag>("_saMuons", "standAloneMuons");
-  desc.add<edm::InputTag>("_rsaMuons", "refittedStandAloneMuons");
-  desc.add<edm::InputTag>("_dgMuons", "displacedGlobalMuons");
-  desc.add<edm::InputTag>("_dsaMuons", "displacedStandAloneMuons");
-  desc.add<edm::InputTag>("_muons", "muons");
+  desc.add<edm::InputTag>("_genParticles",edm::InputTag("genParticles"));
+  desc.add<edm::InputTag>("_tracks",      edm::InputTag("generalTracks"));
+  desc.add<edm::InputTag>("_globalMuons", edm::InputTag("globalMuons"));
+  desc.add<edm::InputTag>("_saMuons",     edm::InputTag("standAloneMuons"));
+  desc.add<edm::InputTag>("_rsaMuons",    edm::InputTag("refittedStandAloneMuons"));
+  desc.add<edm::InputTag>("_dgMuons",     edm::InputTag("displacedGlobalMuons"));
+  desc.add<edm::InputTag>("_dsaMuons",    edm::InputTag("displacedStandAloneMuons"));
+  desc.add<edm::InputTag>("_muons",       edm::InputTag("muons"));
   // descriptions.addDefault(desc);
   descriptions.add("decaylengthana", desc);
 }
