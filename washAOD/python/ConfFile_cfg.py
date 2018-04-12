@@ -5,7 +5,7 @@ process = cms.Process("DecayLengthAnalyzer")
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideAboutPythonConfigFile#Passing_Command_Line_Arguments_T
 options = VarParsing.VarParsing('analysis')
 
-options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-0p1_18858911_AOD.root'
+options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-1_41695249_AOD.root'
 options.outputFile = 'histo.root'
 options.maxEvents = -1
 
@@ -14,9 +14,10 @@ options.parseArguments()
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMessageLogger
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideMessageLoggerParameters
 process.load("FWCore.MessageService.MessageLogger_cfi")
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 process.MessageLogger = cms.Service("MessageLogger",
     destinations = cms.untracked.vstring('detailedInfo', 'critical', 'cerr'),
-    categories   = cms.untracked.vstring('DecayLengthAnalyzer'),
+    categories   = cms.untracked.vstring('DecayLengthAnalyzer', 'FwkReport'),
 
     critical     = cms.untracked.PSet( threshold = cms.untracked.string('ERROR') ),
     detailedInfo = cms.untracked.PSet(
@@ -25,13 +26,14 @@ process.MessageLogger = cms.Service("MessageLogger",
     ),
     cerr         = cms.untracked.PSet(
         threshold = cms.untracked.string('INFO'),
+        FwkReport = cms.untracked.PSet( reportEvery = cms.untracked.int32(100) ),
         DecayLengthAnalyzer = cms.untracked.PSet(reportEvery = cms.untracked.int32(100))
     ),
     debugModules = cms.untracked.vstring('decaylengthana')
 )
 
 process.options   = cms.untracked.PSet(
-    wantSummary = cms.untracked.bool(True),
+    wantSummary = cms.untracked.bool(False),
     SkipEvent = cms.untracked.vstring('ProductNotFound')
 )
 process.maxEvents = cms.untracked.PSet(
@@ -53,9 +55,24 @@ process.decaylengthana = cms.EDAnalyzer('DecayLengthAnalyzer',
     _muons = cms.InputTag("muons")
 )
 
+process.trigeffiana = cms.EDAnalyzer('TrigEffiAnalyzer',
+    _trigResults = cms.InputTag("TriggerResults","","HLT"),
+    _genParticles = cms.InputTag('genParticles'),
+    _saMuons = cms.InputTag("standAloneMuons"),
+    _rsaMuons = cms.InputTag("refittedStandAloneMuons"),
+    _dsaMuons = cms.InputTag("displacedStandAloneMuons"),
+    _muons = cms.InputTag("muons"),
+    _trigPaths = cms.untracked.vstring(
+        'DST_DoubleMu3_noVtx_CaloScouting_v4',
+        'HLT_TrkMu12_DoubleTrkMu5NoFiltersNoVtx_v4',
+        'HLT_TrkMu16_DoubleTrkMu6NoFiltersNoVtx_v10',
+        'HLT_TrkMu17_DoubleTrkMu8NoFiltersNoVtx_v11'
+    )
+)
+
 process.TFileService = cms.Service("TFileService", 
     fileName = cms.string(options.outputFile),
     closeFileFast = cms.untracked.bool(True)
 )
 
-process.p = cms.Path(process.decaylengthana)
+process.p = cms.Path(process.decaylengthana + process.trigeffiana)

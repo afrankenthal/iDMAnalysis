@@ -4,17 +4,17 @@ import ROOT
 ROOT.gROOT.SetBatch(True)
 ROOT.gStyle.SetOptStat(0)
 
-#data = {
-#    0.01: ROOT.TFile('histo_ctau-0p01.root'),
-#    0.1 : ROOT.TFile('histo_ctau-0p1.root'),
-#    1.  : ROOT.TFile('histo_ctau-1.root')
-#}
-
 data = {
-    1.3: ROOT.TFile('histo_ctau-13mm.root'),
-    13: ROOT.TFile('histo_ctau-130mm.root'),
-    130: ROOT.TFile('histo_ctau-1300mm.root')
+    0.01: ROOT.TFile('histo_0p83cm.root'),
+    0.1 : ROOT.TFile('histo_8p3cm.root'),
+    1.  : ROOT.TFile('histo_83cm.root')
 }
+
+#data = {
+#    1.3: ROOT.TFile('histoAlberto_13mm.root'),
+#    13:  ROOT.TFile('histoAlberto_130mm.root'),
+#    130: ROOT.TFile('histoAlberto_1300mm.root')
+#}
 
 # data = {
 #     0.0001: ROOT.TFile('histo_sa_10.root'),
@@ -22,6 +22,7 @@ data = {
 #     0.01: ROOT.TFile('histo_sa_12.root')
 # }
 
+ofn = 'outputNew.pdf'
 muonCollection = ['GenMuon', 'RecoMuon', 'StandAloneMuon',
 'RefittedStandAloneMuon', 'DisplacedStandAloneMuon']
 
@@ -32,7 +33,6 @@ def getLimit(pool, percentage=0.01):
     rightNum = int(len(pool)*(1.-percentage))
     return (sorted(pool)[leftNum], sorted(pool)[rightNum])
 
-ofn = 'outputAlbertoSample.pdf'
 hists = {}
 for i, mu in enumerate(muonCollection):
 

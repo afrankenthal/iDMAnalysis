@@ -1,9 +1,9 @@
 // -*- C++ -*-
 //
-// Package:    firefighter/DecayLengthAnalyzer
+// Package:    firefighter/washAOD
 // Class:      DecayLengthAnalyzer
 // 
-/**\class DecayLengthAnalyzer DecayLengthAnalyzer.cc firefighter/DecayLengthAnalyzer/plugins/DecayLengthAnalyzer.cc
+/**\class washAOD DecayLengthAnalyzer.cc firefighter/washAOD/plugins/DecayLengthAnalyzer.cc
 
  Description: [one line class summary]
 
