@@ -97,10 +97,7 @@ class TrigEffiAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources> 
 
 
       edm::Service<TFileService> fs;
-      TTree *evt, *genparticle, *genaccept;
 
-
-      theMu _genMu, _genMuAc;
       std::map<std::string, std::map<std::string, theMu>>  _triggeredMu;
       std::map<std::string, std::map<std::string, TTree*>> _triggeredMuTree;
 
@@ -161,33 +158,56 @@ TrigEffiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 {
   using namespace edm;
 
-  Handle<reco::GenParticleCollection> genParticlesH;
-  iEvent.getByToken(genParticles, genParticlesH);
-
-  for (const auto& p : *genParticlesH) {
-    if (abs(p.pdgId()) != 13) continue;
-    _genMu = theMu(p);
-    genparticle->Fill();
-  }
-
-  auto passEta = [](const auto& p){return abs(p.pdgId()) == 13 && abs(p.eta()) < 2.4;};
-  bool acceptance = std::count_if(cbegin(*genParticlesH), cend(*genParticlesH), passEta) >= 4;
-  if (!acceptance) return;
-  
-  for (const auto& p : *genParticlesH) {
-    if(abs(p.pdgId() != 13)) continue;
-    _genMuAc = theMu(p);
-    genaccept->Fill();
-  }
-
- 
-
   Handle<reco::TrackCollection> saMuonsH, dsaMuonsH, rsaMuonsH;
   Handle<reco::MuonCollection> recoMuonsH;
   iEvent.getByToken(saMuons, saMuonsH);
   iEvent.getByToken(dsaMuons, dsaMuonsH);
   iEvent.getByToken(rsaMuons, rsaMuonsH);
   iEvent.getByToken(muons, recoMuonsH);
+
+  for (const auto& mu : *saMuonsH) {
+    _triggeredMu["Total"]["saMu"] = theMu(mu);
+    _triggeredMuTree["Total"]["saMu"]->Fill();
+  }
+  for (const auto& mu : *dsaMuonsH) {
+    _triggeredMu["Total"]["dsaMu"] = theMu(mu);
+    _triggeredMuTree["Total"]["dsaMu"]->Fill();
+  }
+  for (const auto& mu : *rsaMuonsH) {
+    _triggeredMu["Total"]["rsaMu"] = theMu(mu);
+    _triggeredMuTree["Total"]["rsaMu"]->Fill();
+  }
+  for (const auto& mu : *recoMuonsH) {
+    _triggeredMu["Total"]["recoMu"] = theMu(mu);
+    _triggeredMuTree["Total"]["recoMu"]->Fill();
+  }
+
+  Handle<reco::GenParticleCollection> genParticlesH;
+  iEvent.getByToken(genParticles, genParticlesH);
+
+  auto passEta = [](const auto& p){return abs(p.pdgId()) == 13 && abs(p.eta()) < 2.4;};
+  bool acceptance = std::count_if(cbegin(*genParticlesH), cend(*genParticlesH), passEta) >= 4;
+  if (!acceptance) return;
+  
+
+  for (const auto& mu : *saMuonsH) {
+    _triggeredMu["Accepted"]["saMu"] = theMu(mu);
+    _triggeredMuTree["Accepted"]["saMu"]->Fill();
+  }
+  for (const auto& mu : *dsaMuonsH) {
+    _triggeredMu["Accepted"]["dsaMu"] = theMu(mu);
+    _triggeredMuTree["Accepted"]["dsaMu"]->Fill();
+  }
+  for (const auto& mu : *rsaMuonsH) {
+    _triggeredMu["Accepted"]["rsaMu"] = theMu(mu);
+    _triggeredMuTree["Accepted"]["rsaMu"]->Fill();
+  }
+  for (const auto& mu : *recoMuonsH) {
+    _triggeredMu["Accepted"]["recoMu"] = theMu(mu);
+    _triggeredMuTree["Accepted"]["recoMu"]->Fill();
+  }
+
+ 
 
   Handle<edm::TriggerResults> trigResultsH;
   iEvent.getByToken(trigResults, trigResultsH);
@@ -197,7 +217,7 @@ TrigEffiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   for (const auto& tp : trigPaths) {
     if (!trigResultsH->accept(trigNames.triggerIndex(tp))) continue;
-    std::cout<< "-------------pass "<<tp<<"-------------"<<std::endl;
+    // std::cout<< "-------------pass "<<tp<<"-------------"<<std::endl;
     for (const auto& mu : *saMuonsH) {
       _triggeredMu[tp]["saMu"] = theMu(mu);
       _triggeredMuTree[tp]["saMu"]->Fill();
@@ -213,7 +233,7 @@ TrigEffiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     for (const auto& mu : *recoMuonsH) {
       _triggeredMu[tp]["recoMu"] = theMu(mu);
       _triggeredMuTree[tp]["recoMu"]->Fill();
-    } 
+    }
   }
 
 
@@ -224,14 +244,11 @@ TrigEffiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 void 
 TrigEffiAnalyzer::beginJob()
 {
-  evt = fs->make<TTree>("Event", "Event information");
-  genparticle = fs->make<TTree>("genParticles", "gen muons");
-  fillTTree(genparticle, _genMu);
 
-  genaccept = fs->make<TTree>("genAccepted", "accpted gen muons");
-  fillTTree(genaccept, _genMuAc);
-
-  for (const auto& p : trigPaths) {
+  std::vector<std::string> dirnames{"Total", "Accepted"};
+  dirnames.insert(dirnames.end(), trigPaths.begin(), trigPaths.end());
+ 
+  for (const auto& p : dirnames) {
     TFileDirectory tpDir = fs->mkdir(p.c_str());
     
     _triggeredMuTree[p]["saMu"]  = tpDir.make<TTree>("standAloneMuons", "");
