@@ -35,6 +35,8 @@
 
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Common/interface/TriggerNames.h"
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/MuonReco/interface/Muon.h"
@@ -88,6 +90,8 @@ class TrigEffiAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources> 
       // ----------member data ---------------------------
       const edm::EDGetTokenT<edm::TriggerResults> trigResults;
       const std::vector<std::string> trigPaths;
+      const edm::EDGetTokenT<trigger::TriggerEvent> trigEvent;
+      const std::vector<std::string> trigFilters;
       
       const edm::EDGetTokenT<reco::GenParticleCollection> genParticles;
       const edm::EDGetTokenT<reco::TrackCollection> saMuons;
@@ -127,6 +131,8 @@ TrigEffiAnalyzer::TrigEffiAnalyzer(const edm::ParameterSet& iC)
 :
 trigResults(consumes<edm::TriggerResults>(iC.getParameter<edm::InputTag>("_trigResults"))),
 trigPaths(iC.getUntrackedParameter<std::vector<std::string>>("_trigPaths")),
+trigEvent(consumes<trigger::TriggerEvent>(iC.getParameter<edm::InputTag>("_trigEvent"))),
+trigFilters(iC.getUntrackedParameter<std::vector<std::string>>("_trigFilters")),
 genParticles(consumes<reco::GenParticleCollection>(iC.getParameter<edm::InputTag>("_genParticles"))),
 saMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_saMuons"))),
 dsaMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_dsaMuons"))),
@@ -135,7 +141,8 @@ muons(consumes<reco::MuonCollection>(iC.getParameter<edm::InputTag>("_muons")))
 {
    //now do what ever initialization is needed
    usesResource("TFileService");
-
+   // Trigger paths and filters must have one-to-one correspondence.
+   assert(trigPaths.size() == trigFilters.size());
 }
 
 
@@ -211,13 +218,34 @@ TrigEffiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
   Handle<edm::TriggerResults> trigResultsH;
   iEvent.getByToken(trigResults, trigResultsH);
+  Handle<trigger::TriggerEvent> trigEventH;
+  iEvent.getByToken(trigEvent, trigEventH);
+
+  // for (trigger::size_type i(0); i!=trigEventH->sizeFilters(); ++i) {
+  //   std::cout<< trigEventH->filterLabel(i) << std::endl;
+  // }
+  // std::cout<< "------------- This is a trigger event-------------"<<std::endl;
 
   const edm::TriggerNames& trigNames = iEvent.triggerNames(*trigResultsH);
-   
 
   for (const auto& tp : trigPaths) {
     if (!trigResultsH->accept(trigNames.triggerIndex(tp))) continue;
     // std::cout<< "-------------pass "<<tp<<"-------------"<<std::endl;
+    
+    auto index = &tp - &trigPaths[0];
+    std::string filterName(trigFilters[index]);
+    trigger::size_type filterIndex = trigEventH->filterIndex(
+      edm::InputTag(filterName,"",trigEventH->usedProcessName()));
+    if (filterIndex < trigEventH->sizeFilters()) {
+      const trigger::Keys& trigKeys = trigEventH->filterKeys(filterIndex);
+      const trigger::TriggerObjectCollection& trigObjColl(trigEventH->getObjects());
+      for (trigger::Keys::const_iterator keyIt=trigKeys.begin(); keyIt!=trigKeys.end(); ++keyIt) {
+        const trigger::TriggerObject& obj = trigObjColl[*keyIt];
+        _triggeredMu[tp]["trigObj"] = theMu(obj.particle());
+        _triggeredMuTree[tp]["trigObj"]->Fill();
+      }
+    }
+
     for (const auto& mu : *saMuonsH) {
       _triggeredMu[tp]["saMu"] = theMu(mu);
       _triggeredMuTree[tp]["saMu"]->Fill();
@@ -251,6 +279,12 @@ TrigEffiAnalyzer::beginJob()
   for (const auto& p : dirnames) {
     TFileDirectory tpDir = fs->mkdir(p.c_str());
     
+    // trigger objects only exist for trigger paths
+    if (std::find(trigPaths.begin(), trigPaths.end(), p) != trigPaths.end()) {
+      _triggeredMuTree[p]["trigObj"] = tpDir.make<TTree>("triggerObjects", "");
+      fillTTree(_triggeredMuTree[p]["trigObj"], _triggeredMu[p]["trigObj"]);
+    }
+
     _triggeredMuTree[p]["saMu"]  = tpDir.make<TTree>("standAloneMuons", "");
     fillTTree(_triggeredMuTree[p]["saMu"], _triggeredMu[p]["saMu"]);
     
@@ -280,14 +314,16 @@ TrigEffiAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
   edm::ParameterSetDescription desc;
   // desc.setUnknown();
   desc.add<edm::InputTag>("_trigResults", edm::InputTag("TriggerResults","","HLT"));
+  desc.add<edm::InputTag>("_trigEvent",   edm::InputTag("hltTriggerSummaryAOD","","HLT"));
   desc.add<edm::InputTag>("_genParticles",edm::InputTag("genParticles"));
   desc.add<edm::InputTag>("_saMuons",     edm::InputTag("standAloneMuons"));
   desc.add<edm::InputTag>("_rsaMuons",    edm::InputTag("refittedStandAloneMuons"));
   desc.add<edm::InputTag>("_dsaMuons",    edm::InputTag("displacedStandAloneMuons"));
   desc.add<edm::InputTag>("_muons",       edm::InputTag("muons"));
 
-  std::vector<std::string> trigpaths;
+  std::vector<std::string> trigpaths, trigfilters;
   desc.addUntracked<std::vector<std::string>>("_trigPaths", trigpaths);
+  desc.addUntracked<std::vector<std::string>>("_trigFilters", trigfilters);
 
   // descriptions.addDefault(desc);
   descriptions.add("trigeffiana", desc);
