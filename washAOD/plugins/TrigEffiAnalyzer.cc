@@ -239,12 +239,24 @@ TrigEffiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     if (filterIndex < trigEventH->sizeFilters()) {
       const trigger::Keys& trigKeys = trigEventH->filterKeys(filterIndex);
       const trigger::TriggerObjectCollection& trigObjColl(trigEventH->getObjects());
+      
+      //customize part: look at scouting trigger with tri-trk muon pt cut.
+      if (tp.find("DST") != std::string::npos) {
+        int ptgt6(0), ptgt16(0);
+        for (trigger::Keys::const_iterator keyIt=trigKeys.begin(); keyIt!=trigKeys.end(); ++keyIt) {
+          if (trigObjColl[*keyIt].pt() >= 6) {ptgt6++;}
+          if (trigObjColl[*keyIt].pt() >= 16) {ptgt16++;}
+        }
+        if (!(ptgt16>0 && ptgt6>1)) continue;
+      }
+
       for (trigger::Keys::const_iterator keyIt=trigKeys.begin(); keyIt!=trigKeys.end(); ++keyIt) {
         const trigger::TriggerObject& obj = trigObjColl[*keyIt];
         _triggeredMu[tp]["trigObj"] = theMu(obj.particle());
         _triggeredMuTree[tp]["trigObj"]->Fill();
       }
     }
+
 
     for (const auto& mu : *saMuonsH) {
       _triggeredMu[tp]["saMu"] = theMu(mu);

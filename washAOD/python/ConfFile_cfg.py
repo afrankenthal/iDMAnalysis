@@ -44,11 +44,16 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(options.inputFiles)
 )
 
+from PhysicsTools.HepMCCandAlgos.goodStandAloneMuonTrackMCMatch_cfi import goodStandAloneMuonTrackMCMatch
+process.stamumcmatch = goodStandAloneMuonTrackMCMatch.clone()
+process.stamumcmatch.src = cms.InputTag('standAloneMuons')
+
 process.decaylengthana = cms.EDAnalyzer('DecayLengthAnalyzer',
     _genParticles = cms.InputTag('genParticles'),
     _tracks = cms.InputTag("generalTracks"),
     _globalMuons = cms.InputTag("globalMuons"),
     _saMuons = cms.InputTag("standAloneMuons"),
+    _saMuonsUAV = cms.InputTag("standAloneMuons","UpdatedAtVtx"),
     _rsaMuons = cms.InputTag("refittedStandAloneMuons"),
     _dgMuons = cms.InputTag("displacedGlobalMuons"),
     _dsaMuons = cms.InputTag("displacedStandAloneMuons"),
@@ -82,4 +87,4 @@ process.TFileService = cms.Service("TFileService",
     closeFileFast = cms.untracked.bool(True)
 )
 
-process.p = cms.Path(process.decaylengthana + process.trigeffiana)
+process.p = cms.Path(process.stamumcmatch + process.decaylengthana + process.trigeffiana)

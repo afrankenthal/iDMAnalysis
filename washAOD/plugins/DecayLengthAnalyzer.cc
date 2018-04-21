@@ -19,6 +19,7 @@
 #define EDM_ML_DEBUG
 // system include files
 #include <memory>
+#include <map>
 
 // user include files
 #include "FWCore/Framework/interface/Frameworkfwd.h"
@@ -59,7 +60,20 @@ class DecayLengthAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResource
       ~DecayLengthAnalyzer();
 
       static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
-
+      
+      struct theMu {
+        theMu() {}
+        template<typename T>
+        theMu(const T& m) {
+          _pt = m.pt();
+          _eta = m.eta();
+          _phi = m.phi();
+          _dxy = std::sqrt(m.vx()*m.vx() + m.vy()*m.vy());
+          _dz = m.vz();
+          _dl = std::sqrt(_dxy*_dxy + _dz*_dz);
+        }
+        double _pt, _eta, _phi, _dxy, _dz, _dl;
+      };
 
    private:
       virtual void beginJob() override;
@@ -71,35 +85,31 @@ class DecayLengthAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResource
       const edm::EDGetTokenT<reco::TrackCollection> tracks;
       const edm::EDGetTokenT<reco::TrackCollection> globalMuons;
       const edm::EDGetTokenT<reco::TrackCollection> saMuons;
+      const edm::EDGetTokenT<reco::TrackCollection> saMuonsUAV;
       const edm::EDGetTokenT<reco::TrackCollection> rsaMuons;
       const edm::EDGetTokenT<reco::TrackCollection> dgMuons;
       const edm::EDGetTokenT<reco::TrackCollection> dsaMuons;
       const edm::EDGetTokenT<reco::MuonCollection> muons;
 
+      void branchTTree(TTree*, theMu&);
       edm::Service<TFileService> fs;
-      TTree *evt, *GenMuon, *DiMuon, *RecoMuon, *GlobalMuon, *SAMuon, *RSAMuon, *DGMuon, *DSAMuon;
+      std::map<std::string, TTree*> _basicMuTree;
+      std::map<std::string, theMu> _basicMu;
+      TTree *evt, *DiMuon;
 
-      struct vtx {
-        vtx() {};
-        vtx(double dxy, double dz) {
-          _dxy = dxy;
-          _dz = _dz;
-          _dl = std::sqrt(_dxy*_dxy + _dz*_dz);
-        };
-        vtx(double vx, double vy, double vz) {
-          _dxy = std::sqrt(vx*vx + vy*vy);
-          _dz = vz;
-          _dl = std::sqrt(_dxy*_dxy + _dz*_dz);
-        }
-        double _dxy;
-        double _dz;
-        double _dl;
-      };
       double _dimuondr;
 
-      vtx _genMuVtx, _recoMuVtx, _globalMuVtx, _saMuVtx, _rsaMuVtx, _dgMuVtx, _dsaMuVtx;
 };
 
+void
+DecayLengthAnalyzer::branchTTree(TTree* t, theMu& m) {
+  t->Branch("pt",  &m._pt,  "pt/D");
+  t->Branch("eta", &m._eta, "eta/D");
+  t->Branch("phi", &m._phi, "phi/D");
+  t->Branch("dxy", &m._dxy, "dxy/D");
+  t->Branch("dz",  &m._dz,  "dz/D");
+  t->Branch("dl",  &m._dl,  "dl/D");
+}
 //
 // constants, enums and typedefs
 //
@@ -117,6 +127,7 @@ genParticles(consumes<reco::GenParticleCollection>(iC.getParameter<edm::InputTag
 tracks(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_tracks"))),
 globalMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_globalMuons"))),
 saMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_saMuons"))),
+saMuonsUAV(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_saMuonsUAV"))),
 rsaMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_rsaMuons"))),
 dgMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_dgMuons"))),
 dsaMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_dsaMuons"))),
@@ -153,9 +164,10 @@ DecayLengthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   Handle<reco::TrackCollection> tracksH;
   iEvent.getByToken(tracks, tracksH);
   
-  Handle<reco::TrackCollection> globalMuonsH, saMuonsH, rsaMuonsH, dgMuonsH, dsaMuonsH;
+  Handle<reco::TrackCollection> globalMuonsH, saMuonsH, saMuonsUAVH, rsaMuonsH, dgMuonsH, dsaMuonsH;
   iEvent.getByToken(globalMuons, globalMuonsH);
   iEvent.getByToken(saMuons, saMuonsH);
+  iEvent.getByToken(saMuonsUAV, saMuonsUAVH);
   iEvent.getByToken(rsaMuons, rsaMuonsH);
   iEvent.getByToken(dgMuons, dgMuonsH);
   iEvent.getByToken(dsaMuons, dsaMuonsH);
@@ -180,45 +192,50 @@ DecayLengthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   // gen muon
   for (const auto& mu : *genParticlesH) {
     if (abs(mu.pdgId()) != 13) continue;
-    _genMuVtx = vtx(mu.vx(), mu.vy(), mu.vz());
-    GenMuon->Fill();
+    _basicMu["genMu"] = theMu(mu);
+    _basicMuTree["genMu"]->Fill();
   }
 
   // reco::Muon
   for (const auto& mu : *muonsH) {
-    _recoMuVtx = vtx(mu.vx(), mu.vy(), mu.vz());
-    RecoMuon->Fill();
+    _basicMu["recoMu"] = theMu(mu);
+    _basicMuTree["recoMu"]->Fill();
   }
 
   // global muon
   for (const auto& mu : *globalMuonsH) {
-    _globalMuVtx = vtx(mu.vx(), mu.vy(), mu.vz());
-    // LogInfo("DecayLengthAnalyzer")<<_globalMuVtx._dxy<<" dz:"<<_globalMuVtx._dz;
-    GlobalMuon->Fill();
+    _basicMu["globalMu"] = theMu(mu);
+    _basicMuTree["globalMu"]->Fill();
   }
 
   // standalone muon
   for (const auto& mu : *saMuonsH) {
-    _saMuVtx = vtx(mu.vx(), mu.vy(), mu.vz());
-    SAMuon->Fill();
+    _basicMu["saMu"] = theMu(mu);
+    _basicMuTree["saMu"]->Fill();
+  }
+
+  // standalone muon updatedAtVertex
+  for (const auto& mu : *saMuonsUAVH) {
+    _basicMu["saMuUAV"] = theMu(mu);
+    _basicMuTree["saMuUAV"]->Fill();
   }
 
   // refitted standalone muon
   for (const auto& mu : *rsaMuonsH) {
-    _rsaMuVtx = vtx(mu.vx(), mu.vy(), mu.vz());
-    RSAMuon->Fill();
+    _basicMu["rsaMu"] = theMu(mu);
+    _basicMuTree["rsaMu"]->Fill();
   }
 
   // displaced global muon
   for (const auto& mu : *dgMuonsH) {
-    _dgMuVtx = vtx(mu.vx(), mu.vy(), mu.vz());
-    DGMuon->Fill();
+    _basicMu["dgMu"] = theMu(mu);
+    _basicMuTree["dgMu"]->Fill();
   }
 
   // displaced standalone muon
   for (const auto& mu : *dsaMuonsH) {
-    _dsaMuVtx = vtx(mu.vx(), mu.vy(), mu.vz());
-    DSAMuon->Fill();
+    _basicMu["dsaMu"] = theMu(mu);
+    _basicMuTree["dsaMu"]->Fill();
   }
 }
 
@@ -228,45 +245,34 @@ void
 DecayLengthAnalyzer::beginJob()
 {
   evt = fs->make<TTree>("Event", "Event information");
-
-  
+ 
   DiMuon = fs->make<TTree>("DiMuon", "Two muons");
   DiMuon->Branch("dimuondR", &_dimuondr, "dimuondR/D");
 
-  GenMuon = fs->make<TTree>("GenMuon", "gen muon");
-  GenMuon->Branch("dxy", &_genMuVtx._dxy, "dxy/D");
-  GenMuon->Branch("dz",  &_genMuVtx._dz,  "dz/D");
-  GenMuon->Branch("dl",  &_genMuVtx._dl,  "dl/D");
+  _basicMuTree["genMu"] = fs->make<TTree>("GenMuon", "gen muon");
+  branchTTree(_basicMuTree["genMu"], _basicMu["genMu"]);
 
-  RecoMuon = fs->make<TTree>("RecoMuon", "reco::Muon");
-  RecoMuon->Branch("dxy", &_recoMuVtx._dxy, "dxy/D");
-  RecoMuon->Branch("dz",  &_recoMuVtx._dz,  "dz/D");
-  RecoMuon->Branch("dl",  &_recoMuVtx._dl,  "dl/D");
+  _basicMuTree["recoMu"] = fs->make<TTree>("RecoMuon", "reco::Muon");
+  branchTTree(_basicMuTree["recoMu"], _basicMu["recoMu"]);
 
-  GlobalMuon = fs->make<TTree>("GlobalMuon", "globalMuon");
-  GlobalMuon->Branch("dxy", &_globalMuVtx._dxy, "dxy/D");
-  GlobalMuon->Branch("dz",  &_globalMuVtx._dz,  "dz/D");
-  GlobalMuon->Branch("dl",  &_globalMuVtx._dl,  "dl/D");
+  _basicMuTree["globalMu"] = fs->make<TTree>("GlobalMuon", "globalMuon");
+  branchTTree(_basicMuTree["globalMu"], _basicMu["globalMu"]);
 
-  SAMuon = fs->make<TTree>("StandAloneMuon", "standalone muon");
-  SAMuon->Branch("dxy", &_saMuVtx._dxy, "dxy/D");
-  SAMuon->Branch("dz" , &_saMuVtx._dz , "dz/D");
-  SAMuon->Branch("dl" , &_saMuVtx._dl , "dl/D");
+  _basicMuTree["saMu"] = fs->make<TTree>("StandAloneMuon", "standalone muon");
+  branchTTree(_basicMuTree["saMu"], _basicMu["saMu"]);
 
-  RSAMuon = fs->make<TTree>("RefittedStandAloneMuon", "refitted standalone muon");
-  RSAMuon->Branch("dxy", &_rsaMuVtx._dxy, "dxy/D");
-  RSAMuon->Branch("dz" , &_rsaMuVtx._dz , "dz/D");
-  RSAMuon->Branch("dl" , &_rsaMuVtx._dl , "dl/D");
+  _basicMuTree["saMuUAV"] = fs->make<TTree>("StandAloneMuonUpdatedAtVertex", "");
+  branchTTree(_basicMuTree["saMuUAV"], _basicMu["saMuUAV"]);
 
-  DGMuon = fs->make<TTree>("DisplacedGlobalMuon", "displaced global muon");
-  DGMuon->Branch("dxy", &_dgMuVtx._dxy, "dxy/D");
-  DGMuon->Branch("dz",  &_dgMuVtx._dz,  "dz/D");
-  DGMuon->Branch("dl",  &_dgMuVtx._dl,  "dl/D");
+  _basicMuTree["rsaMu"] = fs->make<TTree>("RefittedStandAloneMuon", "refitted standalone muon");
+  branchTTree(_basicMuTree["rsaMu"], _basicMu["rsaMu"]);
 
-  DSAMuon = fs->make<TTree>("DisplacedStandAloneMuon", "displaced standalone muon");
-  DSAMuon->Branch("dxy", &_dsaMuVtx._dxy, "dxy/D");
-  DSAMuon->Branch("dz" , &_dsaMuVtx._dz , "dz/D");
-  DSAMuon->Branch("dl" , &_dsaMuVtx._dl , "dl/D");
+  _basicMuTree["dgMu"] = fs->make<TTree>("DisplacedGlobalMuon", "displaced global muon");
+  branchTTree(_basicMuTree["dgMu"], _basicMu["dgMu"]);
+
+  _basicMuTree["dsaMu"] = fs->make<TTree>("DisplacedStandAloneMuon", "displaced standalone muon");
+  branchTTree(_basicMuTree["dsaMu"], _basicMu["dsaMu"]);
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -286,6 +292,7 @@ DecayLengthAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptio
   desc.add<edm::InputTag>("_tracks",      edm::InputTag("generalTracks"));
   desc.add<edm::InputTag>("_globalMuons", edm::InputTag("globalMuons"));
   desc.add<edm::InputTag>("_saMuons",     edm::InputTag("standAloneMuons"));
+  desc.add<edm::InputTag>("_saMuonsUAV",  edm::InputTag("standAloneMuons","UpdatedAtVtx"));
   desc.add<edm::InputTag>("_rsaMuons",    edm::InputTag("refittedStandAloneMuons"));
   desc.add<edm::InputTag>("_dgMuons",     edm::InputTag("displacedGlobalMuons"));
   desc.add<edm::InputTag>("_dsaMuons",    edm::InputTag("displacedStandAloneMuons"));

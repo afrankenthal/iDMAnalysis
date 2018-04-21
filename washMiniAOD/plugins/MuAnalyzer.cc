@@ -22,6 +22,7 @@
 
 #include "TH1I.h"
 #include "TH1F.h"
+#include "TTree.h"
 
 class MuAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources>
 {
@@ -30,18 +31,51 @@ public:
 	~MuAnalyzer();
 
 	static void fillDescriptions(edm::ConfigurationDescriptions& descriptions);
+    struct theMu
+      {
+        theMu() {};
+
+        template<typename T>
+        theMu(const T& m) {
+          _pt = m.pt();
+          _eta = m.eta();
+          _phi = m.phi();
+          _dxy = std::sqrt(m.vx()*m.vx() + m.vy()*m.vy());
+          if (m.isStandAloneMuon()) {
+            _saDxy = std::sqrt(m.standAloneMuon()->vx()*m.standAloneMuon()->vx()
+                              +m.standAloneMuon()->vy()*m.standAloneMuon()->vy());
+          } else {_saDxy = -1;}
+        }
+
+        double _pt, _eta, _phi, _dxy, _saDxy;
+      };
 
 private:
 	virtual void beginJob() override;
 	virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
 	virtual void endJob() override;
 
+  void branchTTree(TTree* t, theMu& m);
+
 	edm::Service<TFileService> fs;
 	const edm::EDGetTokenT<pat::MuonCollection> muons;
 
 	TH1I *hNMuons, *hMuonType, *hMuIdAlgo;
+  std::map<std::string, theMu> _basicMu;
+  std::map<std::string, TTree*> _basicMuTree;
 	
 };
+
+void
+MuAnalyzer::branchTTree(TTree* t, theMu& m) {
+  t->Branch("pt",  &m._pt,  "pt/D");
+  t->Branch("eta", &m._eta, "eta/D");
+  t->Branch("phi", &m._phi, "phi/D");
+  t->Branch("dxy", &m._dxy, "dxy/D");
+  t->Branch("saDxy", &m._saDxy, "saDxy/D");
+}
+
+
 
 MuAnalyzer::MuAnalyzer(const edm::ParameterSet& iC)
 :
@@ -81,6 +115,26 @@ MuAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 			if(mu.isTrackerMuon()) _muType=4; // TM
 		}
 		hMuonType->Fill(_muType);
+
+    // if (_muType==1) {
+    //   _basicMu["sa_glb_tkm"] = theMu(mu);
+    //   _basicMuTree["sa_glb_tkm"]->Fill();
+    // }
+    // else if ()
+    _basicMu["total"] = theMu(mu);
+    _basicMuTree["total"]->Fill();
+    switch(_muType) {
+      case 1:
+      {
+        _basicMu["sa_glb_tkm"] = theMu(mu);
+        _basicMuTree["sa_glb_tkm"]->Fill();
+      }
+      case 5:
+      {
+        _basicMu["saOnly"] = theMu(mu);
+        _basicMuTree["saOnly"]->Fill();
+      }
+    }
 	
 		// Muon ID selection. As described in AN-2008/098
     if(muon::isGoodMuon(mu, muon::All))                                // dummy options - always true
@@ -123,6 +177,15 @@ MuAnalyzer::beginJob()
 	hNMuons = fs->make<TH1I>("nMuons", "Number of muons per event;N_{#mu};A.U.", 10, 0, 10);
 	hMuonType = fs->make<TH1I>("MuonType", "Type of muons;Type;A.U.", 5, 1, 6);
 	hMuIdAlgo = fs->make<TH1I>("muonIdSelectors", "Result of muon id selectors;Id;A.U.", 13, 0, 13);
+
+  _basicMuTree["total"] = fs->make<TTree>("Total", "");
+  branchTTree(_basicMuTree["total"], _basicMu["total"]);
+
+  _basicMuTree["saOnly"] = fs->make<TTree>("standAloneMuonsOnly", "");
+  branchTTree(_basicMuTree["saOnly"], _basicMu["saOnly"]);
+
+  _basicMuTree["sa_glb_tkm"] = fs->make<TTree>("standaloneGlobalTrackerMuon", "");
+  branchTTree(_basicMuTree["sa_glb_tkm"], _basicMu["sa_glb_tkm"]);
 }
 
 void

@@ -5,6 +5,7 @@
 <use name="DataFormats/MuonReco"/>
 <use name="CommonTools/UtilAlgos"/>
 <use name="PhysicsTools/UtilAlgos"/>
+<use name="PhysicsTools/HepMCCandAlgos"/>
 <use name="FWCore/Common"/>
 <use name="DataFormats/Common"/>
 <flags EDM_PLUGIN="1"/>
