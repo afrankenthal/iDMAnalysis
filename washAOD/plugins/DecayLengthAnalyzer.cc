@@ -75,6 +75,29 @@ class DecayLengthAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResource
         double _pt, _eta, _phi, _dxy, _dz, _dl;
       };
 
+      template<typename F, typename T>
+      struct theMCMatching {
+        theMCMatching(const F& from, const T& to) {
+          for (const auto& cand : from) {
+            std::vector<const typename T::value_type*> matchedlist{};
+            for (const auto& gen : to) {
+                if (gen.status() != 1) continue;
+                if (gen.pdgId() != cand.pdgId()) continue;
+                if (gen.charge() != cand.charge()) continue;
+                if (deltaR(cand, gen)>0.15) continue;
+                matchedlist.push_back(&gen);
+            }
+            if (matchedlist.size()>1) {
+                std::sort(matchedlist.begin(), matchedlist.end(), [&cand](const auto& lhs, const auto& rhs){
+                        return std::abs(cand.pt() - lhs->pt()) < std::abs(cand.pt() - rhs->pt());});
+            }
+            matchedmap[&cand] = matchedlist;
+          }
+        }
+        std::vector<const typename T::value_type*>& operator[](const typename F::value_type* cand) {return matchedmap[cand];}
+        std::map<const typename F::value_type*, std::vector<const typename T::value_type*> > matchedmap;
+      };
+
    private:
       virtual void beginJob() override;
       virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
@@ -177,6 +200,9 @@ DecayLengthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   LogDebug("DecayLengthAnalyzer") << "number of muons "<<muonsH->size()
                                   << "number of globalMuons "<<globalMuonsH->size() 
                                   << "number of tracks "<<tracksH->size();
+  unsigned int acceptance = std::count_if(genParticlesH->begin(), genParticlesH->end(),
+          [](const auto& mu) {return abs(mu.pdgId())==13 && abs(mu.eta())<2.4;});
+  if (acceptance<4) return;
   
   // reco::Muon dimuon
   for (size_t imu(0); imu!=muonsH->size(); ++imu) {
@@ -197,10 +223,16 @@ DecayLengthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   }
 
   // reco::Muon
+  auto recoMuMatchMap = theMCMatching<reco::MuonCollection, reco::GenParticleCollection>(*muonsH, *genParticlesH);
   for (const auto& mu : *muonsH) {
     _basicMu["recoMu"] = theMu(mu);
     _basicMuTree["recoMu"]->Fill();
+    std::cout<<mu.pt() << " >> ";
+    for (const auto& g : recoMuMatchMap[&mu])
+        std::cout<<g->pt()<<" ";
+    std::cout<<std::endl;
   }
+  std::cout<<std::endl;
 
   // global muon
   for (const auto& mu : *globalMuonsH) {

@@ -5,7 +5,11 @@ process = cms.Process("DecayLengthAnalyzer")
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideAboutPythonConfigFile#Passing_Command_Line_Arguments_T
 options = VarParsing.VarParsing('analysis')
 
-options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-1_41695249_AOD.root'
+import platform
+if 'cmslpc' in platform.node():
+    options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-1_41695249_AOD.root'
+elif 'lxplus' in platform.node():
+    options.inputFiles = 'file:/eos/user/w/wsi/prelimSamples/SIDMmumu_Mps-200_MZp-1p2_ctau-1_12714105_AOD.root'
 options.outputFile = 'histo.root'
 options.maxEvents = -1
 
@@ -48,6 +52,9 @@ from PhysicsTools.HepMCCandAlgos.goodStandAloneMuonTrackMCMatch_cfi import goodS
 process.stamumcmatch = goodStandAloneMuonTrackMCMatch.clone()
 process.stamumcmatch.src = cms.InputTag('standAloneMuons')
 
+from PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi import muonMatch
+process.muonmatch = muonMatch.clone()
+
 process.decaylengthana = cms.EDAnalyzer('DecayLengthAnalyzer',
     _genParticles = cms.InputTag('genParticles'),
     _tracks = cms.InputTag("generalTracks"),
@@ -87,4 +94,4 @@ process.TFileService = cms.Service("TFileService",
     closeFileFast = cms.untracked.bool(True)
 )
 
-process.p = cms.Path(process.stamumcmatch + process.decaylengthana + process.trigeffiana)
+process.p = cms.Path(process.decaylengthana + process.trigeffiana)
