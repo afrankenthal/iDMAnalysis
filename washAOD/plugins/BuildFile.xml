@@ -2,11 +2,14 @@
 <use name="FWCore/PluginManager"/>
 <use name="FWCore/ParameterSet"/>
 <use name="DataFormats/HepMCCandidate"/>
+<use name="DataFormats/RecoCandidate"/>
 <use name="DataFormats/TrackReco"/>
 <use name="DataFormats/MuonReco"/>
 <use name="CommonTools/UtilAlgos"/>
+<use name="CommonTools/RecoAlgos"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="PhysicsTools/HepMCCandAlgos"/>
 <use name="FWCore/Common"/>
 <use name="DataFormats/Common"/>
+<use name="Firefighter/washAOD"/>
 <flags EDM_PLUGIN="1"/>

@@ -6,7 +6,7 @@ options = VarParsing.VarParsing('analysis')
 
 options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-1_41695249_AOD.root'
 options.outputFile = 'skimtest.root'
-options.maxEvents = 10
+options.maxEvents = -1
 
 options.parseArguments()
 
@@ -21,39 +21,12 @@ process.source = cms.Source("PoolSource",
             fileNames = cms.untracked.vstring(options.inputFiles)
             )
 
+process.allMuPtResolution = cms.EDAnalyzer("muMCAnalyzer")
 
-from PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi import muonMatch
-process.muonmatch = muonMatch.clone()
-
-
-trackMuMatch = cms.EDProducer("MCtkMatcher", # cut on deltaR, deltaPt/Pt; pick best by deltaR
-    src     = cms.InputTag("standAloneMuons"), # RECO objects to match
-    matched = cms.InputTag("genParticles"),   # mc-truth particle collection
-    mcPdgId     = cms.vint32(13), # one or more PDG ID (13 = muon); absolute values (see below)
-    checkCharge = cms.bool(True), # True = require RECO and MC objects to have the same charge
-    mcStatus = cms.vint32(1),     # PYTHIA status code (1 = stable, 2 = shower, 3 = hard scattering)
-    maxDeltaR = cms.double(0.5),  # Minimum deltaR for the match
-    maxDPtRel = cms.double(0.5),  # Minimum deltaPt/Pt for the match
-    resolveAmbiguities = cms.bool(True),     # Forbid two RECO objects to match to the same GEN object
-    resolveByMatchQuality = cms.bool(False), # False = just match input in order; True = pick lowest deltaR pair first
-)
-
-process.samumatch = trackMuMatch
-process.samuUAVmatch = process.samumatch.clone(
-                    src = cms.InputTag("standAloneMuons", "UpdatedAtVtx")
-                    )
-process.dsamumatch = process.samumatch.clone(
-                    src = cms.InputTag("displacedStandAloneMuons")
-                    )
-process.rsamumatch = process.samumatch.clone(
-                    src = cms.InputTag("refittedStandAloneMuons")
-                    )
-process.globalmumatch = process.samumatch.clone(
-                    src = cms.InputTag("globalMuons")
-                    )
-process.dgmumatch = process.samumatch.clone(
-                    src = cms.InputTag("displacedGlobalMuons")
-                    )
+process.TFileService = cms.Service("TFileService",
+        fileName = cms.string('ptreso.root'),
+        closeFileFast = cms.untracked.bool(True)
+        )
 
 process.out = cms.OutputModule("PoolOutputModule",
         fileName = cms.untracked.string(options.outputFile),
@@ -64,14 +37,7 @@ process.out = cms.OutputModule("PoolOutputModule",
                         'keep *_*_*_USER'
                         )
         )
-
-process.p = cms.Path(
-                process.muonmatch +
-                process.samumatch +
-                process.samuUAVmatch +
-                process.dsamumatch +
-                process.rsamumatch +
-                process.globalmumatch +
-                process.dgmumatch
-                )
-process.ep = cms.EndPath(process.out)
+process.load("Firefighter.washAOD.mcMatchSeq_cff")
+process.load("Firefighter.washAOD.produceCandidateFromTrack_cff")
+process.p = cms.Path(process.makeMuTrackCandidates * process.mcMatch * process.allMuPtResolution)
+# process.ep = cms.EndPath(process.out)
