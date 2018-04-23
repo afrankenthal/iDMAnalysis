@@ -71,32 +71,47 @@ class DecayLengthAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResource
           _dxy = std::sqrt(m.vx()*m.vx() + m.vy()*m.vy());
           _dz = m.vz();
           _dl = std::sqrt(_dxy*_dxy + _dz*_dz);
+          _res = -1.;
         }
-        double _pt, _eta, _phi, _dxy, _dz, _dl;
+        void setResolution(double r) {_res = r;}
+        double _pt, _eta, _phi, _dxy, _dz, _dl, _res;
       };
 
       template<typename F, typename T>
       struct theMCMatching {
+        theMCMatching() {}
+        
         theMCMatching(const F& from, const T& to) {
+          
           for (const auto& cand : from) {
             std::vector<const typename T::value_type*> matchedlist{};
             for (const auto& gen : to) {
                 if (gen.status() != 1) continue;
-                if (gen.pdgId() != cand.pdgId()) continue;
+                if (gen.pdgId() != 13) continue;
                 if (gen.charge() != cand.charge()) continue;
                 if (deltaR(cand, gen)>0.15) continue;
                 matchedlist.push_back(&gen);
             }
+            
             if (matchedlist.size()>1) {
-                std::sort(matchedlist.begin(), matchedlist.end(), [&cand](const auto& lhs, const auto& rhs){
-                        return std::abs(cand.pt() - lhs->pt()) < std::abs(cand.pt() - rhs->pt());});
+                auto lessDeltaPt = [&cand](const auto& lhs, const auto& rhs){
+                  return std::abs(cand.pt() - lhs->pt()) < std::abs(cand.pt() - rhs->pt());
+                };
+                std::sort(matchedlist.begin(), matchedlist.end(), lessDeltaPt);
             }
+
             matchedmap[&cand] = matchedlist;
           }
         }
-        std::vector<const typename T::value_type*>& operator[](const typename F::value_type* cand) {return matchedmap[cand];}
-        std::map<const typename F::value_type*, std::vector<const typename T::value_type*> > matchedmap;
+
+        std::vector<const typename T::value_type*>&
+        operator[](const typename F::value_type* cand) {return matchedmap[cand];}
+        
+        std::map<const typename F::value_type*, std::vector<const typename T::value_type*>> matchedmap;
       };
+
+      using recoMuMCMatching =theMCMatching<reco::MuonCollection,  reco::GenParticleCollection>;
+      using muTrackMCMatching=theMCMatching<reco::TrackCollection, reco::GenParticleCollection>;
 
    private:
       virtual void beginJob() override;
@@ -118,6 +133,7 @@ class DecayLengthAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResource
       edm::Service<TFileService> fs;
       std::map<std::string, TTree*> _basicMuTree;
       std::map<std::string, theMu> _basicMu;
+      
       TTree *evt, *DiMuon;
 
       double _dimuondr;
@@ -132,6 +148,7 @@ DecayLengthAnalyzer::branchTTree(TTree* t, theMu& m) {
   t->Branch("dxy", &m._dxy, "dxy/D");
   t->Branch("dz",  &m._dz,  "dz/D");
   t->Branch("dl",  &m._dl,  "dl/D");
+  t->Branch("res", &m._res, "res/D");
 }
 //
 // constants, enums and typedefs
@@ -223,50 +240,86 @@ DecayLengthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   }
 
   // reco::Muon
-  auto recoMuMatchMap = theMCMatching<reco::MuonCollection, reco::GenParticleCollection>(*muonsH, *genParticlesH);
+  auto recoMuMatchMap = recoMuMCMatching(*muonsH, *genParticlesH);
   for (const auto& mu : *muonsH) {
     _basicMu["recoMu"] = theMu(mu);
+    if (!recoMuMatchMap[&mu].empty()) {
+      double genpt = recoMuMatchMap[&mu][0]->pt();
+      double res = abs((mu.pt() - genpt)/genpt);
+      _basicMu["recoMu"].setResolution(res);
+    }
     _basicMuTree["recoMu"]->Fill();
-    std::cout<<mu.pt() << " >> ";
-    for (const auto& g : recoMuMatchMap[&mu])
-        std::cout<<g->pt()<<" ";
-    std::cout<<std::endl;
   }
-  std::cout<<std::endl;
 
   // global muon
+  auto globalMuMatchMap = muTrackMCMatching(*globalMuonsH, *genParticlesH);
   for (const auto& mu : *globalMuonsH) {
     _basicMu["globalMu"] = theMu(mu);
+    if (!globalMuMatchMap[&mu].empty()) {
+      double genpt = globalMuMatchMap[&mu][0]->pt();
+      double res = abs((mu.pt() - genpt)/genpt);
+      _basicMu["globalMu"].setResolution(res);
+    }
     _basicMuTree["globalMu"]->Fill();
   }
 
   // standalone muon
+  auto saMuMatchMap = muTrackMCMatching(*saMuonsH, *genParticlesH);
   for (const auto& mu : *saMuonsH) {
     _basicMu["saMu"] = theMu(mu);
+    if (!saMuMatchMap[&mu].empty()) {
+      double genpt = saMuMatchMap[&mu][0]->pt();
+      double res = abs((mu.pt() - genpt)/genpt);
+      _basicMu["saMu"].setResolution(res);
+    }
     _basicMuTree["saMu"]->Fill();
   }
 
   // standalone muon updatedAtVertex
+  auto saMuUAVMatchMap = muTrackMCMatching(*saMuonsUAVH, *genParticlesH);
   for (const auto& mu : *saMuonsUAVH) {
     _basicMu["saMuUAV"] = theMu(mu);
+    if (!saMuUAVMatchMap[&mu].empty()) {
+      double genpt = saMuUAVMatchMap[&mu][0]->pt();
+      double res = abs((mu.pt() - genpt)/genpt);
+      _basicMu["saMuUAV"].setResolution(res);
+    }
     _basicMuTree["saMuUAV"]->Fill();
   }
 
   // refitted standalone muon
+  auto rsaMuMatchMap = muTrackMCMatching(*rsaMuonsH, *genParticlesH);
   for (const auto& mu : *rsaMuonsH) {
     _basicMu["rsaMu"] = theMu(mu);
+    if (!rsaMuMatchMap[&mu].empty()) {
+      double genpt = rsaMuMatchMap[&mu][0]->pt();
+      double res = abs((mu.pt() - genpt)/genpt);
+      _basicMu["rsaMu"].setResolution(res);
+    }
     _basicMuTree["rsaMu"]->Fill();
   }
 
   // displaced global muon
+  auto dgMuMatchMap = muTrackMCMatching(*dgMuonsH, *genParticlesH);
   for (const auto& mu : *dgMuonsH) {
     _basicMu["dgMu"] = theMu(mu);
+    if (!dgMuMatchMap[&mu].empty()) {
+      double genpt = dgMuMatchMap[&mu][0]->pt();
+      double res = abs((mu.pt() - genpt)/genpt);
+      _basicMu["dgMu"].setResolution(res);
+    }
     _basicMuTree["dgMu"]->Fill();
   }
 
   // displaced standalone muon
+  auto dsaMuMatchMap = muTrackMCMatching(*dsaMuonsH, *genParticlesH);
   for (const auto& mu : *dsaMuonsH) {
     _basicMu["dsaMu"] = theMu(mu);
+    if (!dsaMuMatchMap[&mu].empty()) {
+      double genpt = dsaMuMatchMap[&mu][0]->pt();
+      double res = abs((mu.pt() - genpt)/genpt);
+      _basicMu["dsaMu"].setResolution(res);
+    }
     _basicMuTree["dsaMu"]->Fill();
   }
 }
