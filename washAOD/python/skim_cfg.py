@@ -24,12 +24,12 @@ process.source = cms.Source("PoolSource",
 process.allMuPtResolution = cms.EDAnalyzer("muMCAnalyzer")
 
 process.TFileService = cms.Service("TFileService",
-        fileName = cms.string('ptreso.root'),
+        fileName = cms.string(options.outputFile),
         closeFileFast = cms.untracked.bool(True)
         )
 
 process.out = cms.OutputModule("PoolOutputModule",
-        fileName = cms.untracked.string(options.outputFile),
+        fileName = cms.untracked.string('skimmed_' + options.outputFile),
         outputCommands = cms.untracked.vstring(
                         'keep recoGenParticles_genParticles*_*_*',
                         'keep recoMuons_muons*_*_*',

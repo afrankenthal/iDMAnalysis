@@ -49,7 +49,7 @@ public:
     theMu(const C& cand) {
       _pt = cand->pt();
       _ptGen = -1.;
-      _res = -1.;
+      _res = -0.1;
     }
 
     double _pt, _ptGen, _res;

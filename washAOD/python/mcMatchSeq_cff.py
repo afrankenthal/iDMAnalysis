@@ -2,24 +2,26 @@ import FWCore.ParameterSet.Config as cms
 
 from PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi import muonMatch
 
-muonmatch = muonMatch.clone()
+muonmatch = muonMatch.clone(
+    maxDPtRel = cms.double(1.0)
+)
 
-samumatch = muonMatch.clone(
+samumatch = muonmatch.clone(
     src=cms.InputTag("saMuTrackCands")
 )
-samuUAVmatch = muonMatch.clone(
+samuUAVmatch = muonmatch.clone(
     src=cms.InputTag("saMuUAVTrackCands")
 )
-dsamumatch = muonMatch.clone(
+dsamumatch = muonmatch.clone(
     src=cms.InputTag("dsaMuTrackCands")
 )
-rsamumatch = muonMatch.clone(
+rsamumatch = muonmatch.clone(
     src=cms.InputTag("rsaMuTrackCands")
 )
-globalmumatch = muonMatch.clone(
+globalmumatch = muonmatch.clone(
     src=cms.InputTag("globalMuTrackCands")
 )
-dgmumatch = muonMatch.clone(
+dgmumatch = muonmatch.clone(
     src=cms.InputTag("dgMuTrackCands")
 )
 
