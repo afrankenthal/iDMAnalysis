@@ -1,6 +1,8 @@
 <use name="FWCore/Framework"/>
 <use name="FWCore/PluginManager"/>
 <use name="FWCore/ParameterSet"/>
+<use name="FWCore/Common"/>
+<use name="DataFormats/Common"/>
 <use name="DataFormats/HepMCCandidate"/>
 <use name="DataFormats/RecoCandidate"/>
 <use name="DataFormats/TrackReco"/>
@@ -9,7 +11,10 @@
 <use name="CommonTools/RecoAlgos"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="PhysicsTools/HepMCCandAlgos"/>
-<use name="FWCore/Common"/>
-<use name="DataFormats/Common"/>
+
+<use name="TrackingTools/TransientTrack"/>
+<use name="TrackingTools/Records"/>
+<use name="RecoVertex/VertexPrimitives"/>
+<use name="RecoVertex/KalmanVertexFit"/>
 <use name="Firefighter/washAOD"/>
 <flags EDM_PLUGIN="1"/>
