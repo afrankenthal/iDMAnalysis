@@ -38,22 +38,22 @@ public:
   struct theMuSys
   {
     theMuSys(){};
-    theMuSys(reco::Vertex::Point&& p) {
-      _vxy = std::sqrt(p.X()*p.X() + p.Y()*p.Y());
-      _vz = p.Z();
+    theMuSys(GlobalPoint p) {
+      _vxy = std::sqrt(p.x()*p.x() + p.y()*p.y());
+      _vz = p.z();
     }
     double _vxy, _vz;
     
   };
 
-  using MuSystem = std::pair<edm::Ptr<reco::Track>, edm::Ptr<reco::Track>>;
+  using MuSystem = std::pair<reco::TrackRef, reco::TrackRef>;
   using MuSystemCollection = std::vector<MuSystem>;
 
   MuSystemCollection
   makeMuSystemFromHandle(edm::Handle<reco::TrackCollection>&);
 
   std::vector<TransientVertex>
-  makeTransientVerticesFromMuSystems(edm::ESHandle<TransientTrackBuilder>&, MuSystemCollection&);
+  makeTransientVerticesFromMuSystems(edm::ESHandle<MagneticField>&, MuSystemCollection&);
 
 private:
   virtual void beginJob() override;
@@ -86,9 +86,9 @@ simpleVertexer::makeMuSystemFromHandle(edm::Handle<reco::TrackCollection>& h) {
   MuSystemCollection musystems{};
 
   for (size_t iMu(0); iMu!=h->size(); ++iMu) {
-      edm::Ptr<reco::Track> muA(h, iMu);
+      reco::TrackRef muA(h, iMu);
       for (size_t jMu(iMu+1); jMu!=h->size(); ++jMu) {
-        edm::Ptr<reco::Track> muB(h, jMu);
+        reco::TrackRef muB(h, jMu);
         if (muA->charge()*muB->charge() > 0) continue;
         if (deltaR(*muA.get(), *muB.get()) > 1) continue;
         musystems.push_back(std::make_pair(muA, muB));
@@ -99,20 +99,21 @@ simpleVertexer::makeMuSystemFromHandle(edm::Handle<reco::TrackCollection>& h) {
 }
 
 std::vector<TransientVertex>
-simpleVertexer::makeTransientVerticesFromMuSystems(edm::ESHandle<TransientTrackBuilder>& theB,
+simpleVertexer::makeTransientVerticesFromMuSystems(edm::ESHandle<MagneticField>& mf,
                                                    simpleVertexer::MuSystemCollection& mus) {
   
 
   std::vector<TransientVertex> _tvs{};
   std::vector<reco::TransientTrack> _tks{};
   for (const auto& mupair : mus) {
-    reco::TransientTrack tt1(theB->build(mupair.first.get()));
-    reco::TransientTrack tt2(theB->build(mupair.second.get()));
-    _tks.push_back(tt1);
-    _tks.push_back(tt2);
+    _tks.emplace_back(mupair.first,  &(*mf));
+    _tks.emplace_back(mupair.second, &(*mf));
     
     KalmanVertexFitter kvf(true);
-    _tvs.push_back( kvf.vertex(_tks) );
+    TransientVertex tv = kvf.vertex(_tks);
+    if ( tv.isValid() ) { //<- must check this! otherwise uninitialized proxyBase exception
+      _tvs.push_back(tv);
+    }
     _tks.clear();
   }
 
@@ -149,9 +150,13 @@ simpleVertexer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   if (!acceptance) return;  
 
   Handle<reco::TrackCollection> globalMuonsH, saMuonsH, saMuonsUAVH, rsaMuonsH, dgMuonsH, dsaMuonsH;
-  edm::ESHandle<TransientTrackBuilder> theB;
-  iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", theB);
+  // edm::ESHandle<TransientTrackBuilder> theB;
+  // iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", theB);
+
+  edm::ESHandle<MagneticField> bFieldHandle;
+  iSetup.get<IdealMagneticFieldRecord>().get(bFieldHandle);
   
+  /// standAloneMuons
   iEvent.getByToken(saMuons, saMuonsH);
   if (!saMuonsH.isValid()) {
     edm::LogInfo("Firefighter/simpleVertexer")
@@ -162,17 +167,17 @@ simpleVertexer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     
     MuSystemCollection saMuonSystems = makeMuSystemFromHandle(saMuonsH);
     std::vector<TransientVertex> saMuSysVertices
-      = makeTransientVerticesFromMuSystems(theB, saMuonSystems);
+      = makeTransientVerticesFromMuSystems(bFieldHandle, saMuonSystems);
 
     if (saMuSysVertices.size() > 0) {
       for (const auto& v : saMuSysVertices) {
-        _themusys["saMuon"] = theMuSys(reco::Vertex::Point(v.position()));
+        _themusys["saMuon"] = theMuSys(v.position());
         _thevtxtree["saMuon"]->Fill();
       }
     }
   }
 
-
+  /// globalMuons
   iEvent.getByToken(globalMuons, globalMuonsH);
   if (!globalMuonsH.isValid()) {
     edm::LogInfo("Firefighter/simpleVertexer")
@@ -180,17 +185,17 @@ simpleVertexer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   } else {
     MuSystemCollection globalMuonSystems = makeMuSystemFromHandle(globalMuonsH);
     std::vector<TransientVertex> globalMuSysVertices
-      = makeTransientVerticesFromMuSystems(theB, globalMuonSystems);
+      = makeTransientVerticesFromMuSystems(bFieldHandle, globalMuonSystems);
 
     if (globalMuSysVertices.size() > 0) {
       for (const auto& v : globalMuSysVertices) {
-        _themusys["globalMu"] = theMuSys(reco::Vertex::Point(v.position()));
+        _themusys["globalMu"] = theMuSys(v.position());
         _thevtxtree["globalMu"]->Fill();
       }
     }
   }
 
-
+  /// standAloneMuons UpdatedAtVertex
   iEvent.getByToken(saMuonsUAV, saMuonsUAVH);
   if (!saMuonsUAVH.isValid()) {
     edm::LogInfo("Firefighter/simpleVertexer")
@@ -198,17 +203,17 @@ simpleVertexer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   } else {
     MuSystemCollection saMuonUAVSystems = makeMuSystemFromHandle(saMuonsUAVH);
     std::vector<TransientVertex> saMuUAVSysVertices
-      = makeTransientVerticesFromMuSystems(theB, saMuonUAVSystems);
+      = makeTransientVerticesFromMuSystems(bFieldHandle, saMuonUAVSystems);
 
     if (saMuUAVSysVertices.size() > 0) {
       for (const auto& v : saMuUAVSysVertices) {
-        _themusys["saMuUAV"] = theMuSys(reco::Vertex::Point(v.position()));
+        _themusys["saMuUAV"] = theMuSys(v.position());
         _thevtxtree["saMuUAV"]->Fill();
       }
     }
   }
 
-
+  /// refittedStandAloneMuons
   iEvent.getByToken(rsaMuons, rsaMuonsH);
   if (!rsaMuonsH.isValid()) {
     edm::LogInfo("Firefighter/simpleVertexer")
@@ -216,17 +221,17 @@ simpleVertexer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   } else {
     MuSystemCollection rsaMuonSystems = makeMuSystemFromHandle(rsaMuonsH);
     std::vector<TransientVertex> rsaMuSysVertices
-      = makeTransientVerticesFromMuSystems(theB, rsaMuonSystems);
+      = makeTransientVerticesFromMuSystems(bFieldHandle, rsaMuonSystems);
 
     if (rsaMuSysVertices.size() > 0) {
       for (const auto& v : rsaMuSysVertices) {
-        _themusys["rsaMuon"] = theMuSys(reco::Vertex::Point(v.position()));
+        _themusys["rsaMuon"] = theMuSys(v.position());
         _thevtxtree["rsaMuon"]->Fill();
       }
     }
   }
 
-
+  /// displacedStandAloneMuons
   iEvent.getByToken(dsaMuons, dsaMuonsH);
   if (!dsaMuonsH.isValid()) {
     edm::LogInfo("Firefighter/simpleVertexer")
@@ -234,17 +239,17 @@ simpleVertexer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   } else {
     MuSystemCollection dsaMuonSystems = makeMuSystemFromHandle(dsaMuonsH);
     std::vector<TransientVertex> dsaMuSysVertices
-      = makeTransientVerticesFromMuSystems(theB, dsaMuonSystems);
+      = makeTransientVerticesFromMuSystems(bFieldHandle, dsaMuonSystems);
 
     if (dsaMuSysVertices.size() > 0) {
       for (const auto& v : dsaMuSysVertices) {
-        _themusys["dsaMuon"] = theMuSys(reco::Vertex::Point(v.position()));
+        _themusys["dsaMuon"] = theMuSys(v.position());
         _thevtxtree["dsaMuon"]->Fill();
       }
     }
   }
 
-
+  /// displacedGlobalMuons
   iEvent.getByToken(dgMuons, dgMuonsH);
   if (!dgMuonsH.isValid()) {
     edm::LogInfo("Firefighter/simpleVertexer")
@@ -252,11 +257,11 @@ simpleVertexer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   } else {
     MuSystemCollection dgMuonSystems = makeMuSystemFromHandle(dgMuonsH);
     std::vector<TransientVertex> dgMuSysVertices
-      = makeTransientVerticesFromMuSystems(theB, dgMuonSystems);
+      = makeTransientVerticesFromMuSystems(bFieldHandle, dgMuonSystems);
 
     if (dgMuSysVertices.size() > 0) {
       for (const auto& v : dgMuSysVertices) {
-        _themusys["dgMuon"] = theMuSys(reco::Vertex::Point(v.position()));
+        _themusys["dgMuon"] = theMuSys(v.position());
         _thevtxtree["dgMuon"]->Fill();
       }
     }

@@ -4,17 +4,24 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 process = cms.Process("simpleVertexer")
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideAboutPythonConfigFile#Passing_Command_Line_Arguments_T
 options = VarParsing.VarParsing('analysis')
-
-import platform
-# if 'cmslpc' in platform.node():
-#     options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-1_41695249_AOD.root'
-# elif 'lxplus' in platform.node():
-#     options.inputFiles = 'file:/eos/user/w/wsi/prelimSamples/SIDMmumu_Mps-200_MZp-1p2_ctau-1_12714105_AOD.root'
-options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-1_41695249_AOD.root'
-options.outputFile = 'simpleverter.root'
-options.maxEvents = 100
+options.register('test',
+                 0,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.int,
+                 "Run for a test or not")
 
 options.parseArguments()
+
+if options.test == 1:
+    import platform
+    if 'cmslpc' in platform.node():
+        options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-1_41695249_AOD.root'
+    elif 'lxplus' in platform.node():
+        options.inputFiles = 'file:/eos/user/w/wsi/prelimSamples/SIDMmumu_Mps-200_MZp-1p2_ctau-1_12714105_AOD.root'
+    options.maxEvents = 100
+    options.outputFile = 'simpleverter.root'
+else:
+    options.maxEvents = -1
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
@@ -37,7 +44,6 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
 from Configuration.AlCa.GlobalTag import GlobalTag
 process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v10', '')
 process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-# process.load("Configuration.Geometry.GeometryIdeal_cff")
 process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 process.load("Configuration.StandardSequences.MagneticField_cff")
 

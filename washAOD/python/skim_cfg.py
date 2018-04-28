@@ -3,12 +3,25 @@ import FWCore.ParameterSet.VarParsing as VarParsing
 
 process = cms.Process("USER")
 options = VarParsing.VarParsing('analysis')
-
-options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-1_41695249_AOD.root'
-options.outputFile = 'skimtest.root'
-options.maxEvents = -1
+options.register('test',
+                 0,
+                 VarParsing.VarParsing.multiplicity.singleton,
+                 VarParsing.VarParsing.varType.int,
+                 "Run for a test or not")
 
 options.parseArguments()
+
+if options.test:
+    import platform
+    if 'cmslpc' in platform.node():
+        options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-1_41695249_AOD.root'
+    elif 'lxplus' in platform.node():
+        options.inputFiles = 'file:/eos/user/w/wsi/prelimSamples/SIDMmumu_Mps-200_MZp-1p2_ctau-1_12714105_AOD.root'
+    options.maxEvents = 100
+    options.outputFile = 'skim.root'
+else:
+    options.maxEvents = -1
+
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
