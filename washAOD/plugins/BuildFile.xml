@@ -16,5 +16,4 @@
 <use name="TrackingTools/Records"/>
 <use name="RecoVertex/VertexPrimitives"/>
 <use name="RecoVertex/KalmanVertexFit"/>
-<use name="Firefighter/washAOD"/>
 <flags EDM_PLUGIN="1"/>

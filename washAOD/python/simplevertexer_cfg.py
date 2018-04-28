@@ -6,17 +6,18 @@ process = cms.Process("simpleVertexer")
 options = VarParsing.VarParsing('analysis')
 
 import platform
-if 'cmslpc' in platform.node():
-    options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-1_41695249_AOD.root'
-elif 'lxplus' in platform.node():
-    options.inputFiles = 'file:/eos/user/w/wsi/prelimSamples/SIDMmumu_Mps-200_MZp-1p2_ctau-1_12714105_AOD.root'
+# if 'cmslpc' in platform.node():
+#     options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-1_41695249_AOD.root'
+# elif 'lxplus' in platform.node():
+#     options.inputFiles = 'file:/eos/user/w/wsi/prelimSamples/SIDMmumu_Mps-200_MZp-1p2_ctau-1_12714105_AOD.root'
+options.inputFiles = 'file:/eos/uscms/store/user/wsi/standaloneComp/SIDMmumu_Mps-200_MZp-1p2_ctau-1_41695249_AOD.root'
 options.outputFile = 'simpleverter.root'
 options.maxEvents = 100
 
 options.parseArguments()
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
-process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(10)
+process.MessageLogger.cerr.FwkReport.reportEvery = cms.untracked.int32(100)
 process.MessageLogger = cms.Service("MessageLogger",
     destinations = cms.untracked.vstring('detailedInfo', 'cerr'),
     categories   = cms.untracked.vstring('Firefighter/simpleVertexer', 'FwkReport'),
@@ -26,16 +27,19 @@ process.MessageLogger = cms.Service("MessageLogger",
         ),
     cerr         = cms.untracked.PSet(
         threshold = cms.untracked.string('INFO'),
-        FwkReport = cms.untracked.PSet( reportEvery = cms.untracked.int32(10))
+        FwkReport = cms.untracked.PSet( reportEvery = cms.untracked.int32(100))
         )
     )
 
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideTransientTracks
-process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
-process.load("Configuration.Geometry.GeometryExtended2017Plan1Reco_cff")
-process.load("Configuration.StandardSequences.MagneticField_cff")
+# process.load("Configuration.Geometry.GeometryExtended2017Plan1Reco_cff")
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_cff')
-process.GlobalTag.globaltag = '94X_mc2017_realistic_v10'
+from Configuration.AlCa.GlobalTag import GlobalTag
+process.GlobalTag = GlobalTag(process.GlobalTag, '94X_mc2017_realistic_v10', '')
+process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
+# process.load("Configuration.Geometry.GeometryIdeal_cff")
+process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
+process.load("Configuration.StandardSequences.MagneticField_cff")
 
 
 process.options = cms.untracked.PSet(
