@@ -3,9 +3,15 @@
 <use name="FWCore/ParameterSet"/>
 <use name="DataFormats/TrackReco"/>
 <use name="DataFormats/MuonReco"/>
+<use name="DataFormats/HepMCCandidate"/>
+<use name="DataFormats/PatCandidates"/>
 <use name="CommonTools/UtilAlgos"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="FWCore/Common"/>
 <use name="DataFormats/Common"/>
-<use name="DataFormats/PatCandidates"/>
+
+<use name="TrackingTools/TransientTrack"/>
+<use name="RecoVertex/VertexPrimitives"/>
+<use name="TrackingTools/Records"/>
+<use name="RecoVertex/KalmanVertexFit"/>
 <flags EDM_PLUGIN="1"/>

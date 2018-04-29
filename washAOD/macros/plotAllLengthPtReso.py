@@ -3,7 +3,7 @@ import ROOT
 ROOT.gROOT.SetBatch(True)
 
 data = {
-	0.01: '../test/skimrun/histo_0p1cm.root',
+	0.1: '../test/skimrun/histo_0p1cm.root',
 	1   : '../test/skimrun/histo_1cm.root',
 	10  : '../test/skimrun/histo_10cm.root',
 	50  : '../test/skimrun/histo_50cm.root',

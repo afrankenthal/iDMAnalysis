@@ -9,10 +9,13 @@
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
+#include "FWCore/Utilities/interface/Exception.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/Math/interface/deltaR.h"
@@ -52,6 +55,9 @@ public:
   MuSystemCollection
   makeMuSystemFromHandle(edm::Handle<reco::TrackCollection>&);
 
+  MuSystemCollection
+  makeMuSystemFromHandle(edm::Handle<reco::MuonCollection>&, std::string);
+
   std::vector<TransientVertex>
   makeTransientVerticesFromMuSystems(edm::ESHandle<MagneticField>&, MuSystemCollection&);
 
@@ -63,6 +69,7 @@ private:
 
   edm::Service<TFileService> fs;
   edm::EDGetTokenT<reco::GenParticleCollection> genParticles;
+  edm::EDGetTokenT<reco::MuonCollection>  recoMuons;
   edm::EDGetTokenT<reco::TrackCollection> globalMuons;
   edm::EDGetTokenT<reco::TrackCollection> saMuons;
   edm::EDGetTokenT<reco::TrackCollection> saMuonsUAV;
@@ -98,6 +105,40 @@ simpleVertexer::makeMuSystemFromHandle(edm::Handle<reco::TrackCollection>& h) {
   return musystems;
 }
 
+simpleVertexer::MuSystemCollection
+simpleVertexer::makeMuSystemFromHandle(edm::Handle<reco::MuonCollection>& h, std::string tkType) {
+  MuSystemCollection musystems{};
+
+  for (size_t iMu(0); iMu!=h->size(); ++iMu) {
+      reco::MuonRef muA(h, iMu);
+      for (size_t jMu(iMu+1); jMu!=h->size(); ++jMu) {
+        reco::MuonRef muB(h, jMu);
+        if (muA->charge()*muB->charge() > 0) continue;
+        if (deltaR(*muA.get(), *muB.get()) > 1) continue;
+        reco::TrackRef muA_tk, muB_tk;
+        if (tkType == "global") {
+          muA_tk = muA->globalTrack();
+          muB_tk = muB->globalTrack();
+        } else if (tkType == "inner") {
+          muA_tk = muA->innerTrack();
+          muB_tk = muB->innerTrack();
+        } else if (tkType == "outer") {
+          muA_tk = muA->outerTrack();
+          muB_tk = muB->outerTrack();
+        } else {
+          throw cms::Exception("argumentNotAllowed")
+          << "tkType \""<< tkType <<"\" not allowed.\n"
+          << "Options: global, inner, outer\n";
+        }
+        
+        if (muA_tk.isNull() || muB_tk.isNull()) continue;
+        musystems.push_back(std::make_pair(muA_tk, muB_tk));
+      }
+  }
+
+  return musystems;
+}
+
 std::vector<TransientVertex>
 simpleVertexer::makeTransientVerticesFromMuSystems(edm::ESHandle<MagneticField>& mf,
                                                    simpleVertexer::MuSystemCollection& mus) {
@@ -124,6 +165,7 @@ simpleVertexer::simpleVertexer(const edm::ParameterSet& iC)
 {
   usesResource("TFileService");
   genParticles = consumes<reco::GenParticleCollection>(edm::InputTag("genParticles"));
+  recoMuons = consumes<reco::MuonCollection>(edm::InputTag("muons"));
   globalMuons = consumes<reco::TrackCollection>(edm::InputTag("globalMuons"));
   saMuons = consumes<reco::TrackCollection>(edm::InputTag("standAloneMuons"));
   saMuonsUAV = consumes<reco::TrackCollection>(edm::InputTag("standAloneMuons","UpdatedAtVtx"));
@@ -147,8 +189,9 @@ simpleVertexer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 
   auto passEta = [](const auto& p){return abs(p.pdgId()) == 13 && abs(p.eta()) <= 2.4;};
   bool acceptance = std::count_if(cbegin(*genParticlesH), cend(*genParticlesH), passEta) >= 4;
-  if (!acceptance) return;  
+  if (!acceptance) return;
 
+  Handle<reco::MuonCollection> recoMuonsH;
   Handle<reco::TrackCollection> globalMuonsH, saMuonsH, saMuonsUAVH, rsaMuonsH, dgMuonsH, dsaMuonsH;
   // edm::ESHandle<TransientTrackBuilder> theB;
   // iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", theB);
@@ -156,6 +199,50 @@ simpleVertexer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   edm::ESHandle<MagneticField> bFieldHandle;
   iSetup.get<IdealMagneticFieldRecord>().get(bFieldHandle);
   
+  /// recoMuons global|inner|outer
+  iEvent.getByToken(recoMuons, recoMuonsH);
+  if (!recoMuonsH.isValid()) {
+    edm::LogInfo("Firefighter/simpleVertexer")
+    << "Exception during event number: " << iEvent.id() << "\n";
+  } else {
+    MuSystemCollection recoMuonSystems = makeMuSystemFromHandle(recoMuonsH, "global");
+    std::vector<TransientVertex> recoMuSysVertices
+      = makeTransientVerticesFromMuSystems(bFieldHandle, recoMuonSystems);
+
+    if (recoMuSysVertices.size() > 0) {
+      for (const auto& v : recoMuSysVertices) {
+        _themusys["recoMu_g"] = theMuSys(v.position());
+        _thevtxtree["recoMu_g"]->Fill();
+      }
+    }
+
+
+    recoMuonSystems.clear(); recoMuSysVertices.clear();
+    recoMuonSystems = makeMuSystemFromHandle(recoMuonsH, "inner");
+    recoMuSysVertices = makeTransientVerticesFromMuSystems(bFieldHandle, recoMuonSystems);
+
+    if (recoMuSysVertices.size() > 0) {
+      for (const auto& v : recoMuSysVertices) {
+        _themusys["recoMu_i"] = theMuSys(v.position());
+        _thevtxtree["recoMu_i"]->Fill();
+      }
+    }
+
+
+    recoMuonSystems.clear(); recoMuSysVertices.clear();
+    recoMuonSystems = makeMuSystemFromHandle(recoMuonsH, "outer");
+    recoMuSysVertices = makeTransientVerticesFromMuSystems(bFieldHandle, recoMuonSystems);
+
+    if (recoMuSysVertices.size() > 0) {
+      for (const auto& v : recoMuSysVertices) {
+        _themusys["recoMu_o"] = theMuSys(v.position());
+        _thevtxtree["recoMu_o"]->Fill();
+      }
+    }
+  }
+
+
+
   /// standAloneMuons
   iEvent.getByToken(saMuons, saMuonsH);
   if (!saMuonsH.isValid()) {
@@ -272,6 +359,15 @@ simpleVertexer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 void
 simpleVertexer::beginJob()
 {
+  _thevtxtree["recoMu_g"] = fs->make<TTree>("recoMuons_globalTrack", "");
+  branchTTree(_thevtxtree["recoMu_g"], _themusys["recoMu_g"]);
+
+  _thevtxtree["recoMu_i"] = fs->make<TTree>("recoMuons_innerTrack", "");
+  branchTTree(_thevtxtree["recoMu_i"], _themusys["recoMu_i"]);
+
+  _thevtxtree["recoMu_o"] = fs->make<TTree>("recoMuons_outerTrack", "");
+  branchTTree(_thevtxtree["recoMu_o"], _themusys["recoMu_o"]);
+
   _thevtxtree["saMuon"] = fs->make<TTree>("standAloneMuon", "");
   branchTTree(_thevtxtree["saMuon"], _themusys["saMuon"]);
 
