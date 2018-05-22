@@ -22,6 +22,12 @@ globalMuTrackCands = muTrackCandidates.clone(
 dgMuTrackCands = muTrackCandidates.clone(
                     src=cms.InputTag("displacedGlobalMuons")
                     )
+cosmicMuTrackCands = muTrackCandidates.clone(
+                    src=cms.InputTag("cosmicMuons")
+                    )
+cosmicMu1LegTrackCands = muTrackCandidates.clone(
+                    src=cms.InputTag("cosmicMuons1Leg")
+                    )
 
 makeMuTrackCandidates = cms.Sequence(
     saMuTrackCands +
@@ -29,5 +35,7 @@ makeMuTrackCandidates = cms.Sequence(
     rsaMuTrackCands +
     saMuUAVTrackCands +
     globalMuTrackCands +
-    dgMuTrackCands
+    dgMuTrackCands +
+    cosmicMuTrackCands +
+    cosmicMu1LegTrackCands
     )

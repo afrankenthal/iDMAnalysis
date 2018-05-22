@@ -1,7 +1,7 @@
 import FWCore.ParameterSet.Config as cms
 import FWCore.ParameterSet.VarParsing as VarParsing
 
-process = cms.Process("DecayLengthAnalyzer")
+process = cms.Process("USER")
 # https://twiki.cern.ch/twiki/bin/view/CMSPublic/SWGuideAboutPythonConfigFile#Passing_Command_Line_Arguments_T
 options = VarParsing.VarParsing('analysis')
 options.register('test',
@@ -57,46 +57,18 @@ process.source = cms.Source("PoolSource",
     fileNames = cms.untracked.vstring(options.inputFiles)
 )
 
-from PhysicsTools.HepMCCandAlgos.goodStandAloneMuonTrackMCMatch_cfi import goodStandAloneMuonTrackMCMatch
-process.stamumcmatch = goodStandAloneMuonTrackMCMatch.clone()
-process.stamumcmatch.src = cms.InputTag('standAloneMuons')
+# from PhysicsTools.HepMCCandAlgos.goodStandAloneMuonTrackMCMatch_cfi import goodStandAloneMuonTrackMCMatch
+# process.stamumcmatch = goodStandAloneMuonTrackMCMatch.clone()
+# process.stamumcmatch.src = cms.InputTag('standAloneMuons')
 
-from PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi import muonMatch
-process.muonmatch = muonMatch.clone()
+# from PhysicsTools.PatAlgos.mcMatchLayer0.muonMatch_cfi import muonMatch
+# process.muonmatch = muonMatch.clone()
 
-process.decaylengthana = cms.EDAnalyzer('DecayLengthAnalyzer',
-    _genParticles = cms.InputTag('genParticles'),
-    _tracks = cms.InputTag("generalTracks"),
-    _globalMuons = cms.InputTag("globalMuons"),
-    _saMuons = cms.InputTag("standAloneMuons"),
-    _saMuonsUAV = cms.InputTag("standAloneMuons","UpdatedAtVtx"),
-    _rsaMuons = cms.InputTag("refittedStandAloneMuons"),
-    _dgMuons = cms.InputTag("displacedGlobalMuons"),
-    _dsaMuons = cms.InputTag("displacedStandAloneMuons"),
-    _muons = cms.InputTag("muons")
-)
+from Firefighter.washAOD.DecayLengthAnalyzer_cfi import decaylengthana
+process.decaylengthana = decaylengthana.clone()
 
-process.trigeffiana = cms.EDAnalyzer('TrigEffiAnalyzer',
-    _trigResults = cms.InputTag("TriggerResults","","HLT"),
-    _trigEvent = cms.InputTag("hltTriggerSummaryAOD","","HLT"),
-    _genParticles = cms.InputTag('genParticles'),
-    _saMuons = cms.InputTag("standAloneMuons"),
-    _rsaMuons = cms.InputTag("refittedStandAloneMuons"),
-    _dsaMuons = cms.InputTag("displacedStandAloneMuons"),
-    _muons = cms.InputTag("muons"),
-    _trigPaths = cms.untracked.vstring(
-        'DST_DoubleMu3_noVtx_CaloScouting_v4',
-        'HLT_TrkMu12_DoubleTrkMu5NoFiltersNoVtx_v4',
-        'HLT_TrkMu16_DoubleTrkMu6NoFiltersNoVtx_v10',
-        'HLT_TrkMu17_DoubleTrkMu8NoFiltersNoVtx_v11'
-    ),
-    _trigFilters = cms.untracked.vstring(
-        'hltDoubleMu3L3FilteredNoVtx',
-        'hltL3pfL1sDoubleMu155ORTripleMu444L1f0L2pf0TwoMuL3PreFiltered5NoVtx',
-        'hltL3pfL1sDoubleMu155ORTripleMu444L1f0L2pf0TwoMuL3PreFiltered6NoVtx',
-        'hltL3pfL1sDoubleMu155ORTripleMu444L1f0L2pf0TwoMuL3PreFiltered8NoVtx'
-    )
-)
+from Firefighter.washAOD.TrigEffiAnalyzer_cfi import trigeffiana
+process.trigeffiana = trigeffiana.clone()
 
 process.TFileService = cms.Service("TFileService", 
     fileName = cms.string(options.outputFile),

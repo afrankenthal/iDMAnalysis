@@ -34,27 +34,25 @@ process.source = cms.Source("PoolSource",
             fileNames = cms.untracked.vstring(options.inputFiles)
             )
 
-process.allMuPtResolution = cms.EDAnalyzer("muMCAnalyzer")
-
 process.TFileService = cms.Service("TFileService",
         fileName = cms.string(options.outputFile),
         closeFileFast = cms.untracked.bool(True)
         )
 
-process.out = cms.OutputModule("PoolOutputModule",
-        fileName = cms.untracked.string('skimmed_' + options.outputFile),
-        outputCommands = cms.untracked.vstring(
-                        'keep recoGenParticles_genParticles*_*_*',
-                        'keep recoMuons_muons*_*_*',
-                        'keep recoTracks_*_*_*',
-                        'keep *_*_*_USER'
-                        )
-        )
-
 process.load("Firefighter.washAOD.produceCandidateFromTrack_cff")
 process.load("Firefighter.washAOD.mcMatchSeq_cff")
+process.load("Firefighter.washAOD.MuonRecoEfficiency_cff")
 
-process.p = cms.Path(process.makeMuTrackCandidates
+from Firefighter.washAOD.GenMuonAnalyzer_cfi import genmuana
+process.genmuana = genmuana.clone()
+
+from Firefighter.washAOD.TrigEffiAnalyzer_cfi import trigeffiana
+process.trigeffiana = trigeffiana.clone()
+
+process.recoeffi = cms.Sequence(process.makeMuTrackCandidates
                      * process.mcMatchFromTrackCands
-                     * process.allMuPtResolution)
-# process.ep = cms.EndPath(process.out)
+                     * process.makeMuTrackEfficiencyFromMatched)
+
+process.p = cms.Path(process.genmuana
+                    +process.trigeffiana
+                    + process.recoeffi)

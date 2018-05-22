@@ -24,18 +24,27 @@ globalmumatch = muonmatch.clone(
 dgmumatch = muonmatch.clone(
     src=cms.InputTag("dgMuTrackCands")
 )
+cosmicmumatch = muonmatch.clone(
+    src=cms.InputTag("cosmicMuTrackCands")
+)
+cosmicmu1legmumatch = muonmatch.clone(
+    src=cms.InputTag("cosmicMu1LegTrackCands")
+)
 
 mergedMCMatch = cms.EDProducer("GenParticleMatchMerger",
                                src=cms.VInputTag("muonmatch", "samumatch", "dsamumatch",
                                                  "rsamumatch", "globalmumatch",
-                                                 "dgmumatch", "samuUAVmatch")
+                                                 "dgmumatch", "samuUAVmatch",
+                                                 "cosmicmumatch", "cosmicmu1legmumatch")
                                )
-mcMatch = cms.Sequence(
+mcMatchFromTrackCands = cms.Sequence(
     (muonmatch +
      samumatch +
      samuUAVmatch +
      dsamumatch +
      rsamumatch +
      globalmumatch +
-     dgmumatch) * mergedMCMatch
+     dgmumatch +
+     cosmicmumatch +
+     cosmicmu1legmumatch) * mergedMCMatch
 )

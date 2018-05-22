@@ -97,6 +97,8 @@ class TrigEffiAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResources> 
       const edm::EDGetTokenT<reco::TrackCollection> saMuons;
       const edm::EDGetTokenT<reco::TrackCollection> dsaMuons;
       const edm::EDGetTokenT<reco::TrackCollection> rsaMuons;
+      const edm::EDGetTokenT<reco::TrackCollection> gMuons;
+      const edm::EDGetTokenT<reco::TrackCollection> dgMuons;
       const edm::EDGetTokenT<reco::MuonCollection> muons;
 
 
@@ -137,6 +139,8 @@ genParticles(consumes<reco::GenParticleCollection>(iC.getParameter<edm::InputTag
 saMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_saMuons"))),
 dsaMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_dsaMuons"))),
 rsaMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_rsaMuons"))),
+gMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_globalMuons"))),
+dgMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_dgMuons"))),
 muons(consumes<reco::MuonCollection>(iC.getParameter<edm::InputTag>("_muons")))
 {
    //now do what ever initialization is needed
@@ -165,11 +169,13 @@ TrigEffiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 {
   using namespace edm;
 
-  Handle<reco::TrackCollection> saMuonsH, dsaMuonsH, rsaMuonsH;
+  Handle<reco::TrackCollection> saMuonsH, dsaMuonsH, rsaMuonsH, gMuonsH, dgMuonsH;
   Handle<reco::MuonCollection> recoMuonsH;
   iEvent.getByToken(saMuons, saMuonsH);
   iEvent.getByToken(dsaMuons, dsaMuonsH);
   iEvent.getByToken(rsaMuons, rsaMuonsH);
+  iEvent.getByToken(gMuons, gMuonsH);
+  iEvent.getByToken(dgMuons, dgMuonsH);
   iEvent.getByToken(muons, recoMuonsH);
 
   for (const auto& mu : *saMuonsH) {
@@ -184,6 +190,14 @@ TrigEffiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     _triggeredMu["Total"]["rsaMu"] = theMu(mu);
     _triggeredMuTree["Total"]["rsaMu"]->Fill();
   }
+  for (const auto& mu : *gMuonsH) {
+    _triggeredMu["Total"]["gMu"] = theMu(mu);
+    _triggeredMuTree["Total"]["gMu"]->Fill();
+  }
+  for (const auto& mu : *dgMuonsH) {
+    _triggeredMu["Total"]["dgMu"] = theMu(mu);
+    _triggeredMuTree["Total"]["dgMu"]->Fill();
+  }
   for (const auto& mu : *recoMuonsH) {
     _triggeredMu["Total"]["recoMu"] = theMu(mu);
     _triggeredMuTree["Total"]["recoMu"]->Fill();
@@ -192,10 +206,12 @@ TrigEffiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   Handle<reco::GenParticleCollection> genParticlesH;
   iEvent.getByToken(genParticles, genParticlesH);
 
-  auto passEta = [](const auto& p){return abs(p.pdgId()) == 13 && abs(p.eta()) < 2.4;};
-  bool acceptance = std::count_if(cbegin(*genParticlesH), cend(*genParticlesH), passEta) >= 4;
+  auto passEtaPtgt6 = [](const auto& p){return abs(p.pdgId()) == 13 && abs(p.eta()) < 2.4 && p.pt() > 6;};
+  auto passEtaPtgt16 = [](const auto& p){return abs(p.pdgId()) == 13 && abs(p.eta()) < 2.4 && p.pt() > 16;};
+  bool acceptance = std::count_if(cbegin(*genParticlesH), cend(*genParticlesH), passEtaPtgt6) >= 3
+                  &&std::count_if(cbegin(*genParticlesH), cend(*genParticlesH), passEtaPtgt16) >=1;
   if (!acceptance) return;
-  
+
 
   for (const auto& mu : *saMuonsH) {
     _triggeredMu["Accepted"]["saMu"] = theMu(mu);
@@ -208,6 +224,14 @@ TrigEffiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
   for (const auto& mu : *rsaMuonsH) {
     _triggeredMu["Accepted"]["rsaMu"] = theMu(mu);
     _triggeredMuTree["Accepted"]["rsaMu"]->Fill();
+  }
+  for (const auto& mu : *gMuonsH) {
+    _triggeredMu["Accepted"]["gMu"] = theMu(mu);
+    _triggeredMuTree["Accepted"]["gMu"]->Fill();
+  }
+  for (const auto& mu : *dgMuonsH) {
+    _triggeredMu["Accepted"]["dgMu"] = theMu(mu);
+    _triggeredMuTree["Accepted"]["dgMu"]->Fill();
   }
   for (const auto& mu : *recoMuonsH) {
     _triggeredMu["Accepted"]["recoMu"] = theMu(mu);
@@ -270,6 +294,14 @@ TrigEffiAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
       _triggeredMu[tp]["rsaMu"] = theMu(mu);
       _triggeredMuTree[tp]["rsaMu"]->Fill();
     }
+    for (const auto& mu : *gMuonsH) {
+      _triggeredMu[tp]["gMu"] = theMu(mu);
+      _triggeredMuTree[tp]["gMu"]->Fill();
+    }
+    for (const auto& mu : *dgMuonsH) {
+      _triggeredMu[tp]["dgMu"] = theMu(mu);
+      _triggeredMuTree[tp]["dgMu"]->Fill();
+    }
     for (const auto& mu : *recoMuonsH) {
       _triggeredMu[tp]["recoMu"] = theMu(mu);
       _triggeredMuTree[tp]["recoMu"]->Fill();
@@ -306,6 +338,12 @@ TrigEffiAnalyzer::beginJob()
     _triggeredMuTree[p]["dsaMu"] = tpDir.make<TTree>("displacedStandAloneMuons", "");
     fillTTree(_triggeredMuTree[p]["dsaMu"], _triggeredMu[p]["dsaMu"]);
 
+    _triggeredMuTree[p]["gMu"] = tpDir.make<TTree>("globalMuons", "");
+    fillTTree(_triggeredMuTree[p]["gMu"], _triggeredMu[p]["gMu"]);
+
+    _triggeredMuTree[p]["dgMu"] = tpDir.make<TTree>("displacedGlobalMuons", "");
+    fillTTree(_triggeredMuTree[p]["dgMu"], _triggeredMu[p]["dgMu"]);
+
     _triggeredMuTree[p]["recoMu"]= tpDir.make<TTree>("recoMuons", "");
     fillTTree(_triggeredMuTree[p]["recoMu"], _triggeredMu[p]["recoMu"]);
   }
@@ -331,6 +369,8 @@ TrigEffiAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
   desc.add<edm::InputTag>("_saMuons",     edm::InputTag("standAloneMuons"));
   desc.add<edm::InputTag>("_rsaMuons",    edm::InputTag("refittedStandAloneMuons"));
   desc.add<edm::InputTag>("_dsaMuons",    edm::InputTag("displacedStandAloneMuons"));
+  desc.add<edm::InputTag>("_globalMuons", edm::InputTag("globalMuons"));
+  desc.add<edm::InputTag>("_dgMuons",     edm::InputTag("displacedGlobalMuons"));
   desc.add<edm::InputTag>("_muons",       edm::InputTag("muons"));
 
   std::vector<std::string> trigpaths, trigfilters;

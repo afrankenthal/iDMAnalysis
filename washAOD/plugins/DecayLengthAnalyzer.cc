@@ -127,6 +127,7 @@ class DecayLengthAnalyzer : public edm::one::EDAnalyzer<edm::one::SharedResource
       const edm::EDGetTokenT<reco::TrackCollection> rsaMuons;
       const edm::EDGetTokenT<reco::TrackCollection> dgMuons;
       const edm::EDGetTokenT<reco::TrackCollection> dsaMuons;
+      const edm::EDGetTokenT<reco::TrackCollection> cosmicMu1Leg;
       const edm::EDGetTokenT<reco::MuonCollection> muons;
 
       void branchTTree(TTree*, theMu&);
@@ -171,6 +172,7 @@ saMuonsUAV(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_saMu
 rsaMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_rsaMuons"))),
 dgMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_dgMuons"))),
 dsaMuons(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_dsaMuons"))),
+cosmicMu1Leg(consumes<reco::TrackCollection>(iC.getParameter<edm::InputTag>("_cosmicMu1Leg"))),
 muons(consumes<reco::MuonCollection>(iC.getParameter<edm::InputTag>("_muons")))
 {
    //now do what ever initialization is needed
@@ -204,13 +206,14 @@ DecayLengthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
   Handle<reco::TrackCollection> tracksH;
   iEvent.getByToken(tracks, tracksH);
   
-  Handle<reco::TrackCollection> globalMuonsH, saMuonsH, saMuonsUAVH, rsaMuonsH, dgMuonsH, dsaMuonsH;
+  Handle<reco::TrackCollection> globalMuonsH, saMuonsH, saMuonsUAVH, rsaMuonsH, dgMuonsH, dsaMuonsH, cosmicMu1LegH;
   iEvent.getByToken(globalMuons, globalMuonsH);
   iEvent.getByToken(saMuons, saMuonsH);
   iEvent.getByToken(saMuonsUAV, saMuonsUAVH);
   iEvent.getByToken(rsaMuons, rsaMuonsH);
   iEvent.getByToken(dgMuons, dgMuonsH);
   iEvent.getByToken(dsaMuons, dsaMuonsH);
+  iEvent.getByToken(cosmicMu1Leg, cosmicMu1LegH);
 
   Handle<reco::MuonCollection> muonsH;
   iEvent.getByToken(muons, muonsH);
@@ -322,6 +325,18 @@ DecayLengthAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iS
     }
     _basicMuTree["dsaMu"]->Fill();
   }
+
+  // cosmicMuon1Leg
+  auto cosmicMuMatchMap = muTrackMCMatching(*cosmicMu1LegH, *genParticlesH);
+  for (const auto& mu : *cosmicMu1LegH) {
+    _basicMu["cosmicMu"] = theMu(mu);
+    if (!cosmicMuMatchMap[&mu].empty()) {
+      double genpt = cosmicMuMatchMap[&mu][0]->pt();
+      double res = abs((mu.pt() - genpt)/genpt);
+      _basicMu["cosmicMu"].setResolution(res);
+    }
+    _basicMuTree["cosmicMu"]->Fill();
+  }
 }
 
 
@@ -358,6 +373,9 @@ DecayLengthAnalyzer::beginJob()
   _basicMuTree["dsaMu"] = fs->make<TTree>("DisplacedStandAloneMuon", "displaced standalone muon");
   branchTTree(_basicMuTree["dsaMu"], _basicMu["dsaMu"]);
 
+  _basicMuTree["cosmicMu"] = fs->make<TTree>("cosmicMuon1Leg", "");
+  branchTTree(_basicMuTree["cosmicMu"], _basicMu["cosmicMu"]);
+
 }
 
 // ------------ method called once each job just after ending the event loop  ------------
@@ -381,6 +399,7 @@ DecayLengthAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptio
   desc.add<edm::InputTag>("_rsaMuons",    edm::InputTag("refittedStandAloneMuons"));
   desc.add<edm::InputTag>("_dgMuons",     edm::InputTag("displacedGlobalMuons"));
   desc.add<edm::InputTag>("_dsaMuons",    edm::InputTag("displacedStandAloneMuons"));
+  desc.add<edm::InputTag>("_cosmicMu1Leg",edm::InputTag("cosmicMuons1Leg"));
   desc.add<edm::InputTag>("_muons",       edm::InputTag("muons"));
   // descriptions.addDefault(desc);
   descriptions.add("decaylengthana", desc);
