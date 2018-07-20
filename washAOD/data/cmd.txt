@@ -1,0 +1,1 @@
+ls DIR/*.root |sed 's/^/file:/' > DATA.list
