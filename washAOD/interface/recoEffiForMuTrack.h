@@ -1,5 +1,5 @@
-#ifndef washAOD_genTuplizer_H
-#define washAOD_genTuplizer_H
+#ifndef washAOD_recoEffiForMuTrack_H
+#define washAOD_recoEffiForMuTrack_H
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
@@ -9,17 +9,19 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
+#include "DataFormats/TrackReco/interface/Track.h"
+#include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 
 #include "TTree.h"
 
-class genTuplizer : 
+class recoEffiForMuTrack :
   public edm::one::EDAnalyzer<edm::one::SharedResources>
 {
   public:
-    explicit genTuplizer(const edm::ParameterSet&);
-    ~genTuplizer();
+    explicit recoEffiForMuTrack(const edm::ParameterSet&);
+    ~recoEffiForMuTrack();
 
     static void fillDescriptions(edm::ConfigurationDescriptions&);
 
@@ -28,26 +30,26 @@ class genTuplizer :
     virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
     virtual void endJob() override;
 
+    const edm::InputTag muTrackTag_;
     const edm::InputTag genParticleTag_;
+    const edm::EDGetTokenT<reco::TrackCollection> muTrackToken_;
     const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
 
     edm::Service<TFileService> fs;
+    edm::Handle<reco::TrackCollection> muTrackHandle_;
     edm::Handle<reco::GenParticleCollection> genParticleHandle_;
 
-    unsigned int nGenP_;
+    unsigned int nMatched_;
 
-    std::vector<int> pid_;
-    std::vector<int> charge_;
-    std::vector<double> pt_, pz_;
-    std::vector<double> eta_, phi_;
-    std::vector<double> vxy_, vz_;
-    std::vector<double> mass_, energy_;
+    std::vector<float> genPt_;
+    std::vector<float> genEta_;
+    std::vector<float> genPhi_;
+    std::vector<float> recoPt_;
+    std::vector<float> recoEta_;
+    std::vector<float> recoPhi_;
+    std::vector<float> deltaR_;
 
-    std::vector<double> pairInvM_;
-    std::vector<double> pairDeltaR_;
-    std::vector<int>    pairPid_;
-
-    TTree *genT_;
+    TTree *muTrackT_;
 };
 
 #endif

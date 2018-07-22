@@ -40,6 +40,7 @@ genTuplizer::beginJob()
   genT_->Branch("vz", &vz_);
   genT_->Branch("pairInvM", &pairInvM_);
   genT_->Branch("pairDeltaR", &pairDeltaR_);
+  genT_->Branch("pairPid", &pairPid_);
 }
 
 void
@@ -54,7 +55,9 @@ genTuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       << endl;
       return;
   }
-  nGenP_ = (*genParticleHandle_).size();
+  //nGenP_ = (*genParticleHandle_).size();
+  nGenP_ = count_if((*genParticleHandle_).begin(), (*genParticleHandle_).end(),
+      [](const reco::GenParticle& g){return g.isHardProcess() and abs(g.pdgId())>8;});
 
   pid_.clear(); pid_.reserve(nGenP_);
   charge_.clear(); charge_.reserve(nGenP_);
@@ -68,22 +71,28 @@ genTuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   vz_.clear(); vz_.reserve(nGenP_);
 
   vector<pair<reco::GenParticleRef, reco::GenParticleRef>> genPairs{};
-  for (size_t ig(0); ig!=nGenP_; ++ig) {
+  for (size_t ig(0); ig!=genParticleHandle_->size(); ++ig) {
     reco::GenParticleRef genA(genParticleHandle_, ig);
-    for (size_t jg(ig+1); jg!=nGenP_; ++jg) {
+    if (!genA->isHardProcess() or abs(genA->pdgId())<9) continue;
+    for (size_t jg(ig+1); jg!=genParticleHandle_->size(); ++jg) {
       reco::GenParticleRef genB(genParticleHandle_, jg);
+      if (!genB->isHardProcess() or abs(genB->pdgId())<9) continue;
       // conditions to be counted as a pair:
       // 1. opposite pdgId/charge
       // 2. same vertex.
       if (genA->pdgId() + genB->pdgId() != 0) {continue;}
-      if (genA->vertex() != genB->vertex()) {continue;}
+      if (genA->vertex()!=genB->vertex()) {continue;}
       genPairs.emplace_back(genA, genB);
     }
   }
   pairInvM_.clear(); pairInvM_.reserve(genPairs.size());
   pairDeltaR_.clear(); pairDeltaR_.reserve(genPairs.size());
+  pairPid_.clear(); pairPid_.reserve(genPairs.size());
 
   for (const reco::GenParticle& gp : *genParticleHandle_) {
+    if (!gp.isHardProcess() or abs(gp.pdgId())<9) continue;
+    //cout<<gp.pdgId()<<":\t"<<gp.vx()<<"\t"<<gp.vy()<<"\t"<<gp.vz()<<"\t"<<gp.eta()<<"\t"<<gp.phi()<<"\t"<<gp.pt()<<endl;
+    //cout<<gp.pdgId()<<":\t"<<gp.statusFlags().flags_<<endl;
     pid_.push_back(gp.pdgId());
     charge_.push_back(gp.charge());
     pt_.push_back(gp.pt());
@@ -105,6 +114,7 @@ genTuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
     TLorentzVector vec_a(gp.first->px(), gp.first->py(), gp.first->pz(), gp.first->energy());
     TLorentzVector vec_b(gp.second->px(), gp.second->py(), gp.second->pz(), gp.second->energy());
     pairInvM_.push_back((vec_a+vec_b).M());
+    pairPid_.push_back(abs(gp.first->pdgId()));
   }
 
   genT_->Fill();
