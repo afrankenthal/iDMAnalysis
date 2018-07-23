@@ -99,6 +99,16 @@ recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   }
   nMatched_ = matchedGenMuIdx.size();
 
+  // Fill the rest GEN info
+  for (const int muId : genMuIdx) {
+    if (find(matchedGenMuIdx.begin(), matchedGenMuIdx.end(), muId) != matchedGenMuIdx.end()) continue;
+    reco::GenParticleRef genMu(genParticleHandle_, muId);
+
+    genPt_  .push_back(genMu->pt());
+    genEta_ .push_back(genMu->eta());
+    genPhi_ .push_back(genMu->phi());
+  }
+
   muTrackT_->Fill();
 
   return;
