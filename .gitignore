@@ -2,3 +2,5 @@
 *.log
 *.root
 firefighter/.vscode/*
+messages.txt
+nohup.out
