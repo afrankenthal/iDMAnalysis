@@ -1,0 +1,6 @@
+ nohup ./mkNtuple.sh SIDMmumu_Mps-200_MZp-1p2_ctau-0p012_100k &
+ nohup ./mkNtuple.sh SIDMmumu_Mps-200_MZp-1p2_ctau-0p12_100k &
+ nohup ./mkNtuple.sh SIDMmumu_Mps-200_MZp-1p2_ctau-0p6_100k &
+ nohup ./mkNtuple.sh SIDMmumu_Mps-200_MZp-1p2_ctau-1p20e-03_100k &
+ nohup ./mkNtuple.sh SIDMmumu_Mps-200_MZp-1p2_ctau-1p2_100k &
+ nohup ./mkNtuple.sh SIDMmumu_Mps-200_MZp-1p2_ctau-3p6_100k &

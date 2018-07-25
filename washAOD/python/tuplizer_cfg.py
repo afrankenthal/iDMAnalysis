@@ -66,5 +66,8 @@ from Firefighter.washAOD.genTuplizer_cfi import genTuplizer
 process.GEN = genTuplizer.clone()
 from Firefighter.washAOD.recoEffiForMuTrack_cfi import recoEffiForMuTrack
 process.RECO_muTrackEffi = recoEffiForMuTrack.clone()
+from Firefighter.washAOD.trigEffiForMuTrack_cfi import trigEffiForMuTrack
+process.TRIG_muTrackEffi = trigEffiForMuTrack.clone()
 
-process.p = cms.Path(process.GEN + process.RECO_muTrackEffi)
+process.p = cms.Path(process.GEN + process.RECO_muTrackEffi
+                     + process.TRIG_muTrackEffi)
