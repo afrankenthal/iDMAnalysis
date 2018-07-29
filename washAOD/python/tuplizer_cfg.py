@@ -68,7 +68,14 @@ process.GEN = genTuplizer.clone()
 from Firefighter.washAOD.recoEffiForMuTrack_cfi import recoEffiForMuTrack
 process.RECO_muTrackEffi = recoEffiForMuTrack.clone()
 from Firefighter.washAOD.trigEffiForMuTrack_cfi import trigEffiForMuTrack
-process.TRIG_muTrackEffi = trigEffiForMuTrack.clone()
+#process.TRIG_muTrackEffi = trigEffiForMuTrack.clone()
+process.TRIG_dsa_DL2Mu23 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha'))
+process.TRIG_dsa_DL2Mu23NoL2 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_NoL2Matched'))
+process.TRIG_dsa_DL2Mu23CosmicSeed = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_CosmicSeed'))
+process.TRIG_dsa_DL2Mu23CosmicSeedNoL2 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_CosmicSeed_NoL2Matched'))
 
 process.p = cms.Path(process.GEN + process.RECO_muTrackEffi
-                     + process.TRIG_muTrackEffi)
+                     + process.TRIG_dsa_DL2Mu23
+                     + process.TRIG_dsa_DL2Mu23NoL2
+                     + process.TRIG_dsa_DL2Mu23CosmicSeed
+                     + process.TRIG_dsa_DL2Mu23CosmicSeedNoL2)
