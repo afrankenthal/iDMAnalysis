@@ -29,7 +29,7 @@ trigEffiForMuTrack::fillDescriptions(edm::ConfigurationDescriptions& description
   desc.add<edm::InputTag>("genParticle", edm::InputTag("genParticles"));
   desc.add<edm::InputTag>("trigResult", edm::InputTag("TriggerResults","","HLT"));
   desc.add<edm::InputTag>("trigEvent", edm::InputTag("hltTriggerSummaryAOD","","HLT"));
-  desc.add<std::string>("trigPath", "HLT_TrkMu16_DoubleTrkMu6NoFiltersNoVtx_v");
+  desc.add<std::string>("trigPath", "HLT_TrkMu16_DoubleTrkMu6NoFiltersNoVtx");
   desc.add<std::string>("processName", "HLT");
   descriptions.add("trigEffiForMuTrack", desc);
 }
@@ -74,25 +74,29 @@ trigEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
 
   iEvent.getByToken(muTrackToken_, muTrackHandle_);
   if (!muTrackHandle_.isValid()) {
-    LogVerbatim("trigEffiForMuTrack") << "trigEffiForMuTrack::analyze: Error in getting muTrack product from Event!"
+    LogError("trigEffiForMuTrack")
+      << "trigEffiForMuTrack::analyze: Error in getting muTrack product from Event!"
       << endl;
     return;
   }
   iEvent.getByToken(genParticleToken_, genParticleHandle_);
   if (!genParticleHandle_.isValid()) {
-    LogVerbatim("trigEffiForMuTrack") << "trigEffiForMuTrack::analyze: Error in getting genParticle product from Event!"
+    LogError("trigEffiForMuTrack")
+      << "trigEffiForMuTrack::analyze: Error in getting genParticle product from Event!"
       << endl;
     return;
   }
   iEvent.getByToken(trigResultsToken_, trigResultsHandle_);
   if (!trigResultsHandle_.isValid()) {
-    LogVerbatim("trigEffiForMuTrack") << "trigEffiForMuTrack::analyze: Error in getting triggerResults product from Event!"
+    LogError("trigEffiForMuTrack")
+      << "trigEffiForMuTrack::analyze: Error in getting triggerResults product from Event!"
       << endl;
     return;
   }
   iEvent.getByToken(trigEventToken_, trigEventHandle_);
   if (!trigEventHandle_.isValid()) {
-    LogVerbatim("trigEffiForMuTrack") << "trigEffiForMuTrack::analyze: Error in getting triggerEvent product from Event!"
+    LogError("trigEffiForMuTrack")
+      << "trigEffiForMuTrack::analyze: Error in getting triggerEvent product from Event!"
       << endl;
     return;
   }
@@ -125,6 +129,20 @@ trigEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
   if (matchedGenMuIdx.size()<4) return;
+
+  /* general selection */
+  auto generalSelection = [&](const auto tid){
+    reco::TrackRef t(muTrackHandle_, tid);
+    bool pass = t->pt() > 5
+             && abs(t->eta()) < 2
+             && t->hitPattern().numberOfValidMuonHits() > 16
+             && t->hitPattern().muonStationsWithValidHits() > 1
+             && t->normalizedChi2() < 10;
+    return pass;
+  };
+
+  int tracksPassedGS = count_if(muTrackIdx.begin(), muTrackIdx.end(), generalSelection);
+  if (tracksPassedGS<2) return;
 
   pt_  .clear(); pt_  .reserve(4);
   eta_ .clear(); eta_ .reserve(4);
