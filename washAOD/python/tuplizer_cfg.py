@@ -77,18 +77,30 @@ process.TFileService = cms.Service("TFileService",
 
 from Firefighter.washAOD.genTuplizer_cfi import genTuplizer
 process.GEN = genTuplizer.clone()
+
+## reco efficiency
 from Firefighter.washAOD.recoEffiForMuTrack_cfi import recoEffiForMuTrack
 process.RECO_dsa = recoEffiForMuTrack.clone()
 process.RECO_dgm = recoEffiForMuTrack.clone(muTrack = cms.InputTag("displacedGlobalMuons"))
 process.RECO_rsa = recoEffiForMuTrack.clone(muTrack = cms.InputTag("refittedStandAloneMuons"))
 process.RECO_gbm = recoEffiForMuTrack.clone(muTrack = cms.InputTag("globalMuons"))
+
+## trigger efficiency in terms of events
 from Firefighter.washAOD.trigEffiForMuTrack_cfi import trigEffiForMuTrack
-#process.TRIG_muTrackEffi = trigEffiForMuTrack.clone()
 process.TRIG_dsa_DL2Mu23               = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha'))
 process.TRIG_dsa_DL2Mu23NoL2           = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_NoL2Matched'))
 process.TRIG_dsa_DL2Mu23CosmicSeed     = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_CosmicSeed'))
 process.TRIG_dsa_DL2Mu23CosmicSeedNoL2 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_CosmicSeed_NoL2Matched'))
 
+## trigger efficiency itself
+from Firefighter.washAOD.trigSelfEffiForMuTrack_cfi import trigSelfEffiForMuTrack
+process.TRIGself_dsa_DL2Mu23               = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha'))
+process.TRIGself_dsa_DL2Mu23NoL2           = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_NoL2Matched'))
+process.TRIGself_dsa_DL2Mu23CosmicSeed     = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_CosmicSeed'))
+process.TRIGself_dsa_DL2Mu23CosmicSeedNoL2 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_CosmicSeed_NoL2Matched'))
+
+
+## constructing the path
 process.p = cms.Path(process.GEN
                      + process.RECO_dsa
                      + process.RECO_dgm
@@ -98,4 +110,12 @@ process.p = cms.Path(process.GEN
                      #+ process.TRIG_dsa_DL2Mu23NoL2
                      #+ process.TRIG_dsa_DL2Mu23CosmicSeed
                      #+ process.TRIG_dsa_DL2Mu23CosmicSeedNoL2
+                     #+ process.TRIG_dsa_DL2Mu23
+                     #+ process.TRIG_dsa_DL2Mu23NoL2
+                     #+ process.TRIG_dsa_DL2Mu23CosmicSeed
+                     #+ process.TRIG_dsa_DL2Mu23CosmicSeedNoL2
+                     #+ process.TRIGself_dsa_DL2Mu23
+                     #+ process.TRIGself_dsa_DL2Mu23NoL2
+                     #+ process.TRIGself_dsa_DL2Mu23CosmicSeed
+                     #+ process.TRIGself_dsa_DL2Mu23CosmicSeedNoL2
                      )

@@ -33,9 +33,13 @@ recoEffiForMuTrack::beginJob()
   muTrackT_->Branch("genPt",   &genPt_);
   muTrackT_->Branch("genEta",  &genEta_);
   muTrackT_->Branch("genPhi",  &genPhi_);
+  muTrackT_->Branch("genVxy",  &genVxy_);
+  muTrackT_->Branch("genVz",   &genVz_);
   muTrackT_->Branch("recoPt",  &recoPt_);
   muTrackT_->Branch("recoEta", &recoEta_);
   muTrackT_->Branch("recoPhi", &recoPhi_);
+  muTrackT_->Branch("recoDxy", &recoDxy_);
+  muTrackT_->Branch("recoDz",  &recoDz_);
   muTrackT_->Branch("deltaR",  &deltaR_);
 }
 
@@ -59,22 +63,33 @@ recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   }
 
   int nAccpted = count_if((*genParticleHandle_).begin(), (*genParticleHandle_).end(),
-      [](const reco::GenParticle& g){return abs(g.pdgId())==13 and g.isHardProcess() and abs(g.eta())<2.4;});
+      [](const reco::GenParticle& g){
+        return abs(g.pdgId())==13
+           and g.isHardProcess()
+           and abs(g.eta())<2.4
+           and abs(g.vertex().rho())<740  // decay inside CMS
+           and abs(g.vz())<960;
+        });
   if (nAccpted<4) return;
 
   genPt_  .clear(); genPt_  .reserve(4);
   genEta_ .clear(); genEta_ .reserve(4);
   genPhi_ .clear(); genPhi_ .reserve(4);
+  genVxy_ .clear(); genVxy_ .reserve(4);
+  genVz_  .clear(); genVz_ .reserve(4);
   recoPt_ .clear(); recoPt_ .reserve(4);
   recoEta_.clear(); recoEta_.reserve(4);
   recoPhi_.clear(); recoPhi_.reserve(4);
+  recoDxy_.clear(); recoDxy_.reserve(4);
+  recoDz_ .clear(); recoDz_ .reserve(4);
   deltaR_ .clear(); deltaR_ .reserve(4);
 
   // MC match
   vector<int> genMuIdx{};
   for (size_t ig(0); ig!=genParticleHandle_->size(); ++ig) {
     reco::GenParticleRef gp(genParticleHandle_, ig);
-    if (abs(gp->pdgId())==13 and gp->isHardProcess() and abs(gp->eta())<2.4) {
+    if (abs(gp->pdgId())==13 and gp->isHardProcess() and abs(gp->eta())<2.4
+        and abs(gp->vertex().rho())<740 and abs(gp->vz())<960) {
       genMuIdx.push_back(ig);
     }
   }
@@ -91,9 +106,13 @@ recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       genPt_  .push_back(genMu->pt());
       genEta_ .push_back(genMu->eta());
       genPhi_ .push_back(genMu->phi());
+      genVxy_ .push_back(genMu->vertex().rho());
+      genVz_  .push_back(genMu->vz());
       recoPt_ .push_back(muTrack.pt());
       recoEta_.push_back(muTrack.eta());
       recoPhi_.push_back(muTrack.phi());
+      recoDxy_.push_back(muTrack.dxy());
+      recoDz_ .push_back(muTrack.dz());
       deltaR_ .push_back(deltaR(muTrack, *(genMu.get())));
     }
   }
@@ -107,6 +126,8 @@ recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     genPt_  .push_back(genMu->pt());
     genEta_ .push_back(genMu->eta());
     genPhi_ .push_back(genMu->phi());
+    genVxy_ .push_back(genMu->vertex().rho());
+    genVz_  .push_back(genMu->vz());
   }
 
   muTrackT_->Fill();
