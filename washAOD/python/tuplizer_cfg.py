@@ -9,7 +9,7 @@ options.register('test',
                  VarParsing.VarParsing.varType.int,
                  "Run for a test or not")
 options.register('year',
-                 2017,
+                 2018,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.int,
                  "sample of the year")
@@ -23,10 +23,11 @@ if options.test:
         if options.year == 2017:
             options.inputFiles = 'root://cmseos.fnal.gov///store/user/wsi/MCSIDM/SIDMmumu_Mps-200_MZp-1p2_ctau-1p2/180720-105132/SIDMmumu_Mps-200_MZp-1p2_ctau-1p2_10980067_AOD.root'
         if options.year == 2018:
-           options.inputFiles = 'file:/eos/uscms/store/user/wsi/MCSIDM/SIDMmumu_Mps-200_MZp-1p2_ctau-0p12/180726-222103/SIDMmumu_Mps-200_MZp-1p2_ctau-0p12_10268877_AOD.root'
+           #options.inputFiles = 'file:/eos/uscms/store/user/wsi/MCSIDM/SIDMmumu_Mps-200_MZp-1p2_ctau-0p12/180726-222103/SIDMmumu_Mps-200_MZp-1p2_ctau-0p12_10268877_AOD.root'
+           options.inputFiles = 'root://cmsxrootd.fnal.gov///store/user/escalant/HTo2LongLivedTo4mu_MH-125_MFF-20_CTau-13mm_TuneCUETP8M1_13TeV_pythia8/crab_HTo2LongLivedTo4mu_MH-125_MFF-20_CTau-13mm_TuneCUETP8M1_13TeV_pythia8_AODSIM-ReHLT_V37-v1/180128_100405/0000/displacedMuons_RAW2DIGI_L1Reco_RECO_1.root'
     elif 'lxplus' in platform.node():
         options.inputFiles = 'file:/eos/user/w/wsi/prelimSamples/SIDMmumu_Mps-200_MZp-1p2_ctau-1_12714105_AOD.root'
-    options.maxEvents = -1
+    options.maxEvents = 100
     options.outputFile = 'test.root'
 else:
     options.maxEvents = -1
@@ -93,7 +94,8 @@ process.p = cms.Path(process.GEN
                      + process.RECO_dgm
                      + process.RECO_rsa
                      + process.RECO_gbm
-                     + process.TRIG_dsa_DL2Mu23
-                     + process.TRIG_dsa_DL2Mu23NoL2
-                     + process.TRIG_dsa_DL2Mu23CosmicSeed
-                     + process.TRIG_dsa_DL2Mu23CosmicSeedNoL2)
+                     #+ process.TRIG_dsa_DL2Mu23
+                     #+ process.TRIG_dsa_DL2Mu23NoL2
+                     #+ process.TRIG_dsa_DL2Mu23CosmicSeed
+                     #+ process.TRIG_dsa_DL2Mu23CosmicSeedNoL2
+                     )
