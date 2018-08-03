@@ -1,12 +1,10 @@
-#ifndef washAOD_trigEffiForMuTrack_H
-#define washAOD_trigEffiForMuTrack_H
+#ifndef washAOD_trigSelfEffiForMuTrack_H
+#define washAOD_trigSelfEffiForMuTrack_H
 
 /**
- * Trigger efficiencies in terms of events
+ * Trigger efficiencies itself
  * =======================================
  * Require:
- *   - 4 gen muons in |eta|<2.4
- *   - 4 dSA muons matched with gen muons (dR<0.3)
  *   - >=2 dSA muons passing general selections
  * Check trigger firing condition
  */
@@ -21,8 +19,6 @@
 
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticle.h"
-#include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/Common/interface/TriggerResults.h"
 #include "FWCore/Common/interface/TriggerNames.h"
 #include "DataFormats/HLTReco/interface/TriggerObject.h"
@@ -31,12 +27,12 @@
 
 #include "TTree.h"
 
-class trigEffiForMuTrack :
+class trigSelfEffiForMuTrack :
   public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::SharedResources>
 {
   public:
-    explicit trigEffiForMuTrack(const edm::ParameterSet&);
-    ~trigEffiForMuTrack();
+    explicit trigSelfEffiForMuTrack(const edm::ParameterSet&);
+    ~trigSelfEffiForMuTrack();
 
     static void fillDescriptions(edm::ConfigurationDescriptions&);
 
@@ -48,19 +44,17 @@ class trigEffiForMuTrack :
     virtual void endJob() override;
 
     const edm::InputTag muTrackTag_;
-    const edm::InputTag genParticleTag_;
     const edm::InputTag trigResultsTag_;
     const edm::InputTag trigEventTag_;
     const std::string trigPathNoVer_;
     const std::string processName_;
+    const int nMuons_;
     const edm::EDGetTokenT<reco::TrackCollection> muTrackToken_;
-    const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
     const edm::EDGetTokenT<edm::TriggerResults> trigResultsToken_;
     const edm::EDGetTokenT<trigger::TriggerEvent> trigEventToken_;
 
     edm::Service<TFileService> fs;
     edm::Handle<reco::TrackCollection> muTrackHandle_;
-    edm::Handle<reco::GenParticleCollection> genParticleHandle_;
     edm::Handle<edm::TriggerResults> trigResultsHandle_;
     edm::Handle<trigger::TriggerEvent> trigEventHandle_;
 
