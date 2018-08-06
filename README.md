@@ -3,6 +3,13 @@
 ## Setup
 
 ```bash
+# 2017
+export SCRAM_ARCH=slc6_amd64_gcc630
+cmsrel CMSSW_9_4_9
+cd CMSSW_9_4_9/src
+cmsenv
+
+# 2018
 export SCRAM_ARCH=slc6_amd64_gcc700
 cmsrel CMSSW_10_2_0
 cd CMSSW_10_2_0/src
