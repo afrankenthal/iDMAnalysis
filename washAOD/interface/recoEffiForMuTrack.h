@@ -46,6 +46,7 @@ class recoEffiForMuTrack :
     std::vector<float> genPhi_;
     std::vector<float> genVxy_;
     std::vector<float> genVz_;
+    std::vector<float> genDr_;
     std::vector<float> recoPt_;
     std::vector<float> recoEta_;
     std::vector<float> recoPhi_;
