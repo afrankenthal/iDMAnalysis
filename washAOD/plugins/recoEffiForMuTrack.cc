@@ -130,6 +130,8 @@ recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       recoDxy_.push_back(muTrack.dxy());
       recoDz_ .push_back(muTrack.dz());
       deltaR_ .push_back(deltaR(muTrack, *(genMu.get())));
+
+      break;
     }
   }
   nMatched_ = matchedGenMuIdx.size();
