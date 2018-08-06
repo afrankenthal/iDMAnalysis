@@ -35,6 +35,7 @@ recoEffiForMuTrack::beginJob()
   muTrackT_->Branch("genPhi",  &genPhi_);
   muTrackT_->Branch("genVxy",  &genVxy_);
   muTrackT_->Branch("genVz",   &genVz_);
+  muTrackT_->Branch("genDr",   &genDr_);
   muTrackT_->Branch("recoPt",  &recoPt_);
   muTrackT_->Branch("recoEta", &recoEta_);
   muTrackT_->Branch("recoPhi", &recoPhi_);
@@ -76,7 +77,8 @@ recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
   genEta_ .clear(); genEta_ .reserve(4);
   genPhi_ .clear(); genPhi_ .reserve(4);
   genVxy_ .clear(); genVxy_ .reserve(4);
-  genVz_  .clear(); genVz_ .reserve(4);
+  genVz_  .clear(); genVz_  .reserve(4);
+  genDr_  .clear(); genDr_  .reserve(4);
   recoPt_ .clear(); recoPt_ .reserve(4);
   recoEta_.clear(); recoEta_.reserve(4);
   recoPhi_.clear(); recoPhi_.reserve(4);
@@ -94,6 +96,19 @@ recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     }
   }
 
+  // deltaR between mu pairs
+  map<int, float> genMuIdDr{};
+  for (size_t mu_i(0); mu_i!=genMuIdx.size(); ++mu_i) {
+    reco::GenParticleRef ref_i(genParticleHandle_, genMuIdx[mu_i]);
+    for (size_t mu_j(mu_i+1); mu_j!=genMuIdx.size(); ++mu_j) {
+      reco::GenParticleRef ref_j(genParticleHandle_, genMuIdx[mu_j]);
+      if (ref_i->vertex() != ref_j->vertex()) continue;
+      float dR = deltaR(*(ref_i.get()), *(ref_j.get()));
+      genMuIdDr.emplace(genMuIdx[mu_i], dR);
+      genMuIdDr.emplace(genMuIdx[mu_j], dR);
+    }
+  }
+
   vector<int> matchedGenMuIdx{};
   for (const reco::Track& muTrack : *muTrackHandle_) {
     for (const int genMuid : genMuIdx) {
@@ -108,6 +123,7 @@ recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       genPhi_ .push_back(genMu->phi());
       genVxy_ .push_back(genMu->vertex().rho());
       genVz_  .push_back(genMu->vz());
+      genDr_  .push_back(genMuIdDr[genMuid]);
       recoPt_ .push_back(muTrack.pt());
       recoEta_.push_back(muTrack.eta());
       recoPhi_.push_back(muTrack.phi());
@@ -128,6 +144,7 @@ recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     genPhi_ .push_back(genMu->phi());
     genVxy_ .push_back(genMu->vertex().rho());
     genVz_  .push_back(genMu->vz());
+    genDr_  .push_back(genMuIdDr[muId]);
   }
 
   muTrackT_->Fill();
