@@ -52,6 +52,8 @@ class recoEffiForMuTrack :
     std::vector<float> recoPhi_;
     std::vector<float> recoDxy_;
     std::vector<float> recoDz_;
+    std::vector<float> recoVxy_;
+    std::vector<float> recoVz_;
     std::vector<float> deltaR_;
 
     TTree *muTrackT_;
