@@ -14,6 +14,10 @@
  nohup ./mkNtuple.sh SIDMmumu_Mps-200_MZp-1p2_ctau-1p2 &
  nohup ./mkNtuple.sh SIDMmumu_Mps-200_MZp-1p2_ctau-3p6 &
 
+ nohup ./mkNtuple.sh SIDMmumu_Mps-200_MZp-0p6_dl-1p0 &
+ nohup ./mkNtuple.sh SIDMmumu_Mps-200_MZp-2p4_dl-1p0 &
+ nohup ./mkNtuple.sh SIDMmumu_Mps-200_MZp-5p0_dl-1p0 &
+
 # Alberto's sample
  nohup ./mkAlbertoTuple.sh MC_125_20_13mm &
  nohup ./mkAlbertoTuple.sh MC_125_20_130mm &
