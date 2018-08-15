@@ -11,8 +11,8 @@ cmsenv
 
 # 2018
 export SCRAM_ARCH=slc6_amd64_gcc700
-cmsrel CMSSW_10_2_0
-cd CMSSW_10_2_0/src
+cmsrel CMSSW_10_2_1
+cd CMSSW_10_2_1/src
 cmsenv
 
 git clone https://wsi@gitlab.cern.ch/wsi/Firefighter.git
