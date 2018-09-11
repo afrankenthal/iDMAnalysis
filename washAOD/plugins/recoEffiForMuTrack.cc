@@ -14,8 +14,14 @@
 recoEffiForMuTrack::recoEffiForMuTrack(const edm::ParameterSet& ps) :
   muTrackTag_(ps.getParameter<edm::InputTag>("muTrack")),
   genParticleTag_(ps.getParameter<edm::InputTag>("genParticle")),
+	genJetTag_(ps.getParameter<edm::InputTag>("genJet")),
+	genMetTag_(ps.getParameter<edm::InputTag>("genMet")),
+	recoMetTag_(ps.getParameter<edm::InputTag>("recoMet")),
   muTrackToken_(consumes<reco::TrackCollection>(muTrackTag_)),
-  genParticleToken_(consumes<reco::GenParticleCollection>(genParticleTag_))
+  genParticleToken_(consumes<reco::GenParticleCollection>(genParticleTag_)),
+	genJetToken_(consumes<reco::GenJetCollection>(genJetTag_)),
+	genMetToken_(consumes<reco::GenMETCollection>(genMetTag_)),
+	recoMetToken_(consumes<reco::PFMETCollection>(recoMetTag_))
 {
   usesResource("TFileService");
 }
@@ -28,6 +34,9 @@ recoEffiForMuTrack::fillDescriptions(edm::ConfigurationDescriptions& description
   edm::ParameterSetDescription desc;
   desc.add<edm::InputTag>("muTrack", edm::InputTag("displacedStandAloneMuons"));
   desc.add<edm::InputTag>("genParticle", edm::InputTag("genParticles"));
+	desc.add<edm::InputTag>("genJet", edm::InputTag("ak4GenJets"));
+	desc.add<edm::InputTag>("genMet", edm::InputTag("genMetTrue"));
+	desc.add<edm::InputTag>("recoMet", edm::InputTag("pfMet"));
   descriptions.add("recoEffiForMuTrack", desc);
 }
 
@@ -51,6 +60,10 @@ recoEffiForMuTrack::beginJob()
   muTrackT_->Branch("recoVxy", &recoVxy_);
   muTrackT_->Branch("recoVz",  &recoVz_);
   muTrackT_->Branch("deltaR",  &deltaR_);
+	muTrackT_->Branch("genJetPt", &genJetPt_, "genJetPt/F");
+	muTrackT_->Branch("genLeadMetPt", &genLeadMetPt_, "genLeadMetPt/F");
+	muTrackT_->Branch("genSubLeadMetPt", &genSubLeadMetPt_, "genSubLeadMetPt/F");
+	muTrackT_->Branch("recoPFMetPt", &recoPFMetPt_, "recoPFMetPt/F");
 }
 
 void
@@ -71,6 +84,22 @@ recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       << endl;
     return;
   }
+	iEvent.getByToken(genJetToken_, genJetHandle_);
+	if (!genJetHandle_.isValid()) {
+					LogVerbatim("recoEffiForMuTrack") << "recoEffiForMuTrack::analyze: Error in getting genJet product from Event!" << endl;
+					return;
+	}
+	iEvent.getByToken(genMetToken_, genMetHandle_);
+	if (!genMetHandle_.isValid()) {
+					LogVerbatim("recoEffiForMuTrack") << "recoEffiForMuTrack::analyze: Error in getting genMet product from Event!" << endl;
+					return;
+	}
+	iEvent.getByToken(recoMetToken_, recoMetHandle_);
+	if (!recoMetHandle_.isValid()) {
+					LogVerbatim("recoEffiForMuTrack") << "recoEffiForMuTrack::analyze: Error in getting recoMet product from Event!" << endl;
+					return;
+	}
+
 
   int nAccpted = count_if((*genParticleHandle_).begin(), (*genParticleHandle_).end(),
       [](const reco::GenParticle& g){
@@ -80,22 +109,35 @@ recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
            and abs(g.vertex().rho())<740  // decay inside CMS
            and abs(g.vz())<960;
         });
-  if (nAccpted<4) return;
+  if (nAccpted<2) return;
 
-  genPt_  .clear(); genPt_  .reserve(4);
-  genEta_ .clear(); genEta_ .reserve(4);
-  genPhi_ .clear(); genPhi_ .reserve(4);
-  genVxy_ .clear(); genVxy_ .reserve(4);
-  genVz_  .clear(); genVz_  .reserve(4);
-  genDr_  .clear(); genDr_  .reserve(4);
-  recoPt_ .clear(); recoPt_ .reserve(4);
-  recoEta_.clear(); recoEta_.reserve(4);
-  recoPhi_.clear(); recoPhi_.reserve(4);
-  recoDxy_.clear(); recoDxy_.reserve(4);
-  recoDz_ .clear(); recoDz_ .reserve(4);
-  recoVxy_.clear(); recoVxy_.reserve(4);
-  recoVz_ .clear(); recoVz_ .reserve(4);
-  deltaR_ .clear(); deltaR_ .reserve(4);
+	// Additionally, check if event has 1 or more jets with leading pt > 30 GeV 
+	// TODO: does this need to be std::abs?
+	if (genJetHandle_->size() < 1) return;
+	bool accept = 0;
+	for (size_t i(0); i != genJetHandle_->size(); ++i) {
+					reco::GenJetRef jetr(genJetHandle_, i);
+					if (jetr->pt() > 30.0) {
+									accept = 1;
+									break;
+					}
+	}
+	if (!accept) return;
+
+  genPt_  .clear(); genPt_  .reserve(2);
+  genEta_ .clear(); genEta_ .reserve(2);
+  genPhi_ .clear(); genPhi_ .reserve(2);
+  genVxy_ .clear(); genVxy_ .reserve(2);
+  genVz_  .clear(); genVz_  .reserve(2);
+  genDr_  .clear(); genDr_  .reserve(2);
+  recoPt_ .clear(); recoPt_ .reserve(2);
+  recoEta_.clear(); recoEta_.reserve(2);
+  recoPhi_.clear(); recoPhi_.reserve(2);
+  recoDxy_.clear(); recoDxy_.reserve(2);
+  recoDz_ .clear(); recoDz_ .reserve(2);
+  recoVxy_.clear(); recoVxy_.reserve(2);
+  recoVz_ .clear(); recoVz_ .reserve(2);
+  deltaR_ .clear(); deltaR_ .reserve(2);
 
   // MC match
   vector<int> genMuIdx{};
@@ -201,6 +243,26 @@ recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
     genVz_  .push_back(genMu->vz());
     genDr_  .push_back(genMuIdDr[muId]);
   }
+
+	// Fill j1pT gen branch TODO: does this need to be std::abs?
+	double largestPt = 0.0;
+	for (size_t i(0); i != genJetHandle_->size(); ++i) {
+					reco::GenJetRef jetr(genJetHandle_, i);
+					if (jetr->pt() > largestPt) {
+									largestPt = jetr->pt();
+					}
+	}
+	genJetPt_ = largestPt;
+	
+	// Fill MET gen branch
+	
+	reco::GenMETRef metr(genMetHandle_, 0);
+	genLeadMetPt_ = metr->pt();
+	reco::GenMETRef metr2(genMetHandle_, 1);
+	genSubLeadMetPt_ = metr2->pt();
+
+	reco::PFMETRef metr3(recoMetHandle_, 0);
+	recoPFMetPt_ = metr3->pt();
 
   muTrackT_->Fill();
 

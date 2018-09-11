@@ -13,6 +13,12 @@
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
+#include "DataFormats/JetReco/interface/GenJetCollection.h"
+#include "DataFormats/METReco/interface/GenMET.h"
+#include "DataFormats/METReco/interface/GenMETFwd.h"
+#include "DataFormats/METReco/interface/GenMETCollection.h"
+#include "DataFormats/METReco/interface/PFMET.h"
+#include "DataFormats/METReco/interface/PFMETCollection.h"
 
 #include "TTree.h"
 
@@ -32,12 +38,21 @@ class recoEffiForMuTrack :
 
     const edm::InputTag muTrackTag_;
     const edm::InputTag genParticleTag_;
+		const edm::InputTag genJetTag_;
+		const edm::InputTag genMetTag_;
+		const edm::InputTag recoMetTag_;
     const edm::EDGetTokenT<reco::TrackCollection> muTrackToken_;
     const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
+		const edm::EDGetTokenT<reco::GenJetCollection> genJetToken_;
+		const edm::EDGetTokenT<reco::GenMETCollection> genMetToken_;
+		const edm::EDGetTokenT<reco::PFMETCollection> recoMetToken_;
 
     edm::Service<TFileService> fs;
     edm::Handle<reco::TrackCollection> muTrackHandle_;
     edm::Handle<reco::GenParticleCollection> genParticleHandle_;
+		edm::Handle<reco::GenJetCollection> genJetHandle_;
+		edm::Handle<reco::GenMETCollection> genMetHandle_;
+		edm::Handle<reco::PFMETCollection> recoMetHandle_;
 
     unsigned int nMatched_;
 
@@ -55,6 +70,10 @@ class recoEffiForMuTrack :
     std::vector<float> recoVxy_;
     std::vector<float> recoVz_;
     std::vector<float> deltaR_;
+		float genJetPt_;
+		float genLeadMetPt_;
+		float genSubLeadMetPt_;
+		float recoPFMetPt_;
 
     TTree *muTrackT_;
 };

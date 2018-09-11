@@ -21,7 +21,7 @@ if options.test:
     import platform
     if 'cmslpc' in platform.node():
         if options.year == 2017:
-            options.inputFiles = 'root://cmseos.fnal.gov///store/user/wsi/MCSIDM/SIDMmumu_Mps-200_MZp-1p2_ctau-1p2/180720-105132/SIDMmumu_Mps-200_MZp-1p2_ctau-1p2_10980067_AOD.root'
+            options.inputFiles = 'root://cmseos.fnal.gov///store/user/mreid/iDM/AOD_Samples/Mchi-60_dMchi-20/lifetime_10mm/iDM_Mchi-60_dMchi-20_mZD-150_Wchi2-1p00e-03_slc6_amd64_gcc481_CMSSW_7_1_30_tarball_9906774_ctau-10_AOD.root'
         if options.year == 2018:
            options.inputFiles = 'file:/eos/uscms/store/user/wsi/MCSIDM/SIDMmumu_Mps-200_MZp-1p2_ctau-0p12/180726-222103/SIDMmumu_Mps-200_MZp-1p2_ctau-0p12_10268877_AOD.root'
     elif 'lxplus' in platform.node():
@@ -87,7 +87,7 @@ process.RECO_gbm = recoEffiForMuTrack.clone(muTrack = cms.InputTag("globalMuons"
 ## trigger efficiency in terms of events
 from Firefighter.washAOD.trigEffiForMuTrack_cfi import trigEffiForMuTrack
 ### 2017
-process.TRIG_dsa = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_TrkMu16_DoubleTrkMu6NoFiltersNoVtx'))
+process.TRIG_dsa = trigEffiForMuTrack.clone()#trigPath = cms.string('HLT_TrkMu16_DoubleTrkMu6NoFiltersNoVtx'))
 ### 2018
 process.TRIG_dsa_DL2Mu23               = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha'))
 process.TRIG_dsa_DL2Mu23NoL2           = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_NoL2Matched'))
