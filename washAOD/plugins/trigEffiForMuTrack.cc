@@ -42,6 +42,7 @@ trigEffiForMuTrack::fillDescriptions(edm::ConfigurationDescriptions& description
   desc.add<edm::InputTag>("trigResult", edm::InputTag("TriggerResults","","HLT"));
   desc.add<edm::InputTag>("trigEvent", edm::InputTag("hltTriggerSummaryAOD","","HLT"));
   desc.add<std::string>("trigPath", "HLT_DoubleMu3_DCA_PFMET50_PFMHT60");
+  //desc.add<std::string>("trigPath", "HLT_PFMET120_PFMHT120_IDTight");
   desc.add<std::string>("processName", "HLT");
   descriptions.add("trigEffiForMuTrack", desc);
 }
@@ -49,6 +50,9 @@ trigEffiForMuTrack::fillDescriptions(edm::ConfigurationDescriptions& description
 void
 trigEffiForMuTrack::beginJob()
 {
+	overallInfoT_ = fs->make<TTree>("overallInfo", "");
+	overallInfoT_->Branch("numEventsTotal", &numEventsTotal, "numEventsTotal/I");
+
   muTrackT_ = fs->make<TTree>("trigEffiForMuTrack", "");
 
   muTrackT_->Branch("fired", &fired_, "fired/O");
@@ -147,6 +151,9 @@ trigEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup& iSe
       << endl;
     return;
   }
+
+	numEventsTotal = 1;
+	overallInfoT_->Fill();
 
   int nAccpted = count_if((*genParticleHandle_).begin(), (*genParticleHandle_).end(),
       [](const reco::GenParticle& g){return abs(g.pdgId())==13 and g.isHardProcess() and abs(g.eta())<2.4;});

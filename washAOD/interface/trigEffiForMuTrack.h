@@ -88,6 +88,8 @@ class trigEffiForMuTrack :
     HLTConfigProvider hltConfig_;
 
     bool fired_;
+		
+		int numEventsTotal;
 
     std::vector<float> pt_;
     std::vector<float> eta_;
@@ -102,6 +104,7 @@ class trigEffiForMuTrack :
 		float recoJetPhi_;
 
     TTree *muTrackT_;
+		TTree *overallInfoT_;
 };
 
 #endif
