@@ -29,8 +29,7 @@ if options.test:
     options.maxEvents = -1
     options.outputFile = 'test.root'
 else:
-    options.maxEvents = -1
-
+    options.maxEvents = -1 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.load('Configuration.StandardSequences.Services_cff')
 process.load("Configuration.EventContent.EventContent_cff")
@@ -38,10 +37,11 @@ process.load("TrackingTools.TransientTrack.TransientTrackBuilder_cfi")
 process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
+
 if options.year == 2017:
     process.GlobalTag.globaltag = '94X_mc2017_realistic_v15'
 if options.year == 2018:
-    process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v9'
+    process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v15'
 
 process.load("FWCore.MessageService.MessageLogger_cfi")
 process.MessageLogger = cms.Service("MessageLogger",
@@ -87,22 +87,28 @@ process.RECO_gbm = recoEffiForMuTrack.clone(muTrack = cms.InputTag("globalMuons"
 ## trigger efficiency in terms of events
 from Firefighter.washAOD.trigEffiForMuTrack_cfi import trigEffiForMuTrack
 ### 2017
-process.TRIG_dsa = trigEffiForMuTrack.clone()#trigPath = cms.string('HLT_TrkMu16_DoubleTrkMu6NoFiltersNoVtx'))
+process.TRIG_dsa_HLT_DoubleMu3_DCA_PFMET50_PFMHT60 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleMu3_DCA_PFMET50_PFMHT60'))
+process.TRIG_dsa_HLT_PFMET110_PFMHT110 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET110_PFMHT110_IDTight'))
+process.TRIG_dsa_HLT_PFMET120_PFMHT120 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+process.TRIG_dsa_HLT_PFMET130_PFMHT130 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET130_PFMHT130_IDTight'))
 ### 2018
-process.TRIG_dsa_DL2Mu23               = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha'))
-process.TRIG_dsa_DL2Mu23NoL2           = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_NoL2Matched'))
-process.TRIG_dsa_DL2Mu23CosmicSeed     = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_CosmicSeed'))
-process.TRIG_dsa_DL2Mu23CosmicSeedNoL2 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_CosmicSeed_NoL2Matched'))
+process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70_IDTight'))
+process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80_IDTight'))
+process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90_IDTight'))
+process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100_IDTight'))
 
 ## trigger efficiency itself
 from Firefighter.washAOD.trigSelfEffiForMuTrack_cfi import trigSelfEffiForMuTrack
 ### 2017
-process.TRIGself_dsa = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_TrkMu16_DoubleTrkMu6NoFiltersNoVtx'), nMuons = cms.int32(3))
+process.TRIGself_dsa_HLT_DoubleMu3_DCA_PFMET50_PFMHT60 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleMu3_DCA_PFMET50_PFMHT60'), nMuons=cms.int32(2))
+process.TRIGself_dsa_HLT_PFMET110_PFMHT110 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET110_PFMHT110_IDTight'), nMuons=cms.int32(2))
+process.TRIGself_dsa_HLT_PFMET120_PFMHT120 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), nMuons=cms.int32(2))
+process.TRIGself_dsa_HLT_PFMET130_PFMHT130 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET130_PFMHT130_IDTight'), nMuons=cms.int32(2))
 ### 2018
-process.TRIGself_dsa_DL2Mu23               = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha'))
-process.TRIGself_dsa_DL2Mu23NoL2           = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_NoL2Matched'))
-process.TRIGself_dsa_DL2Mu23CosmicSeed     = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_CosmicSeed'))
-process.TRIGself_dsa_DL2Mu23CosmicSeedNoL2 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha_CosmicSeed_NoL2Matched'))
+process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70_IDTight'))
+process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80_IDTight'))
+process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90_IDTight'))
+process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100_IDTight'))
 
 
 ## constructing the path
@@ -112,8 +118,14 @@ if options.year == 2017:
                          + process.RECO_dgm
                          + process.RECO_rsa
                          + process.RECO_gbm
-                         + process.TRIG_dsa
-                         + process.TRIGself_dsa
+                         + process.TRIG_dsa_HLT_DoubleMu3_DCA_PFMET50_PFMHT60 
+                         + process.TRIG_dsa_HLT_PFMET110_PFMHT110 
+                         + process.TRIG_dsa_HLT_PFMET120_PFMHT120 
+                         + process.TRIG_dsa_HLT_PFMET130_PFMHT130 
+                         + process.TRIGself_dsa_HLT_DoubleMu3_DCA_PFMET50_PFMHT60 
+                         + process.TRIGself_dsa_HLT_PFMET110_PFMHT110 
+                         + process.TRIGself_dsa_HLT_PFMET120_PFMHT120 
+                         + process.TRIGself_dsa_HLT_PFMET130_PFMHT130 
                          )
 
 if options.year == 2018:
@@ -122,12 +134,12 @@ if options.year == 2018:
                          + process.RECO_dgm
                          + process.RECO_rsa
                          + process.RECO_gbm
-                         + process.TRIG_dsa_DL2Mu23
-                         + process.TRIG_dsa_DL2Mu23NoL2
-                         + process.TRIG_dsa_DL2Mu23CosmicSeed
-                         + process.TRIG_dsa_DL2Mu23CosmicSeedNoL2
-                         + process.TRIGself_dsa_DL2Mu23
-                         + process.TRIGself_dsa_DL2Mu23NoL2
-                         + process.TRIGself_dsa_DL2Mu23CosmicSeed
-                         + process.TRIGself_dsa_DL2Mu23CosmicSeedNoL2
+                         + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70
+                         + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 
+                         + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 
+                         + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100
+                         + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70
+                         + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 
+                         + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 
+                         + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100
                          )

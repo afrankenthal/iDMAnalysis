@@ -5,9 +5,10 @@
  * Trigger efficiencies in terms of events
  * =======================================
  * Require:
- *   - 4 gen muons in |eta|<2.4
- *   - 4 dSA muons matched with gen muons (dR<0.3)
+ *   - 2 gen muons in |eta|<2.4
+ *   - 2 dSA muons matched with gen muons (dR<0.3)
  *   - >=2 dSA muons passing general selections
+ *   - >= 30 GeV Jet pt
  * Check trigger firing condition
  */
 
@@ -39,72 +40,71 @@
 
 #include "TTree.h"
 
-class trigEffiForMuTrack :
-  public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::SharedResources>
+class trigEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::SharedResources>
 {
-  public:
-    explicit trigEffiForMuTrack(const edm::ParameterSet&);
-    ~trigEffiForMuTrack();
+    public:
+        explicit trigEffiForMuTrack(const edm::ParameterSet&);
+        ~trigEffiForMuTrack();
 
-    static void fillDescriptions(edm::ConfigurationDescriptions&);
+        static void fillDescriptions(edm::ConfigurationDescriptions&);
 
-  private:
-    virtual void beginJob() override;
-    virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
-    virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
-    virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
-    virtual void endJob() override;
+    private:
+        virtual void beginJob() override;
+        virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
+        virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
+        virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
+        virtual void endJob() override;
 
-    const edm::InputTag muTrackTag_;
-    const edm::InputTag genParticleTag_;
-		const edm::InputTag genJetTag_;
-		const edm::InputTag genMetTag_;
-		const edm::InputTag recoMetTag_;
-		const edm::InputTag recoJetTag_;
-    const edm::InputTag trigResultsTag_;
-    const edm::InputTag trigEventTag_;
-    const std::string trigPathNoVer_;
-    const std::string processName_;
-    const edm::EDGetTokenT<reco::TrackCollection> muTrackToken_;
-    const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
-		const edm::EDGetTokenT<reco::GenJetCollection> genJetToken_;
-		const edm::EDGetTokenT<reco::GenMETCollection> genMetToken_;
-		const edm::EDGetTokenT<reco::PFMETCollection> recoMetToken_;
-		const edm::EDGetTokenT<reco::PFJetCollection> recoJetToken_;
-    const edm::EDGetTokenT<edm::TriggerResults> trigResultsToken_;
-    const edm::EDGetTokenT<trigger::TriggerEvent> trigEventToken_;
+        const edm::InputTag muTrackTag_;
+        const edm::InputTag genParticleTag_;
+        const edm::InputTag genJetTag_;
+        const edm::InputTag genMetTag_;
+        const edm::InputTag recoMetTag_;
+        const edm::InputTag recoJetTag_;
+        const edm::InputTag trigResultsTag_;
+        const edm::InputTag trigEventTag_;
+        const std::string trigPathNoVer_;
+        const std::string processName_;
+        const edm::EDGetTokenT<reco::TrackCollection> muTrackToken_;
+        const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
+        const edm::EDGetTokenT<reco::GenJetCollection> genJetToken_;
+        const edm::EDGetTokenT<reco::GenMETCollection> genMetToken_;
+        const edm::EDGetTokenT<reco::PFMETCollection> recoMetToken_;
+        const edm::EDGetTokenT<reco::PFJetCollection> recoJetToken_;
+        const edm::EDGetTokenT<edm::TriggerResults> trigResultsToken_;
+        const edm::EDGetTokenT<trigger::TriggerEvent> trigEventToken_;
 
-    edm::Service<TFileService> fs;
-    edm::Handle<reco::TrackCollection> muTrackHandle_;
-    edm::Handle<reco::GenParticleCollection> genParticleHandle_;
-		edm::Handle<reco::GenJetCollection> genJetHandle_;
-		edm::Handle<reco::GenMETCollection> genMetHandle_;
-		edm::Handle<reco::PFMETCollection> recoMetHandle_;
-		edm::Handle<reco::PFJetCollection> recoJetHandle_;
-    edm::Handle<edm::TriggerResults> trigResultsHandle_;
-    edm::Handle<trigger::TriggerEvent> trigEventHandle_;
+        edm::Service<TFileService> fs;
+        edm::Handle<reco::TrackCollection> muTrackHandle_;
+        edm::Handle<reco::GenParticleCollection> genParticleHandle_;
+        edm::Handle<reco::GenJetCollection> genJetHandle_;
+        edm::Handle<reco::GenMETCollection> genMetHandle_;
+        edm::Handle<reco::PFMETCollection> recoMetHandle_;
+        edm::Handle<reco::PFJetCollection> recoJetHandle_;
+        edm::Handle<edm::TriggerResults> trigResultsHandle_;
+        edm::Handle<trigger::TriggerEvent> trigEventHandle_;
 
-    std::string trigPath_;
-    HLTConfigProvider hltConfig_;
+        std::string trigPath_;
+        HLTConfigProvider hltConfig_;
 
-    bool fired_;
-		
-		int numEventsTotal;
+        bool fired_;
 
-    std::vector<float> pt_;
-    std::vector<float> eta_;
-    std::vector<float> phi_;
+        int numEventsTotal;
 
-		float genJetPt_;
-		float genLeadMetPt_;
-		float genSubLeadMetPt_;
-		float recoPFMetPt_;
-		float recoJetPt_;
-		float recoJetEta_;
-		float recoJetPhi_;
+        std::vector<float> pt_;
+        std::vector<float> eta_;
+        std::vector<float> phi_;
 
-    TTree *muTrackT_;
-		TTree *overallInfoT_;
+        float genJetPt_;
+        float genLeadMetPt_;
+        float genSubLeadMetPt_;
+        float recoPFMetPt_;
+        float recoJetPt_;
+        float recoJetEta_;
+        float recoJetPhi_;
+
+        TTree *muTrackT_;
+        TTree *overallInfoT_;
 };
 
 #endif
