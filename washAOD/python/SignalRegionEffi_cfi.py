@@ -1,9 +1,10 @@
 import FWCore.ParameterSet.Config as cms
 
-recoEffiForMuTrack = cms.EDAnalyzer('recoEffiForMuTrack',
+SignalRegionEffi = cms.EDAnalyzer('SignalRegionEffi',
         muTrack = cms.InputTag("displacedStandAloneMuons"),
         genParticle = cms.InputTag("genParticles"),
         genJet = cms.InputTag("ak4GenJets"),
         genMet = cms.InputTag("genMetTrue"),
-        recoMet = cms.InputTag("pfMet")
+        recoMet = cms.InputTag("pfMet"),
+        recoJet = cms.InputTag("ak4PFJets")
         )

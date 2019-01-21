@@ -1,5 +1,5 @@
-#ifndef washAOD_recoEffiForMuTrack_H
-#define washAOD_recoEffiForMuTrack_H
+#ifndef washAOD_SignalRegionEffi_H
+#define washAOD_SignalRegionEffi_H
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
@@ -14,6 +14,8 @@
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
+#include "DataFormats/JetReco/interface/PFJet.h"
+#include "DataFormats/JetReco/interface/PFJetCollection.h"
 #include "DataFormats/METReco/interface/GenMET.h"
 #include "DataFormats/METReco/interface/GenMETFwd.h"
 #include "DataFormats/METReco/interface/GenMETCollection.h"
@@ -22,12 +24,12 @@
 
 #include "TTree.h"
 
-class recoEffiForMuTrack :
+class SignalRegionEffi :
     public edm::one::EDAnalyzer<edm::one::SharedResources>
 {
     public:
-        explicit recoEffiForMuTrack(const edm::ParameterSet&);
-        ~recoEffiForMuTrack();
+        explicit SignalRegionEffi(const edm::ParameterSet&);
+        ~SignalRegionEffi();
 
         static void fillDescriptions(edm::ConfigurationDescriptions&);
 
@@ -41,11 +43,14 @@ class recoEffiForMuTrack :
         const edm::InputTag genJetTag_;
         const edm::InputTag genMetTag_;
         const edm::InputTag recoMetTag_;
+        const edm::InputTag recoJetTag_;
+
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken_;
         const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
         const edm::EDGetTokenT<reco::GenJetCollection> genJetToken_;
         const edm::EDGetTokenT<reco::GenMETCollection> genMetToken_;
         const edm::EDGetTokenT<reco::PFMETCollection> recoMetToken_;
+        const edm::EDGetTokenT<reco::PFJetCollection> recoJetToken_;
 
         edm::Service<TFileService> fs;
         edm::Handle<reco::TrackCollection> muTrackHandle_;
@@ -53,15 +58,16 @@ class recoEffiForMuTrack :
         edm::Handle<reco::GenJetCollection> genJetHandle_;
         edm::Handle<reco::GenMETCollection> genMetHandle_;
         edm::Handle<reco::PFMETCollection> recoMetHandle_;
+        edm::Handle<reco::PFJetCollection> recoJetHandle_;
 
         unsigned int nMatched_;
 
-        std::vector<float> genPt_;
-        std::vector<float> genEta_;
-        std::vector<float> genPhi_;
-        std::vector<float> genVxy_;
-        std::vector<float> genVz_;
-        std::vector<float> genDr_;
+        //std::vector<float> genPt_;
+        //std::vector<float> genEta_;
+        //std::vector<float> genPhi_;
+        //std::vector<float> genVxy_;
+        //std::vector<float> genVz_;
+        //std::vector<float> genDr_;
         std::vector<float> recoPt_;
         std::vector<float> recoEta_;
         std::vector<float> recoPhi_;
@@ -70,12 +76,13 @@ class recoEffiForMuTrack :
         std::vector<float> recoVxy_;
         std::vector<float> recoVz_;
         std::vector<float> deltaR_;
-        float genJetPt_;
-        float genLeadMetPt_;
-        float genSubLeadMetPt_;
+        //float genJetPt_;
+        //float genLeadMetPt_;
+        //float genSubLeadMetPt_;
         float recoPFMetPt_;
+        float recoPFJetPt_;
 
-        TTree *muTrackT_;
+        std::vector<TTree*> cutsTree;
 };
 
 #endif
