@@ -1,5 +1,7 @@
 #include "Firefighter/washAOD/interface/SignalRegionEffi.h"
 
+#include "DataFormats/Math/interface/LorentzVector.h"
+
 #include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 #include "DataFormats/Math/interface/deltaR.h"
@@ -45,13 +47,13 @@ void SignalRegionEffi::fillDescriptions(edm::ConfigurationDescriptions& descript
 
 void SignalRegionEffi::beginJob()
 {
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 7; i++) {
         std::stringstream cutlabel; cutlabel << "cut" << i;
         auto temp = cutlabel.str();
         cutsTree.push_back(fs->make<TTree>(temp.c_str(), ""));
     }
 
-    for (int i = 0; i < 6; i++) {
+    for (int i = 0; i < 7; i++) {
         cutsTree[i]->Branch("nMatched", &nMatched_, "nMatched/i");
         cutsTree[i]->Branch("recoPt",  &recoPt_);
         cutsTree[i]->Branch("recoEta", &recoEta_);
@@ -63,6 +65,7 @@ void SignalRegionEffi::beginJob()
         cutsTree[i]->Branch("deltaR",  &deltaR_);
         cutsTree[i]->Branch("recoPFMetPt", &recoPFMetPt_, "recoPFMetPt/F");
         cutsTree[i]->Branch("recoPFJetPt", &recoPFJetPt_, "recoPFJetPt/F");
+        cutsTree[i]->Branch("MHTPt", &MHTPt_, "MHTPt/F");
     }
 }
 
@@ -118,6 +121,14 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
     reco::PFMETRef recoMetr(recoMetHandle_, 0);
     recoPFMetPt_ = recoMetr->pt();
+    
+    // calculate MHT
+    math::XYZTLorentzVector MHT;
+    for (auto & jet : *recoJetHandle_) {
+        if (jet.pt() < 30) continue;
+        MHT += jet.p4();
+    }
+    MHTPt_ = MHT.pt();
 
     // get largest pt jet (and its pt) and second largest jet pt
     bool flagHighPtJets = false;
@@ -213,10 +224,21 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     else
         return;
 
-    // One leading reco jet w/ pT > 120 and only one extra jet w/ pT > 30 GeV
-    if (maxJetPt > 120 && flagHighPtJets == false) {
+    // Trigger emulation: reco MHT > 120 GeV
+    if (MHT.pt() > 120) {
         cutsTree[2]->Fill();
         //std::cout << "passed cut 2" << std::endl;
+    }
+    else
+        return;
+
+    // One leading reco jet w/ pT > 120 and only one extra jet w/ pT > 30 GeV.
+    // If the conditions in the previous line are satisfied, does it follow
+    // that MHT and leading jet are roughly back-to-back? I think so.
+    // TODO: quantify this statement.
+    if (maxJetPt > 120 && flagHighPtJets == false) {
+        cutsTree[3]->Fill();
+        //std::cout << "passed cut 3" << std::endl;
     }
     else
         return;
@@ -225,11 +247,11 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     if (muTrackHandle_->size() > 0) {
         if (leadingMuRef->pt() > 5 && std::sqrt(_vxy*_vxy + _vz*_vz) > 1
                 && std::sqrt(_vxy*_vxy + _vz*_vz) < 300) {
-            cutsTree[3]->Fill();
-            //std::cout << "passed cut 3" << std::endl;
+            cutsTree[4]->Fill();
+            //std::cout << "passed cut 4" << std::endl;
         }
         else {
-            //std::cout << "Didn't pass cut 2, pt of leading mu: " << leadingMuRef->pt() << ", d0: " << std::sqrt(_vxy*_vxy + _vz*_vz) << std::endl;
+            //std::cout << "Didn't pass cut 4, pt of leading mu: " << leadingMuRef->pt() << ", d0: " << std::sqrt(_vxy*_vxy + _vz*_vz) << std::endl;
             //std::cout << "muTrackHandle_->size(): " << muTrackHandle_->size() << std::endl;
             return;
         }
@@ -241,8 +263,8 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     if (muTrackHandle_->size() > 1) {
         if (subleadingMuRef->pt() > 5 && std::sqrt(_vxy*_vxy + _vz*_vz) > 1
                 && std::sqrt(_vxy*_vxy + _vz*_vz) < 300 && tv.isValid()) {
-            cutsTree[4]->Fill();
-            //std::cout << "passed cut 4" << std::endl;
+            cutsTree[5]->Fill();
+            //std::cout << "passed cut 5" << std::endl;
         }
         else
             return;
@@ -252,13 +274,11 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
     // delta phi between MET and muon jet < 0.4, if it got to here
     // then there are at least 2 muons
-    //std::cout << "MEt phi: " << recoMetr->phi() << ", leadingMu phi: " << leadingMuRef->phi()
-        //<< ", subleadingMu phi: " << subleadingMuRef->phi() << std::endl;
 
     if (std::abs(recoMetr->phi() - (leadingMuRef->phi() + subleadingMuRef->phi())/2)
             < 0.4) {
-        cutsTree[5]->Fill();
-        //std::cout << "passed cut 5" << std::endl;
+        cutsTree[6]->Fill();
+        //std::cout << "passed cut 6" << std::endl;
     }
     else return;
 
