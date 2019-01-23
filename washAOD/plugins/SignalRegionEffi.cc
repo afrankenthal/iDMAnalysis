@@ -64,7 +64,10 @@ void SignalRegionEffi::beginJob()
         cutsTree[i]->Branch("recoVz",  &recoVz_);
         cutsTree[i]->Branch("deltaR",  &deltaR_);
         cutsTree[i]->Branch("recoPFMetPt", &recoPFMetPt_, "recoPFMetPt/F");
+        cutsTree[i]->Branch("recoPFMetPhi", &recoPFMetPhi_, "recoPFMetPhi/F");
         cutsTree[i]->Branch("recoPFJetPt", &recoPFJetPt_, "recoPFJetPt/F");
+        cutsTree[i]->Branch("recoPFJetEta", &recoPFJetEta_, "recoPFJetEta/F");
+        cutsTree[i]->Branch("recoPFJetPhi", &recoPFJetPhi_, "recoPFJetPhi/F");
         cutsTree[i]->Branch("MHTPt", &MHTPt_, "MHTPt/F");
     }
 }
@@ -121,6 +124,7 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
     reco::PFMETRef recoMetr(recoMetHandle_, 0);
     recoPFMetPt_ = recoMetr->pt();
+    recoPFMetPhi_ = recoMetr->phi();
     
     // calculate MHT
     math::XYZTLorentzVector MHT;
@@ -151,6 +155,8 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     if (recoJetHandle_->size() > 0) {
         reco::PFJetRef jetMaxPtRef(recoJetHandle_, jetMaxPtIndex);
         recoPFJetPt_ = jetMaxPtRef->pt();
+        recoPFJetEta_ = jetMaxPtRef->eta();
+        recoPFJetPhi_ = jetMaxPtRef->phi();
     }
 
     // get 2 largest pt reco (dSA) muons
@@ -180,7 +186,7 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     vector<reco::TransientTrack> t_trks{};
     KalmanVertexFitter kvf(true);
     TransientVertex tv;
-    float _vxy = 0, _vz = 0, dR = 0;
+    float _vxy = 0, _vz = 0, dR = -10;
     if (muTrackHandle_->size() > 1) {
         t_trks.push_back(theB->build(&leadingMuRef));
         t_trks.push_back(theB->build(&subleadingMuRef));

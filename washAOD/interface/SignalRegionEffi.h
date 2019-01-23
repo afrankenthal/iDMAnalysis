@@ -80,7 +80,10 @@ class SignalRegionEffi :
         //float genLeadMetPt_;
         //float genSubLeadMetPt_;
         float recoPFMetPt_;
+        float recoPFMetPhi_;
         float recoPFJetPt_;
+        float recoPFJetEta_;
+        float recoPFJetPhi_;
         float MHTPt_;
 
         std::vector<TTree*> cutsTree;
