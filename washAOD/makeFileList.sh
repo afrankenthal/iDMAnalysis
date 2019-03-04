@@ -7,12 +7,15 @@
 #### you don't want to use
 
 lpcuser=as2872
-basedir="2018/GenFilter"
+basedir="2018/NoGenFilter_1or2jets_icckw1"
 
 # Use single mass and ctau parameter
-mchi=6p0
-dmchi=2p0
-ctau=10
+#mchi=6p0
+#dmchi=2p0
+#ctau=10
+mchi=$1
+dmchi=$2
+ctau=$3
 dirs="Mchi-${mchi}_dMchi-${dmchi}_ctau-${ctau}"
 
 # OR use directories in EOS to get all samples (uncomment)
@@ -27,9 +30,11 @@ dirs="Mchi-${mchi}_dMchi-${dmchi}_ctau-${ctau}"
 
 for dir in $dirs; do
     echo "Processing $dir"
-    eos root://cmseos.fnal.gov ls /store/user/$lpcuser/iDM/AOD_Samples/$basedir/$dir > data/iDM/$basedir/${dir}.list
+    #eos root://cmseos.fnal.gov ls /store/user/$lpcuser/iDM/AOD_Samples/$basedir/$dir > data/iDM/$basedir/${dir}.list
+    eos root://cmseos.fnal.gov ls /store/group/lpcmetx/iDM/AOD/$basedir/$dir > data/iDM/$basedir/${dir}.list
     sed -i '/MINIAOD/d' data/iDM/$basedir/${dir}.list
-    sed -i "s|^|root://cmsxrootd-site.fnal.gov//store/user/$lpcuser/iDM/AOD_Samples/$basedir/$dir/|" data/iDM/$basedir/${dir}.list
+    #sed -i "s|^|root://cmsxrootd-site.fnal.gov//store/user/$lpcuser/iDM/AOD_Samples/$basedir/$dir/|" data/iDM/$basedir/${dir}.list
+    sed -i "s|^|root://cmsxrootd-site.fnal.gov//store/group/lpcmetx/iDM/AOD/$basedir/$dir/|" data/iDM/$basedir/${dir}.list
 done
 
 #basename="Mchi-${mchi}_dMchi-${dmchi}_ctau-${ctau}"
