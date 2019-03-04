@@ -59,7 +59,10 @@ void recoEffiForMuTrack::beginJob()
     muTrackT_->Branch("recoVz",  &recoVz_);
     muTrackT_->Branch("deltaR",  &deltaR_);
     muTrackT_->Branch("genJetPt", &genJetPt_, "genJetPt/F");
+    muTrackT_->Branch("genJetEta", &genJetEta_, "genJetEta/F");
+    muTrackT_->Branch("genJetPhi", &genJetPhi_, "genJetPhi/F");
     muTrackT_->Branch("genLeadMetPt", &genLeadMetPt_, "genLeadMetPt/F");
+    muTrackT_->Branch("genLeadMetPhi", &genLeadMetPhi_, "genLeadMetPhi/F");
     muTrackT_->Branch("genSubLeadMetPt", &genSubLeadMetPt_, "genSubLeadMetPt/F");
     muTrackT_->Branch("recoPFMetPt", &recoPFMetPt_, "recoPFMetPt/F");
 }
@@ -240,20 +243,25 @@ void recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup
         genDr_  .push_back(genMuIdDr[muId]);
     }
 
-    // Fill j1pT gen branch TODO: does this need to be std::abs?
-    double largestPt = 0.0;
+    // Fill j1pT gen branch
+    double largestPt = 0.0, largestEta = 0.0, largestPhi = 0.0;
     for (size_t i(0); i != genJetHandle_->size(); ++i) {
         reco::GenJetRef jetr(genJetHandle_, i);
         if (jetr->pt() > largestPt) {
             largestPt = jetr->pt();
+            largestEta = jetr->eta();
+            largestPhi = jetr->phi();
         }
     }
     genJetPt_ = largestPt;
+    genJetEta_ = largestEta;
+    genJetPhi_ = largestPhi;
 
     // Fill MET gen branch
 
     reco::GenMETRef metr(genMetHandle_, 0);
     genLeadMetPt_ = metr->pt();
+    genLeadMetPhi_ = metr->phi();
     reco::GenMETRef metr2(genMetHandle_, 1);
     genSubLeadMetPt_ = metr2->pt();
 

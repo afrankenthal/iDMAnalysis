@@ -59,7 +59,7 @@ process.MessageLogger = cms.Service("MessageLogger",
                     )
     )
 process.options = cms.untracked.PSet(
-    wantSummary = cms.untracked.bool(False),
+    wantSummary = cms.untracked.bool(True),
     numberOfThreads = cms.untracked.uint32(8)
 )
 process.maxEvents = cms.untracked.PSet(
@@ -131,15 +131,15 @@ if options.year == 2017:
 if options.year == 2018:
     process.p = cms.Path(process.GEN
                          + process.RECO_dsa
-                         + process.RECO_dgm
-                         + process.RECO_rsa
-                         + process.RECO_gbm
-                         + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70
-                         + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 
-                         + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 
-                         + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100
-                         + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70
-                         + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 
-                         + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 
-                         + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100
+                         # + process.RECO_dgm
+                         # + process.RECO_rsa
+                         # + process.RECO_gbm
+                         # + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70
+                         # + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 
+                         # + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 
+                         # + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100
+                         # + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70
+                         # + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 
+                         # + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 
+                         # + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100
                          )
