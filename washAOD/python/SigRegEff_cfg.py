@@ -60,7 +60,7 @@ process.MessageLogger = cms.Service("MessageLogger",
             )
         )
 process.options = cms.untracked.PSet(
-        wantSummary = cms.untracked.bool(False),
+        wantSummary = cms.untracked.bool(True),
         numberOfThreads = cms.untracked.uint32(8)
         )
 process.maxEvents = cms.untracked.PSet(
@@ -80,16 +80,27 @@ process.GEN = genTuplizer.clone()
 
 ## Signal Region efficiency
 from Firefighter.washAOD.SignalRegionEffi_cfi import SignalRegionEffi
-process.SREffi_dsa = SignalRegionEffi.clone()
-
+process.SREffi_dsa = SignalRegionEffi.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+process.SREffi_gbm = SignalRegionEffi.clone(muTrack = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+process.SREffi_rsa = SignalRegionEffi.clone(muTrack = cms.InputTag('refittedStandAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+process.SREffi_dgm = SignalRegionEffi.clone(muTrack = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+process.SREffi_sam = SignalRegionEffi.clone(muTrack = cms.InputTag('standAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
 
 ## constructing the path
 if options.year == 2017:
     process.p = cms.Path(process.GEN
             + process.SREffi_dsa
+            + process.SREffi_gbm
+            + process.SREffi_rsa
+            + process.SREffi_dgm
+            + process.SREffi_sam
             )
 
 if options.year == 2018:
     process.p = cms.Path(process.GEN
             + process.SREffi_dsa
+            + process.SREffi_gbm
+            + process.SREffi_rsa
+            + process.SREffi_dgm
+            + process.SREffi_sam
             )

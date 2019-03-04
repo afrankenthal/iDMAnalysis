@@ -21,11 +21,16 @@
 #include "DataFormats/METReco/interface/GenMETCollection.h"
 #include "DataFormats/METReco/interface/PFMET.h"
 #include "DataFormats/METReco/interface/PFMETCollection.h"
+#include "DataFormats/Common/interface/TriggerResults.h"
+#include "FWCore/Common/interface/TriggerNames.h"
+#include "DataFormats/HLTReco/interface/TriggerObject.h"
+#include "DataFormats/HLTReco/interface/TriggerEvent.h"
+#include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
 #include "TTree.h"
 
 class SignalRegionEffi :
-    public edm::one::EDAnalyzer<edm::one::SharedResources>
+    public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::SharedResources>
 {
     public:
         explicit SignalRegionEffi(const edm::ParameterSet&);
@@ -35,7 +40,9 @@ class SignalRegionEffi :
 
     private:
         virtual void beginJob() override;
+        virtual void beginRun(edm::Run const&, edm::EventSetup const&) override;
         virtual void analyze(const edm::Event&, const edm::EventSetup&) override;
+        virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
         virtual void endJob() override;
 
         const edm::InputTag muTrackTag_;
@@ -44,6 +51,10 @@ class SignalRegionEffi :
         const edm::InputTag genMetTag_;
         const edm::InputTag recoMetTag_;
         const edm::InputTag recoJetTag_;
+        const edm::InputTag trigResultsTag_;
+        const edm::InputTag trigEventTag_;
+        const std::string trigPathNoVer_;
+        const std::string processName_;
 
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken_;
         const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
@@ -51,6 +62,8 @@ class SignalRegionEffi :
         const edm::EDGetTokenT<reco::GenMETCollection> genMetToken_;
         const edm::EDGetTokenT<reco::PFMETCollection> recoMetToken_;
         const edm::EDGetTokenT<reco::PFJetCollection> recoJetToken_;
+        const edm::EDGetTokenT<edm::TriggerResults> trigResultsToken_;
+        const edm::EDGetTokenT<trigger::TriggerEvent> trigEventToken_;
 
         edm::Service<TFileService> fs;
         edm::Handle<reco::TrackCollection> muTrackHandle_;
@@ -59,8 +72,14 @@ class SignalRegionEffi :
         edm::Handle<reco::GenMETCollection> genMetHandle_;
         edm::Handle<reco::PFMETCollection> recoMetHandle_;
         edm::Handle<reco::PFJetCollection> recoJetHandle_;
+        edm::Handle<edm::TriggerResults> trigResultsHandle_;
+        edm::Handle<trigger::TriggerEvent> trigEventHandle_;
+        
+        std::string trigPath_;
+        HLTConfigProvider hltConfig_;
 
-        unsigned int nMatched_;
+        unsigned int fired_;
+        //unsigned int nMatched_;
 
         //std::vector<float> genPt_;
         //std::vector<float> genEta_;
@@ -75,18 +94,20 @@ class SignalRegionEffi :
         std::vector<float> recoDz_;
         std::vector<float> recoVxy_;
         std::vector<float> recoVz_;
-        std::vector<float> deltaR_;
+        std::vector<float> recoDr_;
+        //std::vector<float> deltaR_;
         //float genJetPt_;
         //float genLeadMetPt_;
         //float genSubLeadMetPt_;
         float recoPFMetPt_;
         float recoPFMetPhi_;
-        float recoPFJetPt_;
-        float recoPFJetEta_;
-        float recoPFJetPhi_;
+        std::vector<float> recoPFJetPt_;
+        std::vector<float> recoPFJetEta_;
+        std::vector<float> recoPFJetPhi_;
         float MHTPt_;
 
         std::vector<TTree*> cutsTree;
+        int cutsVec[6];
 };
 
 #endif

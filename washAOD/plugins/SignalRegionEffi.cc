@@ -20,13 +20,19 @@ SignalRegionEffi::SignalRegionEffi(const edm::ParameterSet& ps) :
     genMetTag_(ps.getParameter<edm::InputTag>("genMet")),
     recoMetTag_(ps.getParameter<edm::InputTag>("recoMet")),
     recoJetTag_(ps.getParameter<edm::InputTag>("recoJet")),
+    trigResultsTag_(ps.getParameter<edm::InputTag>("trigResult")),
+    trigEventTag_(ps.getParameter<edm::InputTag>("trigEvent")),
+    trigPathNoVer_(ps.getParameter<std::string>("trigPath")),
+    processName_(ps.getParameter<std::string>("processName")),
     
     muTrackToken_(consumes<reco::TrackCollection>(muTrackTag_)),
     genParticleToken_(consumes<reco::GenParticleCollection>(genParticleTag_)),
     genJetToken_(consumes<reco::GenJetCollection>(genJetTag_)),
     genMetToken_(consumes<reco::GenMETCollection>(genMetTag_)),
     recoMetToken_(consumes<reco::PFMETCollection>(recoMetTag_)),
-    recoJetToken_(consumes<reco::PFJetCollection>(recoJetTag_))
+    recoJetToken_(consumes<reco::PFJetCollection>(recoJetTag_)),
+    trigResultsToken_(consumes<edm::TriggerResults>(trigResultsTag_)),
+    trigEventToken_(consumes<trigger::TriggerEvent>(trigEventTag_))
 {
     usesResource("TFileService");
 }
@@ -42,19 +48,26 @@ void SignalRegionEffi::fillDescriptions(edm::ConfigurationDescriptions& descript
     desc.add<edm::InputTag>("genMet", edm::InputTag("genMetTrue"));
     desc.add<edm::InputTag>("recoMet", edm::InputTag("pfMet"));
     desc.add<edm::InputTag>("recoJet", edm::InputTag("ak4PFJets"));
+    desc.add<edm::InputTag>("trigResult", edm::InputTag("TriggerResults", "", "HLT"));
+    desc.add<edm::InputTag>("trigEvent", edm::InputTag("hltTriggerSummaryAOD", "", "HLT"));
+    desc.add<std::string>("trigPath", "Defaultshouldntbecalled");
+    desc.add<std::string>("processName", "HLT");
     descriptions.add("SignalRegionEffi", desc);
 }
 
 void SignalRegionEffi::beginJob()
 {
-    for (int i = 0; i < 7; i++) {
+    for (int i = 0; i < 6; i++)
+        cutsVec[i] = 0;
+
+    for (int i = 0; i < 1; i++) {
         std::stringstream cutlabel; cutlabel << "cut" << i;
         auto temp = cutlabel.str();
         cutsTree.push_back(fs->make<TTree>(temp.c_str(), ""));
     }
 
-    for (int i = 0; i < 7; i++) {
-        cutsTree[i]->Branch("nMatched", &nMatched_, "nMatched/i");
+    for (int i = 0; i < 1; i++) {
+        cutsTree[i]->Branch("fired", &fired_, "fired/i");
         cutsTree[i]->Branch("recoPt",  &recoPt_);
         cutsTree[i]->Branch("recoEta", &recoEta_);
         cutsTree[i]->Branch("recoPhi", &recoPhi_);
@@ -62,13 +75,40 @@ void SignalRegionEffi::beginJob()
         cutsTree[i]->Branch("recoDz",  &recoDz_);
         cutsTree[i]->Branch("recoVxy", &recoVxy_);
         cutsTree[i]->Branch("recoVz",  &recoVz_);
-        cutsTree[i]->Branch("deltaR",  &deltaR_);
+        cutsTree[i]->Branch("recoDr",  &recoDr_);
+        //cutsTree[i]->Branch("deltaR",  &deltaR_);
         cutsTree[i]->Branch("recoPFMetPt", &recoPFMetPt_, "recoPFMetPt/F");
         cutsTree[i]->Branch("recoPFMetPhi", &recoPFMetPhi_, "recoPFMetPhi/F");
-        cutsTree[i]->Branch("recoPFJetPt", &recoPFJetPt_, "recoPFJetPt/F");
-        cutsTree[i]->Branch("recoPFJetEta", &recoPFJetEta_, "recoPFJetEta/F");
-        cutsTree[i]->Branch("recoPFJetPhi", &recoPFJetPhi_, "recoPFJetPhi/F");
+        cutsTree[i]->Branch("recoPFJetPt", &recoPFJetPt_);//, "recoPFJetPt/F");
+        cutsTree[i]->Branch("recoPFJetEta", &recoPFJetEta_);//, "recoPFJetEta/F");
+        cutsTree[i]->Branch("recoPFJetPhi", &recoPFJetPhi_);//, "recoPFJetPhi/F");
         cutsTree[i]->Branch("MHTPt", &MHTPt_, "MHTPt/F");
+        cutsTree[i]->Branch("cutsVec", cutsVec, "cutsVec[6]/i");
+        //for (int j = 0; j < 6; j++) {
+            //std::stringstream cutlabel; cutlabel << "cut" << j;
+            //auto temp = cutlabel.str();
+            //cutlabel << "/i";
+            //auto temp2 = cutlabel.str();
+            //cutsTree[i]->Branch(temp.c_str(), cutsVec[j], temp2.c_str());
+        //}
+    }
+}
+
+void SignalRegionEffi::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
+{
+    using namespace std;
+    using namespace edm;
+
+    bool changed(true);
+    if (hltConfig_.init(iRun,iSetup,processName_,changed)) {
+        if (changed) {
+            LogInfo("SignalRegionEffi") << "SignalRegionEffi::beginRun: " << "hltConfig init for Run" << iRun.run();
+            hltConfig_.dump("ProcessName");
+            hltConfig_.dump("GlobalTag");
+            hltConfig_.dump("TableName");
+        }
+    } else {
+        LogError("SignalRegionEffi") << "SignalRegionEffi::beginRun: config extraction failure with processName -> " << processName_;
     }
 }
 
@@ -109,6 +149,20 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         LogVerbatim("SignalRegionEffi") << "SignalRegionEffi::analyze: Error in getting recoJet product from Event!" << endl;
         return;
     }
+    iEvent.getByToken(trigResultsToken_, trigResultsHandle_);
+    if (!trigResultsHandle_.isValid()) {
+        LogError("trigSelfEffiForMuTrack")
+            << "trigSelfEffiForMuTrack::analyze: Error in getting triggerResults product from Event!"
+            << endl;
+        return;
+    }
+    iEvent.getByToken(trigEventToken_, trigEventHandle_);
+    if (!trigEventHandle_.isValid()) {
+        LogError("trigSelfEffiForMuTrack")
+            << "trigSelfEffiForMuTrack::analyze: Error in getting triggerEvent product from Event!"
+            << endl;
+        return;
+    }
 
     recoPt_ .clear();
     recoEta_.clear();
@@ -117,7 +171,14 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     recoDz_ .clear();
     recoVxy_.clear();
     recoVz_ .clear();
-    deltaR_ .clear();
+    recoDr_ .clear();
+    //deltaR_ .clear();
+    recoPFJetPt_.clear();
+    recoPFJetEta_.clear();
+    recoPFJetPhi_.clear();
+
+    for (int i = 0; i < 6; i++)
+        cutsVec[i] = 0;
 
     // get MET
     // assumes 0-th element of recoMet collection is largest pt (and only?) element
@@ -137,13 +198,13 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     // get largest pt jet (and its pt) and second largest jet pt
     bool flagHighPtJets = false;
     double maxJetPt = 0, secondMaxJetPt = 0;
-    int jetMaxPtIndex = 0;
+    //int jetMaxPtIndex = 0;
     for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
         reco::PFJetRef jetTempRef(recoJetHandle_, i);
         if (jetTempRef->pt() > maxJetPt) {
             secondMaxJetPt = maxJetPt;
             maxJetPt = jetTempRef->pt();
-            jetMaxPtIndex = i;
+            //jetMaxPtIndex = i;
         }
         else if (jetTempRef->pt() > secondMaxJetPt) {
             secondMaxJetPt = jetTempRef->pt();
@@ -152,19 +213,37 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
             flagHighPtJets = true;
         }
     }
-    if (recoJetHandle_->size() > 0) {
+    /*if (recoJetHandle_->size() > 0) {
         reco::PFJetRef jetMaxPtRef(recoJetHandle_, jetMaxPtIndex);
         recoPFJetPt_ = jetMaxPtRef->pt();
         recoPFJetEta_ = jetMaxPtRef->eta();
         recoPFJetPhi_ = jetMaxPtRef->phi();
+    }*/
+    
+    // Add all jets to event
+    // Note that jet collection is already sorted by pT
+    for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+        reco::PFJetRef jet_i(recoJetHandle_, i);
+        recoPFJetPt_.push_back(jet_i->pt());
+        recoPFJetEta_.push_back(jet_i->eta());
+        recoPFJetPhi_.push_back(jet_i->phi());
     }
 
     // get 2 largest pt reco (dSA) muons
+    // add top 2 leading pt reco muons to vector, after minimum quality cut
+    // Edit: reco muons that pass minimum quality cut
+    // (to cut on weird 11 GeV peak muons due to cosmic seed in dSA algo)
 
     double maxMuPt = 0, secondMaxMuPt = 0;
     int leadingMuIndex = 0, subleadingMuIndex = 0;
+    int goodQualityTracks = 0;
     for (size_t i = 0; i < muTrackHandle_->size(); ++i) {
         reco::TrackRef muTempRef(muTrackHandle_, i);
+        if (muTempRef->hitPattern().muonStationsWithValidHits() < 2 ||
+                muTempRef->hitPattern().numberOfValidMuonHits() < 12 ||
+                muTempRef->normalizedChi2() > 10)
+            continue;
+        goodQualityTracks++;
         if (muTempRef->pt() > maxMuPt) {
             secondMaxMuPt = maxMuPt;
             maxMuPt = muTempRef->pt();
@@ -176,8 +255,11 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
             subleadingMuIndex = i;
         }
     }
-    reco::TrackRef leadingMuRef(muTrackHandle_, leadingMuIndex);
-    reco::TrackRef subleadingMuRef(muTrackHandle_, subleadingMuIndex);
+    reco::TrackRef leadingMuRef, subleadingMuRef;
+    if (goodQualityTracks > 0)
+        leadingMuRef = reco::TrackRef(muTrackHandle_, leadingMuIndex);
+    if (goodQualityTracks > 1)
+        subleadingMuRef = reco::TrackRef(muTrackHandle_, subleadingMuIndex);
     
     // vtxing between reco mu pair
     ESHandle<TransientTrackBuilder> theB;
@@ -187,7 +269,7 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     KalmanVertexFitter kvf(true);
     TransientVertex tv;
     float _vxy = 0, _vz = 0, dR = -10;
-    if (muTrackHandle_->size() > 1) {
+    if (goodQualityTracks > 1) {
         t_trks.push_back(theB->build(&leadingMuRef));
         t_trks.push_back(theB->build(&subleadingMuRef));
         tv = kvf.vertex(t_trks);
@@ -199,96 +281,192 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
             _vxy = sqrt(_vtx.x()*_vtx.x() + _vtx.y()*_vtx.y());
             _vz  = _vtx.z();
 
-            dR = deltaR(*(leadingMuRef.get()), *(subleadingMuRef.get()));
+            dR = deltaR(*(leadingMuRef), *(subleadingMuRef));
         }
     }
+    
+    // add top 2 leading pt reco muons to vector, after minimum quality cut
+    // Edit: reco muons that pass minimum quality cut
+    // (to cut on weird 11 GeV peak muons due to cosmic seed in dSA algo)
+    /*for (size_t i = 0; i < muTrackHandle_->size(); ++i) { 
+        reco::TrackRef muTrack(muTrackHandle_, i);
+        if (muTrack->hitPattern().muonStationsWithValidHits() < 2 ||
+                muTrack->hitPattern().numberOfValidMuonHits() < 12 ||
+                muTrack->normalizedChi2() > 10)
+            continue;
+        recoPt_.push_back(muTrack->pt());
+        recoEta_.push_back(muTrack->eta());
+        recoPhi_.push_back(muTrack->phi());
+        recoDxy_.push_back(muTrack->dxy());
+        recoDz_.push_back(muTrack->dz());
+    }*/
 
-    if (muTrackHandle_->size() > 1) {
+    // Same with vertices
+    // Make all possible vertices with pairs of muons
+    // Ordering will be e.g. for 3 muons:
+    // recoVxy[0] -> {mu0, mu1}
+    // recoVxy[1] -> {mu0, mu2}
+    // recoVxy[2] -> {mu1, mu2}
+    // If vertex is not valid set to 0
+    // Same ordering for deltaR vector
+    /*ESHandle<TransientTrackBuilder> theB;
+    iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
+
+    for (size_t i = 0; i < muTrackHandle_->size(); ++i) {
+        reco::TrackRef ref_i(muTrackHandle_, i);
+        for (size_t j = i+1; j < muTrackHandle_->size(); ++j) {
+            reco::TrackRef ref_j(muTrackHandle_, j);
+
+            deltaR_.push_back(deltaR(*(ref_i.get()), *(ref_j.get())));
+
+            vector<reco::TransientTrack> t_tks{};
+            t_tks.push_back(theB->build(&ref_i));
+            t_tks.push_back(theB->build(&ref_j));
+            KalmanVertexFitter kvf(true);
+            TransientVertex tv = kvf.vertex(t_tks);
+
+            float _vxy, _vz;
+            if (tv.isValid()) {
+                reco::Vertex _vtx = reco::Vertex(tv);
+                _vxy = sqrt(_vtx.x()*_vtx.x() + _vtx.y()*_vtx.y());
+                _vz  = _vtx.z();
+            }
+            else {
+                _vxy = 0;
+                _vz = 0;
+            }
+            recoVxy_.push_back(_vxy);
+            recoVz_.push_back(_vz);
+        }
+    }*/
+
+    if (goodQualityTracks > 0) {
         recoPt_ .push_back(leadingMuRef->pt());
         recoEta_.push_back(leadingMuRef->eta());
         recoPhi_.push_back(leadingMuRef->phi());
         recoDxy_.push_back(leadingMuRef->dxy());
         recoDz_ .push_back(leadingMuRef->dz());
-        recoPt_ .push_back(subleadingMuRef->pt());
-        recoEta_.push_back(subleadingMuRef->eta());
-        recoPhi_.push_back(subleadingMuRef->phi());
-        recoDxy_.push_back(subleadingMuRef->dxy());
-        recoDz_ .push_back(subleadingMuRef->dz());
-        recoVxy_.push_back(_vxy);
-        recoVz_ .push_back(_vz);
-        deltaR_ .push_back(dR);
+        if (goodQualityTracks > 1) {
+            recoPt_ .push_back(subleadingMuRef->pt());
+            recoEta_.push_back(subleadingMuRef->eta());
+            recoPhi_.push_back(subleadingMuRef->phi());
+            recoDxy_.push_back(subleadingMuRef->dxy());
+            recoDz_ .push_back(subleadingMuRef->dz());
+            recoVxy_.push_back(_vxy);
+            recoVz_ .push_back(_vz);
+            recoDr_ .push_back(dR);
+            //deltaR_ .push_back(dR);
+        }
     }
+
+
+    // Trigger check firing bit (MET+MHT 120 GeV trigger)
+    const vector<string>& pathNames = hltConfig_.triggerNames();
+    const vector<string> matchedPaths(hltConfig_.restoreVersion(pathNames, trigPathNoVer_));
+    if (matchedPaths.size() == 0) {
+        LogError("SignalRegionEffi") << "Could not find matched full trigger path with -> " << trigPathNoVer_ << endl;
+        return;
+    }
+    trigPath_ = matchedPaths[0];
+    if (hltConfig_.triggerIndex(trigPath_) >= hltConfig_.size()) {
+        LogError("SignalRegionEffi") << "Cannot find trigger path -> " << trigPath_ << endl;
+        return;
+    }
+    bool fired = trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath_));
+    fired_ = fired;
+
+    /******* BEGINNING OF CUTS ******/
 
     // Fill everything before cuts (cutsTree[0])
-    cutsTree[0]->Fill();
-
-    // Trigger emulation: reco MET > 120 GeV
-    if (recoPFMetPt_ > 120) {
-        cutsTree[1]->Fill();
+    //cutsTree[0]->Fill();
+    cutsVec[0] = 1;
+    
+    if (fired) {
+        //cutsTree[1]->Fill();
+        cutsVec[1] = 1;
         //std::cout << "passed cut 1" << std::endl;
     }
-    else
-        return;
+    //else
+        //return;
 
-    // Trigger emulation: reco MHT > 120 GeV
-    if (MHT.pt() > 120) {
-        cutsTree[2]->Fill();
-        //std::cout << "passed cut 2" << std::endl;
-    }
-    else
-        return;
+    //// Trigger emulation: reco MET > 120 GeV
+    //if (recoPFMetPt_ > 120) {
+        //cutsTree[1]->Fill();
+        ////std::cout << "passed cut 1" << std::endl;
+    //}
+    //else
+        //return;
+
+    //// Trigger emulation: reco MHT > 120 GeV
+    //if (MHT.pt() > 120) {
+        //cutsTree[2]->Fill();
+        ////std::cout << "passed cut 2" << std::endl;
+    //}
+    //else
+        //return;
 
     // One leading reco jet w/ pT > 120 and only one extra jet w/ pT > 30 GeV.
     // If the conditions in the previous line are satisfied, does it follow
     // that MHT and leading jet are roughly back-to-back? I think so.
     // TODO: quantify this statement.
     if (maxJetPt > 120 && flagHighPtJets == false) {
-        cutsTree[3]->Fill();
-        //std::cout << "passed cut 3" << std::endl;
+        //cutsTree[2]->Fill();
+        cutsVec[2] = 1;
+        //std::cout << "passed cut 2" << std::endl;
     }
-    else
-        return;
+    //else
+        //return;
 
-    // First muon has vertex between 1 mm and 30 cm and pt > 5 GeV
-    if (muTrackHandle_->size() > 0) {
-        if (leadingMuRef->pt() > 5 && std::sqrt(_vxy*_vxy + _vz*_vz) > 1
-                && std::sqrt(_vxy*_vxy + _vz*_vz) < 300) {
-            cutsTree[4]->Fill();
+    // First muon has impact parameter between 1 mm and 30 cm and pt > 5 GeV
+    if (goodQualityTracks > 0) {
+        if (leadingMuRef->pt() > 5 && leadingMuRef->dxy() > 0.1
+                && leadingMuRef->dxy() < 30) {
+            //cutsTree[3]->Fill();
+            cutsVec[3] = 1;
+            //std::cout << "passed cut 3" << std::endl;
+        }
+        //else {
+            ////std::cout << "Didn't pass cut 3, pt of leading mu: " << leadingMuRef->pt() << ", d0: " << std::sqrt(_vxy*_vxy + _vz*_vz) << std::endl;
+            ////std::cout << "muTrackHandle_->size(): " << muTrackHandle_->size() << std::endl;
+            //return;
+        //}
+    }
+    //else
+        //return;
+
+    // Second muon, same criterion plus check if vertex is valid and dR < 0.4
+    if (goodQualityTracks > 1) {
+        if (subleadingMuRef->pt() > 5 && subleadingMuRef->dxy() > 0.1
+                && subleadingMuRef->dxy() < 30 && tv.isValid() /*&& recoDr_[0] < 0.4*/) {
+            //cutsTree[4]->Fill();
+            cutsVec[4] = 1;
             //std::cout << "passed cut 4" << std::endl;
         }
-        else {
-            //std::cout << "Didn't pass cut 4, pt of leading mu: " << leadingMuRef->pt() << ", d0: " << std::sqrt(_vxy*_vxy + _vz*_vz) << std::endl;
-            //std::cout << "muTrackHandle_->size(): " << muTrackHandle_->size() << std::endl;
-            return;
-        }
+        //else
+            //return;
     }
-    else
-        return;
+    //else
+        //return;
+        
+    // delta phi between MET and muon jet < 0.4
 
-    // Second muon, same criterion plus check if vertex is valid
-    if (muTrackHandle_->size() > 1) {
-        if (subleadingMuRef->pt() > 5 && std::sqrt(_vxy*_vxy + _vz*_vz) > 1
-                && std::sqrt(_vxy*_vxy + _vz*_vz) < 300 && tv.isValid()) {
-            cutsTree[5]->Fill();
+    /////////// FIX ME need to deal with phi wrap-around
+    if (goodQualityTracks > 1) {
+        if (std::abs(recoMetr->phi() - (leadingMuRef->phi() + subleadingMuRef->phi())/2)
+                < 0.4) {
+            //cutsTree[5]->Fill();
+            cutsVec[5] = 1;
             //std::cout << "passed cut 5" << std::endl;
         }
-        else
-            return;
     }
-    else
-        return;
+    //else return;
 
-    // delta phi between MET and muon jet < 0.4, if it got to here
-    // then there are at least 2 muons
-
-    if (std::abs(recoMetr->phi() - (leadingMuRef->phi() + subleadingMuRef->phi())/2)
-            < 0.4) {
-        cutsTree[6]->Fill();
-        //std::cout << "passed cut 6" << std::endl;
-    }
-    else return;
+    cutsTree[0]->Fill();
 
     return;
+    
 }
+
+void SignalRegionEffi::endRun(edm::Run const& iRun, edm::EventSetup const& iSetup) {}
 
 void SignalRegionEffi::endJob() {}
