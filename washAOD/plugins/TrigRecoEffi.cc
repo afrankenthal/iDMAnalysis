@@ -66,11 +66,16 @@ void TrigRecoEffi::beginJob()
     muTrackT_->Branch("genVxy",  &genVxy_);
     muTrackT_->Branch("genVz",   &genVz_);
     muTrackT_->Branch("genDr",   &genDr_);
-    muTrackT_->Branch("recoPt",  &recoPt_);
-    muTrackT_->Branch("recoEta", &recoEta_);
-    muTrackT_->Branch("recoPhi", &recoPhi_);
-    muTrackT_->Branch("recoDxy", &recoDxy_);
-    muTrackT_->Branch("recoDz",  &recoDz_);
+    muTrackT_->Branch("recoLeadSubleadMuPt",  &recoLeadSubleadMuPt_);
+    muTrackT_->Branch("recoLeadSubleadMuEta", &recoLeadSubleadMuEta_);
+    muTrackT_->Branch("recoLeadSubleadMuPhi", &recoLeadSubleadMuPhi_);
+    muTrackT_->Branch("recoLeadSubleadMuDxy", &recoLeadSubleadMuDxy_);
+    muTrackT_->Branch("recoLeadSubleadMuDz",  &recoLeadSubleadMuDz_);
+    muTrackT_->Branch("recoAllMuPt",  &recoPt_);
+    muTrackT_->Branch("recoAllMuEta", &recoEta_);
+    muTrackT_->Branch("recoAllMuPhi", &recoPhi_);
+    muTrackT_->Branch("recoAllMuDxy", &recoDxy_);
+    muTrackT_->Branch("recoAllMuDz",  &recoDz_);
     muTrackT_->Branch("recoVxy", &recoVxy_);
     muTrackT_->Branch("recoVz",  &recoVz_);
     muTrackT_->Branch("recoDr",  &recoDr_);
@@ -199,6 +204,11 @@ void TrigRecoEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     recoVz_ .clear(); recoVz_ .reserve(1);
     recoDr_ .clear(); recoDr_ .reserve(1);
     deltaR_ .clear(); deltaR_ .reserve(2);
+    recoLeadSubleadMuPt_.clear(); recoLeadSubleadMuPt_.reserve(2);
+    recoLeadSubleadMuEta_.clear(); recoLeadSubleadMuEta_.reserve(2);
+    recoLeadSubleadMuPhi_.clear(); recoLeadSubleadMuPhi_.reserve(2);
+    recoLeadSubleadMuDxy_.clear(); recoLeadSubleadMuDxy_.reserve(2);
+    recoLeadSubleadMuDz_.clear(); recoLeadSubleadMuDz_.reserve(2);
 
     // MC match
     vector<int> genMuIdx{};
@@ -261,25 +271,49 @@ void TrigRecoEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
     //for (size_t i(0); i!=muTrackHandle_->size(); ++i) {
     //  cout<<i<<"\t"<<recoMuIdVtx[i].first<<" "<<recoMuIdVtx[i].second<<endl;
     //}
+    
+    // Sort mu by pT
+    vector<reco::TrackRef> muRefs{};
+    for (size_t i = 0; i < muTrackHandle_->size(); i++) {
+        muRefs.emplace_back(muTrackHandle_, i);
+    }
+
+    sort(muRefs.begin(), muRefs.end(), [](const auto & lhs, const auto & rhs) { return lhs->pt() > rhs->pt(); } );
 
     vector<int> matchedGenMuIdx{};
     vector<int> matchedRecoMuIdx{};
-    int iTk = 0;
-    for (const reco::Track& muTrack : *muTrackHandle_) {
-        iTk = &muTrack - &(muTrackHandle_->at(0));
+    //int iTk = 0;
+    for (size_t iTk = 0; iTk < muRefs.size(); iTk++) {
+        const reco::Track & muTrack = *muRefs[iTk];
+        // quality cut
+        if (muTrack.hitPattern().numberOfValidMuonHits() < 12 ||
+                muTrack.hitPattern().muonStationsWithValidHits() < 2 ||
+                muTrack.normalizedChi2() > 10)
+            continue;
+
+        // add to all mu collection
+        recoPt_ .push_back(muTrack.pt());
+        recoEta_.push_back(muTrack.eta());
+        recoPhi_.push_back(muTrack.phi());
+        recoDxy_.push_back(muTrack.dxy());
+        recoDz_ .push_back(muTrack.dz());
+
+    //for (const reco::Track& muTrack : *muTrackHandle_) {
+        //iTk = &muTrack - &(muTrackHandle_->at(0));
         for (const int genMuid : genMuIdx) {
 
-            if (find(matchedGenMuIdx.begin(), matchedGenMuIdx.end(), genMuid) != matchedGenMuIdx.end())
+            if (find(matchedGenMuIdx.begin(), matchedGenMuIdx.end(), genMuid) != matchedGenMuIdx.end()) // gen mu already matched
                 continue;
             reco::GenParticleRef genMu(genParticleHandle_, genMuid);
 
-            if (deltaR(muTrack, *(genMu.get())) > 0.3)
+            if (deltaR(muTrack, *(genMu.get())) > 0.3 || 
+                    muTrack.charge() != genMu->charge()) { // doesn't match
                 continue;
-            if (muTrack.charge()!=genMu->charge())
-                continue;
+            }
 
-            matchedGenMuIdx.push_back(genMuid);
-            matchedRecoMuIdx.push_back(iTk);
+            // Matched gen with reco muon
+
+            deltaR_ .push_back(deltaR(muTrack, *(genMu.get())));
 
             genPt_  .push_back(genMu->pt());
             genEta_ .push_back(genMu->eta());
@@ -287,12 +321,15 @@ void TrigRecoEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             genVxy_ .push_back(genMu->vertex().rho());
             genVz_  .push_back(genMu->vz());
             genDr_  .push_back(genMuIdDr[genMuid]);
-            recoPt_ .push_back(muTrack.pt());
-            recoEta_.push_back(muTrack.eta());
-            recoPhi_.push_back(muTrack.phi());
-            recoDxy_.push_back(muTrack.dxy());
-            recoDz_ .push_back(muTrack.dz());
-            deltaR_ .push_back(deltaR(muTrack, *(genMu.get())));
+
+            recoLeadSubleadMuPt_.push_back(muTrack.pt());
+            recoLeadSubleadMuEta_.push_back(muTrack.eta());
+            recoLeadSubleadMuPhi_.push_back(muTrack.phi());
+            recoLeadSubleadMuDxy_.push_back(muTrack.dxy());
+            recoLeadSubleadMuDz_.push_back(muTrack.dz());
+
+            matchedGenMuIdx.push_back(genMuid);
+            matchedRecoMuIdx.push_back(iTk);
 
             break;
         }
@@ -306,8 +343,8 @@ void TrigRecoEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
         iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
 
         // there should ONLY be 2 reco muons matched
-        reco::TrackRef ref_i(muTrackHandle_, matchedRecoMuIdx[0]);
-        reco::TrackRef ref_j(muTrackHandle_, matchedRecoMuIdx[1]);
+        reco::TrackRef ref_i = muRefs[matchedRecoMuIdx[0]];
+        reco::TrackRef ref_j = muRefs[matchedRecoMuIdx[1]];
         vector<reco::TransientTrack> t_tks{};
         t_tks.push_back(theB->build(&ref_i));
         t_tks.push_back(theB->build(&ref_j));
@@ -324,7 +361,6 @@ void TrigRecoEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& iSet
             recoDr_.push_back(deltaR(*ref_i, *ref_j));
         }
     }
-
     
     // trigger firing condition
     const vector<string>& pathNames = hltConfig_.triggerNames();

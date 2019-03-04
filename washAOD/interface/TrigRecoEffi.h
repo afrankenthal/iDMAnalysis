@@ -95,6 +95,11 @@ class TrigRecoEffi :
         std::vector<float> recoVz_;
         std::vector<float> recoDr_;
         std::vector<float> deltaR_;
+        std::vector<float> recoLeadSubleadMuPt_;
+        std::vector<float> recoLeadSubleadMuEta_;
+        std::vector<float> recoLeadSubleadMuPhi_;
+        std::vector<float> recoLeadSubleadMuDxy_;
+        std::vector<float> recoLeadSubleadMuDz_;
         float genJetPt_;
         float genJetEta_;
         float genJetPhi_;
