@@ -13,6 +13,8 @@
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
 
+#include <cmath>
+
 SignalRegionEffi::SignalRegionEffi(const edm::ParameterSet& ps) :
     muTrackTag_(ps.getParameter<edm::InputTag>("muTrack")),
     genParticleTag_(ps.getParameter<edm::InputTag>("genParticle")),
@@ -60,30 +62,30 @@ void SignalRegionEffi::beginJob()
     for (int i = 0; i < 6; i++)
         cutsVec[i] = 0;
 
-    for (int i = 0; i < 1; i++) {
-        std::stringstream cutlabel; cutlabel << "cut" << i;
-        auto temp = cutlabel.str();
-        cutsTree.push_back(fs->make<TTree>(temp.c_str(), ""));
-    }
+    //for (int i = 0; i < 1; i++) {
+        //std::stringstream cutlabel; cutlabel << "cut" << i;
+        //auto temp = cutlabel.str();
+    cutsTree = fs->make<TTree>("cutsTree", "");
+    //}
 
     for (int i = 0; i < 1; i++) {
-        cutsTree[i]->Branch("fired", &fired_, "fired/i");
-        cutsTree[i]->Branch("recoPt",  &recoPt_);
-        cutsTree[i]->Branch("recoEta", &recoEta_);
-        cutsTree[i]->Branch("recoPhi", &recoPhi_);
-        cutsTree[i]->Branch("recoDxy", &recoDxy_);
-        cutsTree[i]->Branch("recoDz",  &recoDz_);
-        cutsTree[i]->Branch("recoVxy", &recoVxy_);
-        cutsTree[i]->Branch("recoVz",  &recoVz_);
-        cutsTree[i]->Branch("recoDr",  &recoDr_);
+        cutsTree->Branch("fired", &fired_, "fired/i");
+        cutsTree->Branch("recoPt",  &recoPt_);
+        cutsTree->Branch("recoEta", &recoEta_);
+        cutsTree->Branch("recoPhi", &recoPhi_);
+        cutsTree->Branch("recoDxy", &recoDxy_);
+        cutsTree->Branch("recoDz",  &recoDz_);
+        cutsTree->Branch("recoVxy", &recoVxy_);
+        cutsTree->Branch("recoVz",  &recoVz_);
+        cutsTree->Branch("recoDr",  &recoDr_);
         //cutsTree[i]->Branch("deltaR",  &deltaR_);
-        cutsTree[i]->Branch("recoPFMetPt", &recoPFMetPt_, "recoPFMetPt/F");
-        cutsTree[i]->Branch("recoPFMetPhi", &recoPFMetPhi_, "recoPFMetPhi/F");
-        cutsTree[i]->Branch("recoPFJetPt", &recoPFJetPt_);//, "recoPFJetPt/F");
-        cutsTree[i]->Branch("recoPFJetEta", &recoPFJetEta_);//, "recoPFJetEta/F");
-        cutsTree[i]->Branch("recoPFJetPhi", &recoPFJetPhi_);//, "recoPFJetPhi/F");
-        cutsTree[i]->Branch("MHTPt", &MHTPt_, "MHTPt/F");
-        cutsTree[i]->Branch("cutsVec", cutsVec, "cutsVec[6]/i");
+        cutsTree->Branch("recoPFMetPt", &recoPFMetPt_, "recoPFMetPt/F");
+        cutsTree->Branch("recoPFMetPhi", &recoPFMetPhi_, "recoPFMetPhi/F");
+        cutsTree->Branch("recoPFJetPt", &recoPFJetPt_);//, "recoPFJetPt/F");
+        cutsTree->Branch("recoPFJetEta", &recoPFJetEta_);//, "recoPFJetEta/F");
+        cutsTree->Branch("recoPFJetPhi", &recoPFJetPhi_);//, "recoPFJetPhi/F");
+        cutsTree->Branch("MHTPt", &MHTPt_, "MHTPt/F");
+        cutsTree->Branch("cutsVec", cutsVec, "cutsVec[6]/i");
         //for (int j = 0; j < 6; j++) {
             //std::stringstream cutlabel; cutlabel << "cut" << j;
             //auto temp = cutlabel.str();
@@ -417,10 +419,10 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     //else
         //return;
 
-    // First muon has impact parameter between 1 mm and 30 cm and pt > 5 GeV
+    // First muon has impact parameter between 1 mm and 700 /*30*/ cm and pt > 5 GeV
     if (goodQualityTracks > 0) {
-        if (leadingMuRef->pt() > 5 && leadingMuRef->dxy() > 0.1
-                && leadingMuRef->dxy() < 30) {
+        if (leadingMuRef->pt() > 5 && std::abs(leadingMuRef->dxy()) > 0.1
+                && std::abs(leadingMuRef->dxy()) < 700/*30*/) {
             //cutsTree[3]->Fill();
             cutsVec[3] = 1;
             //std::cout << "passed cut 3" << std::endl;
@@ -436,8 +438,8 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
     // Second muon, same criterion plus check if vertex is valid and dR < 0.4
     if (goodQualityTracks > 1) {
-        if (subleadingMuRef->pt() > 5 && subleadingMuRef->dxy() > 0.1
-                && subleadingMuRef->dxy() < 30 && tv.isValid() /*&& recoDr_[0] < 0.4*/) {
+        if (subleadingMuRef->pt() > 5 && std::abs(subleadingMuRef->dxy()) > 0.1
+                && std::abs(subleadingMuRef->dxy()) < 700 /*30*/ && tv.isValid() /*&& recoDr_[0] < 0.4*/) {
             //cutsTree[4]->Fill();
             cutsVec[4] = 1;
             //std::cout << "passed cut 4" << std::endl;
@@ -448,12 +450,17 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     //else
         //return;
         
-    // delta phi between MET and muon jet < 0.4
-
-    /////////// FIX ME need to deal with phi wrap-around
+    // delta phi between MET and muon pair < 0.4
     if (goodQualityTracks > 1) {
-        if (std::abs(recoMetr->phi() - (leadingMuRef->phi() + subleadingMuRef->phi())/2)
-                < 0.4) {
+        double avgMuPhi = atan2( sin(leadingMuRef->phi()) + sin(subleadingMuRef->phi()), cos(leadingMuRef->phi()) + cos(subleadingMuRef->phi()) );
+        double phiDiff = recoMetr->phi() - avgMuPhi;
+        double reducedPhiDiff = phiDiff;
+        if (std::abs(reducedPhiDiff) > 3.1415)
+            reducedPhiDiff -= 2 * 3.1415 * reducedPhiDiff/std::abs(reducedPhiDiff);
+
+        //if (std::abs(recoMetr->phi() - (leadingMuRef->phi() + subleadingMuRef->phi())/2)
+         //       < 0.4) {
+        if (std::abs(reducedPhiDiff) < 0.4) {
             //cutsTree[5]->Fill();
             cutsVec[5] = 1;
             //std::cout << "passed cut 5" << std::endl;
@@ -461,7 +468,7 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     }
     //else return;
 
-    cutsTree[0]->Fill();
+    cutsTree->Fill();
 
     return;
     

@@ -23,7 +23,8 @@ if options.test:
         if options.year == 2017:
             options.inputFiles = 'root://cmseos.fnal.gov///store/user/mreid/iDM/AOD_Samples/Mchi-60_dMchi-20/lifetime_10mm/iDM_Mchi-60_dMchi-20_mZD-150_Wchi2-1p00e-03_slc6_amd64_gcc481_CMSSW_7_1_30_tarball_9906774_ctau-10_AOD.root'
         if options.year == 2018:
-            options.inputFiles = 'root://cmseos.fnal.gov////store/user/as2872/iDM/AOD_Samples/2018/Mchi-60_dMchi-20_ctau-10/iDM_Mchi-60_dMchi-20_mZDinput-150_ctau-0_9985539_AOD_ctau-10.root'
+            #options.inputFiles = 'root://cmseos.fnal.gov////store/user/as2872/iDM/AOD_Samples/2018/Mchi-60_dMchi-20_ctau-10/iDM_Mchi-60_dMchi-20_mZDinput-150_ctau-0_9985539_AOD_ctau-10.root'
+            options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/GenFilter_1or2jets_icckw1_drjj0_xptj80_xqcut20_qcut20/Mchi-60p0_dMchi-20p0_ctau-10/iDM_Mchi-60p0_dMchi-20p0_mZDinput-150p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_9576064_AOD_ctau-10.root'
     elif 'lxplus' in platform.node():
         options.inputFiles = 'file:/eos/user/w/wsi/prelimSamples/SIDMmumu_Mps-200_MZp-1p2_ctau-1_12714105_AOD.root'
     options.maxEvents = -1

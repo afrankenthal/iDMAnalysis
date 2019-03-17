@@ -106,7 +106,7 @@ class SignalRegionEffi :
         std::vector<float> recoPFJetPhi_;
         float MHTPt_;
 
-        std::vector<TTree*> cutsTree;
+        TTree* cutsTree;
         int cutsVec[6];
 };
 
