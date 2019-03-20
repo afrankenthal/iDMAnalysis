@@ -222,9 +222,10 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
         recoPFJetPhi_ = jetMaxPtRef->phi();
     }*/
     
-    // Add all jets to event
+    // Add leading 5 jets to event
     // Note that jet collection is already sorted by pT
     for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+        if (i > 4) break;
         reco::PFJetRef jet_i(recoJetHandle_, i);
         recoPFJetPt_.push_back(jet_i->pt());
         recoPFJetEta_.push_back(jet_i->eta());
