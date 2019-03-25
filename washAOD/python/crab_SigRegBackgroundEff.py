@@ -1,17 +1,64 @@
 from CRABClient.UserUtilities import config, getUsernameFromSiteDB
 config = config()
 
-#sample = 'Mchi-5p25_dMchi-0p5_ctau-10'
-#sample = 'ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia'
-# sample = 'WWTo2L2Nu_v3'
-#sample = 'W2JetsToLNu'
-#sample = 'DYJetsToTauTau'
-#sample = 'TTJets_DiLept'
-#sample = 'WWJJToLNuLNu'
 #sample = 'WZTo3LNu'
-#sample = 'ZJetsToNuNu'
-sample = 'QCD_bEnriched_HT300to500'
+#sample = 'WWJJToLNuLNu'
+#sample = 'ZZTo2L2Nu'
+#sample = 'WWTo2L2Nu'
 
+#sample = 'DYJetsToTauTau'
+#sample = 'DYJetsToLL'
+
+#sample = 'WJetsToLNu_HT-70To100'
+sample = 'WJetsToLNu_HT-100To200'
+#sample = 'WJetsToLNu_HT-200To400'
+#sample = 'WJetsToLNu_HT-400To600'
+
+#sample = 'ZJetsToNuNu_HT-100To200'
+#sample = 'ZJetsToNuNu_HT-200To400'
+
+#sample = 'TTTo2L2Nu'
+#sample = 'TT_diLept'
+#sample = 'TTJets'
+
+#sample = 'QCD_bEnriched_HT100to200'
+#sample = 'QCD_bEnriched_HT200to300'
+#sample = 'QCD_bEnriched_HT300to500'
+#sample = 'QCD_bEnriched_HT500to700'
+#sample = 'QCD_bEnriched_HT700to1000'
+
+input_data = {
+
+'WZTo3LNu':'/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
+'WWJJToLNuLNu':'/WWJJToLNuLNu_QCD_noTop_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
+'ZZTo2L2Nu':'/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
+'WWTo2L2Nu':'/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+
+'DYJetsToTauTau':'/DYJetsToTauTau_ForcedMuDecay_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM',
+'DYJetsToLL':'/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+
+'WJetsToLNu_HT-70To100':'/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+'WJetsToLNu_HT-100To200':'/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+'WJetsToLNu_HT-200To400':'/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+'WJetsToLNu_HT-400To600':'/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+
+'ZJetsToNuNu_HT-100To200':'/ZJetsToNuNu_HT-100To200_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+'ZJetsToNuNu_HT-200To400':'/ZJetsToNuNu_HT-200To400_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+
+'TTTo2L2Nu':'/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+'TT_diLept':'/TT_DiLept_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
+'TTJets':'/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+
+'QCD_bEnriched_HT100to200':'/QCD_bEnriched_HT100to200_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+'QCD_bEnriched_HT200to300':'/QCD_bEnriched_HT200to300_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
+'QCD_bEnriched_HT300to500':'/QCD_bEnriched_HT300to500_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
+'QCD_bEnriched_HT500to700':'/QCD_bEnriched_HT500to2700_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
+'QCD_bEnriched_HT700to1000':'/QCD_bEnriched_HT700to1000_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM'
+
+
+}
+
+config.Data.inputDataset = input_data[sample] 
 config.General.requestName = 'washAOD_analyzer_' + sample
 config.General.workArea = 'crab'
 config.General.transferOutputs = True
@@ -24,42 +71,36 @@ config.JobType.psetName = 'SigRegEff_cfg.py'
 
 #config.Data.outputPrimaryDataset = 'iDM_2018_MC'
 config.Data.outputDatasetTag = 'crab_' + sample
-# config.Data.splitting = 'Automatic'
-config.Data.splitting = 'FileBased'
-config.Data.unitsPerJob = 3
-config.Data.totalUnits = 60 
+config.Data.splitting = 'Automatic'
+#config.Data.splitting = 'FileBased'
+#config.Data.unitsPerJob = 3
+#config.Data.totalUnits = 60 
 config.Data.publication = False
+config.Data.publishWithGroupName = True
 #config.Data.userInputFiles = open('../data/iDM/2018/' + sample + '.list').readlines()
-#config.Data.inputDataset = '/store/mc/RunIIAutumn18DRPremix/ZZTo4L_TuneCP5_13TeV_powheg_pythia8/AODSIM/102X_upgrade2018_realistic_v15_ext1-v2/'
+config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds/'
 
-
-#config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds/ZZTo2L2Nu/'
-#'config.Data.inputDataset = '/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM'
+#config.Data.inputDataset = '/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM'
 
 #config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds/W2JetsToLNu/'
 #config.Data.inputDataset = '/W2JetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM'
 
-config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds/'
-#config.Data.inputDataset = '/WWTo2L2Nu_13TeV-powheg/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/AODSIM'
-# config.Data.inputDataset = '/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
-config.Data.inputDataset = '/QCD_bEnriched_HT300to500_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM'
+#config.Data.inputDataset = '/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
+#config.Data.inputDataset = '/QCD_bEnriched_HT300to500_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM'
 #-------------------------------------#
 #config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds/DYJetsToTauTauForcedMuDecay/'
 #config.Data.inputDataset = '/DYJetsToTauTau_ForcedMuDecay_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM'
-
+#config.Data.inputDataset = '/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
 #config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds/TTJetsDiLept/'
 #config.Data.inputDataset = '/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
 #
 #config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds/TTdilepton/'
 #config.Data.inputDataset = '/TT_DiLept_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM'
 
-#config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds/WWJJToLNuLNu/'
 #config.Data.inputDataset = '/WWJJToLNuLNu_QCD_noTop_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM'
 #
-#config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds/WZTo3LNu/'
 #config.Data.inputDataset = '/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM'
 #
-#config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds/ZJetsToNuNu/'
 #config.Data.inputDataset = '/ZJetsToNuNu_HT-200To400_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
 
 
