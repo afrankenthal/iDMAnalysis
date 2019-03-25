@@ -6,5 +6,7 @@ SignalRegionEffi = cms.EDAnalyzer('SignalRegionEffi',
         genJet = cms.InputTag("ak4GenJets"),
         genMet = cms.InputTag("genMetTrue"),
         recoMet = cms.InputTag("pfMet"),
-        recoJet = cms.InputTag("ak4PFJets")
+        recoJet = cms.InputTag("ak4PFJets"),
+        pileups = cms.InputTag("addPileupInfo"),
+        genEvt = cms.InputTag("generator")
         )

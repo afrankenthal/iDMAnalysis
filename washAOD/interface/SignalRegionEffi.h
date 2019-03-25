@@ -27,6 +27,9 @@
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 
+#include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
+
 #include "TTree.h"
 
 class SignalRegionEffi :
@@ -54,6 +57,8 @@ class SignalRegionEffi :
         const edm::InputTag trigResultsTag_;
         const edm::InputTag trigEventTag_;
         const std::string trigPathNoVer_;
+        const edm::InputTag pileupInfosTag_;
+        const edm::InputTag genEvtInfoTag_;
         const std::string processName_;
 
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken_;
@@ -64,6 +69,8 @@ class SignalRegionEffi :
         const edm::EDGetTokenT<reco::PFJetCollection> recoJetToken_;
         const edm::EDGetTokenT<edm::TriggerResults> trigResultsToken_;
         const edm::EDGetTokenT<trigger::TriggerEvent> trigEventToken_;
+        const edm::EDGetTokenT<std::vector<PileupSummaryInfo> > pileupInfosToken_;
+        const edm::EDGetTokenT<GenEventInfoProduct> genEvtInfoToken_;
 
         edm::Service<TFileService> fs;
         edm::Handle<reco::TrackCollection> muTrackHandle_;
@@ -74,6 +81,8 @@ class SignalRegionEffi :
         edm::Handle<reco::PFJetCollection> recoJetHandle_;
         edm::Handle<edm::TriggerResults> trigResultsHandle_;
         edm::Handle<trigger::TriggerEvent> trigEventHandle_;
+        edm::Handle<std::vector<PileupSummaryInfo> > pileupInfosHandle_;
+        edm::Handle<GenEventInfoProduct> genEvtInfoHandle_;
         
         std::string trigPath_;
         HLTConfigProvider hltConfig_;
@@ -105,6 +114,9 @@ class SignalRegionEffi :
         std::vector<float> recoPFJetEta_;
         std::vector<float> recoPFJetPhi_;
         float MHTPt_;
+        int genpuobs;
+        int genputrue;
+        float genwgt;
 
         TTree* cutsTree;
         int cutsVec[6];

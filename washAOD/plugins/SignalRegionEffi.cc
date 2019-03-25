@@ -25,6 +25,8 @@ SignalRegionEffi::SignalRegionEffi(const edm::ParameterSet& ps) :
     trigResultsTag_(ps.getParameter<edm::InputTag>("trigResult")),
     trigEventTag_(ps.getParameter<edm::InputTag>("trigEvent")),
     trigPathNoVer_(ps.getParameter<std::string>("trigPath")),
+    pileupInfosTag_(ps.getParameter<edm::InputTag>("pileups")),
+    genEvtInfoTag_(ps.getParameter<edm::InputTag>("genEvt")),
     processName_(ps.getParameter<std::string>("processName")),
     
     muTrackToken_(consumes<reco::TrackCollection>(muTrackTag_)),
@@ -34,7 +36,9 @@ SignalRegionEffi::SignalRegionEffi(const edm::ParameterSet& ps) :
     recoMetToken_(consumes<reco::PFMETCollection>(recoMetTag_)),
     recoJetToken_(consumes<reco::PFJetCollection>(recoJetTag_)),
     trigResultsToken_(consumes<edm::TriggerResults>(trigResultsTag_)),
-    trigEventToken_(consumes<trigger::TriggerEvent>(trigEventTag_))
+    trigEventToken_(consumes<trigger::TriggerEvent>(trigEventTag_)),
+    pileupInfosToken_(consumes<std::vector<PileupSummaryInfo> >(pileupInfosTag_)),
+    genEvtInfoToken_(consumes<GenEventInfoProduct>(genEvtInfoTag_))
 {
     usesResource("TFileService");
 }
@@ -53,6 +57,8 @@ void SignalRegionEffi::fillDescriptions(edm::ConfigurationDescriptions& descript
     desc.add<edm::InputTag>("trigResult", edm::InputTag("TriggerResults", "", "HLT"));
     desc.add<edm::InputTag>("trigEvent", edm::InputTag("hltTriggerSummaryAOD", "", "HLT"));
     desc.add<std::string>("trigPath", "Defaultshouldntbecalled");
+    desc.add<edm::InputTag>("pileups", edm::InputTag("addPileupInfo"));
+    desc.add<edm::InputTag>("genEvt", edm::InputTag("generator"));
     desc.add<std::string>("processName", "HLT");
     descriptions.add("SignalRegionEffi", desc);
 }
@@ -86,6 +92,9 @@ void SignalRegionEffi::beginJob()
         cutsTree->Branch("recoPFJetPhi", &recoPFJetPhi_);//, "recoPFJetPhi/F");
         cutsTree->Branch("MHTPt", &MHTPt_, "MHTPt/F");
         cutsTree->Branch("cutsVec", cutsVec, "cutsVec[6]/i");
+        cutsTree->Branch("genpuobs", &genpuobs);
+        cutsTree->Branch("genputrue", &genputrue);
+        cutsTree->Branch("genwgt", &genwgt);
         //for (int j = 0; j < 6; j++) {
             //std::stringstream cutlabel; cutlabel << "cut" << j;
             //auto temp = cutlabel.str();
@@ -153,18 +162,33 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
     }
     iEvent.getByToken(trigResultsToken_, trigResultsHandle_);
     if (!trigResultsHandle_.isValid()) {
-        LogError("trigSelfEffiForMuTrack")
-            << "trigSelfEffiForMuTrack::analyze: Error in getting triggerResults product from Event!"
+        LogError("SignalRegionEffi")
+            << "SignalRegionEffi::analyze: Error in getting triggerResults product from Event!"
             << endl;
         return;
     }
     iEvent.getByToken(trigEventToken_, trigEventHandle_);
     if (!trigEventHandle_.isValid()) {
-        LogError("trigSelfEffiForMuTrack")
-            << "trigSelfEffiForMuTrack::analyze: Error in getting triggerEvent product from Event!"
+        LogError("SignalRegionEffi")
+            << "SignalRegionEffi::analyze: Error in getting triggerEvent product from Event!"
             << endl;
         return;
     }
+    iEvent.getByToken(pileupInfosToken_, pileupInfosHandle_);
+    if (!pileupInfosHandle_.isValid()) {
+        LogError("SignalRegionEffi")
+            << "SignalRegionEffi::analyze: Error in getting pileupInfos product from Event!"
+            << endl;
+        return;
+    }
+    iEvent.getByToken(genEvtInfoToken_, genEvtInfoHandle_);
+    if (!genEvtInfoHandle_.isValid()) {
+        LogError("SignalRegionEffi")
+            << "SignalRegionEffi::analyze: Error in getting genEvtInfo product from Event!"
+            << endl;
+        return;
+    }
+
 
     recoPt_ .clear();
     recoEta_.clear();
@@ -181,6 +205,19 @@ void SignalRegionEffi::analyze(const edm::Event& iEvent, const edm::EventSetup& 
 
     for (int i = 0; i < 6; i++)
         cutsVec[i] = 0;
+
+    genwgt = genEvtInfoHandle_->weight();
+
+    genpuobs = -999;
+    genputrue = -999;
+
+    for (const auto & pileupInfo : *pileupInfosHandle_) {
+        if (pileupInfo.getBunchCrossing() == 0) {
+            genpuobs = pileupInfo.getPU_NumInteractions();
+            genputrue  = pileupInfo.getTrueNumInteractions();
+            break;
+        }
+    }
 
     // get MET
     // assumes 0-th element of recoMet collection is largest pt (and only?) element
