@@ -76,11 +76,11 @@ process.TFileService = cms.Service("TFileService",
         closeFileFast = cms.untracked.bool(True)
         )
 
-from Firefighter.washAOD.genTuplizer_cfi import genTuplizer
+from iDMSkimmer.washAOD.genTuplizer_cfi import genTuplizer
 process.GEN = genTuplizer.clone()
 
 ## Signal Region efficiency
-from Firefighter.washAOD.SignalRegionEffi_cfi import SignalRegionEffi
+from iDMSkimmer.washAOD.SignalRegionEffi_cfi import SignalRegionEffi
 process.SREffi_dsa = SignalRegionEffi.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
 process.SREffi_gbm = SignalRegionEffi.clone(muTrack = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
 process.SREffi_rsa = SignalRegionEffi.clone(muTrack = cms.InputTag('refittedStandAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))

@@ -18,4 +18,6 @@
 <use name="RecoVertex/VertexPrimitives"/>
 <use name="RecoVertex/KalmanVertexFit"/>
 <use name="HLTrigger/HLTcore"/>
+
+<use name="boost"/>
 <flags EDM_PLUGIN="1"/>

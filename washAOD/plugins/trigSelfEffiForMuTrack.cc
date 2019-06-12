@@ -1,4 +1,4 @@
-#include "Firefighter/washAOD/interface/trigSelfEffiForMuTrack.h"
+#include "iDMSkimmer/washAOD/interface/trigSelfEffiForMuTrack.h"
 
 #include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"

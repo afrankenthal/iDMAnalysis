@@ -1,4 +1,4 @@
-#include "Firefighter/washAOD/interface/SignalRegionEffi.h"
+#include "iDMSkimmer/washAOD/interface/SignalRegionEffi.h"
 
 #include "DataFormats/Math/interface/LorentzVector.h"
 

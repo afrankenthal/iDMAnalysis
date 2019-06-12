@@ -1,4 +1,4 @@
-#include "Firefighter/washAOD/interface/TrigRecoEffi.h"
+#include "iDMSkimmer/washAOD/interface/TrigRecoEffi.h"
 
 #include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"

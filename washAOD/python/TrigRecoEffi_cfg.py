@@ -75,11 +75,11 @@ process.TFileService = cms.Service("TFileService",
                 closeFileFast = cms.untracked.bool(True)
                 )
 
-from Firefighter.washAOD.genTuplizer_cfi import genTuplizer
+from iDMSkimmer.washAOD.genTuplizer_cfi import genTuplizer
 process.GEN = genTuplizer.clone()
 
 ## Trigger-reco efficiency
-from Firefighter.washAOD.TrigRecoEffi_cfi import TrigRecoEffi
+from iDMSkimmer.washAOD.TrigRecoEffi_cfi import TrigRecoEffi
 process.RECO_dsa = TrigRecoEffi.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
 process.RECO_dgm = TrigRecoEffi.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), muTrack = cms.InputTag("displacedGlobalMuons"))
 process.RECO_rsa = TrigRecoEffi.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), muTrack = cms.InputTag("refittedStandAloneMuons"))
