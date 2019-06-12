@@ -1,4 +1,4 @@
-#include "Firefighter/washAOD/interface/genTuplizer.h"
+#include "iDMSkimmer/washAOD/interface/genTuplizer.h"
 
 #include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
@@ -57,7 +57,7 @@ genTuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   }
   //nGenP_ = (*genParticleHandle_).size();
   nGenP_ = count_if((*genParticleHandle_).begin(), (*genParticleHandle_).end(),
-      [](const reco::GenParticle& g){return g.isHardProcess() and abs(g.pdgId())>8;});
+      [](const reco::GenParticle& g){return g.isHardProcess();});// and abs(g.pdgId())>8;});
 
   pid_.clear(); pid_.reserve(nGenP_);
   charge_.clear(); charge_.reserve(nGenP_);
@@ -90,7 +90,7 @@ genTuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
   pairPid_.clear(); pairPid_.reserve(genPairs.size());
 
   for (const reco::GenParticle& gp : *genParticleHandle_) {
-    if (!gp.isHardProcess() or abs(gp.pdgId())<9) continue;
+    if (!gp.isHardProcess()) continue; // or abs(gp.pdgId())<9) continue;
     //cout<<gp.pdgId()<<":\t"<<gp.vx()<<"\t"<<gp.vy()<<"\t"<<gp.vz()<<"\t"<<gp.eta()<<"\t"<<gp.phi()<<"\t"<<gp.pt()<<endl;
     //cout<<gp.pdgId()<<":\t"<<gp.statusFlags().flags_<<endl;
     pid_.push_back(gp.pdgId());

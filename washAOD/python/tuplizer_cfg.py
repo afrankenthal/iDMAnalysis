@@ -74,18 +74,18 @@ process.TFileService = cms.Service("TFileService",
                 closeFileFast = cms.untracked.bool(True)
                 )
 
-from Firefighter.washAOD.genTuplizer_cfi import genTuplizer
+from iDMSkimmer.washAOD.genTuplizer_cfi import genTuplizer
 process.GEN = genTuplizer.clone()
 
 ## reco efficiency
-from Firefighter.washAOD.recoEffiForMuTrack_cfi import recoEffiForMuTrack
+from iDMSkimmer.washAOD.recoEffiForMuTrack_cfi import recoEffiForMuTrack
 process.RECO_dsa = recoEffiForMuTrack.clone()
 process.RECO_dgm = recoEffiForMuTrack.clone(muTrack = cms.InputTag("displacedGlobalMuons"))
 process.RECO_rsa = recoEffiForMuTrack.clone(muTrack = cms.InputTag("refittedStandAloneMuons"))
 process.RECO_gbm = recoEffiForMuTrack.clone(muTrack = cms.InputTag("globalMuons"))
 
 ## trigger efficiency in terms of events
-from Firefighter.washAOD.trigEffiForMuTrack_cfi import trigEffiForMuTrack
+from iDMSkimmer.washAOD.trigEffiForMuTrack_cfi import trigEffiForMuTrack
 ### 2017
 process.TRIG_dsa_HLT_DoubleMu3_DCA_PFMET50_PFMHT60 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleMu3_DCA_PFMET50_PFMHT60'))
 process.TRIG_dsa_HLT_PFMET110_PFMHT110 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET110_PFMHT110_IDTight'))
@@ -98,7 +98,7 @@ process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 = trigEffiForMuTrack
 process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100_IDTight'))
 
 ## trigger efficiency itself
-from Firefighter.washAOD.trigSelfEffiForMuTrack_cfi import trigSelfEffiForMuTrack
+from iDMSkimmer.washAOD.trigSelfEffiForMuTrack_cfi import trigSelfEffiForMuTrack
 ### 2017
 process.TRIGself_dsa_HLT_DoubleMu3_DCA_PFMET50_PFMHT60 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleMu3_DCA_PFMET50_PFMHT60'), nMuons=cms.int32(2))
 process.TRIGself_dsa_HLT_PFMET110_PFMHT110 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET110_PFMHT110_IDTight'), nMuons=cms.int32(2))
