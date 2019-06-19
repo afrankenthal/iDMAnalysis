@@ -26,7 +26,8 @@ if options.test:
             #options.inputFiles = 'root://cmseos.fnal.gov////store/user/as2872/iDM/AOD_Samples/2018/Mchi-60_dMchi-20_ctau-10/iDM_Mchi-60_dMchi-20_mZDinput-150_ctau-0_9985539_AOD_ctau-10.root'
             #options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/GenFilter_1or2jets_icckw1_drjj0_xptj80_xqcut20_qcut20/Mchi-60p0_dMchi-20p0_ctau-10/iDM_Mchi-60p0_dMchi-20p0_mZDinput-150p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_9576064_AOD_ctau-10.root'
             #options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/MC/2018/signal/Mchi-5p25_dMchi-0p5_ctau-100/step2/190527_010049/0000/externalLHEProducer_and_PYTHIA8_Hadronizer_AOD_ctau-100_94.root'
-            options.inputFiles = 'file:/uscms/homes/a/as2872/nobackup/iDM/AODproducer/debugVxy/CMSSW_10_2_3/src/externalLHEProducer_and_PYTHIA8_Hadronizer_AOD_ctau-100.root'
+            #options.inputFiles = 'file:/uscms/homes/a/as2872/nobackup/iDM/AODproducer/debugVxy/CMSSW_10_2_3/src/externalLHEProducer_and_PYTHIA8_Hadronizer_AOD_ctau-100.root'
+            options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/MC/2018/signal/Mchi-5p25_dMchi-0p5_ctau-100/step2/190614_033909/0000/externalLHEProducer_and_PYTHIA8_Hadronizer_AOD_ctau-100_103.root'
     elif 'lxplus' in platform.node():
         options.inputFiles = 'file:/eos/user/w/wsi/prelimSamples/SIDMmumu_Mps-200_MZp-1p2_ctau-1_12714105_AOD.root'
     options.maxEvents = -1
@@ -72,7 +73,7 @@ process.MessageLogger = cms.Service("MessageLogger",
 
 process.options = cms.untracked.PSet(
         wantSummary = cms.untracked.bool(True),
-        # numberOfThreads = cms.untracked.uint32(8)
+        numberOfThreads = cms.untracked.uint32(12)
         )
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(options.maxEvents)

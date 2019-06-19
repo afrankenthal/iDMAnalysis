@@ -78,6 +78,7 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("mu_dz",  &recoDz_);
     recoT->Branch("mu_M2",  &recoM2_);
     recoT->Branch("n_mu", &recoNMu_);
+    recoT->Branch("n_good_mu", &recoNGoodMu_);
     recoT->Branch("MET_mu_DeltaPhi", &recoDeltaPhiMetMu_);
     recoT->Branch("vertex_vxy", &recoVxy_);
     recoT->Branch("vertex_vz",  &recoVz_);
@@ -99,6 +100,7 @@ void iDMAnalyzer::beginJob()
     genT->Branch("mu_pt", &genPt_);
     genT->Branch("mu_eta", &genEta_);
     genT->Branch("mu_phi", &genPhi_);
+    genT->Branch("mu_energy", &genEn_);
     genT->Branch("mu_dR", &genDr_);
     genT->Branch("vertex_vxy", &genVxy_);
     genT->Branch("vertex_vz", &genVz_);
@@ -259,8 +261,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         recoPFJetPhi_.push_back(jet_i->phi());
     }
 
-    // Get all muon info, sorted by pT
-    // Note that muon collection is *not* sorted by pT at first
+    // Sort muons (note that muon collection is *not* sorted by pT at first)
 
     recoNMu_ = muTrackHandle_->size();
 
@@ -269,15 +270,6 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         muTracks.emplace_back(muTrackHandle_, i);
     }
     sort(muTracks.begin(), muTracks.end(), [](const auto & l, const auto & r){ return l->pt() > r->pt(); });
-
-    for (size_t i = 0; i < muTracks.size(); i++) {
-        reco::TrackRef mu_i(muTracks[i]);
-        recoPt_.push_back(mu_i->pt());
-        recoEta_.push_back(mu_i->eta());
-        recoPhi_.push_back(mu_i->phi());
-        recoDxy_.push_back(mu_i->dxy());
-        recoDz_.push_back(mu_i->dz());
-    }
 
     // Create separate collection for good quality muons
     vector<int> muGoodTracksIdx{};
@@ -288,9 +280,21 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             continue;
         muGoodTracksIdx.push_back(i);
     }
+    
+    // Only add good muons info to ntuple
+    for (size_t i = 0; i < muGoodTracksIdx.size(); i++) {
+        reco::TrackRef mu_i(muTracks[muGoodTracksIdx[i]]);
+        recoPt_.push_back(mu_i->pt());
+        recoEta_.push_back(mu_i->eta());
+        recoPhi_.push_back(mu_i->phi());
+        recoDxy_.push_back(mu_i->dxy());
+        recoDz_.push_back(mu_i->dz());
+    }
 
+    recoNGoodMu_ = muGoodTracksIdx.size();
+    
     // Calculate invariant mass of highest pT good quality muons
-    if (muGoodTracksIdx.size() > 2) {
+    if (muGoodTracksIdx.size() > 1) {
         reco::TrackRef leadingMuRef(muTrackHandle_, muGoodTracksIdx[0]);
         reco::TrackRef subleadingMuRef(muTrackHandle_, muGoodTracksIdx[1]);
 
@@ -474,6 +478,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     genPt_.clear();
     genEta_.clear();
     genPhi_.clear();
+    genEn_.clear();
     genVxy_.clear();
     genVz_.clear();
     genDr_.clear();
@@ -499,13 +504,14 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         }
     }
 
-    // all gen muons
+    // all hard-process gen muons
     for (size_t i = 0; i < genParticleHandle_->size(); i++) {
         reco::GenParticleRef genParticle(genParticleHandle_, i);
-        if (genParticle->isHardProcess() && (genParticle->pdgId() == 13 || genParticle->pdgId() == -13)) {
+        if (genParticle->isHardProcess() && (std::abs(genParticle->pdgId()) == 13)) {
             genPt_.push_back(genParticle->pt());
             genEta_.push_back(genParticle->eta());
             genPhi_.push_back(genParticle->phi());
+            genEn_.push_back(genParticle->energy());
             genVxy_.push_back(genParticle->vertex().rho());
             genVz_.push_back(genParticle->vz());
         }
