@@ -1,4 +1,4 @@
-# iDM-analysis-skimming
+# iDMSkimmer
 iDM analysis code (skimming and trigger/reco efficiency)
 
 # Instruction
