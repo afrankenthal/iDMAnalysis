@@ -80,11 +80,11 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("n_mu", &recoNMu_);
     recoT->Branch("n_good_mu", &recoNGoodMu_);
     recoT->Branch("MET_mu_DeltaPhi", &recoDeltaPhiMetMu_);
-    recoT->Branch("vertex_vxy", &recoVxy_);
-    recoT->Branch("vertex_vz",  &recoVz_);
-    recoT->Branch("vertex_dR",  &recoDr_);
-    recoT->Branch("vertex_reducedChi2", &recoVtxReducedChi2_);
-    recoT->Branch("vertex_sigmavxy", &recoVtxSigmaVxy_);
+    recoT->Branch("recovertex_vxy", &recoVxy_);
+    recoT->Branch("recovertex_vz",  &recoVz_);
+    recoT->Branch("recovertex_dR",  &recoDr_);
+    recoT->Branch("recovertex_reducedChi2", &recoVtxReducedChi2_);
+    recoT->Branch("recovertex_sigmavxy", &recoVtxSigmaVxy_);
     recoT->Branch("PF_MET_pt", &recoPFMetPt_);
     recoT->Branch("PF_MET_phi", &recoPFMetPhi_);
     recoT->Branch("PF_jet_pt", &recoPFJetPt_);
@@ -93,6 +93,7 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("PF_n_jet", &recoPFNJet_);
     recoT->Branch("MHT_Pt", &MHTPt_);
     recoT->Branch("cutsVec", cutsVec, "cutsVec[16]/i");
+    recoT->Branch("event", &event);
 
     genT = fs->make<TTree>("gen", "");
 
@@ -104,13 +105,20 @@ void iDMAnalyzer::beginJob()
     genT->Branch("mu_phi", &genPhi_);
     genT->Branch("mu_energy", &genEn_);
     genT->Branch("mu_dR", &genDr_);
-    genT->Branch("vertex_vxy", &genVxy_);
-    genT->Branch("vertex_vz", &genVz_);
+    genT->Branch("genmu_vxy", &genVxy_);
+    genT->Branch("genmu_vz", &genVz_);
+    genT->Branch("chi2_pt", &genChi2Pt_);
+    genT->Branch("chi2_eta", &genChi2Eta_);
+    genT->Branch("chi2_phi", &genChi2Phi_);
+    genT->Branch("chi2_energy", &genChi2En_);
+    genT->Branch("genchi2_vxy", &genChi2Vxy_);
+    genT->Branch("genchi2_vz", &genChi2Vz_);
     genT->Branch("jet_pt", &genJetPt_);
     genT->Branch("jet_eta", &genJetEta_);
     genT->Branch("jet_phi", &genJetPhi_);
     genT->Branch("MET_pt", &genLeadMetPt_);
     genT->Branch("MET_phi", &genLeadMetPhi_);
+    genT->Branch("event", &event);
 }
 
 
@@ -199,6 +207,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     using namespace edm;
 
     getCollections(iEvent);
+
+    const edm::EventAuxiliary& aux = iEvent.eventAuxiliary();
+    event = aux.event();
 
     recoPt_ .clear();
     recoEta_.clear();
@@ -487,6 +498,12 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     genEn_.clear();
     genVxy_.clear();
     genVz_.clear();
+    genChi2Pt_.clear();
+    genChi2Eta_.clear();
+    genChi2Phi_.clear();
+    genChi2En_.clear();
+    genChi2Vxy_.clear();
+    genChi2Vz_.clear();
     genDr_.clear();
     genJetPt_.clear();
     genJetEta_.clear();
@@ -520,6 +537,18 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             genEn_.push_back(genParticle->energy());
             genVxy_.push_back(genParticle->vertex().rho());
             genVz_.push_back(genParticle->vz());
+        }
+    }
+    // all hard-process gen DM_Chi2
+    for (size_t i = 0; i < genParticleHandle_->size(); i++) {
+        reco::GenParticleRef genParticle(genParticleHandle_, i);
+        if (genParticle->isHardProcess() && (std::abs(genParticle->pdgId()) == 1000023)) {
+            genChi2Pt_.push_back(genParticle->pt());
+            genChi2Eta_.push_back(genParticle->eta());
+            genChi2Phi_.push_back(genParticle->phi());
+            genChi2En_.push_back(genParticle->energy());
+            genChi2Vxy_.push_back(genParticle->vertex().rho());
+            genChi2Vz_.push_back(genParticle->vz());
         }
     }
 

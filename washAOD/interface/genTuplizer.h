@@ -46,7 +46,7 @@ class genTuplizer :
     std::vector<double> pairInvM_;
     std::vector<double> pairDeltaR_;
     std::vector<int>    pairPid_;
-
+    unsigned long long event;
     TTree *genT_;
 };
 
