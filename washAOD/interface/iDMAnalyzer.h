@@ -147,7 +147,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         int genpuobs_;
         int genputrue_;
         float genwgt_;
-	unsigned long long event;
+	unsigned long long event_;
 
         TTree * recoT;
         TTree * genT;

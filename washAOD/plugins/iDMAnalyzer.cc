@@ -93,7 +93,7 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("PF_n_jet", &recoPFNJet_);
     recoT->Branch("MHT_Pt", &MHTPt_);
     recoT->Branch("cutsVec", cutsVec, "cutsVec[16]/i");
-    recoT->Branch("event", &event);
+    recoT->Branch("event", &event_);
 
     genT = fs->make<TTree>("gen", "");
 
@@ -105,26 +105,26 @@ void iDMAnalyzer::beginJob()
     genT->Branch("mu_phi", &genPhi_);
     genT->Branch("mu_energy", &genEn_);
     genT->Branch("mu_dR", &genDr_);
-    genT->Branch("genmu_vxy", &genVxy_);
-    genT->Branch("genmu_vz", &genVz_);
+    genT->Branch("gen_mu_vxy", &genVxy_);
+    genT->Branch("gen_mu_vz", &genVz_);
     genT->Branch("chi1_pt", &genChi1Pt_);
     genT->Branch("chi1_eta", &genChi1Eta_);
     genT->Branch("chi1_phi", &genChi1Phi_);
     genT->Branch("chi1_energy", &genChi1En_);
-    genT->Branch("genchi1_vxy", &genChi1Vxy_);
-    genT->Branch("genchi1_vz", &genChi1Vz_);
+    genT->Branch("gen_chi1_vxy", &genChi1Vxy_);
+    genT->Branch("gen_chi1_vz", &genChi1Vz_);
     genT->Branch("chi2_pt", &genChi2Pt_);
     genT->Branch("chi2_eta", &genChi2Eta_);
     genT->Branch("chi2_phi", &genChi2Phi_);
     genT->Branch("chi2_energy", &genChi2En_);
-    genT->Branch("genchi2_vxy", &genChi2Vxy_);
-    genT->Branch("genchi2_vz", &genChi2Vz_);
+    genT->Branch("gen_chi2_vxy", &genChi2Vxy_);
+    genT->Branch("gen_chi2_vz", &genChi2Vz_);
     genT->Branch("jet_pt", &genJetPt_);
     genT->Branch("jet_eta", &genJetEta_);
     genT->Branch("jet_phi", &genJetPhi_);
     genT->Branch("MET_pt", &genLeadMetPt_);
     genT->Branch("MET_phi", &genLeadMetPhi_);
-    genT->Branch("event", &event);
+    genT->Branch("event", &event_);
 }
 
 
@@ -215,7 +215,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     getCollections(iEvent);
 
     const edm::EventAuxiliary& aux = iEvent.eventAuxiliary();
-    event = aux.event();
+    event_ = aux.event();
 
     recoPt_ .clear();
     recoEta_.clear();
