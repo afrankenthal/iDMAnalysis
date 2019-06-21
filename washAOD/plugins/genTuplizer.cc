@@ -36,11 +36,12 @@ genTuplizer::beginJob()
   genT_->Branch("phi", &phi_);
   genT_->Branch("mass", &mass_);
   genT_->Branch("energy", &energy_);
-  genT_->Branch("vxy", &vxy_);
-  genT_->Branch("vz", &vz_);
+  genT_->Branch("gen_vxy", &vxy_);
+  genT_->Branch("gen_vz", &vz_);
   genT_->Branch("pairInvM", &pairInvM_);
   genT_->Branch("pairDeltaR", &pairDeltaR_);
   genT_->Branch("pairPid", &pairPid_);
+  genT_->Branch("event", &event);
 }
 
 void
@@ -55,6 +56,8 @@ genTuplizer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
       << endl;
       return;
   }
+    const edm::EventAuxiliary& aux = iEvent.eventAuxiliary();
+    event = aux.event();
   //nGenP_ = (*genParticleHandle_).size();
   nGenP_ = count_if((*genParticleHandle_).begin(), (*genParticleHandle_).end(),
       [](const reco::GenParticle& g){return g.isHardProcess();});// and abs(g.pdgId())>8;});

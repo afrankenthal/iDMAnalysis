@@ -102,6 +102,18 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> genVxy_;
         std::vector<float> genVz_;
         std::vector<float> genDr_;
+        std::vector<float> genChi1Pt_;
+        std::vector<float> genChi1Eta_;
+        std::vector<float> genChi1Phi_;
+        std::vector<float> genChi1En_;
+        std::vector<float> genChi1Vxy_;
+        std::vector<float> genChi1Vz_;
+        std::vector<float> genChi2Pt_;
+        std::vector<float> genChi2Eta_;
+        std::vector<float> genChi2Phi_;
+        std::vector<float> genChi2En_;
+        std::vector<float> genChi2Vxy_;
+        std::vector<float> genChi2Vz_;
 
         std::vector<float> recoPt_;
         std::vector<float> recoEta_;
@@ -135,6 +147,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         int genpuobs_;
         int genputrue_;
         float genwgt_;
+	unsigned long long event_;
 
         TTree * recoT;
         TTree * genT;

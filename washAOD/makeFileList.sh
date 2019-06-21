@@ -7,7 +7,7 @@
 #### you don't want to use
 
 lpcuser=as2872
-basedir="2018/NoGenFilter_1or2jets_icckw1"
+basedir="2018/signal"
 
 # Use single mass and ctau parameter
 #mchi=6p0
