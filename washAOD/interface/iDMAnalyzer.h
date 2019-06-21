@@ -102,6 +102,12 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> genVxy_;
         std::vector<float> genVz_;
         std::vector<float> genDr_;
+        std::vector<float> genChi1Pt_;
+        std::vector<float> genChi1Eta_;
+        std::vector<float> genChi1Phi_;
+        std::vector<float> genChi1En_;
+        std::vector<float> genChi1Vxy_;
+        std::vector<float> genChi1Vz_;
         std::vector<float> genChi2Pt_;
         std::vector<float> genChi2Eta_;
         std::vector<float> genChi2Phi_;

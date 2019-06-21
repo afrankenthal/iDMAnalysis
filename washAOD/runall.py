@@ -11,8 +11,8 @@ if test:
 
 else:
 	lifelist = [1,10,100,1000]
-	mchis=['6p0']#['60p0']
-	dmchis=['2p0']#['20p0']
+	mchis=['6p0','60p0']
+	dmchis=['2p0','20p0']
 	masslist = ["Mchi-%s_dMchi-%s"%(mchi,dmchi) for mchi,dmchi in zip(mchis,dmchis)]
 
 print masslist
@@ -43,7 +43,7 @@ for mass in masslist:
 			process1.stdout.close()
 			process1.wait()
 
-			transfer = "xrdcp {0}/{1} root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis/{1}".format(odir,ofile)
+			transfer = "xrdcp {0}/{1} root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis/{2}_ctau-{3}/{1}".format(odir,ofile,mass,life)
 			print(transfer)
                 	process2 = subprocess.Popen(transfer,shell=True, stdout=subprocess.PIPE)
                 	for line2 in iter(process2.stdout.readline,b''):
