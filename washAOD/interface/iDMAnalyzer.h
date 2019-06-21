@@ -109,6 +109,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoDxy_;
         std::vector<float> recoDz_;
         std::vector<float> recoVxy_;
+        std::vector<float> recoVtxSigmaVxy_;
+        std::vector<float> recoVtxReducedChi2_;
         std::vector<float> recoVz_;
         std::vector<float> recoDr_;
         std::vector<int> recoVi_, recoVj_;

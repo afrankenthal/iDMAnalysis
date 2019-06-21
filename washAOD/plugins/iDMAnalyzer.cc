@@ -83,6 +83,8 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("vertex_vxy", &recoVxy_);
     recoT->Branch("vertex_vz",  &recoVz_);
     recoT->Branch("vertex_dR",  &recoDr_);
+    recoT->Branch("vertex_reducedChi2", &recoVtxReducedChi2_);
+    recoT->Branch("vertex_sigmavxy", &recoVtxSigmaVxy_);
     recoT->Branch("PF_MET_pt", &recoPFMetPt_);
     recoT->Branch("PF_MET_phi", &recoPFMetPhi_);
     recoT->Branch("PF_jet_pt", &recoPFJetPt_);
@@ -355,11 +357,15 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             }
             else {
                 reco::Vertex vertex = reco::Vertex(tv);
-                recoVxy_.push_back( sqrt(vertex.x()*vertex.x() + vertex.y()*vertex.y()) );
+                float vxy = sqrt( vertex.x()*vertex.x() + vertex.y()*vertex.y() );
+                recoVxy_.push_back( vxy );
+                float sigma_vxy = (1/vxy)*( vertex.x()*vertex.xError() + vertex.y()*vertex.yError() );
+                recoVtxSigmaVxy_.push_back( sigma_vxy );
                 recoVz_.push_back( vertex.z() );
                 recoDr_.push_back( deltaR(*muTracks[muGoodTracksIdx[i]], *muTracks[muGoodTracksIdx[j]]) );
-                recoVi_.push_back(muGoodTracksIdx[i]);
-                recoVj_.push_back(muGoodTracksIdx[j]);
+                recoVi_.push_back( muGoodTracksIdx[i] );
+                recoVj_.push_back( muGoodTracksIdx[j] );
+                recoVtxReducedChi2_.push_back( vertex.normalizedChi2() );
             }
 
         }
