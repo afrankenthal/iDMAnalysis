@@ -168,6 +168,22 @@ void trigSelfEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventS
     eta_ .clear(); eta_ .reserve(muRefs.size());
     phi_ .clear(); phi_ .reserve(muRefs.size());
 
+    genPt_.clear(); genPt_.reserve(2);
+    genEta_.clear(); genEta_.reserve(2);
+    genPhi_.clear(); genPhi_.reserve(2);
+    genVxy_.clear(); genVxy_.reserve(2);
+    genVz_.clear(); genVz_.reserve(2);
+
+    for (size_t i = 0; i < genParticleHandle_->size(); i++) {
+        reco::GenParticleRef genP(genParticleHandle_, i);
+        if (std::abs(genP->pdgId()) != 13) continue;
+        genPt_.push_back(genP->pt());
+        genEta_.push_back(genP->eta());
+        genPhi_.push_back(genP->phi());
+        genVxy_.push_back(genP->vertex().rho());
+        genVz_.push_back(genP->vz());
+    }
+
     for (const auto& recoMu : muRefs) {
         pt_ .push_back(recoMu->pt());
         eta_.push_back(recoMu->eta());

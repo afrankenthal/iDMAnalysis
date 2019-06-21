@@ -9,7 +9,7 @@ options.register('test',
                  VarParsing.VarParsing.varType.int,
                  "Run for a test or not")
 options.register('year',
-                 2017,
+                 2018,
                  VarParsing.VarParsing.multiplicity.singleton,
                  VarParsing.VarParsing.varType.int,
                  "sample of the year")
@@ -78,20 +78,24 @@ from iDMSkimmer.washAOD.genTuplizer_cfi import genTuplizer
 process.GEN = genTuplizer.clone()
 
 ## reco efficiency
-from iDMSkimmer.washAOD.recoEffiForMuTrack_cfi import recoEffiForMuTrack
-process.RECO_dsa = recoEffiForMuTrack.clone()
-process.RECO_dgm = recoEffiForMuTrack.clone(muTrack = cms.InputTag("displacedGlobalMuons"))
-process.RECO_rsa = recoEffiForMuTrack.clone(muTrack = cms.InputTag("refittedStandAloneMuons"))
-process.RECO_gbm = recoEffiForMuTrack.clone(muTrack = cms.InputTag("globalMuons"))
+#from iDMSkimmer.washAOD.recoEffiForMuTrack_cfi import recoEffiForMuTrack
+#process.RECO_dsa = recoEffiForMuTrack.clone()
+#process.RECO_dgm = recoEffiForMuTrack.clone(muTrack = cms.InputTag("displacedGlobalMuons"))
+#process.RECO_rsa = recoEffiForMuTrack.clone(muTrack = cms.InputTag("refittedStandAloneMuons"))
+#process.RECO_gbm = recoEffiForMuTrack.clone(muTrack = cms.InputTag("globalMuons"))
 
 ## trigger efficiency in terms of events
 from iDMSkimmer.washAOD.trigEffiForMuTrack_cfi import trigEffiForMuTrack
-### 2017
+### 2017 & 2018
 process.TRIG_dsa_HLT_DoubleMu3_DCA_PFMET50_PFMHT60 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleMu3_DCA_PFMET50_PFMHT60'))
 process.TRIG_dsa_HLT_PFMET110_PFMHT110 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET110_PFMHT110_IDTight'))
 process.TRIG_dsa_HLT_PFMET120_PFMHT120 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+process.TRIG_gbm_HLT_PFMET120_PFMHT120 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), muTrack=cms.InputTag('globalMuons'))
 process.TRIG_dsa_HLT_PFMET130_PFMHT130 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET130_PFMHT130_IDTight'))
-### 2018
+process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70_IDTight'))
+process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80_IDTight'))
+process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90_IDTight'))
+process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100_IDTight'))
 process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70_IDTight'))
 process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80_IDTight'))
 process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 = trigEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90_IDTight'))
@@ -99,12 +103,12 @@ process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100 = trigEffiForMuTra
 
 ## trigger efficiency itself
 from iDMSkimmer.washAOD.trigSelfEffiForMuTrack_cfi import trigSelfEffiForMuTrack
-### 2017
+### 2017 & 2018
 process.TRIGself_dsa_HLT_DoubleMu3_DCA_PFMET50_PFMHT60 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_DoubleMu3_DCA_PFMET50_PFMHT60'), nMuons=cms.int32(2))
 process.TRIGself_dsa_HLT_PFMET110_PFMHT110 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET110_PFMHT110_IDTight'), nMuons=cms.int32(2))
 process.TRIGself_dsa_HLT_PFMET120_PFMHT120 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), nMuons=cms.int32(2))
+process.TRIGself_gbm_HLT_PFMET120_PFMHT120 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), nMuons=cms.int32(2), muTrack=cms.InputTag('globalMuons'))
 process.TRIGself_dsa_HLT_PFMET130_PFMHT130 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET130_PFMHT130_IDTight'), nMuons=cms.int32(2))
-### 2018
 process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70_IDTight'))
 process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80_IDTight'))
 process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 = trigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90_IDTight'))
@@ -130,7 +134,7 @@ if options.year == 2017:
 
 if options.year == 2018:
     process.p = cms.Path(process.GEN
-                         + process.RECO_dsa
+                         #+ process.RECO_dsa
                          # + process.RECO_dgm
                          # + process.RECO_rsa
                          # + process.RECO_gbm
@@ -138,8 +142,18 @@ if options.year == 2018:
                          # + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 
                          # + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 
                          # + process.TRIG_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100
+                         # + process.TRIG_dsa_HLT_DoubleMu3_DCA_PFMET50_PFMHT60 
+                         # + process.TRIG_dsa_HLT_PFMET110_PFMHT110 
+                          + process.TRIG_dsa_HLT_PFMET120_PFMHT120 
+                          + process.TRIG_gbm_HLT_PFMET120_PFMHT120
+                         # + process.TRIG_dsa_HLT_PFMET130_PFMHT130 
                          # + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET70_PFMHT70
                          # + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET80_PFMHT80 
                          # + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET90_PFMHT90 
                          # + process.TRIGself_dsa_HLT_Mu3er1p5_PFJet100er2p5_PFMET100_PFMHT100
+                         # + process.TRIGself_dsa_HLT_DoubleMu3_DCA_PFMET50_PFMHT60 
+                         # + process.TRIGself_dsa_HLT_PFMET110_PFMHT110 
+                          + process.TRIGself_dsa_HLT_PFMET120_PFMHT120 
+                          + process.TRIGself_gbm_HLT_PFMET120_PFMHT120
+                         # + process.TRIGself_dsa_HLT_PFMET130_PFMHT130 
                          )

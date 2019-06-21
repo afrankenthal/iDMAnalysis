@@ -183,8 +183,8 @@ void trigEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup
     auto generalSelection = [&](const auto tid){
         reco::TrackRef t(muTrackHandle_, tid);
         bool pass = t->pt() > 5
-            && abs(t->eta()) < 2
-            && t->hitPattern().numberOfValidMuonHits() > 16
+            && abs(t->eta()) < 2.4
+            && t->hitPattern().numberOfValidMuonHits() > 12
             && t->hitPattern().muonStationsWithValidHits() > 1
             && t->normalizedChi2() < 10;
         return pass;
@@ -193,13 +193,12 @@ void trigEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup
     int tracksPassedGS = count_if(muTrackIdx.begin(), muTrackIdx.end(), generalSelection);
     if (tracksPassedGS<2) return;
 
-    // Additionally, check if event has 1 or more jets with leading pt >
-    // 30 GeV
+    // Additionally, check if event has 1 or more jets with leading pt > 120 GeV
     if (recoJetHandle_->size() < 1) return;
     bool accept = 0;
     for (size_t i(0); i != recoJetHandle_->size(); ++i) {
         reco::PFJetRef jetr(recoJetHandle_, i);
-        if (jetr->pt() > 30.0) {
+        if (jetr->pt() > 120.0) {
             accept = 1;
             break;
         }
@@ -211,6 +210,7 @@ void trigEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup
     phi_ .clear(); phi_ .reserve(2);
 
     for (const int muid : muTrackIdx) {
+        if (!generalSelection(muid)) continue;
         reco::TrackRef recoMu(muTrackHandle_, muid);
         pt_ .push_back(recoMu->pt());
         eta_.push_back(recoMu->eta());

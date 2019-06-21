@@ -91,6 +91,12 @@ class trigSelfEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRuns, 
         std::vector<float> eta_;
         std::vector<float> phi_;
 
+        std::vector<float> genPt_;
+        std::vector<float> genEta_;
+        std::vector<float> genPhi_;
+        std::vector<float> genVxy_;
+        std::vector<float> genVz_;
+
         float genJetPt_;
         float genLeadMetPt_;
         float genSubLeadMetPt_;
