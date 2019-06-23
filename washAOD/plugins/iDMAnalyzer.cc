@@ -76,6 +76,9 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_mu_phi", &recoPhi_);
     recoT->Branch("reco_mu_dxy", &recoDxy_);
     recoT->Branch("reco_mu_dz",  &recoDz_);
+    recoT->Branch("reco_mu_trk_chi2", &recoTrkChi2_);
+    recoT->Branch("reco_mu_trk_num_planes", &recoTrkNumPlanes_);
+    recoT->Branch("reco_mu_trk_num_hits", &recoTrkNumHits_);
     recoT->Branch("reco_mu_M2",  &recoM2_);
     recoT->Branch("reco_num_mu", &recoNMu_);
     recoT->Branch("reco_num_good_mu", &recoNGoodMu_);
