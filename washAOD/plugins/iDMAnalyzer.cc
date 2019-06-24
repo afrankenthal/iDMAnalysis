@@ -307,12 +307,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     for (size_t i = 0; i < muTracks.size(); i++) {
         if (muTracks[i]->hitPattern().muonStationsWithValidHits() < 2 ||
                 muTracks[i]->hitPattern().numberOfValidMuonHits() < 12 ||
-                muTracks[i]->normalizedChi2() > 10){
+                muTracks[i]->normalizedChi2() > 10 ||
+		muTracks[i]->pt()<5){
             continue;
-	}
-	reco::TrackRef mu_i(muTracks[i]);
-	if(mu_i->pt() < 5){
-	continue;
 	}
         muGoodTracksIdx.push_back(i);
     }
