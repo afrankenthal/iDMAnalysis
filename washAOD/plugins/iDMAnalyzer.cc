@@ -94,6 +94,7 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_PF_jet_eta", &recoPFJetEta_);
     recoT->Branch("reco_PF_jet_phi", &recoPFJetPhi_);
     recoT->Branch("reco_PF_num_jets", &recoPFNJet_);
+    recoT->Branch("reco_PF_num_highPt_jets", &recoPFNHighPtJet_);
     recoT->Branch("reco_MHT_Pt", &MHTPt_);
     recoT->Branch("cutsVec", cutsVec, "cutsVec[16]/i");
     recoT->Branch("event_num", &event_);
@@ -278,14 +279,17 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     // Get all jets info, sorted by pT
     // Note that jet collection is already sorted by pT
 
-    recoPFNJet_ = recoJetHandle_->size();
-
+    recoPFNJet_ = recoJetHandle_->size(); 
+    recoPFNHighPtJet_ = 0;
     for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
         //if (i > 4) break;
         reco::PFJetRef jet_i(recoJetHandle_, i);
-        recoPFJetPt_.push_back(jet_i->pt());
-        recoPFJetEta_.push_back(jet_i->eta());
-        recoPFJetPhi_.push_back(jet_i->phi());
+	if(jet_i->pt() > 30){recoPFNHighPtJet_++;}
+	if(i<10){
+        	recoPFJetPt_.push_back(jet_i->pt());
+       		recoPFJetEta_.push_back(jet_i->eta());
+       		recoPFJetPhi_.push_back(jet_i->phi());
+	}
     }
 
     // Sort muons (note that muon collection is *not* sorted by pT at first)
@@ -303,8 +307,10 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     for (size_t i = 0; i < muTracks.size(); i++) {
         if (muTracks[i]->hitPattern().muonStationsWithValidHits() < 2 ||
                 muTracks[i]->hitPattern().numberOfValidMuonHits() < 12 ||
-                muTracks[i]->normalizedChi2() > 10)
+                muTracks[i]->normalizedChi2() > 10 ||
+		muTracks[i]->pt()<5){
             continue;
+	}
         muGoodTracksIdx.push_back(i);
     }
     

@@ -146,11 +146,13 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoPFJetEta_;
         std::vector<float> recoPFJetPhi_;
         int recoPFNJet_;
+        int recoPFNHighPtJet_;
         float MHTPt_;
         int genpuobs_;
         int genputrue_;
         float genwgt_;
 	unsigned long long event_;
+	
 
         TTree * recoT;
         TTree * genT;
