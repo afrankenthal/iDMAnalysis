@@ -2,7 +2,7 @@ import os, sys
 import subprocess
 
 
-test = False
+test = True
 if test:
 	mchis=['6p0']#['60p0']
 	dmchis=['2p0']#['20p0']
