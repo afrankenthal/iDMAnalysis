@@ -1,73 +1,102 @@
 #include "tdrstyle.C"
 
-void cutflowPlots(std::string variable, std::string description, int nbins, float lowx, float highx, bool fSave=false) {
+void cutflowPlots(TString variable, TString description, int nbins, float lowx, float highx, bool fSave=false) {
     //gROOT->LoadMacro("tdrstyle.C");
-    //setTDRStyle();
+    setTDRStyle();
 
-    std::map<std::string, int> colors { {"5p25", kRed+1}, {"52p5", kBlue+1}, {"6p0", kGreen+1}, {"60p0", kBlack} };
-    std::map<std::string, std::string> labels { 
-        {"5p25", "m1 = 5 GeV, #Delta = 0.1"},
-        {"52p5", "m1 = 50 GeV, #Delta = 0.1"}, 
-        {"6p0", "m1 = 5 GeV, #Delta = 0.4"}, 
-        {"60p0", "m1 = 50 GeV, #Delta = 0.4"} 
+    typedef struct sample_info {
+        TString filename;
+        TString label;
+        int color;
+    } sample_info;
+
+    std::map<TString, sample_info> samples {
+        {"5p25", sample_info{
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis/iDMAnalysis_Mchi-5p25_dMchi-0p5_ctau-100.root",
+                "m1 = 5 GeV, #Delta = 0.1",
+                kRed+1}},
+        {"52p5", sample_info{
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-100.root",
+                "m1 = 50 GeV, #Delta = 0.1",
+                kBlue+1}},
+        {"6p0", sample_info{
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis/iDMAnalysis_Mchi-6p0_dMchi-2p0_ctau-100.root",
+                "m1 = 5 GeV, #Delta = 0.4",
+                kGreen+1}},
+        {"60p0", sample_info{
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis/iDMAnalysis_Mchi-60p0_dMchi-20p0_ctau-100.root",
+                "m1 = 50 GeV, #Delta = 0.4",
+                kBlack}}
     };
 
-    std::map<std::string, std::string> files { 
-        {"5p25", "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis/iDMAnalysis_Mchi-5p25_dMchi-0p5_ctau-100.root"},
-        {"52p5", "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-100.root"},
-        {"6p0", "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis/iDMAnalysis_Mchi-6p0_dMchi-2p0_ctau-100.root"}, 
-        {"60p0", "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis/iDMAnalysis_Mchi-60p0_dMchi-20p0_ctau-100.root"}
-    };
-
-    std::map<std::string, std::map<std::string, TH1F *> > hists;
+    std::map<TString, std::map<TString, TH1F *> > hists;
     int numCuts_ = 16;
+
+    typedef struct cut_info {
+        TCut cut;
+        TString label;
+    } cut_info;
 
     TCut noSelection = "";
     TCut initialSelection = "cutsVec[1] && cutsVec[2] && cutsVec[4] && cutsVec[5] && cutsVec[6] && cutsVec[7]";
     TCut signalRegion = initialSelection && "cutsVec[3] && cutsVec[9] && cutsVec[10] && cutsVec[11] && cutsVec[12] && cutsVec[14]";
+    TCut controlRegion_QCD = initialSelection && "!cutsVec[3] && cutsVec[9] && cutsVec[10] && cutsVec[11] && cutsVec[12] && cutsVec[14]";
+    TCut controlRegion_EW = initialSelection && "cutsVec[3] && !cutsVec[9] && !cutsVec[10] && !cutsVec[11] && !cutsVec[12] && !cutsVec[14]";
+    TCut controlRegion_TTbar = initialSelection && "cutsVec[3] && cutsVec[9] && cutsVec[10] && cutsVec[11] && cutsVec[12] && !cutsVec[14]";
 
-    std::map<std::string, TCut> cuts { 
-        {"no_selection", noSelection},
-        {"initial_selection", initialSelection},
-        {"signal_region", signalRegion}
+    std::map<TString, cut_info> cuts {
+        {"no_selection", cut_info{noSelection, "No Selection"}},
+        {"initial_selection", cut_info{initialSelection, "Initial Selection"}},
+        {"signal_region", cut_info{signalRegion, "Signal Region"}},
+        {"control_region_QCD", cut_info{controlRegion_QCD, "QCD Control Region"}},
+        {"control_region_EW", cut_info{controlRegion_EW, "EW Control Region"}},
+        {"control_region_TTbar", cut_info{controlRegion_TTbar, "TTbar Control Region"}}
     };
-    std::map<std::string, std::string> cut_labels {
-        {"no_selection", "No Selection"},
-        {"initial_selection", "Initial Selection"},
-        {"signal_region", "Initial Selection + Signal Region"}
-    };
 
-    std::map<std::string, TCanvas *> canvases;
+    std::map<TString, TCanvas *> canvases;
 
-    for (auto & file : files) {
+    for (auto & sample : samples) {
 
-        TFile * f = TFile::Open(file.second.c_str());
+        TFile * f = TFile::Open(sample.second.filename.Data());
         TTree * recoT = (TTree*)f->Get("SREffi_dsa/reco");
         recoT->UseCurrentStyle();
 
         for (auto cut : cuts) {
-            recoT->Draw(Form("%s>>h%s_%s(%d,%f,%f)", variable.c_str(), cut.first.c_str(), file.first.c_str(), nbins, lowx, highx), cut.second, "goff");
-            hists[file.first][cut.first] = (TH1F*)gDirectory->Get(Form("h%s_%s", cut.first.c_str(), file.first.c_str()));
+            recoT->Draw(Form("%s>>h%s_%s(%d,%f,%f)", variable.Data(), cut.first.Data(), sample.first.Data(), nbins, lowx, highx), cut.second.cut, "goff");
+            hists[sample.first][cut.first] = (TH1F*)gDirectory->Get(Form("h%s_%s", cut.first.Data(), sample.first.Data()));
         }
     }
     for (auto cut : cuts) {
-        THStack * hs = new THStack(Form("%s", cut.first.c_str()), Form("%s", cut_labels[cut.first].c_str()));
-        auto legend = new TLegend(0.6,0.7,0.9,0.9);
-        for (auto & file : files) {
-            hists[file.first][cut.first]->Scale(1/hists[file.first][cut.first]->Integral(), "width");
-            hists[file.first][cut.first]->SetLineColor(colors[file.first]);
-            hists[file.first][cut.first]->SetLineWidth(2);
-            hs->Add(hists[file.first][cut.first]);
-            legend->AddEntry(hists[file.first][cut.first], labels[file.first].c_str());
+        THStack * hs = new THStack(Form("%s", cut.first.Data()), Form("%s", cut.second.label.Data()));
+        auto legend = new TLegend(0.5,0.7,0.8,0.9);
+        //auto legend = new TLegend(0.25,0.2);
+        for (auto & sample : samples) {
+            hists[sample.first][cut.first]->Scale(1/hists[sample.first][cut.first]->Integral(), "width");
+            hists[sample.first][cut.first]->SetLineColor(sample.second.color);
+            hists[sample.first][cut.first]->SetLineWidth(2);
+            hs->Add(hists[sample.first][cut.first]);
+            legend->AddEntry(hists[sample.first][cut.first], sample.second.label.Data());
         }
         canvases[cut.first] = new TCanvas();
         canvases[cut.first]->cd();
         hs->Draw("E HIST nostack");
-        hs->GetXaxis()->SetTitle(Form("%s", description.c_str()));
+        TPaveText *text = new TPaveText(0.25,0.8,0.4,1.0, "NDC");
+        text->AddText(Form("%s", cut.second.label.Data()));
+        text->SetBorderSize(0);
+        text->SetFillColor(0);
+        text->SetTextFont(53); 
+        text->SetTextSize(20);
+        text->SetFillStyle(0);
+        hs->GetXaxis()->SetTitle(Form("%s", description.Data()));
         hs->GetYaxis()->SetTitle("A. U.");
+        hs->GetYaxis()->SetTitleOffset(1.4);
         gPad->Modified();
         legend->Draw();
-        if (fSave) 
-            canvases[cut.first]->SaveAs(Form("temp_plots/%s_%s.pdf", variable.c_str(), cut.first.c_str()));
+        text->Draw();
+        if (fSave) {
+            canvases[cut.first]->SaveAs(Form("temp_plots/%s_%s.pdf", variable.Data(), cut.first.Data()));
+            canvases[cut.first]->SaveAs(Form("temp_plots/%s_%s.png", variable.Data(), cut.first.Data()));
+            canvases[cut.first]->SaveAs(Form("temp_plots/%s_%s.root", variable.Data(), cut.first.Data()));
+        }
     }
 }

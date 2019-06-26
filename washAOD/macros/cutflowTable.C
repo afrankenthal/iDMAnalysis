@@ -26,6 +26,7 @@ void cutflowTable() {
         TFile * f = TFile::Open(file.second.c_str());
         TTree * recoT = (TTree*)f->Get("SREffi_dsa/reco");
 
+        int numCuts_ = 16;
         UInt_t cutsVec[numCuts_];
 
         recoT->SetBranchAddress("cutsVec", cutsVec);
