@@ -618,14 +618,19 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
     // Fill everything before cuts 
     cutsVec[0] = 1;
+
+    // Trigger check
     
     if (fired_)
         cutsVec[1] = 1;
 
+    if (recoPFMetPt_ > 200)
+        cutsVec[2] = 1;
+
     // One leading reco jet w/ pT > 120...
 
     if (recoPFJetPt_[0] > 120)
-        cutsVec[2] = 1;
+        cutsVec[3] = 1;
     
     // ...and only one extra jet w/ pT > 30 GeV
     
@@ -636,7 +641,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         if (nHighPtJets >= 2) break;
     }
     if (nHighPtJets < 2)
-        cutsVec[3] = 1;
+        cutsVec[4] = 1;
 
     // Muon cuts
     
@@ -645,16 +650,16 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         reco::TrackRef mu_tmp(muTracks[muGoodTracksIdx[i]]);
 
         if (mu_tmp->hitPattern().muonStationsWithValidHits() >= 2)
-            cutsVec[4 + i*numMuCuts] = 1;
-        if (mu_tmp->hitPattern().numberOfValidMuonHits() >= 12)
             cutsVec[5 + i*numMuCuts] = 1;
-        if (mu_tmp->normalizedChi2() < 10)
+        if (mu_tmp->hitPattern().numberOfValidMuonHits() >= 12)
             cutsVec[6 + i*numMuCuts] = 1;
+        if (mu_tmp->normalizedChi2() < 10)
+            cutsVec[7 + i*numMuCuts] = 1;
 
         if (mu_tmp->pt() > 5)
-            cutsVec[7 + i*numMuCuts] = 1;
-        if (abs(mu_tmp->dxy()) > 0.1 && abs(mu_tmp->dxy()) < 700)
             cutsVec[8 + i*numMuCuts] = 1;
+        if (abs(mu_tmp->dxy()) > 0.1 && abs(mu_tmp->dxy()) < 700)
+            cutsVec[9 + i*numMuCuts] = 1;
     }
 
     // Check vertex between highest pT good muons
@@ -662,12 +667,12 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         for (size_t k = 0; k < recoVi_.size(); k++) 
             if (recoVi_[k] == muGoodTracksIdx[0] && recoVj_[k] == muGoodTracksIdx[1])
                 if (recoDr_[k] < 0.8)
-                    cutsVec[14] = 1;
+                    cutsVec[15] = 1;
     
     // Check DeltaPhi between MET and leading muon pair
     if (muGoodTracksIdx.size() > 1)
         if (abs(recoDeltaPhiMetMu_) < 0.4)
-            cutsVec[15] = 1;
+            cutsVec[16] = 1;
 
     recoT->Fill();
     genT->Fill();

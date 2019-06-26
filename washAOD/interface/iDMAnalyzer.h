@@ -156,7 +156,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
 
         TTree * recoT;
         TTree * genT;
-        static constexpr int numCuts_ = 16;
+        static constexpr int numCuts_ = 17;
         int cutsVec[numCuts_];
 };
 
