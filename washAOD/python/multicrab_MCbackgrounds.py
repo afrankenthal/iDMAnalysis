@@ -72,7 +72,8 @@ def main():
         config.General.transferLogs = True
 
         config.JobType.pluginName = 'Analysis'
-        config.JobType.psetName = 'python/iDMAnalyzer_cfg.py'
+        config.JobType.psetName = 'iDMAnalyzer_cfg.py'
+        #config.JobType.psetName = 'python/iDMAnalyzer_cfg.py'
         #config.JobType.maxMemoryMB = 4000
         #config.JobType.numCores = 1
 
@@ -101,7 +102,7 @@ def main():
 #                'DYJetsToLL_M-50': '/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 #                'ZZTo2L2Nu': '/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM'
 #        }
-	QCD_samples = {
+	QCD_sample = {
 		'QCD_bEnriched_HT100to200':'/QCD_bEnriched_HT100to200_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 		'QCD_bEnriched_HT200to300':'/QCD_bEnriched_HT200to300_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
 		'QCD_bEnriched_HT300to500':'/QCD_bEnriched_HT300to500_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
@@ -138,12 +139,12 @@ def main():
 		'WWTo2L2Nu':'/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
 	}
 
-	#sample = QCD_sample
-	#sample = TT_sample
-	#sample = Zjets_sample
-	#sample = Wjets_sample
-	#sample = DY_sample
-	#sample = Di_sample
+	#samples = QCD_sample
+	#samples = TT_sample
+	#samples = Zjets_sample
+	#samples = Wjets_sample
+	samples = DY_sample
+	#samples = Di_sample
         for sample, dataset in samples.items():
 
             config.Data.inputDataset = dataset

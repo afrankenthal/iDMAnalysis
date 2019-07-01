@@ -76,7 +76,7 @@ process.MessageLogger = cms.Service("MessageLogger",
 
 process.options = cms.untracked.PSet(
         wantSummary = cms.untracked.bool(True),
-        numberOfThreads = cms.untracked.uint32(8)
+        #numberOfThreads = cms.untracked.uint32(8)
         )
 process.maxEvents = cms.untracked.PSet(
         input = cms.untracked.int32(options.maxEvents)
