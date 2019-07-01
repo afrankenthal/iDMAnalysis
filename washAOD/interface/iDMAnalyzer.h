@@ -53,7 +53,11 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         virtual void endRun(edm::Run const&, edm::EventSetup const&) override;
         virtual void endJob() override;
 
-        const edm::InputTag muTrackTag_;
+        edm::Service<TFileService> fs;
+
+        // Tags
+        const edm::InputTag muTrackTag1_;
+        const edm::InputTag muTrackTag2_;
         const edm::InputTag genParticleTag_;
         const edm::InputTag genJetTag_;
         const edm::InputTag genMetTag_;
@@ -66,7 +70,9 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag genEvtInfoTag_;
         const std::string processName_;
 
-        const edm::EDGetTokenT<reco::TrackCollection> muTrackToken_;
+        // Tokens
+        const edm::EDGetTokenT<reco::TrackCollection> muTrackToken1_;
+        const edm::EDGetTokenT<reco::TrackCollection> muTrackToken2_;
         const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
         const edm::EDGetTokenT<reco::GenJetCollection> genJetToken_;
         const edm::EDGetTokenT<reco::GenMETCollection> genMetToken_;
@@ -74,11 +80,12 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::EDGetTokenT<reco::PFJetCollection> recoJetToken_;
         const edm::EDGetTokenT<edm::TriggerResults> trigResultsToken_;
         const edm::EDGetTokenT<trigger::TriggerEvent> trigEventToken_;
-        const edm::EDGetTokenT<std::vector<PileupSummaryInfo> > pileupInfosToken_;
+        const edm::EDGetTokenT<std::vector<PileupSummaryInfo>> pileupInfosToken_;
         const edm::EDGetTokenT<GenEventInfoProduct> genEvtInfoToken_;
 
-        edm::Service<TFileService> fs;
-        edm::Handle<reco::TrackCollection> muTrackHandle_;
+        // Handles
+        edm::Handle<reco::TrackCollection> muTrackHandle1_;
+        edm::Handle<reco::TrackCollection> muTrackHandle2_;
         edm::Handle<reco::GenParticleCollection> genParticleHandle_;
         edm::Handle<reco::GenJetCollection> genJetHandle_;
         edm::Handle<reco::GenMETCollection> genMetHandle_;
@@ -86,15 +93,27 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         edm::Handle<reco::PFJetCollection> recoJetHandle_;
         edm::Handle<edm::TriggerResults> trigResultsHandle_;
         edm::Handle<trigger::TriggerEvent> trigEventHandle_;
-        edm::Handle<std::vector<PileupSummaryInfo> > pileupInfosHandle_;
+        edm::Handle<std::vector<PileupSummaryInfo>> pileupInfosHandle_;
         edm::Handle<GenEventInfoProduct> genEvtInfoHandle_;
         
         std::string trigPath_;
         HLTConfigProvider hltConfig_;
 
-        unsigned int fired_;
-        //unsigned int nMatched_;
+        // Reco and gen TTrees
+        TTree * recoT;
+        TTree * genT;
 
+        // Trigger and event number branches
+        unsigned int fired_;
+        unsigned long long event_;
+
+        // Gen branches
+        
+        // Pileup and gen weight
+        int genpuobs_;
+        int genputrue_;
+        float genwgt_;
+        // Gen muon
         std::vector<float> genPt_;
         std::vector<float> genEta_;
         std::vector<float> genPhi_;
@@ -102,19 +121,31 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> genVxy_;
         std::vector<float> genVz_;
         std::vector<float> genDr_;
+        // Chi1 DM
         std::vector<float> genChi1Pt_;
         std::vector<float> genChi1Eta_;
         std::vector<float> genChi1Phi_;
         std::vector<float> genChi1En_;
         std::vector<float> genChi1Vxy_;
         std::vector<float> genChi1Vz_;
+        // Chi2 DM
         std::vector<float> genChi2Pt_;
         std::vector<float> genChi2Eta_;
         std::vector<float> genChi2Phi_;
         std::vector<float> genChi2En_;
         std::vector<float> genChi2Vxy_;
         std::vector<float> genChi2Vz_;
+        // Gen jet
+        std::vector<float> genJetPt_;
+        std::vector<float> genJetEta_;
+        std::vector<float> genJetPhi_;
+        // Gen MET
+        float genLeadMetPt_;
+        float genLeadMetPhi_;
 
+        // Reco dSA muon branches
+        int recoNMu_;
+        int recoNGoodDSAMu_;
         std::vector<float> recoPt_;
         std::vector<float> recoEta_;
         std::vector<float> recoPhi_;
@@ -123,41 +154,46 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoTrkChi2_;
         std::vector<float> recoTrkNumPlanes_;
         std::vector<float> recoTrkNumHits_;
-        std::vector<float> recoVxy_;
-        std::vector<float> recoVtxSigmaVxy_;
-        std::vector<float> recoVtxReducedChi2_;
-        std::vector<float> recoVz_;
-        std::vector<float> recoDr_;
-        std::vector<int> recoVi_, recoVj_;
-        int recoNMu_;
-        int recoNGoodMu_;
-        //std::vector<float> deltaR_;
-        std::vector<float> genJetPt_;
-        std::vector<float> genJetEta_;
-        std::vector<float> genJetPhi_;
-        float genLeadMetPt_;
-        float genLeadMetPhi_;
-        //float genSubLeadMetPt_;
+
+        // Selected muon branches
+        int nSelectedMuons_;
+        int recoNMatchedGBMvDSA_;
+        float recoGBMDSADr_;
+        std::vector<float> selectedMuonsPt_;
+        std::vector<float> selectedMuonsEta_;
+        std::vector<float> selectedMuonsPhi_;
+        std::vector<float> selectedMuonsDxy_;
+        std::vector<float> selectedMuonsDz_;
+
+        // Vertex branches
+        float recoVtxVxy_;
+        float recoVtxVz_;
+        float recoVtxSigmaVxy_;
+        float recoVtxReducedChi2_;
+        float recoVtxDr_;
+
+        // MET reco branches
         float recoPFMetPt_;
         float recoPFMetPhi_;
-        float recoM2_;
+        float recoMmumu_;
         float recoDeltaPhiMetMu_;
+
+        // Jet reco branches
+        int recoPFNJet_;
+        int recoPFNHighPtJet_;
         std::vector<float> recoPFJetPt_;
         std::vector<float> recoPFJetEta_;
         std::vector<float> recoPFJetPhi_;
-        int recoPFNJet_;
-        int recoPFNHighPtJet_;
-        float MHTPt_;
-        int genpuobs_;
-        int genputrue_;
-        float genwgt_;
-	unsigned long long event_;
-	
 
-        TTree * recoT;
-        TTree * genT;
-        static constexpr int numCuts_ = 17;
-        int cutsVec[numCuts_];
+        float recoPFMETJetDeltaPhi_;
+
+        // MHT reco branch
+        float MHTPt_;
+
+        // as long as fewer than 32 cuts don't need to specify number
+        uint32_t cuts_;
+        inline void setCutBit(int bit) { cuts_ |= (1 << bit); }
+        inline void clearCutBit(int bit) { cuts_ &= ~(1 << bit); }
 };
 
 #endif

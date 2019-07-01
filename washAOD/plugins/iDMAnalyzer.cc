@@ -4,7 +4,10 @@
 
 #include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
+
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaPhi.h"
+#include "CommonTools/Utils/interface/InvariantMass.h"
 
 #include "TrackingTools/TransientTrack/interface/TransientTrack.h"
 #include "TrackingTools/TransientTrack/interface/TransientTrackBuilder.h"
@@ -12,11 +15,15 @@
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/TrackReco/interface/HitPattern.h"
 
 #include <cmath>
+#include <algorithm>
+#include <vector>
 
 iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
-    muTrackTag_(ps.getParameter<edm::InputTag>("muTrack")),
+    muTrackTag1_(ps.getParameter<edm::InputTag>("muTrack1")),
+    muTrackTag2_(ps.getParameter<edm::InputTag>("muTrack2")),
     genParticleTag_(ps.getParameter<edm::InputTag>("genParticle")),
     genJetTag_(ps.getParameter<edm::InputTag>("genJet")),
     genMetTag_(ps.getParameter<edm::InputTag>("genMet")),
@@ -29,7 +36,8 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     genEvtInfoTag_(ps.getParameter<edm::InputTag>("genEvt")),
     processName_(ps.getParameter<std::string>("processName")),
     
-    muTrackToken_(consumes<reco::TrackCollection>(muTrackTag_)),
+    muTrackToken1_(consumes<reco::TrackCollection>(muTrackTag1_)),
+    muTrackToken2_(consumes<reco::TrackCollection>(muTrackTag2_)),
     genParticleToken_(consumes<reco::GenParticleCollection>(genParticleTag_)),
     genJetToken_(consumes<reco::GenJetCollection>(genJetTag_)),
     genMetToken_(consumes<reco::GenMETCollection>(genMetTag_)),
@@ -37,7 +45,7 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     recoJetToken_(consumes<reco::PFJetCollection>(recoJetTag_)),
     trigResultsToken_(consumes<edm::TriggerResults>(trigResultsTag_)),
     trigEventToken_(consumes<trigger::TriggerEvent>(trigEventTag_)),
-    pileupInfosToken_(consumes<std::vector<PileupSummaryInfo> >(pileupInfosTag_)),
+    pileupInfosToken_(consumes<std::vector<PileupSummaryInfo>>(pileupInfosTag_)),
     genEvtInfoToken_(consumes<GenEventInfoProduct>(genEvtInfoTag_))
 {
     usesResource("TFileService");
@@ -48,7 +56,8 @@ iDMAnalyzer::~iDMAnalyzer() = default;
 void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
 {
     edm::ParameterSetDescription desc;
-    desc.add<edm::InputTag>("muTrack", edm::InputTag("displacedStandAloneMuons"));
+    desc.add<edm::InputTag>("muTrack1", edm::InputTag("displacedStandAloneMuons"));
+    desc.add<edm::InputTag>("muTrack2", edm::InputTag("globalMuons"));
     desc.add<edm::InputTag>("genParticle", edm::InputTag("genParticles"));
     desc.add<edm::InputTag>("genJet", edm::InputTag("ak4GenJets"));
     desc.add<edm::InputTag>("genMet", edm::InputTag("genMetTrue"));
@@ -65,42 +74,48 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
 
 void iDMAnalyzer::beginJob()
 {
-    for (int i = 0; i < numCuts_; i++)
-        cutsVec[i] = 0;
+    recoT = fs->make<TTree>("recoT", "");
 
-    recoT = fs->make<TTree>("reco", "");
-
+    recoT->Branch("event_n", &event_);
     recoT->Branch("trig_fired", &fired_);
-    recoT->Branch("reco_mu_pt",  &recoPt_);
-    recoT->Branch("reco_mu_eta", &recoEta_);
-    recoT->Branch("reco_mu_phi", &recoPhi_);
-    recoT->Branch("reco_mu_dxy", &recoDxy_);
-    recoT->Branch("reco_mu_dz",  &recoDz_);
-    recoT->Branch("reco_mu_trk_chi2", &recoTrkChi2_);
-    recoT->Branch("reco_mu_trk_num_planes", &recoTrkNumPlanes_);
-    recoT->Branch("reco_mu_trk_num_hits", &recoTrkNumHits_);
-    recoT->Branch("reco_mu_M2",  &recoM2_);
-    recoT->Branch("reco_num_mu", &recoNMu_);
-    recoT->Branch("reco_num_good_mu", &recoNGoodMu_);
-    recoT->Branch("reco_MET_mu_DeltaPhi", &recoDeltaPhiMetMu_);
-    recoT->Branch("reco_vertex_vxy", &recoVxy_);
-    recoT->Branch("reco_vertex_vz",  &recoVz_);
-    recoT->Branch("reco_vertex_dR",  &recoDr_);
-    recoT->Branch("reco_vertex_reducedChi2", &recoVtxReducedChi2_);
-    recoT->Branch("reco_vertex_sigmavxy", &recoVtxSigmaVxy_);
+    recoT->Branch("reco_n_dsa", &recoNMu_);
+    recoT->Branch("reco_n_good_dsa", &recoNGoodDSAMu_);
+    recoT->Branch("reco_dsa_pt",  &recoPt_);
+    recoT->Branch("reco_dsa_eta", &recoEta_);
+    recoT->Branch("reco_dsa_phi", &recoPhi_);
+    recoT->Branch("reco_dsa_dxy", &recoDxy_);
+    recoT->Branch("reco_dsa_dz",  &recoDz_);
+    recoT->Branch("reco_dsa_trk_chi2", &recoTrkChi2_);
+    recoT->Branch("reco_dsa_trk_n_planes", &recoTrkNumPlanes_);
+    recoT->Branch("reco_dsa_trk_n_hits", &recoTrkNumHits_);
+    recoT->Branch("reco_n_gbmdsa_match", &recoNMatchedGBMvDSA_);
+    recoT->Branch("reco_gbmdsa_dR", &recoGBMDSADr_);
+    recoT->Branch("reco_sel_mu_pt", &selectedMuonsPt_);
+    recoT->Branch("reco_sel_mu_eta", &selectedMuonsEta_);
+    recoT->Branch("reco_sel_mu_phi", &selectedMuonsPhi_);
+    recoT->Branch("reco_sel_mu_dxy", &selectedMuonsDxy_);
+    recoT->Branch("reco_sel_mu_dz", &selectedMuonsDz_);
+    recoT->Branch("reco_Mmumu",  &recoMmumu_);
+    recoT->Branch("reco_METmu_dphi", &recoDeltaPhiMetMu_);
+    recoT->Branch("reco_vtx_vxy", &recoVtxVxy_);
+    recoT->Branch("reco_vtx_vz",  &recoVtxVz_);
+    recoT->Branch("reco_vtx_sigmavxy", &recoVtxSigmaVxy_);
+    recoT->Branch("reco_vtx_reduced_chi2", &recoVtxReducedChi2_);
+    recoT->Branch("reco_vtx_dR",  &recoVtxDr_);
     recoT->Branch("reco_PF_MET_pt", &recoPFMetPt_);
     recoT->Branch("reco_PF_MET_phi", &recoPFMetPhi_);
+    recoT->Branch("reco_PF_n_jets", &recoPFNJet_);
+    recoT->Branch("reco_PF_n_highPt_jets", &recoPFNHighPtJet_);
     recoT->Branch("reco_PF_jet_pt", &recoPFJetPt_);
     recoT->Branch("reco_PF_jet_eta", &recoPFJetEta_);
     recoT->Branch("reco_PF_jet_phi", &recoPFJetPhi_);
-    recoT->Branch("reco_PF_num_jets", &recoPFNJet_);
-    recoT->Branch("reco_PF_num_highPt_jets", &recoPFNHighPtJet_);
+    recoT->Branch("reco_PF_METjet_dphi", &recoPFMETJetDeltaPhi_);
     recoT->Branch("reco_MHT_Pt", &MHTPt_);
-    recoT->Branch("cutsVec", cutsVec, "cutsVec[16]/i");
-    recoT->Branch("event_num", &event_);
+    recoT->Branch("cuts", &cuts_);
 
-    genT = fs->make<TTree>("gen", "");
+    genT = fs->make<TTree>("genT", "");
 
+    genT->Branch("event_n", &event_);
     genT->Branch("gen_pu_obs", &genpuobs_);
     genT->Branch("gen_pu_true", &genputrue_);
     genT->Branch("gen_wgt", &genwgt_);
@@ -128,7 +143,6 @@ void iDMAnalyzer::beginJob()
     genT->Branch("gen_jet_phi", &genJetPhi_);
     genT->Branch("gen_MET_pt", &genLeadMetPt_);
     genT->Branch("gen_MET_phi", &genLeadMetPhi_);
-    genT->Branch("event_num", &event_);
 }
 
 
@@ -156,9 +170,14 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
 
     char error_msg[] = "iDMAnalyzer::GetCollections: Error in getting product %s from Event!";
         
-    iEvent.getByToken(muTrackToken_, muTrackHandle_);
-    if (!muTrackHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "muTrack");
+    iEvent.getByToken(muTrackToken1_, muTrackHandle1_);
+    if (!muTrackHandle1_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "muTrack1");
+        return false;
+    }
+    iEvent.getByToken(muTrackToken2_, muTrackHandle2_);
+    if (!muTrackHandle2_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "muTrack2");
         return false;
     }
     iEvent.getByToken(genParticleToken_, genParticleHandle_);
@@ -196,6 +215,17 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "trigEvent");
         return false;
     }
+    const std::vector<std::string>& pathNames = hltConfig_.triggerNames();
+    const std::vector<std::string> matchedPaths(hltConfig_.restoreVersion(pathNames, trigPathNoVer_));
+    if (matchedPaths.size() == 0) {
+        LogError("TriggerError") << "Could not find matched full trigger path with -> " << trigPathNoVer_;
+        return false;
+    }
+    trigPath_ = matchedPaths[0];
+    if (hltConfig_.triggerIndex(trigPath_) >= hltConfig_.size()) {
+        LogError("TriggerError") << "Cannot find trigger path -> " << trigPath_;
+        return false;
+    }
     iEvent.getByToken(pileupInfosToken_, pileupInfosHandle_);
     if (!pileupInfosHandle_.isValid()) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "pileupInfos");
@@ -213,10 +243,11 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
 
 void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetup)
 {
-    using namespace std;
-    using namespace edm;
+    using std::cout, std::vector, std::endl;
 
-    getCollections(iEvent);
+    if (!getCollections(iEvent))
+        return;
+
 
     const edm::EventAuxiliary& aux = iEvent.eventAuxiliary();
     event_ = aux.event();
@@ -229,94 +260,104 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoTrkChi2_.clear();
     recoTrkNumPlanes_.clear();
     recoTrkNumHits_.clear();
-    recoVxy_.clear();
-    recoVtxSigmaVxy_.clear();
-    recoVtxReducedChi2_.clear();
-    recoVz_ .clear();
-    recoDr_ .clear();
-    recoVi_.clear();
-    recoVj_.clear();
     recoPFJetPt_.clear();
     recoPFJetEta_.clear();
     recoPFJetPhi_.clear();
+    selectedMuonsPt_.clear();
+    selectedMuonsEta_.clear();
+    selectedMuonsPhi_.clear();
+    selectedMuonsDxy_.clear();
+    selectedMuonsDz_.clear();
 
     fired_ = 0;
     recoPFMetPt_ = -9999;
     recoPFMetPhi_ = -9999;
-    recoM2_ = -9999;
+    recoMmumu_ = -9999;
     recoDeltaPhiMetMu_ = -9999;
     MHTPt_ = -9999;
+    recoNMatchedGBMvDSA_ = -1;
 
+    // Trigger check firing bit (MET+MHT 120 GeV trigger)
+    fired_ = trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath_));
 
     // get MET
     // assumes 0-th element of recoMet collection is largest pt (and only?) element
-
     reco::PFMETRef recoMetr(recoMetHandle_, 0);
     recoPFMetPt_ = recoMetr->pt();
     recoPFMetPhi_ = recoMetr->phi();
     
     // calculate MHT
-
     math::XYZTLorentzVector MHT;
     for (auto & jet : *recoJetHandle_) {
         if (jet.pt() < 30) continue;
         MHT += jet.p4();
     }
     MHTPt_ = MHT.pt();
-
-    // Get all jets info, sorted by pT
-    //vector<reco::PFJetRef> PFJets{};
-    //for (int i = 0; i < recoJetHandle_->size(); i++) {
-    //    PFJets.emplace_back(recoJetHandle_, i);
-    //}
-    //sort(PFJets.begin(), PFJets.end(), [](const auto & l, const auto & r) { return l->pt() > r->pt(); } );
-    //for (int i = 0; i < PFJets.size(); i++) {
-    //    recoPFJetPt_.push_back(PFJets[i]->pt());
-    //    recoPFJetEta_.push_back(PFJets[i]->eta());
-    //    recoPFJetPhi_.push_back(PFJets[i]->phi());
-    //}
     
-    // Get all jets info, sorted by pT
+    // Get 10 top leading jets info, sorted by pT
     // Note that jet collection is already sorted by pT
-
     recoPFNJet_ = recoJetHandle_->size(); 
     recoPFNHighPtJet_ = 0;
     for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
-        //if (i > 4) break;
         reco::PFJetRef jet_i(recoJetHandle_, i);
-	if(jet_i->pt() > 30){recoPFNHighPtJet_++;}
-	if(i<10){
-        	recoPFJetPt_.push_back(jet_i->pt());
+        if (jet_i->pt() > 30) {
+            recoPFNHighPtJet_++;
+        }
+        if (i < 10) {
+            recoPFJetPt_.push_back(jet_i->pt());
        		recoPFJetEta_.push_back(jet_i->eta());
        		recoPFJetPhi_.push_back(jet_i->phi());
-	}
+        }
     }
 
-    // Sort muons (note that muon collection is *not* sorted by pT at first)
+    // Calculate angle between MET and leading jet
+    recoPFMETJetDeltaPhi_ = reco::deltaPhi(recoPFJetPhi_[0], recoPFMetPhi_);
 
-    recoNMu_ = muTrackHandle_->size();
+    // Sort dSA muons (note that muon collection is *not* sorted by pT at first)
+    recoNMu_ = muTrackHandle1_->size();
 
-    vector<reco::TrackRef> muTracks{};
-    for (size_t i = 0; i < muTrackHandle_->size(); i++) {
-        muTracks.emplace_back(muTrackHandle_, i);
+    vector<reco::TrackRef> muTracks1{};
+    for (size_t i = 0; i < muTrackHandle1_->size(); i++) {
+        muTracks1.emplace_back(muTrackHandle1_, i);
     }
-    sort(muTracks.begin(), muTracks.end(), [](const auto & l, const auto & r){ return l->pt() > r->pt(); });
+    sort(muTracks1.begin(), muTracks1.end(), [](const auto & l, const auto & r){ return l->pt() > r->pt(); });
 
-    // Create separate collection for good quality muons
+    // Sort global muons (note that muon collection is *not* sorted by pT at first)
+    vector<reco::TrackRef> muTracks2{};
+    for (size_t i = 0; i < muTrackHandle2_->size(); i++) {
+        muTracks2.emplace_back(muTrackHandle2_, i);
+    }
+    sort(muTracks2.begin(), muTracks2.end(), [](const auto & l, const auto & r){ return l->pt() > r->pt(); });
+
+    // Create separate collection for good quality dSA muons
     vector<int> muGoodTracksIdx{};
-    for (size_t i = 0; i < muTracks.size(); i++) {
-        if (muTracks[i]->hitPattern().muonStationsWithValidHits() < 2 ||
-                muTracks[i]->hitPattern().numberOfValidMuonHits() < 12 ||
-                muTracks[i]->normalizedChi2() > 10 ||
-		muTracks[i]->pt()<5){
-            continue;
-	}
+    for (size_t i = 0; i < muTracks1.size(); i++) {
+        if (muTracks1[i]->hitPattern().muonStationsWithValidHits() < 2 ||
+            muTracks1[i]->hitPattern().numberOfValidMuonHits() < 12 ||
+            muTracks1[i]->normalizedChi2() > 10 ||
+	       	muTracks1[i]->pt() < 5 ||
+            muTracks1[i]->eta() > 2.4) {
+                continue;
+        }
         muGoodTracksIdx.push_back(i);
+    }
+    
+    // Create separate collection for good quality global muons
+    vector<int> muGoodTracksIdx2{};
+    for (size_t i = 0; i < muTracks2.size(); i++) {
+        if (muTracks2[i]->hitPattern().muonStationsWithValidHits() < 2 ||
+            muTracks2[i]->hitPattern().numberOfValidMuonHits() < 12 ||
+            muTracks2[i]->normalizedChi2() > 10 ||
+	       	muTracks2[i]->pt() < 5 ||
+            muTracks2[i]->eta() > 2.4) {
+                continue;
+        }
+        muGoodTracksIdx2.push_back(i);
     }
     
     // Only add good muons info to ntuple
     for (size_t i = 0; i < muGoodTracksIdx.size(); i++) {
-        reco::TrackRef mu_i(muTracks[muGoodTracksIdx[i]]);
+        reco::TrackRef mu_i = muTracks1[muGoodTracksIdx[i]];
         recoPt_.push_back(mu_i->pt());
         recoEta_.push_back(mu_i->eta());
         recoPhi_.push_back(mu_i->phi());
@@ -327,193 +368,275 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         recoTrkNumHits_.push_back(mu_i->hitPattern().numberOfValidMuonHits());
     }
 
-    recoNGoodMu_ = muGoodTracksIdx.size();
+    recoNGoodDSAMu_ = muGoodTracksIdx.size();
     
-    // Calculate invariant mass of highest pT good quality muons
-    if (muGoodTracksIdx.size() > 1) {
-        reco::TrackRef leadingMuRef(muTrackHandle_, muGoodTracksIdx[0]);
-        reco::TrackRef subleadingMuRef(muTrackHandle_, muGoodTracksIdx[1]);
+    // Pick pair of dSA muons with smallest vertex chi square fit
+    bool fFoundValidVertex = false;
+    int dSAIdx[2]; dSAIdx[0] = -1; dSAIdx[1] = -1;
+    recoVtxVxy_ = -9999;
+    recoVtxVz_ = -9999;
+    recoVtxSigmaVxy_ = -9999;
+    recoVtxReducedChi2_ = 9999999;
+    recoVtxDr_ = -9999;
 
-        recoM2_ = 2 * leadingMuRef->pt() * subleadingMuRef->pt() *
-            (cosh(leadingMuRef->eta() - subleadingMuRef->eta()) -
-             cos(leadingMuRef->phi() - subleadingMuRef->phi()));
-    }
-
-    // get 2 largest pt reco (dSA) muons
-    // add top 2 leading pt reco muons to vector, after minimum quality cut
-    // Edit: reco muons that pass minimum quality cut
-    // (to cut on weird 11 GeV peak muons due to cosmic seed in dSA algo)
-
-    //double maxMuPt = 0, secondMaxMuPt = 0;
-    //int leadingMuIndex = 0, subleadingMuIndex = 0;
-    //int goodQualityTracks = 0;
-    //for (size_t i = 0; i < muTrackHandle_->size(); ++i) {
-    //    reco::TrackRef muTempRef(muTrackHandle_, i);
-    //    if (muTempRef->hitPattern().muonStationsWithValidHits() < 2 ||
-    //            muTempRef->hitPattern().numberOfValidMuonHits() < 12 ||
-    //            muTempRef->normalizedChi2() > 10)
-    //        continue;
-    //    goodQualityTracks++;
-    //    if (muTempRef->pt() > maxMuPt) {
-    //        secondMaxMuPt = maxMuPt;
-    //        maxMuPt = muTempRef->pt();
-    //        subleadingMuIndex = leadingMuIndex;
-    //        leadingMuIndex = i;
-    //    }
-    //    else if (muTempRef->pt() > secondMaxMuPt) {
-    //        secondMaxMuPt = muTempRef->pt();
-    //        subleadingMuIndex = i;
-    //    }
-    //}
-    //reco::TrackRef leadingMuRef, subleadingMuRef;
-    //if (goodQualityTracks > 0)
-    //    leadingMuRef = reco::TrackRef(muTrackHandle_, leadingMuIndex);
-    //if (goodQualityTracks > 1)
-    //    subleadingMuRef = reco::TrackRef(muTrackHandle_, subleadingMuIndex);
-    
-    // Get vertex between pairs of muons
-    // Get all pairs between 4 leading muons, if that many
-
-    ESHandle<TransientTrackBuilder> theB;
+    edm::ESHandle<TransientTrackBuilder> theB;
     iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", theB);
     KalmanVertexFitter kvf(true);
-    TransientVertex tv;
 
-    for (size_t i = 0; i < min(muGoodTracksIdx.size()-1, (size_t)3); i++) {
-        for (size_t j = i+1; j < min(muGoodTracksIdx.size(), (size_t)4); j++) {
+    if (recoNGoodDSAMu_ >= 2) {
+        for (size_t i = 0; i < muGoodTracksIdx.size()-1; i++) {
+            for (size_t j = i+1; j < muGoodTracksIdx.size(); j++) {
 
-            vector<reco::TransientTrack> trans_tracks{};
-            trans_tracks.push_back(theB->build(muTracks[muGoodTracksIdx[i]]));
-            trans_tracks.push_back(theB->build(muTracks[muGoodTracksIdx[j]]));
-            tv = kvf.vertex(trans_tracks);
-            if (!tv.isValid()) {
-                LogWarning("VertexFittingFailed") << "Warning! TV is not valid!";
+                TransientVertex tv;
+                vector<reco::TransientTrack> trans_tracks{};
+                trans_tracks.push_back(theB->build(muTracks1[muGoodTracksIdx[i]]));
+                trans_tracks.push_back(theB->build(muTracks1[muGoodTracksIdx[j]]));
+                tv = kvf.vertex(trans_tracks);
+                if (tv.isValid()) {
+                    fFoundValidVertex = true;
+                    reco::Vertex vertex = reco::Vertex(tv);
+                    float vxy = sqrt(vertex.x()*vertex.x() + vertex.y()*vertex.y());
+                    float sigma_vxy = (1/vxy)*(vertex.x()*vertex.xError() + vertex.y()*vertex.yError());
+                    float vtxChi2 = vertex.normalizedChi2();
+                    if (vtxChi2 < recoVtxReducedChi2_) {
+                        recoVtxReducedChi2_ = vtxChi2;
+                        recoVtxVxy_ = vxy;
+                        recoVtxSigmaVxy_ = sigma_vxy;
+                        recoVtxVz_ = vertex.z();
+                        recoVtxDr_ = reco::deltaR(*muTracks1[muGoodTracksIdx[i]], *muTracks1[muGoodTracksIdx[j]]);
+                        dSAIdx[0] = i; dSAIdx[1] = j;
+                    }
+                }
+            }
+        }
+        if (!fFoundValidVertex)
+            edm::LogWarning("VertexFittingFailed") << "Warning! No valid vertices found!";
+    }
+
+    nSelectedMuons_ = -1;
+    if (fFoundValidVertex)
+        nSelectedMuons_ = 2;
+    else if (recoNGoodDSAMu_ == 1)
+        nSelectedMuons_ = 1;
+    else if (recoNGoodDSAMu_ == 0)
+        nSelectedMuons_ = 0;
+
+    // Now try to match global muons with selected dSA muons
+    float smallest_dR = 10000, second_smallest_dR = 10000;
+    int smallest_i = -1, smallest_j = -1, second_smallest_i = -1;
+    vector<vector<float>> deltaRs;
+    deltaRs.resize(muGoodTracksIdx2.size(), vector<float>(2));
+    if (fFoundValidVertex) {
+        recoNMatchedGBMvDSA_ = 0;
+        for (size_t i = 0; i < muGoodTracksIdx2.size(); i++) {
+            reco::TrackRef gbm_i = muTracks2[muGoodTracksIdx2[i]];
+            for (size_t j = 0; j < 2; j++) {
+                reco::TrackRef dsa_j = muTracks1[dSAIdx[j]];
+                float dR = reco::deltaR(gbm_i->outerEta(), gbm_i->outerPhi(),
+                        dsa_j->outerEta(), dsa_j->outerPhi());
+
+                deltaRs[i][j] = dR;
+                if (dR < smallest_dR) {
+                    smallest_dR = dR;
+                    smallest_i = (int)i; smallest_j = (int)j;
+                }
+            }
+        }
+        recoGBMDSADr_ = smallest_dR;
+        if (smallest_dR < 0.1) {
+            recoNMatchedGBMvDSA_++;
+            reco::TrackRef gbm_i = muTracks2[muGoodTracksIdx2[smallest_i]];
+            selectedMuonsPt_.push_back(gbm_i->pt());
+            selectedMuonsEta_.push_back(gbm_i->eta());
+            selectedMuonsPhi_.push_back(gbm_i->phi());
+            selectedMuonsDxy_.push_back(gbm_i->dxy());
+            selectedMuonsDz_.push_back(gbm_i->dz());
+            for (size_t i = 0; i < muGoodTracksIdx2.size(); i++) {
+                for (size_t j = 0; j < 2; j++) {
+                    if ((int)i != smallest_i && (int)j != smallest_j) {
+                        if (deltaRs[i][j] < second_smallest_dR) {
+                            second_smallest_dR = deltaRs[i][j];
+                            second_smallest_i = (int)i;
+                        }
+                    }
+                }
+            }
+            if (second_smallest_dR < 0.1) {
+                recoNMatchedGBMvDSA_++;
+                reco::TrackRef gbm2_i = muTracks2[muGoodTracksIdx2[second_smallest_i]];
+                selectedMuonsPt_.push_back(gbm2_i->pt());
+                selectedMuonsEta_.push_back(gbm2_i->eta());
+                selectedMuonsPhi_.push_back(gbm2_i->phi());
+                selectedMuonsDxy_.push_back(gbm2_i->dxy());
+                selectedMuonsDz_.push_back(gbm2_i->dz());
             }
             else {
-                reco::Vertex vertex = reco::Vertex(tv);
-                float vxy = sqrt( vertex.x()*vertex.x() + vertex.y()*vertex.y() );
-                recoVxy_.push_back( vxy );
-                float sigma_vxy = (1/vxy)*( vertex.x()*vertex.xError() + vertex.y()*vertex.yError() );
-                recoVtxSigmaVxy_.push_back( sigma_vxy );
-                recoVz_.push_back( vertex.z() );
-                recoDr_.push_back( deltaR(*muTracks[muGoodTracksIdx[i]], *muTracks[muGoodTracksIdx[j]]) );
-                recoVi_.push_back( muGoodTracksIdx[i] );
-                recoVj_.push_back( muGoodTracksIdx[j] );
-                recoVtxReducedChi2_.push_back( vertex.normalizedChi2() );
+                reco::TrackRef dsa2_j = muTracks1[dSAIdx[1-smallest_j]];
+                selectedMuonsPt_.push_back(dsa2_j->pt());
+                selectedMuonsEta_.push_back(dsa2_j->eta());
+                selectedMuonsPhi_.push_back(dsa2_j->phi());
+                selectedMuonsDxy_.push_back(dsa2_j->dxy());
+                selectedMuonsDz_.push_back(dsa2_j->dz());
             }
-
+        }
+        else {
+            reco::TrackRef dsa1_j = muTracks1[dSAIdx[0]];
+            selectedMuonsPt_.push_back(dsa1_j->pt());
+            selectedMuonsEta_.push_back(dsa1_j->eta());
+            selectedMuonsPhi_.push_back(dsa1_j->phi());
+            selectedMuonsDxy_.push_back(dsa1_j->dxy());
+            selectedMuonsDz_.push_back(dsa1_j->dz());
+            reco::TrackRef dsa2_j = muTracks1[dSAIdx[1]];
+            selectedMuonsPt_.push_back(dsa2_j->pt());
+            selectedMuonsEta_.push_back(dsa2_j->eta());
+            selectedMuonsPhi_.push_back(dsa2_j->phi());
+            selectedMuonsDxy_.push_back(dsa2_j->dxy());
+            selectedMuonsDz_.push_back(dsa2_j->dz());
+        }
+    }
+    
+    // Re-fit vertex if one or more dsa muons got replaced
+    reco::TrackRef muon1, muon2;
+    if (smallest_dR < 0.1) {
+        muon1 = muTracks2[muGoodTracksIdx2[smallest_i]];
+        if (second_smallest_dR < 0.1)
+            muon2 = muTracks2[muGoodTracksIdx2[second_smallest_i]];
+        else if (recoNGoodDSAMu_ >= 2)
+            muon2 = muTracks1[dSAIdx[1-smallest_j]];
+    }
+    else if (recoNGoodDSAMu_ >= 1) {
+        if (fFoundValidVertex)
+            muon1 = muTracks1[dSAIdx[0]];
+        else
+            muon1 = muTracks1[0];
+        if (recoNGoodDSAMu_ >= 2) {
+            if (fFoundValidVertex)
+                muon2 = muTracks1[dSAIdx[1]];
+            else
+                muon2 = muTracks1[1];
         }
     }
 
-    // Calculate delta phi between MET and leading good muons
-    if (muGoodTracksIdx.size() > 1) {
-        reco::TrackRef leadingMuRef(muTrackHandle_, muGoodTracksIdx[0]);
-        reco::TrackRef subleadingMuRef(muTrackHandle_, muGoodTracksIdx[1]);
-        double avgMuPhi = atan2( sin(leadingMuRef->phi()) + sin(subleadingMuRef->phi()), cos(leadingMuRef->phi()) + cos(subleadingMuRef->phi()) );
-        double phiDiff = recoMetr->phi() - avgMuPhi;
-        double reducedPhiDiff = phiDiff;
-        if (abs(reducedPhiDiff) > 3.141592)
-            reducedPhiDiff -= 2 * 3.141592 * reducedPhiDiff/abs(reducedPhiDiff);
+    if (smallest_dR < 0.1) {
+        TransientVertex tv;
+        vector<reco::TransientTrack> trans_tracks{};
+        trans_tracks.push_back(theB->build(muon1));
+        trans_tracks.push_back(theB->build(muon2));
+        tv = kvf.vertex(trans_tracks);
+        if (!tv.isValid()) {
+            edm::LogWarning("VertexFittingFailed") << "Warning! Vertex re-fitting failed!";
+            fFoundValidVertex = false;
+        }
+        else {
+            reco::Vertex vertex = reco::Vertex(tv);
+            float vxy = sqrt(vertex.x()*vertex.x() + vertex.y()*vertex.y());
+            float sigma_vxy = (1/vxy)*(vertex.x()*vertex.xError() + vertex.y()*vertex.yError());
+            float vtxChi2 = vertex.normalizedChi2();
+            recoVtxReducedChi2_ = vtxChi2;
+            recoVtxVxy_ = vxy;
+            recoVtxSigmaVxy_ = sigma_vxy;
+            recoVtxVz_ = vertex.z();
+            float dR = reco::deltaR(muon1->outerEta(), muon1->outerPhi(),
+                    muon2->outerEta(), muon2->outerPhi());
+            recoVtxDr_ = dR;
+        }
+    }
+    
+    // Calculate delta phi between MET and selected muons
+    if (fFoundValidVertex) {
+        double avgMuPhi = atan2( (1/2)*(sin(muon1->phi()) + sin(muon2->phi())), (1/2)*(cos(muon1->phi()) + cos(muon2->phi())) );
+        double reducedPhiDiff = reco::deltaPhi(recoMetr->phi(), avgMuPhi);
         recoDeltaPhiMetMu_ = reducedPhiDiff;
     }
 
-    //vector<reco::TransientTrack> t_trks{};
-    //KalmanVertexFitter kvf(true);
-    //TransientVertex tv;
-    //float _vxy = 0, _vz = 0, dR = -10;
-    //if (goodQualityTracks > 1) {
-    //    t_trks.push_back(theB->build(&leadingMuRef));
-    //    t_trks.push_back(theB->build(&subleadingMuRef));
-    //    tv = kvf.vertex(t_trks);
-    //    if (!tv.isValid()) {
-    //        std::cout << "Warning! TV is not valid!" << std::endl;
-    //    }
-    //    else {
-    //        reco::Vertex _vtx = reco::Vertex(tv);
-    //        _vxy = sqrt(_vtx.x()*_vtx.x() + _vtx.y()*_vtx.y());
-    //        _vz  = _vtx.z();
+    // Calculate invariant mass of selected muons
+    if (fFoundValidVertex)
+        recoMmumu_ = std::sqrt(2 * muon1->pt() * muon2->pt() *
+            (cosh(muon1->eta() - muon2->eta()) -
+             cos(muon1->phi() - muon2->phi())));
 
-    //        dR = deltaR(*(leadingMuRef), *(subleadingMuRef));
+    //recoNMatchedGBMvDSA_ = -1;
+    //int nDoubleMatched = 0;
+    //if (fFoundValidVertex) {
+    //    recoNMatchedGBMvDSA_ = 0;
+    //    for (size_t i = 0; i < muGoodTracksIdx.size(); i++) {
+    //        if ((int)i != dSA1Idx && (int)i != dSA2Idx) continue;
+    //        bool alreadyMatched = false;
+    //        auto & track1 = muTracks[muGoodTracksIdx[i]];
+    //        const reco::HitPattern &p1 = track1->hitPattern();
+    //        //std::cout << "p1 number of valid muon hits: " << p1.numberOfValidMuonHits() << std::endl;
+    //        //std::cout << "p1 number of stations: " << p1.muonStationsWithValidHits() << std::endl;
+    //        //std::cout << "p1 pattern: "; p1.print(reco::HitPattern::TRACK_HITS);
+    //        std::vector<int> stations1;
+    //        // loop over the hits of track1 
+    //        for (int k = 0; k < p1.numberOfAllHits(reco::HitPattern::TRACK_HITS); k++) {
+    //            uint32_t hit1 = p1.getHitPattern(reco::HitPattern::TRACK_HITS, k);
+    //            if (!p1.validHitFilter(hit1)) continue;
+    //            stations1.push_back(hit1);
+    //        }
+    //        stations1.erase(std::unique(stations1.begin(), stations1.end()), stations1.end());
+    //        std::sort(stations1.begin(), stations1.end());
+    //        for (size_t j = 0; j < muGoodTracksIdx2.size(); j++) {
+    //            size_t nCommonChambers = 0;
+    //            auto & track2 = muTracks2[muGoodTracksIdx2[j]];
+    //            const reco::HitPattern &p2 = track2->hitPattern();
+    //            //std::cout << "p2 number of valid muon hits: " << p2.numberOfValidMuonHits() << std::endl;
+    //            //std::cout << "p2 number of stations: " << p2.muonStationsWithValidHits() << std::endl;
+    //            //std::cout << "p2 pattern: "; p2.print(reco::HitPattern::TRACK_HITS);
+    //            std::vector<int> stations2;
+    //            // loop over the hits of track2
+    //            for (int l = 0; l < p2.numberOfAllHits(reco::HitPattern::TRACK_HITS); l++) {
+    //                uint32_t hit2 = p2.getHitPattern(reco::HitPattern::TRACK_HITS, l);
+    //                if (!p2.validHitFilter(hit2)) continue;
+    //                stations2.push_back(hit2);
+    //            }
+    //            stations2.erase(std::unique(stations2.begin(), stations2.end()), stations2.end());
+    //            std::sort(stations2.begin(), stations2.end());
+    //            std::vector<int> intersect;
+    //            std::set_intersection(stations1.begin(),stations1.end(),stations2.begin(),stations2.end(), std::back_inserter(intersect));
+    //            nCommonChambers = intersect.size();
+    //            nCommonChambers_.push_back(min(stations1.size(),stations2.size()) - nCommonChambers);
+    //            //std::cout << "nCommonChambers: " << nCommonChambers << std::endl;
+    //            int distanceMetric = -1;
+    //            // number of chambers not equal
+    //            if (std::abs((int)stations1.size() - (int)stations2.size()) >= 1) {
+    //                // if all chambers of smaller set match, not ok
+    //                // (to make it ok, change distanceMetric back to 1 here)
+    //                if (nCommonChambers == min(stations1.size(), stations2.size())) 
+    //                    distanceMetric = 1;
+    //                // one chamber of smaller set deosnt match, ok/not ok:
+    //                else if (nCommonChambers == min(stations1.size(),stations2.size())-1)
+    //                    distanceMetric = 1;
+    //                // at least two chambers of smaller set doesnt match, not ok
+    //                else 
+    //                    distanceMetric = 2;
+    //            }
+    //            // number of chambers equal
+    //            else {
+    //                // at most one chamber different, ok
+    //                if ((stations1.size() - nCommonChambers) <= 1)
+    //                    distanceMetric = 1;
+    //                // more than one chamber different, not ok
+    //                else 
+    //                    distanceMetric = 2;
+    //            }
+    //            if (distanceMetric == 1) {
+    //            //if (nCommonStations >=  min(p1.muonStationsWithValidHits(), p2.muonStationsWithValidHits())) {
+    //                recoNMatchedGBMvDSA_++;
+    //                if (alreadyMatched)
+    //                    nDoubleMatched++;
+    //                else
+    //                    alreadyMatched = true;
+    //            }
+    //        }
     //    }
     //}
 
-    // Same with vertices
-    // Make all possible vertices with pairs of muons
-    // Ordering will be e.g. for 3 muons:
-    // recoVxy[0] -> {mu0, mu1}
-    // recoVxy[1] -> {mu0, mu2}
-    // recoVxy[2] -> {mu1, mu2}
-    // If vertex is not valid set to 0
-    // Same ordering for deltaR vector
-    /*ESHandle<TransientTrackBuilder> theB;
-    iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
-
-    for (size_t i = 0; i < muTrackHandle_->size(); ++i) {
-        reco::TrackRef ref_i(muTrackHandle_, i);
-        for (size_t j = i+1; j < muTrackHandle_->size(); ++j) {
-            reco::TrackRef ref_j(muTrackHandle_, j);
-
-            deltaR_.push_back(deltaR(*(ref_i.get()), *(ref_j.get())));
-
-            vector<reco::TransientTrack> t_tks{};
-            t_tks.push_back(theB->build(&ref_i));
-            t_tks.push_back(theB->build(&ref_j));
-            KalmanVertexFitter kvf(true);
-            TransientVertex tv = kvf.vertex(t_tks);
-
-            float _vxy, _vz;
-            if (tv.isValid()) {
-                reco::Vertex _vtx = reco::Vertex(tv);
-                _vxy = sqrt(_vtx.x()*_vtx.x() + _vtx.y()*_vtx.y());
-                _vz  = _vtx.z();
-            }
-            else {
-                _vxy = 0;
-                _vz = 0;
-            }
-            recoVxy_.push_back(_vxy);
-            recoVz_.push_back(_vz);
-        }
-    }*/
-
-    //if (goodQualityTracks > 0) {
-    //    recoPt_ .push_back(leadingMuRef->pt());
-    //    recoEta_.push_back(leadingMuRef->eta());
-    //    recoPhi_.push_back(leadingMuRef->phi());
-    //    recoDxy_.push_back(leadingMuRef->dxy());
-    //    recoDz_ .push_back(leadingMuRef->dz());
-    //    if (goodQualityTracks > 1) {
-    //        recoPt_ .push_back(subleadingMuRef->pt());
-    //        recoEta_.push_back(subleadingMuRef->eta());
-    //        recoPhi_.push_back(subleadingMuRef->phi());
-    //        recoDxy_.push_back(subleadingMuRef->dxy());
-    //        recoDz_ .push_back(subleadingMuRef->dz());
-    //        recoVxy_.push_back(_vxy);
-    //        recoVz_ .push_back(_vz);
-    //        recoDr_ .push_back(dR);
-    //        //deltaR_ .push_back(dR);
-    //    }
-    //}
-
-
-    // Trigger check firing bit (MET+MHT 120 GeV trigger)
-    const vector<string>& pathNames = hltConfig_.triggerNames();
-    const vector<string> matchedPaths(hltConfig_.restoreVersion(pathNames, trigPathNoVer_));
-    if (matchedPaths.size() == 0) {
-        LogError("TriggerError") << "Could not find matched full trigger path with -> " << trigPathNoVer_;
-        return;
-    }
-    trigPath_ = matchedPaths[0];
-    if (hltConfig_.triggerIndex(trigPath_) >= hltConfig_.size()) {
-        LogError("TriggerError") << "Cannot find trigger path -> " << trigPath_;
-        return;
-    }
-    fired_ = trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath_));
-
+    //std::cout << "[AF] Number of matched muons: " << recoNMatchedGBMvDSA_ << std::endl;
+    //std::cout << "[AF] Number of double-matchings: " << nDoubleMatched << std::endl;
+    
 
     /****** GEN INFO *******/
-
-    // Pile-up and event genweight
 
     genPt_.clear();
     genEta_.clear();
@@ -538,6 +661,8 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     genJetEta_.clear();
     genJetPhi_.clear();
 
+    
+    // Pile-up and event genweight
     genpuobs_ = -9999;
     genputrue_ = -9999;
     genwgt_ = -9999;
@@ -568,6 +693,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             genVz_.push_back(genParticle->vz());
         }
     }
+
     // all hard-process gen DM_Chi1
     for (size_t i = 0; i < genParticleHandle_->size(); i++) {
         reco::GenParticleRef genParticle(genParticleHandle_, i);
@@ -580,6 +706,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             genChi1Vz_.push_back(genParticle->vz());
         }
     }
+
     // all hard-process gen DM_Chi2
     for (size_t i = 0; i < genParticleHandle_->size(); i++) {
         reco::GenParticleRef genParticle(genParticleHandle_, i);
@@ -613,72 +740,76 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
     /******* BEGINNING OF CUTS ******/
 
-    for (size_t i = 0; i < numCuts_; i++)
-        cutsVec[i] = 0;
+    cuts_ = 0;
 
     // Fill everything before cuts 
-    cutsVec[0] = 1;
+    setCutBit(0);
 
     // Trigger check
-    
     if (fired_)
-        cutsVec[1] = 1;
+        setCutBit(1);
 
-    if (recoPFMetPt_ > 200)
-        cutsVec[2] = 1;
+    // MET offline selection of 200 GeV
+    if (recoPFMetPt_ > 200) 
+        setCutBit(2);
 
     // One leading reco jet w/ pT > 120...
-
     if (recoPFJetPt_[0] > 120)
-        cutsVec[3] = 1;
+        setCutBit(3);
     
     // ...and only one extra jet w/ pT > 30 GeV
     
-    int nHighPtJets = 0;
+    recoPFNHighPtJet_ = 0;
+    setCutBit(4);
     for (size_t i = 1; i < recoPFJetPt_.size(); i++) {
         if (recoPFJetPt_[i] > 30)
-            nHighPtJets++;
-        if (nHighPtJets >= 2) break;
+            recoPFNHighPtJet_++;
+        if (recoPFNHighPtJet_ >= 2) clearCutBit(4);
     }
-    if (nHighPtJets < 2)
-        cutsVec[4] = 1;
 
-    // Muon cuts
-    
-    for (size_t i = 0; i < min(muGoodTracksIdx.size(), (size_t)2); i++) {
+    // dsa muon cuts
+    for (size_t i = 0; i < 2; i++) {
         int numMuCuts = 5;
-        reco::TrackRef mu_tmp(muTracks[muGoodTracksIdx[i]]);
+        if (dSAIdx[i] == -1) continue;
+        reco::TrackRef mu_i = muTracks1[dSAIdx[i]];
 
-        if (mu_tmp->hitPattern().muonStationsWithValidHits() >= 2)
-            cutsVec[5 + i*numMuCuts] = 1;
-        if (mu_tmp->hitPattern().numberOfValidMuonHits() >= 12)
-            cutsVec[6 + i*numMuCuts] = 1;
-        if (mu_tmp->normalizedChi2() < 10)
-            cutsVec[7 + i*numMuCuts] = 1;
+        if (mu_i->hitPattern().muonStationsWithValidHits() >= 2)
+            setCutBit(5 + i*numMuCuts);
+        if (mu_i->hitPattern().numberOfValidMuonHits() >= 12)
+            setCutBit(6 + i*numMuCuts);
+        if (mu_i->normalizedChi2() < 10)
+            setCutBit(7 + i*numMuCuts);
 
-        if (mu_tmp->pt() > 5)
-            cutsVec[8 + i*numMuCuts] = 1;
-        if (abs(mu_tmp->dxy()) > 0.1 && abs(mu_tmp->dxy()) < 700)
-            cutsVec[9 + i*numMuCuts] = 1;
+        if (mu_i->pt() > 5)
+            setCutBit(8 + i*numMuCuts);
+        if (mu_i->eta() < 2.4)
+            setCutBit(9 + i*numMuCuts);
+        //if (abs(mu_tmp->dxy()) > 0.1 && abs(mu_tmp->dxy()) < 700)
+         //   cutsVec[9 + i*numMuCuts] = 1;
     }
 
-    // Check vertex between highest pT good muons
-    if (muGoodTracksIdx.size() > 1) 
-        for (size_t k = 0; k < recoVi_.size(); k++) 
-            if (recoVi_[k] == muGoodTracksIdx[0] && recoVj_[k] == muGoodTracksIdx[1])
-                if (recoDr_[k] < 0.8)
-                    cutsVec[15] = 1;
+    // Check dR between selected muons (SR)
+    if (recoNGoodDSAMu_ > 1 && fFoundValidVertex) 
+        if (std::abs(recoVtxDr_) < 0.8)
+            setCutBit(15);
+
+    // Check invariant mass between muons (SR)
+    if (std::abs(recoMmumu_) < 50)
+        setCutBit(16);
     
     // Check DeltaPhi between MET and leading muon pair
-    if (muGoodTracksIdx.size() > 1)
-        if (abs(recoDeltaPhiMetMu_) < 0.4)
-            cutsVec[16] = 1;
+    if (recoNGoodDSAMu_ > 1 && fFoundValidVertex)
+        if (std::abs(recoDeltaPhiMetMu_) < 0.4)
+            setCutBit(17);
+    
+    // Only have 1 good dSA muon (one-lepton CR)
+    if (recoNGoodDSAMu_ == 1 && nSelectedMuons_ == 1)
+        setCutBit(18);
 
     recoT->Fill();
     genT->Fill();
 
     return;
-    
 }
 
 void iDMAnalyzer::endRun(edm::Run const& iRun, edm::EventSetup const& iSetup) {}

@@ -27,7 +27,10 @@ if options.test:
             #options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/GenFilter_1or2jets_icckw1_drjj0_xptj80_xqcut20_qcut20/Mchi-60p0_dMchi-20p0_ctau-10/iDM_Mchi-60p0_dMchi-20p0_mZDinput-150p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_9576064_AOD_ctau-10.root'
             #options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/MC/2018/signal/Mchi-5p25_dMchi-0p5_ctau-100/step2/190527_010049/0000/externalLHEProducer_and_PYTHIA8_Hadronizer_AOD_ctau-100_94.root'
             #options.inputFiles = 'file:/uscms/homes/a/as2872/nobackup/iDM/AODproducer/debugVxy/CMSSW_10_2_3/src/externalLHEProducer_and_PYTHIA8_Hadronizer_AOD_ctau-100.root'
-            options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-5p25_dMchi-0p5_ctau-100/iDM_Mchi-5p25_dMchi-0p5_mZDinput-15p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_9905963_AOD_ctau-100.root'
+            #options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-5p25_dMchi-0p5_ctau-100/iDM_Mchi-5p25_dMchi-0p5_mZDinput-15p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_9905963_AOD_ctau-100.root'
+            #options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-60p0_dMchi-20p0_ctau-1/iDM_Mchi-60p0_dMchi-20p0_mZDinput-150p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_9868345_AOD_ctau-1.root'
+            #options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-5p25_dMchi-0p5_ctau-100/iDM_Mchi-5p25_dMchi-0p5_mZDinput-15p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_10109056_AOD_ctau-100.root'
+            options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-60p0_dMchi-20p0_ctau-100/iDM_Mchi-60p0_dMchi-20p0_mZDinput-150p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_1547134_AOD_ctau-100.root'
     elif 'lxplus' in platform.node():
         options.inputFiles = 'file:/eos/user/w/wsi/prelimSamples/SIDMmumu_Mps-200_MZp-1p2_ctau-1_12714105_AOD.root'
     options.maxEvents = -1
@@ -92,27 +95,27 @@ process.GEN = genTuplizer.clone()
 
 ## Signal Region efficiency
 from iDMSkimmer.washAOD.iDMAnalyzer_cfi import iDMAnalyzer
-process.SREffi_dsa = iDMAnalyzer.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
-process.SREffi_gbm = iDMAnalyzer.clone(muTrack = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
-process.SREffi_rsa = iDMAnalyzer.clone(muTrack = cms.InputTag('refittedStandAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
-process.SREffi_dgm = iDMAnalyzer.clone(muTrack = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
-process.SREffi_sam = iDMAnalyzer.clone(muTrack = cms.InputTag('standAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+#process.SREffi_dsa = iDMAnalyzer.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+process.ntuples_gbm = iDMAnalyzer.clone(muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+#process.SREffi_rsa = iDMAnalyzer.clone(muTrack2 = cms.InputTag('refittedStandAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+process.ntuples_dgm = iDMAnalyzer.clone(muTrack2 = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+#process.SREffi_sam = iDMAnalyzer.clone(muTrack2 = cms.InputTag('standAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
 
 ## constructing the path
 if options.year == 2017:
-    process.p = cms.Path(process.GEN +
-            process.SREffi_dsa
-            + process.SREffi_gbm
-            + process.SREffi_rsa
-            + process.SREffi_dgm
-            + process.SREffi_sam
+    process.p = cms.Path(process.GEN
+            #+ process.SREffi_dsa
+            + process.ntuples_gbm
+            #+ process.SREffi_rsa
+            + process.ntuples_dgm
+            #+ process.SREffi_sam
             )
 
 if options.year == 2018:
-    process.p = cms.Path(process.GEN +
-            process.SREffi_dsa
-            + process.SREffi_gbm
-            + process.SREffi_rsa
-            + process.SREffi_dgm
-            + process.SREffi_sam
+    process.p = cms.Path(process.GEN 
+            #+ process.SREffi_dsa
+            + process.ntuples_gbm
+            #+ process.SREffi_rsa
+            + process.ntuples_dgm
+            #+ process.SREffi_sam
             )

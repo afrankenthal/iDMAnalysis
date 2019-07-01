@@ -1,7 +1,8 @@
 import FWCore.ParameterSet.Config as cms
 
 iDMAnalyzer = cms.EDAnalyzer('iDMAnalyzer',
-    muTrack = cms.InputTag("displacedStandAloneMuons"),
+    muTrack1 = cms.InputTag("displacedStandAloneMuons"),
+    muTrack2 = cms.InputTag("globalMuons"),
     genParticle = cms.InputTag("genParticles"),
     genJet = cms.InputTag("ak4GenJets"),
     genMet = cms.InputTag("genMetTrue"),
