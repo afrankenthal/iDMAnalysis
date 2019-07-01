@@ -4,6 +4,23 @@ void cutflowPlots(TString variable, TString description, int nbins, float lowx, 
     //gROOT->LoadMacro("tdrstyle.C");
     setTDRStyle();
 
+    std::map<TString, TString> plot_variables {
+        {"leading_mu_pt", "reco_mu_pt[0]"},
+        {"subleading_mu_pt", "reco_mu_pt[1]"},
+        {"leading_mu_eta", "reco_mu_eta[0]"},
+        {"subleading_mu_eta", "reco_mu_eta[1]"},
+        {"leading_mu_phi", "reco_mu_phi[0]"},
+        {"subleading_mu_phi", "reco_mu_phi[1]"},
+        {"mu_dR", "reco_vertex_dR"},
+        {"mu_M2", "sqrt(reco_mu_M2)"},
+        {"leading_jet_pt", "reco_PF_jet_pt[0]"},
+        {"leading_jet_eta", "reco_PF_jet_eta[0]"},
+        {"leading_jet_phi", "reco_PF_jet_phi[0]"},
+        {"MET_pt", "reco_PF_MET_pt"},
+        {"MET_phi", "reco_PF_MET_phi"},
+        {"MET_mu_dphi", "reco_MET_mu_DeltaPhi"}
+    };
+
     typedef struct sample_info {
         TString filename;
         TString label;
@@ -62,7 +79,7 @@ void cutflowPlots(TString variable, TString description, int nbins, float lowx, 
         recoT->UseCurrentStyle();
 
         for (auto cut : cuts) {
-            recoT->Draw(Form("%s>>h%s_%s(%d,%f,%f)", variable.Data(), cut.first.Data(), sample.first.Data(), nbins, lowx, highx), cut.second.cut, "goff");
+            recoT->Draw(Form("%s>>h%s_%s(%d,%f,%f)", plot_variables.at(variable).Data(), cut.first.Data(), sample.first.Data(), nbins, lowx, highx), cut.second.cut, "goff");
             hists[sample.first][cut.first] = (TH1F*)gDirectory->Get(Form("h%s_%s", cut.first.Data(), sample.first.Data()));
         }
     }
