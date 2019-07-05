@@ -55,8 +55,8 @@ void recoEffiForMuTrack::beginJob()
     muTrackT_->Branch("recoPhi", &recoPhi_);
     muTrackT_->Branch("recoDxy", &recoDxy_);
     muTrackT_->Branch("recoDz",  &recoDz_);
-    muTrackT_->Branch("recoVxy", &recoVxy_);
-    muTrackT_->Branch("recoVz",  &recoVz_);
+//    muTrackT_->Branch("recoVxy", &recoVxy_);
+//    muTrackT_->Branch("recoVz",  &recoVz_);
     muTrackT_->Branch("deltaR",  &deltaR_);
     muTrackT_->Branch("genJetPt", &genJetPt_, "genJetPt/F");
     muTrackT_->Branch("genJetEta", &genJetEta_, "genJetEta/F");
@@ -111,17 +111,17 @@ void recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup
             });
     if (nAccpted<2) return;
 
-    // Additionally, check if event has 1 or more jets with leading pt > 30 GeV 
-    if (genJetHandle_->size() < 1) return;
-    bool accept = 0;
-    for (size_t i(0); i != genJetHandle_->size(); ++i) {
-        reco::GenJetRef jetr(genJetHandle_, i);
-        if (jetr->pt() > 30.0) {
-            accept = 1;
-            break;
-        }
-    }
-    if (!accept) return;
+//    // Additionally, check if event has 1 or more jets with leading pt > 30 GeV 
+//    if (genJetHandle_->size() < 1) return;
+//    bool accept = 0;
+//    for (size_t i(0); i != genJetHandle_->size(); ++i) {
+//        reco::GenJetRef jetr(genJetHandle_, i);
+//        if (jetr->pt() > 30.0) {
+//            accept = 1;
+//            break;
+//        }
+//    }
+//    if (!accept) return;
 
     genPt_  .clear(); genPt_  .reserve(2);
     genEta_ .clear(); genEta_ .reserve(2);
@@ -161,38 +161,38 @@ void recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup
         }
     }
 
-    // vtxing between reco mu pairs
-    ESHandle<TransientTrackBuilder> theB;
-    iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
-
-    map<int, pair<float, float>> recoMuIdVtx{};
-    for (size_t mu_i(0); mu_i!=muTrackHandle_->size(); ++mu_i) {
-        reco::TrackRef ref_i(muTrackHandle_, mu_i);
-        for (size_t mu_j(mu_i+1); mu_j!=muTrackHandle_->size(); ++mu_j) {
-            reco::TrackRef ref_j(muTrackHandle_, mu_j);
-            if (deltaR(*(ref_i.get()), *(ref_j.get())) > 0.4) continue;
-            if (ref_i->charge() == ref_j->charge()) continue;
-
-            vector<reco::TransientTrack> t_tks{};
-            t_tks.push_back(theB->build(&ref_i));
-            t_tks.push_back(theB->build(&ref_j));
-            KalmanVertexFitter kvf(true);
-            TransientVertex tv = kvf.vertex(t_tks);
-            if (!tv.isValid()) continue;
-
-            reco::Vertex _vtx = reco::Vertex(tv);
-            float _vxy = sqrt(_vtx.x()*_vtx.x() + _vtx.y()*_vtx.y());
-            float _vz  = _vtx.z();
-            recoMuIdVtx.emplace(int(mu_i), make_pair(_vxy, _vz));
-            recoMuIdVtx.emplace(int(mu_j), make_pair(_vxy, _vz));
-            break;
-
-        }
-    }
-    for (size_t i(0); i!=muTrackHandle_->size(); ++i) {
-        if (recoMuIdVtx.find(int(i)) != recoMuIdVtx.end()) continue;
-        recoMuIdVtx.emplace(int(i), make_pair(0., 0.));
-    }
+//    // vtxing between reco mu pairs
+//    ESHandle<TransientTrackBuilder> theB;
+//    iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder",theB);
+//
+//    map<int, pair<float, float>> recoMuIdVtx{};
+//    for (size_t mu_i(0); mu_i!=muTrackHandle_->size(); ++mu_i) {
+//        reco::TrackRef ref_i(muTrackHandle_, mu_i);
+//        for (size_t mu_j(mu_i+1); mu_j!=muTrackHandle_->size(); ++mu_j) {
+//            reco::TrackRef ref_j(muTrackHandle_, mu_j);
+//            if (deltaR(*(ref_i.get()), *(ref_j.get())) > 0.4) continue;
+//            if (ref_i->charge() == ref_j->charge()) continue;
+//
+//            vector<reco::TransientTrack> t_tks{};
+//            t_tks.push_back(theB->build(&ref_i));
+//            t_tks.push_back(theB->build(&ref_j));
+//            KalmanVertexFitter kvf(true);
+//            TransientVertex tv = kvf.vertex(t_tks);
+//            if (!tv.isValid()) continue;
+//
+//            reco::Vertex _vtx = reco::Vertex(tv);
+//            float _vxy = sqrt(_vtx.x()*_vtx.x() + _vtx.y()*_vtx.y());
+//            float _vz  = _vtx.z();
+//            recoMuIdVtx.emplace(int(mu_i), make_pair(_vxy, _vz));
+//            recoMuIdVtx.emplace(int(mu_j), make_pair(_vxy, _vz));
+//            break;
+//
+//        }
+//    }
+//    for (size_t i(0); i!=muTrackHandle_->size(); ++i) {
+//        if (recoMuIdVtx.find(int(i)) != recoMuIdVtx.end()) continue;
+//        recoMuIdVtx.emplace(int(i), make_pair(0., 0.));
+//    }
 
     //cout<<endl;
     //for (size_t i(0); i!=muTrackHandle_->size(); ++i) {
@@ -200,9 +200,9 @@ void recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup
     //}
 
     vector<int> matchedGenMuIdx{};
-    int iTk = 0;
+    //int iTk = 0;
     for (const reco::Track& muTrack : *muTrackHandle_) {
-        iTk = &muTrack - &(muTrackHandle_->at(0));
+      //  iTk = &muTrack - &(muTrackHandle_->at(0));
         for (const int genMuid : genMuIdx) {
             if (find(matchedGenMuIdx.begin(), matchedGenMuIdx.end(), genMuid) != matchedGenMuIdx.end()) continue;
             reco::GenParticleRef genMu(genParticleHandle_, genMuid);
@@ -221,8 +221,8 @@ void recoEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::EventSetup
             recoPhi_.push_back(muTrack.phi());
             recoDxy_.push_back(muTrack.dxy());
             recoDz_ .push_back(muTrack.dz());
-            recoVxy_.push_back(recoMuIdVtx[iTk].first);
-            recoVz_ .push_back(recoMuIdVtx[iTk].second);
+//            recoVxy_.push_back(recoMuIdVtx[iTk].first);
+//            recoVz_ .push_back(recoMuIdVtx[iTk].second);
             deltaR_ .push_back(deltaR(muTrack, *(genMu.get())));
 
             break;
