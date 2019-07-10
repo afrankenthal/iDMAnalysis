@@ -1,85 +1,57 @@
-#include "tdrstyle.C"
-#include "json.hpp"
+#include "utils/tdrstyle.C"
+#include "utils/json.hpp"
 using json = nlohmann::json;
+#include "utils/common.C"
+using namespace common;
 
 using std::cout, std::endl, std::map, std::vector;
 
-typedef struct sample_info {
-    vector<TString> filenames;
-    TString label;
-    Float_t xsec;
-    Float_t weight;
-    TString group;
-    int color;
-    int style;
-} sample_info;
-
-bool readCutBit(uint32_t cuts, int bit) { return cuts & (1 << bit); }
-
-void list_files(sample_info & sample, const char *dirname="", const char *ext=".root") {
-    TSystemDirectory dir(dirname, dirname); 
-    TList *files = dir.GetListOfFiles(); 
-    if (files) { 
-        TSystemFile *file; 
-        TString fname; 
-        TIter next(files); 
-        while ((file=(TSystemFile*)next())) { 
-            fname = file->GetName(); 
-            if (!file->IsDirectory() && fname.EndsWith(ext)) 
-                sample.filenames.push_back(Form("%s/%s", dirname, fname.Data()));
-        }
-    } 
-}
-
 void nminus1Plots(bool fSave=false) {
     TDatime time_begin;
-    map<TString, sample_info> samples;
+
+    map<TString, SampleInfo> samples;
+
     std::ifstream bkgs_file("backgrounds.json");
     json bkgs_cfg;
     bkgs_file >> bkgs_cfg;
     int color = 3;
     for (auto const & [bkg, cfg] : bkgs_cfg.items()) {
-        samples.insert(std::make_pair(TString(bkg),
-                    sample_info{
-                    {}, // list of filenames
-                    bkg, // plot label
-                    cfg["xsec"].get<float>(), // xsec
-                    1, // weight
-                    TString(cfg["group"].get<std::string>()), // plot group
-                    color++, // line color
-                    1 // line style
-                    }));
-        list_files(samples[bkg], cfg["dir"].get<std::string>().c_str()); 
+        samples[TString(bkg)] = SampleInfo{
+            listFiles(cfg["dir"].get<std::string>().c_str()), // list of filenames
+            bkg, // plot label
+            cfg["xsec"].get<float>(), // xsec
+            cfg["sum_gen_wgt"], // sum_gen_wgt
+            cfg["limit_num_files"], // limit_num_files
+            1, // weight
+            TString(cfg["group"].get<std::string>()), // plot group
+            color++, // line color
+            1 // line style
+        };
     }
 
     //gROOT->LoadMacro("tdrstyle.C");
     setTDRStyle();
 
-    typedef struct signal_info {
-        TString m1;
-        TString dmchi;
-        TString delta;
-        int color;
-    } signal_info;
-    map<TString, signal_info> mchis{
-        {"5p25", signal_info{"5", "0p5", "0.1", kYellow}},
-        {"52p5", signal_info{"50", "5p0", "0.1", kBlue}},
-        {"6p0", signal_info{"5", "2p0", "0.4", kGreen}},
-        {"60p0", signal_info{"50", "20p0", "0.4", kRed}}
+    map<TString, SignalInfo> mchis{
+        {"5p25", SignalInfo{"5", "0p5", "0.1", kYellow}},
+        {"52p5", SignalInfo{"50", "5p0", "0.1", kBlue}},
+        {"6p0", SignalInfo{"5", "2p0", "0.4", kGreen}},
+        {"60p0", SignalInfo{"50", "20p0", "0.4", kRed}}
     };
     vector<TString> ctaus{"1", "10", "100", "1000"};
     for (auto ctau : ctaus) 
         for (auto const & [mchi, cfg] : mchis) 
-            samples.insert(std::make_pair(Form("%s_%s", mchi.Data(), ctau.Data()),
-                        sample_info{
-                        vector<TString>{Form("../Mchi-%s_dMchi-%s_ctau-%s.root", mchi.Data(), cfg.dmchi.Data(), ctau.Data())}, // list of filenames
-                        Form("m1 = %s GeV, #Delta = %s, c#tau = %s mm", cfg.m1.Data(), cfg.delta.Data(), ctau.Data()), // plot label
-                        1, // xsec
-                        1, // weight
-                        "", // plot group
-                        cfg.color + 1*(int)(distance(ctaus.begin(), find(ctaus.begin(), ctaus.end(), ctau))), // line color
-                        2 // line style
-                        }));
+            samples[Form("%s_%s", mchi.Data(), ctau.Data())] = SampleInfo{
+                vector<TString>{Form("../Mchi-%s_dMchi-%s_ctau-%s.root", mchi.Data(), cfg.dmchi.Data(), ctau.Data())}, // list of filenames
+                Form("m1 = %s GeV, #Delta = %s, c#tau = %s mm", cfg.m1.Data(), cfg.delta.Data(), ctau.Data()), // plot label
+                1, // xsec
+                0.0, // sum_gen_wgt
+                -1, // limit_num_files
+                1, // weight
+                "", // plot group
+                cfg.color + 1*(int)(distance(ctaus.begin(), find(ctaus.begin(), ctaus.end(), ctau))), // line color
+                2 // line style
+            };
 
     for (auto const & [sample, props] : samples) {
         cout << sample << endl;
@@ -90,7 +62,7 @@ void nminus1Plots(bool fSave=false) {
     map<TString, map<TString, TH1F *>> hists;
     int numCuts_ = 19;
 
-    typedef struct cut_info {
+    typedef struct CutInfo {
         TCut tcut;
         TString plot_var;
         TString plot_description;
@@ -99,7 +71,7 @@ void nminus1Plots(bool fSave=false) {
         Float_t highX;
         TString label;
         vector<TString> sample_list;
-    } cut_info;
+    } CutInfo;
 
     vector<TCut> bits;
     for (int bit = 0; bit < numCuts_; bit++)
@@ -119,32 +91,25 @@ void nminus1Plots(bool fSave=false) {
     //TCut controlRegion_EW = initialSelection && "cutsVec[3] && !cutsVec[9] && !cutsVec[10] && !cutsVec[11] && !cutsVec[12] && !cutsVec[14]";
     //TCut controlRegion_TTbar = initialSelection && "cutsVec[3] && cutsVec[9] && cutsVec[10] && cutsVec[11] && cutsVec[12] && !cutsVec[14]";
 
-    map<TString, cut_info> cuts {
-        //{"no_selection", cut_info{noSelection, "No Selection"}},
-        //{"initial_selection", cut_info{initialSelection, "Initial Selection"}},
-        {"nMinusDr", cut_info{nMinusDr, "reco_vtx_dR", "Di-muon dR", 10, 0, 6, "N-1 (dR)",
-                                 vector<TString>{"5p25_100", "60p0_1", "Di-boson", "QCD", "DY", "TTbar", "V+Jets"}}},
-            {"nMinusMmumu", cut_info{nMinusMmumu, "reco_Mmumu", "M_{#mu#mu} [GeV]", 20, 0, 50, "N-1 (M_{#mu#mu})",
-                                 vector<TString>{"5p25_100", "60p0_1", "Di-boson", "QCD", "DY", "TTbar", "V+Jets"}}},
-            {"nMinusNJets", cut_info{nMinusNJets, "reco_PF_n_highPt_jets", "Number of high pT (> 30 GeV) jets", 9, 1, 10, "N-1 (nJets)",
-                                 vector<TString>{"5p25_100", "60p0_1", "Di-boson", "QCD", "DY", "TTbar", "V+Jets"}}},
-            {"nMinusGoodMu", cut_info{nMinusGoodMu, "reco_n_good_dsa", "Number of quality dSA muons", 9, 1, 10, "N-1 (nGoodMuons)",
-                                 vector<TString>{"5p25_100", "60p0_1", "Di-boson", "QCD", "DY", "TTbar", "V+Jets"}}},
-        //{"signal_region", cut_info{signalRegion, "Signal Region"}},
-        //{"control_region_QCD", cut_info{controlRegion_QCD, "QCD Control Region"}},
-        //{"control_region_EW", cut_info{controlRegion_EW, "EW Control Region"}},
-        //{"control_region_TTbar", cut_info{controlRegion_TTbar, "TTbar Control Region"}}
-    };
+    map<TString, CutInfo> cuts{};
+    cuts["nMinusDr"] = CutInfo{nMinusDr, "reco_vtx_dR", "Di-muon dR", 10, 0, 6, "N-1 (dR)",
+                               vector<TString>{"5p25_100", "60p0_1", "Di-boson", "QCD", "DY", "TTbar", "V+Jets"}};
+    cuts["nMinusMmumu"] = CutInfo{nMinusMmumu, "reco_Mmumu", "M_{#mu#mu} [GeV]", 20, 0, 50, "N-1 (M_{#mu#mu})",
+                               vector<TString>{"5p25_100", "60p0_1", "Di-boson", "QCD", "DY", "TTbar", "V+Jets"}};
+    cuts["nMinusNJets"] = CutInfo{nMinusNJets, "reco_PF_n_highPt_jets", "Number of high pT (> 30 GeV) jets", 9, 1, 10, "N-1 (nJets)",
+                               vector<TString>{"5p25_100", "60p0_1", "Di-boson", "QCD", "DY", "TTbar", "V+Jets"}};
+    cuts["nMinusGoodMu"] = CutInfo{nMinusGoodMu, "reco_n_good_dsa", "Number of quality dSA muons", 9, 1, 10, "N-1 (nGoodMuons)",
+                               vector<TString>{"5p25_100", "60p0_1", "Di-boson", "QCD", "DY", "TTbar", "V+Jets"}};
 
     map<TString, TCanvas *> canvases;
 
     for (auto const & [sample, props] : samples) {
 
-        //int count = 0;
+        int count = 0;
         TChain * data_gen = new TChain("ntuples_gbm/genT");
         TChain * data_reco = new TChain("ntuples_gbm/recoT");
         for (auto const & filename : props.filenames) {
-            //if (count++ >= 2) continue;
+            if (count++ >= props.limit_num_files && props.limit_num_files != -1) continue;
             data_gen->Add(filename);
             data_reco->Add(filename);
         }
@@ -156,12 +121,7 @@ void nminus1Plots(bool fSave=false) {
         data_reco->UseCurrentStyle();
         data_reco->AddFriend(data_gen, "ntuples_gbm/genT");
 
-        Float_t sum_gen_wgt = 0;
-        for (size_t i = 0; i < data_gen->GetEntries(); i++) {
-            data_gen->GetEntry(i);
-            sum_gen_wgt += gen_wgt;
-        }
-        cout << "sample: " << sample << ", sum_gen_wgt: " << sum_gen_wgt << endl;
+        cout << "sample: " << sample << ", sum_gen_wgt: " << props.sum_gen_wgt << endl;
 
         for (auto const & [cut_name, cut] : cuts) {
             if (std::find(cut.sample_list.begin(), cut.sample_list.end(), sample) != cut.sample_list.end()) {
@@ -169,7 +129,7 @@ void nminus1Plots(bool fSave=false) {
                 hists[sample][cut_name] = (TH1F*)gDirectory->Get(Form("h%s_%s", cut_name.Data(), sample.Data()));
             }
             else if (std::find(cut.sample_list.begin(), cut.sample_list.end(), props.group) != cut.sample_list.end()) {
-                data_reco->Draw(Form("%s>>h%s_%s(%d,%f,%f)", cut.plot_var.Data(), cut_name.Data(), props.group.Data(), cut.nbins, cut.lowX, cut.highX), cut.tcut * Form("gen_wgt * %f / %f", props.xsec, sum_gen_wgt), "goff");
+                data_reco->Draw(Form("%s>>h%s_%s(%d,%f,%f)", cut.plot_var.Data(), cut_name.Data(), props.group.Data(), cut.nbins, cut.lowX, cut.highX), cut.tcut * Form("gen_wgt * %f / %f", props.xsec, props.sum_gen_wgt), "goff");
                 hists[props.group][cut_name] = (TH1F*)gDirectory->Get(Form("h%s_%s", cut_name.Data(), props.group.Data()));
             }
         }
@@ -223,7 +183,6 @@ void nminus1Plots(bool fSave=false) {
             canvases[cut_name]->SaveAs(Form("temp_plots/%s_%s.root", cut.plot_var.Data(), cut_name.Data()));
         }
     }
-    TDatime time_end;
-    cout << "Time elapsed: " << time_end.Convert() - time_begin.Convert() << " seconds or " 
-         << (time_end.Convert() - time_begin.Convert())/3600.0 << " hours" << endl;
+
+    printTimeElapsed(time_begin);
 }
