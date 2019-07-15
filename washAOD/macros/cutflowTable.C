@@ -3,13 +3,20 @@ using namespace common;
 #include "utils/json.hpp"
 using json = nlohmann::json;
 using std::cout, std::endl, std::map, std::vector;
+#include <iomanip>
 
-void cutflowTable() {
+void cutflowTable(TString which_cutflow="SR", bool test=true) {
     TDatime time_begin;
 
     map<TString, SampleInfo> samples;
 
-    std::ifstream bkgs_file("backgrounds_full.json");
+    TString config_file;
+    if (test)
+        config_file = TString("configs/backgrounds_subset.json");
+    else
+        config_file = TString("configs/backgrounds_full.json");
+
+    std::ifstream bkgs_file(config_file.Data());
     json bkg_cfgs;
     bkgs_file >> bkg_cfgs;
     int color = 3;
@@ -65,25 +72,40 @@ void cutflowTable() {
     //    {"6p0", { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } },
     //    {"60p0", { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 } }
     //};
-    map<TString, vector<UInt_t>> cutsIncl, cutsExcl;
-    map<TString, vector<UInt_t>> cutsGroupIncl, cutsGroupExcl;
-    vector<UInt_t> empty_cuts_template = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    map<TString, vector<Float_t>> cutsIncl, cutsExcl;
+    map<TString, vector<Float_t>> cutsGroupIncl, cutsGroupExcl;
+    vector<Float_t> empty_cuts_template = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    cutsGroupIncl.insert(std::make_pair(TString("Diboson"), empty_cuts_template));
     cutsGroupIncl.insert(std::make_pair(TString("DY"), empty_cuts_template));
     cutsGroupIncl.insert(std::make_pair(TString("QCD"), empty_cuts_template));
     cutsGroupIncl.insert(std::make_pair(TString("TTbar"), empty_cuts_template));
-    cutsGroupIncl.insert(std::make_pair(TString("V+Jets"), empty_cuts_template));
-    cutsGroupIncl.insert(std::make_pair(TString("Di-boson"), empty_cuts_template));
+    cutsGroupIncl.insert(std::make_pair(TString("ZJets"), empty_cuts_template));
+    cutsGroupIncl.insert(std::make_pair(TString("WJets"), empty_cuts_template));
+    cutsGroupExcl.insert(std::make_pair(TString("Diboson"), empty_cuts_template));
     cutsGroupExcl.insert(std::make_pair(TString("DY"), empty_cuts_template));
     cutsGroupExcl.insert(std::make_pair(TString("QCD"), empty_cuts_template));
     cutsGroupExcl.insert(std::make_pair(TString("TTbar"), empty_cuts_template));
-    cutsGroupExcl.insert(std::make_pair(TString("V+Jets"), empty_cuts_template));
-    cutsGroupExcl.insert(std::make_pair(TString("Di-boson"), empty_cuts_template));
+    cutsGroupExcl.insert(std::make_pair(TString("ZJets"), empty_cuts_template));
+    cutsGroupExcl.insert(std::make_pair(TString("WJets"), empty_cuts_template));
 
     vector<int> cutOrder { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 19, 20, 21, 17, 18 };
+    vector<int> cutMask;
+    if (which_cutflow == "SR")
+        cutMask = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+    else if (which_cutflow == "CR_nJets")
+        cutMask = { 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+    else if (which_cutflow == "CR_dR")
+        cutMask = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1 };
+    else {
+        cout << "ERROR! Didn't understand which cutflow you want. Exiting..." << endl;
+        return;
+    }
+
 
     Float_t lumi = 59.97 * 1000; // 1/pb
 
     for (auto const & [sample, props] : samples) {
+
         TChain * data_reco = new TChain("ntuples_gbm/recoT");
         TChain * data_gen = new TChain("ntuples_gbm/genT");
         int count = 0;
@@ -124,15 +146,15 @@ void cutflowTable() {
                 }
                 // bitmask cuts
                 else {
-                    if (readCutBit(cuts, j)) {
-                        cutsExcl[sample][j]++;
+                    if ((readCutBit(cuts, j) && cutMask[j]) || (!readCutBit(cuts,j) && !cutMask[j])) {
+                        cutsExcl[sample][j] += gen_wgt * lumi * props.xsec / props.sum_gen_wgt;
                         if (props.group != TString(""))
                             cutsGroupExcl[props.group][j] += gen_wgt * lumi * props.xsec / props.sum_gen_wgt;
                     }
                     else
                         cumPass = false;
-                    if (readCutBit(cuts, j) && cumPass) {
-                        cutsIncl[sample][j]++;
+                    if (((readCutBit(cuts, j) && cutMask[j]) || (!readCutBit(cuts,j) && !cutMask[j])) && cumPass) {
+                        cutsIncl[sample][j] += gen_wgt * lumi * props.xsec / props.sum_gen_wgt;
                         if (props.group != TString(""))
                             cutsGroupIncl[props.group][j] += gen_wgt * lumi * props.xsec / props.sum_gen_wgt;
                     }
@@ -140,30 +162,29 @@ void cutflowTable() {
             }
         }
     }
+    cout << std::setprecision(1) << std::fixed;
 
-    //cout << "inclusive 5p25 52p5 6p0 60p0" << endl;
     cout << "Inclusive:" << endl;
     for (auto group : cutsGroupIncl)
         cout << group.first << " ";
     cout << endl;
     for (auto j : cutOrder) {
-        cout << "cut " << j << ": ";
+        cout << "cut " << j << " & ";
         for (auto const & group : cutsGroupIncl) {
-            cout << cutsGroupIncl[group.first][j] << " ";
+            cout << cutsGroupIncl[group.first][j] << " & ";
         }
-        cout << endl;
+        cout << " \\\\ " << endl;
     }
-    //cout << endl << "exclusive 5p25 52p5 6p0 60p0" << endl;
     cout << "Exclusive:" << endl;
     for (auto group : cutsGroupExcl)
         cout << group.first << " ";
     cout << endl;
     for (auto j : cutOrder) {
-        cout << "cut " << j << ": ";
+        cout << "cut " << j << " & ";
         for (auto group : cutsGroupIncl) {
-            cout << cutsGroupExcl[group.first][j] << " ";
+            cout << cutsGroupExcl[group.first][j] << " & ";
         }
-        cout << endl;
+        cout << " \\\\ " << endl;
     }
 
     printTimeElapsed(time_begin);

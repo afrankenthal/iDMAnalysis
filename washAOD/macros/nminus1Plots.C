@@ -6,15 +6,33 @@ using namespace common;
 
 using std::cout, std::endl, std::map, std::vector;
 
-void nminus1Plots(bool fSave=false) {
+void nminus1Plots(bool fSave=false, bool test=true) {
     TDatime time_begin;
 
+    vector<int> colors{kBlack, kRed, kMagenta, kBlue,
+        kCyan, kGreen, kYellow+1};
+
+    map<TString, TString> group_legend{
+        {"DY", "Z(ll)+Jets"},
+        {"QCD", "QCD"},
+        {"Diboson", "Di-boson"},
+        {"ZJets", "Z(#nu#nu)+Jets"},
+        {"WJets", "W(l#nu)+Jets"},
+        {"TTbar", "t#bar{t}"}
+    };
+    
     map<TString, SampleInfo> samples;
 
-    std::ifstream bkgs_file("backgrounds.json");
+    TString config_file;
+    if (test)
+        config_file = TString("configs/backgrounds_subset.json");
+    else
+        config_file = TString("configs/backgrounds_full.json");
+
+    std::ifstream bkgs_file(config_file.Data());
     json bkgs_cfg;
     bkgs_file >> bkgs_cfg;
-    int color = 3;
+    int color = 1;
     for (auto const & [bkg, cfg] : bkgs_cfg.items()) {
         samples[TString(bkg)] = SampleInfo{
             listFiles(cfg["dir"].get<std::string>().c_str()), // list of filenames
@@ -85,26 +103,25 @@ void nminus1Plots(bool fSave=false) {
     TCut nMinusMmumu = initialSelection && bits[4] && muon2 && bits[15];
     TCut nMinusNJets = initialSelection && muon2 && bits[15] && bits[16];
     TCut nMinusGoodMu = bits[1] && bits[2] && bits[3] && bits[4];
+    TCut nMinusDPhiJetMet = bits[1] && bits[2] && bits[3]; // noSelection; // initialSelection; // && bits[4] && muon2 && bits[15] && bits[16];
 
     //TCut signalRegion = initialSelection && "cutsVec[3] && cutsVec[9] && cutsVec[10] && cutsVec[11] && cutsVec[12] && cutsVec[14]";
     //TCut controlRegion_QCD = initialSelection && "!cutsVec[3] && cutsVec[9] && cutsVec[10] && cutsVec[11] && cutsVec[12] && cutsVec[14]";
     //TCut controlRegion_EW = initialSelection && "cutsVec[3] && !cutsVec[9] && !cutsVec[10] && !cutsVec[11] && !cutsVec[12] && !cutsVec[14]";
     //TCut controlRegion_TTbar = initialSelection && "cutsVec[3] && cutsVec[9] && cutsVec[10] && cutsVec[11] && cutsVec[12] && !cutsVec[14]";
 
+    vector<TString> groups_to_plot{"5p25_100", "60p0_1", "Diboson", "QCD", "DY", "TTbar", "ZJets", "WJets"};
+
     map<TString, CutInfo> cuts{};
-    cuts["nMinusDr"] = CutInfo{nMinusDr, "reco_vtx_dR", "Di-muon dR", 10, 0, 6, "N-1 (dR)",
-                               vector<TString>{"5p25_100", "60p0_1", "Di-boson", "QCD", "DY", "TTbar", "V+Jets"}};
-    cuts["nMinusMmumu"] = CutInfo{nMinusMmumu, "reco_Mmumu", "M_{#mu#mu} [GeV]", 20, 0, 50, "N-1 (M_{#mu#mu})",
-                               vector<TString>{"5p25_100", "60p0_1", "Di-boson", "QCD", "DY", "TTbar", "V+Jets"}};
-    cuts["nMinusNJets"] = CutInfo{nMinusNJets, "reco_PF_n_highPt_jets", "Number of high pT (> 30 GeV) jets", 9, 1, 10, "N-1 (nJets)",
-                               vector<TString>{"5p25_100", "60p0_1", "Di-boson", "QCD", "DY", "TTbar", "V+Jets"}};
-    cuts["nMinusGoodMu"] = CutInfo{nMinusGoodMu, "reco_n_good_dsa", "Number of quality dSA muons", 9, 1, 10, "N-1 (nGoodMuons)",
-                               vector<TString>{"5p25_100", "60p0_1", "Di-boson", "QCD", "DY", "TTbar", "V+Jets"}};
+    cuts["nMinusDr"] = CutInfo{nMinusDr, "reco_vtx_dR", "Di-muon dR", 10, 0, 6, "N-1 (dR)", groups_to_plot};
+    cuts["nMinusMmumu"] = CutInfo{nMinusMmumu, "reco_Mmumu", "M_{#mu#mu} [GeV]", 60, 0, 120, "N-1 (M_{#mu#mu})", groups_to_plot};
+    cuts["nMinusNJets"] = CutInfo{nMinusNJets, "reco_PF_n_highPt_jets", "Number of high pT (> 30 GeV) jets", 9, 1, 10, "N-1 (nJets)", groups_to_plot};
+    cuts["nMinusGoodMu"] = CutInfo{nMinusGoodMu, "reco_n_good_dsa", "Number of quality dSA muons", 9, 1, 10, "N-1 (nGoodMuons)", groups_to_plot};
+    cuts["nMinusDPhiJetMet"] = CutInfo{nMinusDPhiJetMet, "reco_PF_METjet_dphi", "#Delta#Phi(leading jet, MET)", 20, -3.2, 3.2, "N-1 (dPhiJetMet)", groups_to_plot};
 
     map<TString, TCanvas *> canvases;
 
     for (auto const & [sample, props] : samples) {
-
         int count = 0;
         TChain * data_gen = new TChain("ntuples_gbm/genT");
         TChain * data_reco = new TChain("ntuples_gbm/recoT");
@@ -123,14 +140,19 @@ void nminus1Plots(bool fSave=false) {
 
         cout << "sample: " << sample << ", sum_gen_wgt: " << props.sum_gen_wgt << endl;
 
+        float lumi = 59.97 * 1000; // 1/pb
+
         for (auto const & [cut_name, cut] : cuts) {
             if (std::find(cut.sample_list.begin(), cut.sample_list.end(), sample) != cut.sample_list.end()) {
-                data_reco->Draw(Form("%s>>h%s_%s(%d,%f,%f)", cut.plot_var.Data(), cut_name.Data(), sample.Data(), cut.nbins, cut.lowX, cut.highX), cut.tcut, "goff");
+                if (hists[sample].find(cut_name) == hists[sample].end())
+                    hists[sample][cut_name] = new TH1F(Form("h%s_%s", cut_name.Data(), sample.Data()), "", cut.nbins, cut.lowX, cut.highX);
+                data_reco->Draw(Form("%s>>+h%s_%s", cut.plot_var.Data(), cut_name.Data(), sample.Data()), cut.tcut, "goff");
                 hists[sample][cut_name] = (TH1F*)gDirectory->Get(Form("h%s_%s", cut_name.Data(), sample.Data()));
             }
             else if (std::find(cut.sample_list.begin(), cut.sample_list.end(), props.group) != cut.sample_list.end()) {
-                data_reco->Draw(Form("%s>>h%s_%s(%d,%f,%f)", cut.plot_var.Data(), cut_name.Data(), props.group.Data(), cut.nbins, cut.lowX, cut.highX), cut.tcut * Form("gen_wgt * %f / %f", props.xsec, props.sum_gen_wgt), "goff");
-                hists[props.group][cut_name] = (TH1F*)gDirectory->Get(Form("h%s_%s", cut_name.Data(), props.group.Data()));
+                if (hists[props.group].find(cut_name) == hists[props.group].end())
+                    hists[props.group][cut_name] = new TH1F(Form("h%s_%s", cut_name.Data(), props.group.Data()), "", cut.nbins, cut.lowX, cut.highX);
+                data_reco->Draw(Form("%s>>+h%s_%s", cut.plot_var.Data(), cut_name.Data(), props.group.Data()), cut.tcut * Form("gen_wgt * %f * %f / %f", lumi, props.xsec, props.sum_gen_wgt), "goff");
             }
         }
     }
@@ -140,27 +162,27 @@ void nminus1Plots(bool fSave=false) {
         auto legend = new TLegend(0.45,0.7,0.85,0.9);
         legend->SetFillStyle(0);
         //auto legend = new TLegend(0.25,0.2);
-        color = 3;
+        color = 1;
         for (auto & sample : cut.sample_list) {
+            if (hists[sample][cut_name]->Integral() < 0.00001) continue;
             hists[sample][cut_name]->Scale(1/hists[sample][cut_name]->Integral(), "width");
             if (samples.find(sample) != samples.end()) {
                 hists[sample][cut_name]->SetLineColor(samples[sample].color);
                 hists[sample][cut_name]->SetLineStyle(samples[sample].style);
             }
             else {
-                if (color == 5) // yellow
-                    hists[sample][cut_name]->SetLineColor(kYellow+1);
-                else
-                    hists[sample][cut_name]->SetLineColor(color);
-                color++;
+                hists[sample][cut_name]->SetLineColor(colors[color++]);
             }
             hists[sample][cut_name]->SetLineWidth(2);
             hs->Add(hists[sample][cut_name]);
             if (samples.find(sample) != samples.end())
                 legend->AddEntry(hists[sample][cut_name], samples[sample].label.Data());
-            else
-                legend->AddEntry(hists[sample][cut_name], sample);
+            else // group instead
+                legend->AddEntry(hists[sample][cut_name], group_legend[sample]);
         }
+
+        if (hs->GetNhists() == 0) continue;
+        
         canvases[cut_name] = new TCanvas();
         canvases[cut_name]->cd();
         hs->Draw("E HIST nostack");

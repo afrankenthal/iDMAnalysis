@@ -10,7 +10,7 @@ void calcSumGenWgt() {
 
     map<TString, SampleInfo> samples;
 
-    std::ifstream bkgs_file("backgrounds.json");
+    std::ifstream bkgs_file("configs/backgrounds_full.json");
     json bkgs_cfg;
     bkgs_file >> bkgs_cfg;
     json out_json = bkgs_cfg;
@@ -19,8 +19,8 @@ void calcSumGenWgt() {
             listFiles(cfg["dir"].get<std::string>().c_str()), // list of filenames 
             bkg, // plot label
             cfg["xsec"].get<float>(), // xsec
-            0.0, // sum_gen_wgt
-            -1, // limit_num_files
+            cfg["sum_gen_wgt"].get<float>(), // sum_gen_wgt
+            cfg["limit_num_files"].get<int>(), // limit_num_files
             1, // weight
             TString(cfg["group"].get<std::string>()), // plot group
             0, // line color
@@ -28,6 +28,8 @@ void calcSumGenWgt() {
         };
 
     for (auto const & [sample, props] : samples) {
+        if (props.sum_gen_wgt > 0.1) continue; // only run over previously empty samples
+
         cout << "Processing sample " << sample << ", " << props.filenames.size() << " files" << endl;
 
         TChain * data_gen = new TChain("ntuples_gbm/genT");
