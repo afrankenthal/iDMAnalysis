@@ -6,6 +6,7 @@
 #include "iDMSkimmer/washAOD/interface/trigEffiForMuTrack.h"
 #include "iDMSkimmer/washAOD/interface/trigSelfEffiForMuTrack.h"
 #include "iDMSkimmer/washAOD/interface/SignalRegionEffi.h"
+#include "iDMSkimmer/washAOD/interface/MetTrigSelfEffiForMuTrack.h"
 #include "iDMSkimmer/washAOD/interface/TrigRecoEffi.h"
 #include "iDMSkimmer/washAOD/interface/iDMAnalyzer.h"
 #include "iDMSkimmer/washAOD/interface/TrackQuality.h"
@@ -16,5 +17,6 @@ DEFINE_FWK_MODULE(trigEffiForMuTrack);
 DEFINE_FWK_MODULE(trigSelfEffiForMuTrack);
 DEFINE_FWK_MODULE(SignalRegionEffi);
 DEFINE_FWK_MODULE(TrigRecoEffi);
+DEFINE_FWK_MODULE(MetTrigSelfEffiForMuTrack);
 DEFINE_FWK_MODULE(iDMAnalyzer);
 DEFINE_FWK_MODULE(TrackQuality);
