@@ -255,9 +255,15 @@ void MetTrigSelfEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::Eve
     recoPFMetPt_ = metr3->pt();
     recoPFMetEta_ = metr3->eta();
     recoPFMetPhi_ = metr3->phi();
-
+    
+    //save if Enriched criteria is met
+    bool enrich = false;
+    if( (recoJetPt_ >100) && (recoJetEta_<4.5) && (fired0_==true) ){//&& (pt_.at(0)>25) && (eta_.at(0)<2.5)){
+	enrich = true;
+	}
+    if (enrich){
     muTrackT_->Fill();
-
+	}
     return;
 }
 

@@ -10,7 +10,8 @@ if test:
 	masslist = ["Mchi-%s_dMchi-%s"%(mchi,dmchi) for mchi,dmchi in zip(mchis,dmchis)]
 
 else:
-	lifelist = [1,10,100,1000]
+	#lifelist = [1,10,100,1000]
+	lifelist = [100]
 	#mchis=['52p5']
 	#dmchis=['5p0']
 	#mchis=['5p25']
@@ -25,15 +26,20 @@ else:
 
 print masslist
 
-makedir = subprocess.Popen("mkdir /uscmst1b_scratch/lpc1/3DayLifetime/mireid",shell=True,stdout=subprocess.PIPE)
+odir = "/uscmst1b_scratch/lpc1/3DayLifetime/mireid/v4"
+#makedir = subprocess.Popen("mkdir /uscmst1b_scratch/lpc1/3DayLifetime/mireid",shell=True,stdout=subprocess.PIPE)
+makedir = subprocess.Popen("mkdir %s"%odir,shell=True,stdout=subprocess.PIPE)
 makedir.wait()
 analyzer ='MetTrigSelfEffiForMuTrack_cfg.py'
 #analyzer ='iDMAnalyzer_cfg.py'
 #analyzer='MuRecoEffi_cfg.py'
+analyzer_name = {'MetTrigSelfEffiForMuTrack_cfg.py': 'MetTrigStudyv4',
+		'iDMAnalyzer_cfg.py': 'iDMAnalysis',
+		'MuRecoEffi_cfg.py': 'MuRecoEffi'}
 for mass in masslist:
 	for life in lifelist:	
-		odir = "/uscmst1b_scratch/lpc1/3DayLifetime/mireid"
-		ofile= "iDMAnalysis_{0}_ctau-{1}.root".format(mass,life)
+	#	odir = "/uscmst1b_scratch/lpc1/3DayLifetime/mireid/v3"
+		ofile= "{2}_{0}_ctau-{1}.root".format(mass,life,analyzer_name[analyzer])
 		if test:
 			cmdxx = "cmsRun python/{1} year=2018 inputFiles_load=data/iDM/2018/signal/test.list outputFile=test_{0}".format(ofile,analyzer)#,mass,life)
 		
@@ -54,7 +60,7 @@ for mass in masslist:
 			process1.wait()
 
 			#transfer = "xrdcp {0}/{1} root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/reco_effi/{2}_ctau-{3}/{1}".format(odir,ofile,mass,life)
-			transfer = "xrdcp {0}/{1} root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis/{2}_ctau-{3}/{1}".format(odir,ofile,mass,life)
+			transfer = "xrdcp {0}/{1} root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/{4}/{2}_ctau-{3}/{1}".format(odir,ofile,mass,life,analyzer_name[analyzer])
 			print(transfer)
                 	process2 = subprocess.Popen(transfer,shell=True, stdout=subprocess.PIPE)
                 	for line2 in iter(process2.stdout.readline,b''):

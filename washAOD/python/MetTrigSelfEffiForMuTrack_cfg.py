@@ -80,24 +80,24 @@ process.TFileService = cms.Service("TFileService",
 
 ## Trigger-reco efficiency
 from iDMSkimmer.washAOD.MetTrigSelfEffiForMuTrack_cfi import MetTrigSelfEffiForMuTrack
-process.RECO_dsa = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'),trigPath0 = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha'))
-process.RECO_dgm = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), trigPath0 = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha'), muTrack = cms.InputTag("displacedGlobalMuons"))
-process.RECO_rsa = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), trigPath0 = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha'), muTrack = cms.InputTag("refittedStandAloneMuons"))
-process.RECO_gbm = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), trigPath0 = cms.string('HLT_DoubleL2Mu23NoVtx_2Cha'), muTrack = cms.InputTag("globalMuons"))
+process.RECO_dsa = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'),trigPath0 = cms.string('HLT_Mu17'))
+process.RECO_dsa50 = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), trigPath0 = cms.string('HLT_Mu50'))
+process.RECO_gbm = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), trigPath0 = cms.string('HLT_Mu17'), muTrack = cms.InputTag("globalMuons"))
+process.RECO_gbm50 = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), trigPath0 = cms.string('HLT_Mu50'), muTrack = cms.InputTag("globalMuons"))
 
 ## constructing the path
 if options.year == 2017:
     process.p = cms.Path(
                          process.RECO_dsa
-                         + process.RECO_dgm
-                         + process.RECO_rsa
+                         + process.RECO_dsa50
                          + process.RECO_gbm
+                         + process.RECO_gbm50
                          )
 
 if options.year == 2018:
     process.p = cms.Path(
                          process.RECO_dsa
-                         + process.RECO_dgm
-                         + process.RECO_rsa
+                         + process.RECO_dsa50
                          + process.RECO_gbm
+                         + process.RECO_gbm50
                          )

@@ -72,16 +72,20 @@ def main():
         config.General.transferLogs = True
 
         config.JobType.pluginName = 'Analysis'
-        config.JobType.psetName = 'iDMAnalyzer_cfg.py'
+        #config.JobType.psetName = 'iDMAnalyzer_cfg.py'
+        config.JobType.psetName = 'MetTrigSelfEffiForMuTrack_cfg.py'
         #config.JobType.psetName = 'python/iDMAnalyzer_cfg.py'
         #config.JobType.maxMemoryMB = 4000
         #config.JobType.numCores = 1
 
 
         #config.Data.outputPrimaryDataset = 'TrigRecoEffStudies'
-        config.Data.splitting = 'Automatic'
-        #config.Data.unitsPerJob = 1
-        config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds'
+        #config.Data.splitting = 'Automatic'
+        #config.Data.splitting = 'FileBased'
+        config.Data.splitting = 'LumiBased'
+        config.Data.unitsPerJob = 100
+        #config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds'
+        config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/signal/MetTrigStudyv6/backgrounds'
         config.Data.publication = False
 
         #config.Site.ignoreGlobalBlacklist = True
@@ -126,7 +130,11 @@ def main():
 		'WJetsToLNu_HT-70To100':'/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 		'WJetsToLNu_HT-100To200':'/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 		'WJetsToLNu_HT-200To400':'/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		'WJetsToLNu_HT-400To600':'/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
+		'WJetsToLNu_HT-400To600':'/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-600To800':'/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-800To1200':'/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-1200To2500':'/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-2500ToInf':'/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
 	}
 	DY_sample = {
 		'DYJetsToTauTau':'/DYJetsToTauTau_ForcedMuDecay_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM',
@@ -136,19 +144,51 @@ def main():
 		'WZTo3LNu':'/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
 		'WWJJToLNuLNu':'/WWJJToLNuLNu_QCD_noTop_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
 		'ZZTo2L2Nu':'/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
+		'ZZTo2L2Nu_ext2':'/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext2-v2/AODSIM',
 		'WWTo2L2Nu':'/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
 	}
 
+	WMuNu_sample = {
+	'WMuNu': '/WToMuNu_M-200_TuneCP5_13TeV-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
+	}
+	trig_data = {
+	#'singleMu_RunA_Jun':'/SingleMuon/Run2018A-06Jun2018-v1/AOD',
+	#'singleMu_RunA_Sep':'/SingleMuon/Run2018A-17Sep2018-v2/AOD',
+	#'singleMu_RunA_May':'/SingleMuon/Run2018A-22May2018-v1/AOD',
+	#'singleMu_RunB_Sep':'/SingleMuon/Run2018B-17Sep2018-v1/AOD',
+	#'singleMu_RunC_Sep':'/SingleMuon/Run2018C-17Sep2018-v1/AOD',
+	'singleMu_RunD_Jan':'/SingleMuon/Run2018D-22Jan2019-v2/AOD',
+	#'singleMu_RunD_Apr':'/SingleMuon/Run2018D-30Apr2019-v1/AOD'
+	}
+	extra_samples = {
+		'WJetsToLNu_HT-600To800':'/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-800To1200':'/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-1200To2500':'/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-2500ToInf':'/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+ 		'ZZTo2L2Nu_ext2':'/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext2-v2/AODSIM'
+	}
+
+
+	#samples = extra_samples
 	#samples = QCD_sample
 	#samples = TT_sample
 	#samples = Zjets_sample
 	#samples = Wjets_sample
-	samples = DY_sample
+	#samples = DY_sample
 	#samples = Di_sample
+	#samples = WMuNu_sample
+	samples = trig_data
+
+	#samples = TT_sample
+	#samples.update(Wjets_sample)
+	#samples.update(Di_sample)
+	#samples.update(WMuNu_sample)
+	#samples.update(TT_sample)
         for sample, dataset in samples.items():
 
             config.Data.inputDataset = dataset
-            config.General.requestName = 'iDMAnalysis_' + sample
+            #config.General.requestName = 'iDMAnalysis_' + sample
+            config.General.requestName = 'MetTrigEffiv2_' + sample
             #config.Data.outputDatasetTag = sample
             #config.Data.userInputFiles = open(basedir + sample + '.list').readlines()
 
