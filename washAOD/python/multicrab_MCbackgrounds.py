@@ -81,17 +81,9 @@ def main():
 
         #config.Data.outputPrimaryDataset = 'TrigRecoEffStudies'
         #config.Data.splitting = 'Automatic'
-<<<<<<< HEAD
-        #config.Data.splitting = 'FileBased'
-        config.Data.splitting = 'LumiBased'
-        config.Data.unitsPerJob = 100
-        #config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds'
-        config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/signal/MetTrigStudyv6/backgrounds'
-=======
         config.Data.splitting = 'FileBased'
         config.Data.unitsPerJob = 1
         config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds'
->>>>>>> 9623d2b53cb06698b411d24024c4c1218d8a001c
         config.Data.publication = False
 
         #config.Site.ignoreGlobalBlacklist = True
@@ -137,16 +129,6 @@ def main():
 		#'ZJetsToNuNu_HT-2500ToInf':'/ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
 	}
 	Wjets_sample = {
-<<<<<<< HEAD
-		'WJetsToLNu':'/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
-		'WJetsToLNu_HT-70To100':'/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		'WJetsToLNu_HT-100To200':'/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		'WJetsToLNu_HT-200To400':'/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		'WJetsToLNu_HT-400To600':'/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		'WJetsToLNu_HT-600To800':'/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		'WJetsToLNu_HT-800To1200':'/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		'WJetsToLNu_HT-1200To2500':'/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-=======
 		#'WJetsToLNu':'/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
 		#'WJetsToLNu_HT-70To100':'/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 		#'WJetsToLNu_HT-100To200':'/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
@@ -155,7 +137,6 @@ def main():
 		#'WJetsToLNu_HT-600To800':'/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 		#'WJetsToLNu_HT-800To1200':'/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 		#'WJetsToLNu_HT-1200To2500':'/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
->>>>>>> 9623d2b53cb06698b411d24024c4c1218d8a001c
 		'WJetsToLNu_HT-2500ToInf':'/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
 	}
 	DY_sample = {
@@ -195,11 +176,7 @@ def main():
 	#samples = QCD_sample
 	#samples = TT_sample
 	#samples = Zjets_sample
-<<<<<<< HEAD
 	#samples = Wjets_sample
-=======
-	samples = Wjets_sample
->>>>>>> 9623d2b53cb06698b411d24024c4c1218d8a001c
 	#samples = DY_sample
 	#samples = Di_sample
 	#samples = WMuNu_sample
@@ -213,12 +190,7 @@ def main():
         for sample, dataset in samples.items():
 
             config.Data.inputDataset = dataset
-<<<<<<< HEAD
-            #config.General.requestName = 'iDMAnalysis_' + sample
-            config.General.requestName = 'MetTrigEffiv2_' + sample
-=======
             config.General.requestName = 'iDMAnalysis_' + sample 
->>>>>>> 9623d2b53cb06698b411d24024c4c1218d8a001c
             #config.Data.outputDatasetTag = sample
             #config.Data.userInputFiles = open(basedir + sample + '.list').readlines()
 
