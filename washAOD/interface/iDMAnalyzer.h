@@ -12,6 +12,7 @@
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
 
+#include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -44,6 +45,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         static void fillDescriptions(edm::ConfigurationDescriptions&);
 
     private:
+        int eventCounter;
 
         bool getCollections(const edm::Event&);
 
@@ -56,6 +58,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         edm::Service<TFileService> fs;
 
         // Tags
+        const edm::InputTag bTagProbbTag_;
+        const edm::InputTag bTagProbbbTag_;
         const edm::InputTag muTrackTag1_;
         const edm::InputTag muTrackTag2_;
         const edm::InputTag genParticleTag_;
@@ -71,6 +75,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const std::string processName_;
 
         // Tokens
+        const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbToken_;
+        const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbbToken_;
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken1_;
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken2_;
         const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
@@ -84,6 +90,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::EDGetTokenT<GenEventInfoProduct> genEvtInfoToken_;
 
         // Handles
+        edm::Handle<reco::JetTagCollection> bTagProbbHandle_;
+        edm::Handle<reco::JetTagCollection> bTagProbbbHandle_;
         edm::Handle<reco::TrackCollection> muTrackHandle1_;
         edm::Handle<reco::TrackCollection> muTrackHandle2_;
         edm::Handle<reco::GenParticleCollection> genParticleHandle_;
@@ -151,9 +159,12 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoPhi_;
         std::vector<float> recoDxy_;
         std::vector<float> recoDz_;
+        std::vector<int> recoCharge_;
         std::vector<float> recoTrkChi2_;
         std::vector<float> recoTrkNumPlanes_;
         std::vector<float> recoTrkNumHits_;
+        //int recoDSAIdx0_;
+        //int recoDSAIdx1_;
 
         // Selected muon branches
         int nSelectedMuons_;
@@ -164,6 +175,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> selectedMuonsPhi_;
         std::vector<float> selectedMuonsDxy_;
         std::vector<float> selectedMuonsDz_;
+        std::vector<int> selectedMuonsCharge_;
 
         // Vertex branches
         float recoVtxVxy_;
@@ -184,6 +196,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoPFJetPt_;
         std::vector<float> recoPFJetEta_;
         std::vector<float> recoPFJetPhi_;
+        std::vector<float> recoPFJetBTag_;
 
         float recoPFMETJetDeltaPhi_;
 

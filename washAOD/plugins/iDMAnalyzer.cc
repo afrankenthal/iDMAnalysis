@@ -22,6 +22,8 @@
 #include <vector>
 
 iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
+    bTagProbbTag_(ps.getParameter<edm::InputTag>("bTagProbb")),
+    bTagProbbbTag_(ps.getParameter<edm::InputTag>("bTagProbbb")),
     muTrackTag1_(ps.getParameter<edm::InputTag>("muTrack1")),
     muTrackTag2_(ps.getParameter<edm::InputTag>("muTrack2")),
     genParticleTag_(ps.getParameter<edm::InputTag>("genParticle")),
@@ -36,6 +38,8 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     genEvtInfoTag_(ps.getParameter<edm::InputTag>("genEvt")),
     processName_(ps.getParameter<std::string>("processName")),
     
+    bTagProbbToken_(consumes<reco::JetTagCollection>(bTagProbbTag_)),
+    bTagProbbbToken_(consumes<reco::JetTagCollection>(bTagProbbbTag_)),
     muTrackToken1_(consumes<reco::TrackCollection>(muTrackTag1_)),
     muTrackToken2_(consumes<reco::TrackCollection>(muTrackTag2_)),
     genParticleToken_(consumes<reco::GenParticleCollection>(genParticleTag_)),
@@ -56,6 +60,8 @@ iDMAnalyzer::~iDMAnalyzer() = default;
 void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
 {
     edm::ParameterSetDescription desc;
+    desc.add<edm::InputTag>("bTagProbb", edm::InputTag("pfDeepCSVJetTags", "probb", "RECO"));
+    desc.add<edm::InputTag>("bTagProbbb", edm::InputTag("pfDeepCSVJetTags", "probbb", "RECO"));
     desc.add<edm::InputTag>("muTrack1", edm::InputTag("displacedStandAloneMuons"));
     desc.add<edm::InputTag>("muTrack2", edm::InputTag("globalMuons"));
     desc.add<edm::InputTag>("genParticle", edm::InputTag("genParticles"));
@@ -74,6 +80,8 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
 
 void iDMAnalyzer::beginJob()
 {
+    eventCounter = 0;
+
     recoT = fs->make<TTree>("recoT", "");
 
     recoT->Branch("event_n", &event_);
@@ -85,6 +93,7 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_dsa_phi", &recoPhi_);
     recoT->Branch("reco_dsa_dxy", &recoDxy_);
     recoT->Branch("reco_dsa_dz",  &recoDz_);
+    recoT->Branch("reco_dsa_charge", &recoCharge_);
     recoT->Branch("reco_dsa_trk_chi2", &recoTrkChi2_);
     recoT->Branch("reco_dsa_trk_n_planes", &recoTrkNumPlanes_);
     recoT->Branch("reco_dsa_trk_n_hits", &recoTrkNumHits_);
@@ -95,6 +104,7 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_sel_mu_phi", &selectedMuonsPhi_);
     recoT->Branch("reco_sel_mu_dxy", &selectedMuonsDxy_);
     recoT->Branch("reco_sel_mu_dz", &selectedMuonsDz_);
+    recoT->Branch("reco_sel_mu_charge", &selectedMuonsCharge_);
     recoT->Branch("reco_Mmumu",  &recoMmumu_);
     recoT->Branch("reco_METmu_dphi", &recoDeltaPhiMetMu_);
     recoT->Branch("reco_vtx_vxy", &recoVtxVxy_);
@@ -109,6 +119,7 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_PF_jet_pt", &recoPFJetPt_);
     recoT->Branch("reco_PF_jet_eta", &recoPFJetEta_);
     recoT->Branch("reco_PF_jet_phi", &recoPFJetPhi_);
+    recoT->Branch("reco_PF_jet_BTag", &recoPFJetBTag_);
     recoT->Branch("reco_PF_METjet_dphi", &recoPFMETJetDeltaPhi_);
     recoT->Branch("reco_MHT_Pt", &MHTPt_);
     recoT->Branch("cuts", &cuts_);
@@ -170,6 +181,16 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
 
     char error_msg[] = "iDMAnalyzer::GetCollections: Error in getting product %s from Event!";
         
+    iEvent.getByToken(bTagProbbToken_, bTagProbbHandle_);
+    if (!bTagProbbHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagProbb");
+        return false;
+    }
+    iEvent.getByToken(bTagProbbbToken_, bTagProbbbHandle_);
+    if (!bTagProbbbHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagProbbb");
+        return false;
+    }
     iEvent.getByToken(muTrackToken1_, muTrackHandle1_);
     if (!muTrackHandle1_.isValid()) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "muTrack1");
@@ -248,6 +269,15 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     if (!getCollections(iEvent))
         return;
 
+    //Loop over jets and study b tag info.
+    //for (size_t i = 0; i != bTagsProbb.size(); ++i) {
+    //    if (i >= 9) break;
+    //    cout<<" Jet "<< i 
+    //        <<" has Probb b tag discriminator = "<<bTagsProbb[i].second
+    //        <<" and Probbb b tag discriminator = "<<bTagsProbbb[i].second
+    //        <<" and sum = " << bTagsProbb[i].second+bTagsProbbb[i].second
+    //        << " and jet Pt = "<<bTagsProbb[i].first->pt()<<endl;
+    //}
 
     const edm::EventAuxiliary& aux = iEvent.eventAuxiliary();
     event_ = aux.event();
@@ -257,17 +287,22 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoPhi_.clear();
     recoDxy_.clear();
     recoDz_ .clear();
+    recoCharge_.clear();
     recoTrkChi2_.clear();
     recoTrkNumPlanes_.clear();
     recoTrkNumHits_.clear();
+    //recoDSAIdx0_ = -9999;
+    //recoDSAIdx1_ = -9999;
     recoPFJetPt_.clear();
     recoPFJetEta_.clear();
     recoPFJetPhi_.clear();
+    recoPFJetBTag_.clear();
     selectedMuonsPt_.clear();
     selectedMuonsEta_.clear();
     selectedMuonsPhi_.clear();
     selectedMuonsDxy_.clear();
     selectedMuonsDz_.clear();
+    selectedMuonsCharge_.clear();
 
     fired_ = 0;
     recoPFMetPt_ = -9999;
@@ -296,6 +331,8 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     
     // Get 10 top leading jets info, sorted by pT
     // Note that jet collection is already sorted by pT
+    const reco::JetTagCollection & bTagsProbb = *(bTagProbbHandle_.product());
+    const reco::JetTagCollection & bTagsProbbb = *(bTagProbbbHandle_.product());
     recoPFNJet_ = recoJetHandle_->size(); 
     recoPFNHighPtJet_ = 0;
     for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
@@ -307,6 +344,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             recoPFJetPt_.push_back(jet_i->pt());
        		recoPFJetEta_.push_back(jet_i->eta());
        		recoPFJetPhi_.push_back(jet_i->phi());
+            recoPFJetBTag_.push_back(bTagsProbb[i].second+bTagsProbbb[i].second);
         }
     }
 
@@ -363,6 +401,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         recoPhi_.push_back(mu_i->phi());
         recoDxy_.push_back(mu_i->dxy());
         recoDz_.push_back(mu_i->dz());
+        recoCharge_.push_back(mu_i->charge());
         recoTrkChi2_.push_back(mu_i->normalizedChi2());
         recoTrkNumPlanes_.push_back(mu_i->hitPattern().muonStationsWithValidHits());
         recoTrkNumHits_.push_back(mu_i->hitPattern().numberOfValidMuonHits());
@@ -404,7 +443,10 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
                         recoVtxSigmaVxy_ = sigma_vxy;
                         recoVtxVz_ = vertex.z();
                         recoVtxDr_ = reco::deltaR(*muTracks1[muGoodTracksIdx[i]], *muTracks1[muGoodTracksIdx[j]]);
-                        dSAIdx[0] = i; dSAIdx[1] = j;
+                        dSAIdx[0] = muGoodTracksIdx[i]; 
+                        dSAIdx[1] = muGooodTracksIdx[j];
+                        //recoDSAIdx0_ = muGoodTracksIdx[i]; 
+                        //recoDSAIdx1_ = muGoodTracksIdx[j];
                     }
                 }
             }
@@ -451,6 +493,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             selectedMuonsPhi_.push_back(gbm_i->phi());
             selectedMuonsDxy_.push_back(gbm_i->dxy());
             selectedMuonsDz_.push_back(gbm_i->dz());
+            selectedMuonsCharge_.push_back(gbm_i->charge());
             for (size_t i = 0; i < muGoodTracksIdx2.size(); i++) {
                 for (size_t j = 0; j < 2; j++) {
                     if ((int)i != smallest_i && (int)j != smallest_j) {
@@ -469,6 +512,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
                 selectedMuonsPhi_.push_back(gbm2_i->phi());
                 selectedMuonsDxy_.push_back(gbm2_i->dxy());
                 selectedMuonsDz_.push_back(gbm2_i->dz());
+                selectedMuonsCharge_.push_back(gbm2_i->charge());
             }
             else {
                 reco::TrackRef dsa2_j = muTracks1[dSAIdx[1-smallest_j]];
@@ -477,6 +521,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
                 selectedMuonsPhi_.push_back(dsa2_j->phi());
                 selectedMuonsDxy_.push_back(dsa2_j->dxy());
                 selectedMuonsDz_.push_back(dsa2_j->dz());
+                selectedMuonsCharge_.push_back(dsa2_j->charge());
             }
         }
         else {
@@ -486,12 +531,14 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             selectedMuonsPhi_.push_back(dsa1_j->phi());
             selectedMuonsDxy_.push_back(dsa1_j->dxy());
             selectedMuonsDz_.push_back(dsa1_j->dz());
+            selectedMuonsCharge_.push_back(dsa1_j->charge());
             reco::TrackRef dsa2_j = muTracks1[dSAIdx[1]];
             selectedMuonsPt_.push_back(dsa2_j->pt());
             selectedMuonsEta_.push_back(dsa2_j->eta());
             selectedMuonsPhi_.push_back(dsa2_j->phi());
             selectedMuonsDxy_.push_back(dsa2_j->dxy());
             selectedMuonsDz_.push_back(dsa2_j->dz());
+            selectedMuonsCharge_.push_back(dsa2_j->charge());
         }
     }
     
@@ -761,11 +808,17 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     
     recoPFNHighPtJet_ = 0;
     setCutBit(4);
-    for (size_t i = 1; i < recoPFJetPt_.size(); i++) {
+    for (size_t i = 0; i < recoPFJetPt_.size(); i++) 
         if (recoPFJetPt_[i] > 30)
             recoPFNHighPtJet_++;
-        if (recoPFNHighPtJet_ >= 2) clearCutBit(4);
-    }
+    if (recoPFNHighPtJet_ >= 3) clearCutBit(4);
+
+    // None of the 1-or-2 high-pt jets is b-tagged
+    setCutBit(5);
+    if (recoPFNHighPtJet_ <= 2) 
+        for (int i = 0; i < recoPFNHighPtJet_; i++) 
+            if (recoPFJetBTag_[i] > 0.4184)
+                clearCutBit(5);
 
     // dsa muon cuts
     for (size_t i = 0; i < 2; i++) {
@@ -774,16 +827,16 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         reco::TrackRef mu_i = muTracks1[dSAIdx[i]];
 
         if (mu_i->hitPattern().muonStationsWithValidHits() >= 2)
-            setCutBit(5 + i*numMuCuts);
-        if (mu_i->hitPattern().numberOfValidMuonHits() >= 12)
             setCutBit(6 + i*numMuCuts);
-        if (mu_i->normalizedChi2() < 10)
+        if (mu_i->hitPattern().numberOfValidMuonHits() >= 12)
             setCutBit(7 + i*numMuCuts);
+        if (mu_i->normalizedChi2() < 10)
+            setCutBit(8 + i*numMuCuts);
 
         if (mu_i->pt() > 5)
-            setCutBit(8 + i*numMuCuts);
-        if (mu_i->eta() < 2.4)
             setCutBit(9 + i*numMuCuts);
+        if (mu_i->eta() < 2.4)
+            setCutBit(10 + i*numMuCuts);
         //if (abs(mu_tmp->dxy()) > 0.1 && abs(mu_tmp->dxy()) < 700)
          //   cutsVec[9 + i*numMuCuts] = 1;
     }
@@ -791,20 +844,28 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     // Check dR between selected muons (SR)
     if (recoNGoodDSAMu_ > 1 && fFoundValidVertex) 
         if (std::abs(recoVtxDr_) < 0.8)
-            setCutBit(15);
+            setCutBit(16);
 
     // Check invariant mass between muons (SR)
     if (std::abs(recoMmumu_) < 50)
-        setCutBit(16);
+        setCutBit(17);
+
+    // Check OS muons
+    if (recoNGoodDSAMu_ > 1 && fFoundValidVertex)
+       if ((selectedMuonsCharge_[0]+selectedMuonsCharge_[1]) == 0)
+            setCutBit(18);
     
     // Check DeltaPhi between MET and leading muon pair
     if (recoNGoodDSAMu_ > 1 && fFoundValidVertex)
         if (std::abs(recoDeltaPhiMetMu_) < 0.4)
-            setCutBit(17);
+            setCutBit(19);
     
     // Only have 1 good dSA muon (one-lepton CR)
     if (recoNGoodDSAMu_ == 1 && nSelectedMuons_ == 1)
-        setCutBit(18);
+        setCutBit(20);
+
+    // Number of matched GBM-DSA muons
+    setCutBit(21 + recoNMatchedGBMvDSA_);
 
     recoT->Fill();
     genT->Fill();
