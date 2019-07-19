@@ -5,19 +5,33 @@ using namespace common;
 
 using std::cout, std::endl, std::map, std::vector;
 
-void calcSumGenWgt() {
+void calcSumGenWgt(int which=0) {
     TDatime time_begin;
 
     map<TString, SampleInfo> samples;
 
-    std::ifstream bkgs_file("configs/backgrounds_full.json");
-    json bkgs_cfg;
-    bkgs_file >> bkgs_cfg;
-    json out_json = bkgs_cfg;
-    for (auto const & [bkg, cfg] : bkgs_cfg.items())
-        samples[TString(bkg)] = SampleInfo{
+    TString config_name;
+    if (which == 0)
+        config_name = TString("configs/signal.json");
+    else if (which == 1)
+        config_name = TString("configs/backgrounds_full.json");
+    else if (which == 2)
+        config_name = TString("configs/backgrounds_subset.json");
+    else if (which == 3)
+        config_name = TString("configs/test.json");
+    else {
+        cout << "Which config option invalid! Returning..." << endl;
+        return;
+    }
+
+    std::ifstream file(config_name.Data());
+    json cfgs;
+    file >> cfgs;
+    json out_json = cfgs;
+    for (auto const & [sample, cfg] : cfgs.items())
+        samples[TString(sample)] = SampleInfo{
             listFiles(cfg["dir"].get<std::string>().c_str()), // list of filenames 
-            bkg, // plot label
+            sample, // plot label
             cfg["xsec"].get<float>(), // xsec
             cfg["sum_gen_wgt"].get<float>(), // sum_gen_wgt
             cfg["limit_num_files"].get<int>(), // limit_num_files
@@ -53,7 +67,7 @@ void calcSumGenWgt() {
         out_json[sample.Data()]["sum_gen_wgt"] = sum_gen_wgt;
         out_json[sample.Data()]["limit_num_files"] = limit_num_files;
     }
-    std::ofstream out("backgrounds_out.json");
+    std::ofstream out("out.json");
     out << std::setw(4) << out_json << endl;
 
     printTimeElapsed(time_begin);

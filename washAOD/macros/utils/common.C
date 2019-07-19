@@ -27,8 +27,11 @@ namespace common {
 
     //vector<TString> listFiles(SampleInfo & sample, const char *dirname="", const char *ext=".root") {
     vector<TString> listFiles(const char *dirname="", const char *ext=".root") {
-        vector<TString> filenames;
         TSystemDirectory dir(dirname, dirname); 
+        // First check if dirname is actually just a single .root file
+        if (TString(dirname).EndsWith(TString(ext)))
+            return vector<TString>{TString(dirname)};
+        vector<TString> filenames;
         TList *files = dir.GetListOfFiles(); 
         if (files) { 
             TSystemFile *file; 
