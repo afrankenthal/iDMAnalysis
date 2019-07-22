@@ -1,0 +1,9 @@
+{
+    "test": {
+        "dir": "../test.root",
+        "group": "test",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 126.0,
+        "xsec": 0.002101050525269
+    }
+}
