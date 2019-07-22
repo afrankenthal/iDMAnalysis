@@ -97,6 +97,8 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_dsa_trk_chi2", &recoTrkChi2_);
     recoT->Branch("reco_dsa_trk_n_planes", &recoTrkNumPlanes_);
     recoT->Branch("reco_dsa_trk_n_hits", &recoTrkNumHits_);
+    recoT->Branch("reco_dsa_idx0", &recoDSAIdx0_);
+    recoT->Branch("reco_dsa_idx1", &recoDSAIdx1_);
     recoT->Branch("reco_n_gbmdsa_match", &recoNMatchedGBMvDSA_);
     recoT->Branch("reco_gbmdsa_dR", &recoGBMDSADr_);
     recoT->Branch("reco_sel_mu_pt", &selectedMuonsPt_);
@@ -291,8 +293,8 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoTrkChi2_.clear();
     recoTrkNumPlanes_.clear();
     recoTrkNumHits_.clear();
-    //recoDSAIdx0_ = -9999;
-    //recoDSAIdx1_ = -9999;
+    recoDSAIdx0_ = -9999;
+    recoDSAIdx1_ = -9999;
     recoPFJetPt_.clear();
     recoPFJetEta_.clear();
     recoPFJetPhi_.clear();
@@ -444,9 +446,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
                         recoVtxVz_ = vertex.z();
                         recoVtxDr_ = reco::deltaR(*muTracks1[muGoodTracksIdx[i]], *muTracks1[muGoodTracksIdx[j]]);
                         dSAIdx[0] = muGoodTracksIdx[i]; 
-                        dSAIdx[1] = muGooodTracksIdx[j];
-                        //recoDSAIdx0_ = muGoodTracksIdx[i]; 
-                        //recoDSAIdx1_ = muGoodTracksIdx[j];
+                        dSAIdx[1] = muGoodTracksIdx[j];
+                        recoDSAIdx0_ = muGoodTracksIdx[i]; 
+                        recoDSAIdx1_ = muGoodTracksIdx[j];
                     }
                 }
             }

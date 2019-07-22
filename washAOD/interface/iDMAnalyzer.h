@@ -163,8 +163,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoTrkChi2_;
         std::vector<float> recoTrkNumPlanes_;
         std::vector<float> recoTrkNumHits_;
-        //int recoDSAIdx0_;
-        //int recoDSAIdx1_;
+        int recoDSAIdx0_;
+        int recoDSAIdx1_;
 
         // Selected muon branches
         int nSelectedMuons_;
