@@ -17,6 +17,7 @@ config = config()
 
 #sample = 'ZJetsToNuNu_HT-100To200'
 #sample = 'ZJetsToNuNu_HT-200To400'
+sample = 'ZJetsToNuNu_HT-400To600'
 
 #sample = 'TTTo2L2Nu'
 #sample = 'TT_diLept'
@@ -31,7 +32,7 @@ config = config()
 #sample = 'QCD_bEnriched_HT1500to2000'
 #sample = 'QCD_bEnriched_HT2000toInf'
 
-sample = 'WMuNu'
+#sample = 'WMuNu'
 input_data = {
 
 'WZTo3LNu':'/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
@@ -50,6 +51,11 @@ input_data = {
 
 'ZJetsToNuNu_HT-100To200':'/ZJetsToNuNu_HT-100To200_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 'ZJetsToNuNu_HT-200To400':'/ZJetsToNuNu_HT-200To400_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+'ZJetsToNuNu_HT-400To600':'/ZJetsToNuNu_HT-400To600_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
+'ZJetsToNuNu_HT-600To800':'/ZJetsToNuNu_HT-600To800_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+'ZJetsToNuNu_HT-800To1200':'/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+'ZJetsToNuNu_HT-1200To2500':'/ZJetsToNuNu_HT-1200To2500_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+'ZJetsToNuNu_HT-2500ToInf':'/ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 
 'TTTo2L2Nu':'/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 'TT_diLept':'/TT_DiLept_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
@@ -75,21 +81,22 @@ config.General.transferLogs = True
 
 config.JobType.pluginName = 'Analysis'
 #config.JobType.psetName = 'SigRegEff_cfg.py'
-config.JobType.psetName = 'MetTrigSelfEffiForMuTrack_cfg.py'
+#config.JobType.psetName = 'MetTrigSelfEffiForMuTrack_cfg.py'
+config.JobType.psetName = 'iDMAnalyzer_cfg.py'
 #config.JobType.maxMemoryMB = 4000
 #config.JobType.numCores = 1
 
 #config.Data.outputPrimaryDataset = 'iDM_2018_MC'
 config.Data.outputDatasetTag = 'crab_' + sample
 config.Data.splitting = 'Automatic'
-#config.Data.splitting = 'FileBased'
+config.Data.splitting = 'FileBased'
 #config.Data.unitsPerJob = 3
-#config.Data.totalUnits = 60 
+config.Data.totalUnits = 100 
 config.Data.publication = False
 config.Data.publishWithGroupName = True
 #config.Data.userInputFiles = open('../data/iDM/2018/' + sample + '.list').readlines()
 #config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds/'
-config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/signal/MetTrigStudyv2/'
+config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_thirdrun'
 
 
 #config.Site.ignoreGlobalBlacklist = True
