@@ -5,7 +5,7 @@ using namespace common;
 
 using std::cout, std::endl, std::map, std::vector;
 
-void calcSumGenWgt(int which=0) {
+void calcSumGenWgtFast(int which=1) {
     TDatime time_begin;
 
     map<TString, SampleInfo> samples;
@@ -14,7 +14,7 @@ void calcSumGenWgt(int which=0) {
     if (which == 0)
         config_name = TString("configs/signal.json");
     else if (which == 1)
-        config_name = TString("configs/backgrounds_full.json");
+        config_name = TString("configs/thirdrun/backgrounds_full.json");
     else if (which == 2)
         config_name = TString("configs/backgrounds_subset.json");
     else if (which == 3)
@@ -28,9 +28,16 @@ void calcSumGenWgt(int which=0) {
     json cfgs;
     file >> cfgs;
     json out_json = cfgs;
-    for (auto const & [sample, cfg] : cfgs.items())
+    for (auto const & [sample, cfg] : cfgs.items()) {
+        vector<TString> filelist{};
+        for (auto dir : cfg["dir"].get<std::vector<std::string>>()) {
+            vector<TString> newlist = listFiles(dir.c_str());
+            cout << "file list size: " << newlist.size() << " dir " << dir << endl;
+            filelist.insert(filelist.end(), newlist.begin(), newlist.end());
+        }
         samples[TString(sample)] = SampleInfo{
-            listFiles(cfg["dir"].get<std::string>().c_str()), // list of filenames 
+            filelist,
+            //listFiles(cfg["dir"].get<std::vector<std::string>>().c_str()), // list of filenames 
             sample, // plot label
             cfg["xsec"].get<float>(), // xsec
             cfg["sum_gen_wgt"].get<float>(), // sum_gen_wgt
@@ -40,6 +47,7 @@ void calcSumGenWgt(int which=0) {
             0, // line color
             1 // line style
         };
+    }
 
     for (auto const & [sample, props] : samples) {
         if (props.sum_gen_wgt > 0.1) continue; // only run over previously empty samples
@@ -55,6 +63,8 @@ void calcSumGenWgt(int which=0) {
             if (count++ >= limit_num_files && limit_num_files != -1) continue;
             data_gen->Add(filename);
         }
+        data_gen->SetBranchStatus("*",0);
+        data_gen->SetBranchStatus("gen_wgt", 1);
         Float_t gen_wgt;
         data_gen->SetBranchAddress("gen_wgt", &gen_wgt);
         data_gen->GetEntries();
