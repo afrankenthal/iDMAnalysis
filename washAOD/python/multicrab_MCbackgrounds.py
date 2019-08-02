@@ -81,9 +81,10 @@ def main():
 
         #config.Data.outputPrimaryDataset = 'TrigRecoEffStudies'
         #config.Data.splitting = 'Automatic'
-        config.Data.splitting = 'FileBased'
-        config.Data.unitsPerJob = 1
-        config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds'
+        config.Data.splitting = 'LumiBased'
+        #config.Data.splitting = 'FileBased'
+        config.Data.unitsPerJob = 100
+        config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/signal/MetTrigStudyv10/'
         config.Data.publication = False
 
         #config.Site.ignoreGlobalBlacklist = True
@@ -124,19 +125,19 @@ def main():
 		#'ZJetsToNuNu_HT-200To400':'/ZJetsToNuNu_HT-200To400_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 		#'ZJetsToNuNu_HT-400To600':'/ZJetsToNuNu_HT-400To600_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
 		#'ZJetsToNuNu_HT-600To800':'/ZJetsToNuNu_HT-600To800_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		'ZJetsToNuNu_HT-800To1200':'/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		#'ZJetsToNuNu_HT-800To1200':'/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 		#'ZJetsToNuNu_HT-1200To2500':'/ZJetsToNuNu_HT-1200To2500_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 		#'ZJetsToNuNu_HT-2500ToInf':'/ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
 	}
 	Wjets_sample = {
 		#'WJetsToLNu':'/WJetsToLNu_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
-		#'WJetsToLNu_HT-70To100':'/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		#'WJetsToLNu_HT-100To200':'/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		#'WJetsToLNu_HT-200To400':'/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		#'WJetsToLNu_HT-400To600':'/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
-		#'WJetsToLNu_HT-600To800':'/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		#'WJetsToLNu_HT-800To1200':'/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		#'WJetsToLNu_HT-1200To2500':'/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-70To100':'/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-100To200':'/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-200To400':'/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-400To600':'/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-600To800':'/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-800To1200':'/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+		'WJetsToLNu_HT-1200To2500':'/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
 		'WJetsToLNu_HT-2500ToInf':'/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
 	}
 	DY_sample = {
@@ -155,42 +156,52 @@ def main():
 	'WMuNu': '/WToMuNu_M-200_TuneCP5_13TeV-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
 	}
 	trig_data = {
-	#'singleMu_RunA_Jun':'/SingleMuon/Run2018A-06Jun2018-v1/AOD',
-	#'singleMu_RunA_Sep':'/SingleMuon/Run2018A-17Sep2018-v2/AOD',
-	#'singleMu_RunA_May':'/SingleMuon/Run2018A-22May2018-v1/AOD',
-	#'singleMu_RunB_Sep':'/SingleMuon/Run2018B-17Sep2018-v1/AOD',
-	#'singleMu_RunC_Sep':'/SingleMuon/Run2018C-17Sep2018-v1/AOD',
+	'singleMu_RunA_Jun':'/SingleMuon/Run2018A-06Jun2018-v1/AOD',
+	'singleMu_RunA_Sep':'/SingleMuon/Run2018A-17Sep2018-v2/AOD',
+	'singleMu_RunA_May':'/SingleMuon/Run2018A-22May2018-v1/AOD',
+	'singleMu_RunB_Sep':'/SingleMuon/Run2018B-17Sep2018-v1/AOD',
+	'singleMu_RunC_Sep':'/SingleMuon/Run2018C-17Sep2018-v1/AOD',
 	'singleMu_RunD_Jan':'/SingleMuon/Run2018D-22Jan2019-v2/AOD',
-	#'singleMu_RunD_Apr':'/SingleMuon/Run2018D-30Apr2019-v1/AOD'
-	}
-	extra_samples = {
-		'WJetsToLNu_HT-600To800':'/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		'WJetsToLNu_HT-800To1200':'/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		'WJetsToLNu_HT-1200To2500':'/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-		'WJetsToLNu_HT-2500ToInf':'/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
- 		'ZZTo2L2Nu_ext2':'/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext2-v2/AODSIM'
-	}
+	'singleMu_RunD_Apr':'/SingleMuon/Run2018D-30Apr2019-v1/AOD'
+	}	
 
+	prompt_data = {
+	'Prompt_RunA1':'/SingleMuon/Run2018A-PromptReco-v1/AOD',
+	'Prompt_RunA2':'/SingleMuon/Run2018A-PromptReco-v2/AOD',
+	'Prompt_RunA3':'/SingleMuon/Run2018A-PromptReco-v3/AOD',
+	'Prompt_RunB1':'/SingleMuon/Run2018B-PromptReco-v1/AOD',
+	'Prompt_RunB2':'/SingleMuon/Run2018B-PromptReco-v2/AOD',
+	'Prompt_RunC1':'/SingleMuon/Run2018C-PromptReco-v1/AOD',
+	'Prompt_RunC2':'/SingleMuon/Run2018C-PromptReco-v2/AOD',
+	'Prompt_RunC3':'/SingleMuon/Run2018C-PromptReco-v3/AOD',
+	'Prompt_RunD2':'/SingleMuon/Run2018D-PromptReco-v2/AOD'
+
+
+	}
+	
 
 	#samples = extra_samples
 	#samples = QCD_sample
 	#samples = TT_sample
 	#samples = Zjets_sample
-	#samples = Wjets_sample
+#	samples = Wjets_sample
 	#samples = DY_sample
 	#samples = Di_sample
 	#samples = WMuNu_sample
-	samples = trig_data
+#	samples = trig_data
+	samples = prompt_data
 
 	#samples = TT_sample
+	samples.update(trig_data)
 	#samples.update(Wjets_sample)
 	#samples.update(Di_sample)
 	#samples.update(WMuNu_sample)
-	#samples.update(TT_sample)
+#	samples.update(TT_sample)
         for sample, dataset in samples.items():
 
             config.Data.inputDataset = dataset
-            config.General.requestName = 'iDMAnalysis_' + sample 
+            #config.General.requestName = 'iDMAnalysis_' + sample 
+            config.General.requestName = 'METTrigEffiv6_' + sample 
             #config.Data.outputDatasetTag = sample
             #config.Data.userInputFiles = open(basedir + sample + '.list').readlines()
 

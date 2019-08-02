@@ -6,6 +6,7 @@
 
 MetTrigSelfEffiForMuTrack::MetTrigSelfEffiForMuTrack(const edm::ParameterSet& ps) :
     muTrackTag_(ps.getParameter<edm::InputTag>("muTrack")),
+    genEvtInfoTag_(ps.getParameter<edm::InputTag>("genEvt")),
 //    genParticleTag_(ps.getParameter<edm::InputTag>("genParticle")),
 //    genJetTag_(ps.getParameter<edm::InputTag>("genJet")),
 //    genMetTag_(ps.getParameter<edm::InputTag>("genMet")),
@@ -18,6 +19,7 @@ MetTrigSelfEffiForMuTrack::MetTrigSelfEffiForMuTrack(const edm::ParameterSet& ps
     processName_(ps.getParameter<std::string>("processName")),
     nMuons_(ps.getParameter<int>("nMuons")),
     muTrackToken_(consumes<reco::TrackCollection>(muTrackTag_)),
+    genEvtInfoToken_(consumes<GenEventInfoProduct>(genEvtInfoTag_)),
 //    genParticleToken_(consumes<reco::GenParticleCollection>(genParticleTag_)),
 //    genJetToken_(consumes<reco::GenJetCollection>(genJetTag_)),
 //    genMetToken_(consumes<reco::GenMETCollection>(genMetTag_)),
@@ -35,6 +37,7 @@ void MetTrigSelfEffiForMuTrack::fillDescriptions(edm::ConfigurationDescriptions&
 {
     edm::ParameterSetDescription desc;
     desc.add<edm::InputTag>("muTrack", edm::InputTag("displacedStandAloneMuons"));
+    desc.add<edm::InputTag>("genEvt", edm::InputTag("generator"));
 //    desc.add<edm::InputTag>("genParticle", edm::InputTag("genParticles"));
 //    desc.add<edm::InputTag>("genJet", edm::InputTag("ak4GenJets"));
     desc.add<edm::InputTag>("recoJet", edm::InputTag("ak4PFJets"));
@@ -62,11 +65,20 @@ void MetTrigSelfEffiForMuTrack::beginJob()
     muTrackT_->Branch("recoJetPt", &recoJetPt_, "recoJetPt/F");
     muTrackT_->Branch("recoJetEta", &recoJetEta_, "recoJetEta/F");
     muTrackT_->Branch("recoJetPhi", &recoJetPhi_, "recoJetPhi/F");
+    muTrackT_->Branch("recoJetPt1", &recoJetPt1_, "recoJetPt1/F");
+    muTrackT_->Branch("recoJetEta1", &recoJetEta1_, "recoJetEta1/F");
+    muTrackT_->Branch("recoJetPhi1", &recoJetPhi1_, "recoJetPhi1/F");
+    muTrackT_->Branch("recoJetPt2", &recoJetPt2_, "recoJetPt2/F");
+    muTrackT_->Branch("recoJetEta2", &recoJetEta2_, "recoJetEta2/F");
+    muTrackT_->Branch("recoJetPhi2", &recoJetPhi2_, "recoJetPhi2/F");
 //    muTrackT_->Branch("genLeadMetPt", &genLeadMetPt_, "genLeadMetPt/F");
 //    muTrackT_->Branch("genSubLeadMetPt", &genSubLeadMetPt_, "genSubLeadMetPt/F");
     muTrackT_->Branch("recoPFMetPt", &recoPFMetPt_, "recoPFMetPt/F");
     muTrackT_->Branch("recoPFMetEta", &recoPFMetEta_, "recoPFMetEta/F");
     muTrackT_->Branch("recoPFMetPhi", &recoPFMetPhi_, "recoPFMetPhi/F");
+    muTrackT_->Branch("genwgt", &genwgt_, "genwgt/F");
+    genweight_ = fs->make<TTree>("GenWeight", "");
+    genweight_->Branch("genwgt", &genwgt_, "genwgt/F");
 }
 
 void MetTrigSelfEffiForMuTrack::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
@@ -148,6 +160,17 @@ void MetTrigSelfEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::Eve
             << endl;
         return;
     }
+    iEvent.getByToken(genEvtInfoToken_, genEvtInfoHandle_);
+    genwgt_=-9999;
+    if (!genEvtInfoHandle_.isValid()) {
+       // LogError("HandleError") << boost::str(boost::format(error_msg) % "genEventInfo");
+        genwgt_=1;
+    }
+    else{
+	// Gen weight
+    	 genwgt_ = genEvtInfoHandle_->weight();		
+	}
+    genweight_->Fill();
 
     vector<reco::TrackRef> muRefs{};
     for (size_t i(0); i!=muTrackHandle_->size(); ++i) {
@@ -223,7 +246,7 @@ void MetTrigSelfEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::Eve
     }
     fired_ = trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath_));
 
-    double largestPt = 0.0;
+ //   double largestPt = 0.0;
 //    for (size_t i(0); i != genJetHandle_->size(); ++i) {
 //        reco::GenJetRef jetr(genJetHandle_, i);
 //        if (jetr->pt() > largestPt) {
@@ -232,19 +255,48 @@ void MetTrigSelfEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::Eve
 //    }
 //    genJetPt_ = largestPt;
 
-    largestPt = 0.0;
+    double largestPt = 0.0;
     double largestEta = 0.0, largestPhi = 0.0;
+    double largestPt1 = 0.0;
+    double largestEta1 = 0.0, largestPhi1 = 0.0;
+    double largestPt2 = 0.0;
+    double largestEta2 = 0.0, largestPhi2 = 0.0;
     for (size_t i(0); i != recoJetHandle_->size(); ++i) {
         reco::PFJetRef jetr(recoJetHandle_, i);
         if (jetr->pt() > largestPt) {
+	    largestPt2 = largestPt1;
+	    largestEta2 = largestEta1;
+	    largestPhi2 = largestPhi1;
+	    largestPt1 = largestPt;
+	    largestEta1 = largestEta;
+	    largestPhi1 = largestPhi;
             largestPt = jetr->pt();
             largestEta = jetr->eta();
             largestPhi = jetr->phi();
+        }
+        else if (jetr->pt() > largestPt1) {
+	    largestPt1 = largestPt;
+	    largestEta1 = largestEta;
+	    largestPhi1 = largestPhi;
+            largestPt = jetr->pt();
+            largestEta = jetr->eta();
+            largestPhi = jetr->phi();
+        }
+        else if (jetr->pt() > largestPt2) {
+            largestPt2 = jetr->pt();
+            largestEta2 = jetr->eta();
+            largestPhi2 = jetr->phi();
         }
     }
     recoJetPt_ = largestPt;
     recoJetEta_ = largestEta;
     recoJetPhi_ = largestPhi;
+    recoJetPt1_ = largestPt1;
+    recoJetEta1_ = largestEta1;
+    recoJetPhi1_ = largestPhi1;
+    recoJetPt2_ = largestPt2;
+    recoJetEta2_ = largestEta2;
+    recoJetPhi2_ = largestPhi2;
 
     // Fill MET branches
 //    reco::GenMETRef metr(genMetHandle_, 0);
@@ -258,7 +310,7 @@ void MetTrigSelfEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::Eve
     
     //save if Enriched criteria is met
     bool enrich = false;
-    if( (recoJetPt_ >100) && (recoJetEta_<4.5) && (fired0_==true) ){//&& (pt_.at(0)>25) && (eta_.at(0)<2.5)){
+    if( (recoJetPt_ >100) && (recoJetEta_<2.4) && (fired0_==true) ){//&& (pt_.at(0)>25) && (eta_.at(0)<2.5)){
 	enrich = true;
 	}
     if (enrich){

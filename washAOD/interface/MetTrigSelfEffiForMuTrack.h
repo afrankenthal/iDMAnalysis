@@ -34,6 +34,7 @@
 #include "DataFormats/HLTReco/interface/TriggerObject.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+#include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include "TTree.h"
 
@@ -53,6 +54,7 @@ class MetTrigSelfEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRun
         virtual void endJob() override;
 
         const edm::InputTag muTrackTag_;
+	const edm::InputTag genEvtInfoTag_;
 //        const edm::InputTag genParticleTag_;
 //       const edm::InputTag genJetTag_;
 //        const edm::InputTag genMetTag_;
@@ -65,6 +67,7 @@ class MetTrigSelfEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRun
         const std::string processName_;
         const int nMuons_;
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken_;
+	const edm::EDGetTokenT<GenEventInfoProduct> genEvtInfoToken_;
         const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
 //        const edm::EDGetTokenT<reco::GenJetCollection> genJetToken_;
 //        const edm::EDGetTokenT<reco::GenMETCollection> genMetToken_;
@@ -72,9 +75,12 @@ class MetTrigSelfEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRun
         const edm::EDGetTokenT<reco::PFJetCollection> recoJetToken_;
         const edm::EDGetTokenT<edm::TriggerResults> trigResultsToken_;
         const edm::EDGetTokenT<trigger::TriggerEvent> trigEventToken_;
+	
+
 
         edm::Service<TFileService> fs;
         edm::Handle<reco::TrackCollection> muTrackHandle_;
+	edm::Handle<GenEventInfoProduct> genEvtInfoHandle_;
 //        edm::Handle<reco::GenParticleCollection> genParticleHandle_;
 //        edm::Handle<reco::GenJetCollection> genJetHandle_;
 //        edm::Handle<reco::GenMETCollection> genMetHandle_;
@@ -82,6 +88,7 @@ class MetTrigSelfEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRun
         edm::Handle<reco::PFJetCollection> recoJetHandle_;
         edm::Handle<edm::TriggerResults> trigResultsHandle_;
         edm::Handle<trigger::TriggerEvent> trigEventHandle_;
+
 
         std::string trigPath_;
         std::string trigPath0_;
@@ -109,8 +116,16 @@ class MetTrigSelfEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRun
         float recoJetPt_;
         float recoJetEta_;
         float recoJetPhi_;
+        float recoJetPt1_;
+        float recoJetEta1_;
+        float recoJetPhi1_;
+        float recoJetPt2_;
+        float recoJetEta2_;
+        float recoJetPhi2_;
+	float genwgt_;
 
         TTree *muTrackT_;
+        TTree *genweight_;
 };
 
 #endif

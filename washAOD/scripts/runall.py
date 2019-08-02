@@ -41,7 +41,7 @@ for mass in masslist:
 	#	odir = "/uscmst1b_scratch/lpc1/3DayLifetime/mireid/v3"
 		ofile= "{2}_{0}_ctau-{1}.root".format(mass,life,analyzer_name[analyzer])
 		if test:
-			cmdxx = "cmsRun python/{1} year=2018 inputFiles_load=data/iDM/2018/signal/test.list outputFile=test_{0}".format(ofile,analyzer)#,mass,life)
+			cmdxx = "cmsRun ../python/{1} year=2018 inputFiles_load=../data/iDM/2018/signal/test.list outputFile=test_{0}".format(ofile,analyzer)#,mass,life)
 		
 			print(cmdxx)
 			process1 = subprocess.Popen(cmdxx,shell=True, stdout=subprocess.PIPE)
