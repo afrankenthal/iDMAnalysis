@@ -1,29 +1,65 @@
+#include <string.h>
+#include <fstream>
+#include <iostream>
+#include <iomanip>
+
+#include <TDatime.h>
+#include <TCollection.h>
+#include <TSystemFile.h>
+#include <TSystemDirectory.h>
+#include <TString.h>
+#include <TChain.h>
+#include <TApplication.h>
+#include <TCut.h>
+#include <TH1F.h>
+
 #include "utils/common.C"
 using namespace common;
 #include "utils/json.hpp"
 using json = nlohmann::json;
-using std::cout, std::endl, std::map, std::vector;
-#include <iomanip>
+#include "utils/cxxopts.hpp"
 
-void cutflowTableFast(TString which_cutflow="SR", bool test=true) {
+using std::cout, std::endl, std::map, std::vector;
+
+int main(int argc, char ** argv) {
+//void cutflowTableFast() { //int argc, char **argv) { //TString which_cutflow="SR", bool test=true) {
     TDatime time_begin;
 
-    map<TString, SampleInfo> samples;
+    cxxopts::Options options("Cutflow tables", "Compute cutflows of signal and backgrounds");
+    options.add_options()
+        ("c,config", "Config file to use", cxxopts::value<std::string>()->default_value("configs/signal_local.json"))
+        ("w,which", "Which cutflow to use", cxxopts::value<std::string>()->default_value("SR"))
+        ("o,outfile", "Output file", cxxopts::value<std::string>()->default_value(""))
+        ("h,help", "Print help and exit.")
+    ;
+    auto result = options.parse(argc, argv);
 
-    vector<TString> config_filenames{TString("configs/signal_local.json")};
-    //if (test)
-    //    config_filenames.push_back(TString("configs/backgrounds_subset.json"));
-    //else
-    //    config_filenames.push_back(TString("configs/backgrounds_full.json"));
+    if (result.count("help")) {
+        cout << options.help() << std::endl;
+        exit(0);
+    }
+
+    // Program options
+    TString which_cutflow = TString(result["which"].as<std::string>());
+    vector<TString> config_filenames{TString(result["config"].as<std::string>())};
+    TString outfilename = TString(result["outfile"].as<std::string>());
+    
+    map<TString, SampleInfo> samples;
 
     for (auto config_filename : config_filenames) { 
         std::ifstream config_file(config_filename.Data());
         json configs;
         config_file >> configs;
         int color = 3;
-        for (auto const & [sample, cfg] : configs.items()) 
+        for (auto const & [sample, cfg] : configs.items()) {
+            vector<TString> filelist{};
+            for (auto dir : cfg["dir"].get<std::vector<std::string>>()) {
+                vector<TString> newlist = listFiles(dir.c_str());
+                filelist.insert(filelist.end(), newlist.begin(), newlist.end());
+            }
             samples[TString(sample)] = SampleInfo{
-                listFiles(cfg["dir"].get<std::string>().c_str()), // list of filenames
+                filelist,
+                //listFiles(cfg["dir"].get<std::string>().c_str()), // list of filenames
                 sample, // plot label
                 cfg["xsec"].get<float>(), // xsec
                 cfg["sum_gen_wgt"].get<float>(), // sum_gen_wgt
@@ -33,6 +69,7 @@ void cutflowTableFast(TString which_cutflow="SR", bool test=true) {
                 color++, // line color
                 1 // line style
             };
+        }
     }
 
     map<TString, vector<Float_t>> cutsIncl, cutsExcl;
@@ -59,12 +96,15 @@ void cutflowTableFast(TString which_cutflow="SR", bool test=true) {
         cutMask = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 1, 1, 1, 1, 1, 1, 1 };
     else {
         cout << "ERROR! Didn't understand which cutflow you want. Exiting..." << endl;
-        return;
+        return 0;
     }
 
     Float_t lumi = 59.97 * 1000; // 1/pb
 
     for (auto const & [sample, props] : samples) {
+
+        cout << "sample: " << sample << ", sum_gen_wgt: " << props.sum_gen_wgt << endl;
+        if (props.sum_gen_wgt < 0.1) continue;
 
         TChain * data_reco = new TChain("ntuples_gbm/recoT");
         TChain * data_gen = new TChain("ntuples_gbm/genT");
@@ -74,13 +114,11 @@ void cutflowTableFast(TString which_cutflow="SR", bool test=true) {
             data_gen->Add(filename.Data());
             data_reco->Add(filename.Data());
         }
-        Float_t gen_wgt;
-        data_gen->SetBranchAddress("gen_wgt", &gen_wgt);
+        //Float_t gen_wgt;
+        //data_gen->SetBranchAddress("gen_wgt", &gen_wgt);
         data_gen->GetEntries();
         data_reco->GetEntries();
         data_reco->AddFriend(data_gen, "nutples_gbm/genT");
-
-        cout << "sample: " << sample << ", sum_gen_wgt: " << props.sum_gen_wgt << endl;
 
         uint32_t cutInclPosMask = 0, cutInclNegMask = 0;
         //uint32_t cutExcl;
@@ -102,8 +140,9 @@ void cutflowTableFast(TString which_cutflow="SR", bool test=true) {
 
             data_reco->Draw("1",
                     TCut(Form("(gen_wgt * %f * %f / %f)", lumi, props.xsec, props.sum_gen_wgt))
-                    * (TCut(Form("%d == (cuts & %d)", cutInclPosMask, cutInclPosMask)) 
-                    && TCut(Form("%d == ((cuts ^ %d) & %d)", cutInclNegMask, cutInclNegMask, cutInclNegMask))),
+                    * (TCut(Form("%d == (cuts&%d)", cutInclPosMask, cutInclPosMask))
+                    && TCut(Form("0 == (cuts&%d)", cutInclNegMask))), // XOR
+                    //&& TCut(Form("%d == (((cuts | %d) & (!cuts | !%d)) & %d)", cutInclNegMask, cutInclNegMask, cutInclNegMask, cutInclNegMask))), // XOR
                                 //lumi, props.xsec, props.sum_gen_wgt, cutInclPosMask, cutInclPosMask)), //cutInclNegMask, cutInclNegMask, cutInclNegMask)),
                     //* TCut(Form("gen_wgt * %f * %f / %f", lumi, props.xsec, props.sum_gen_wgt)),
                     //&& TCut(Form("(%d == ((cuts ^ %d) & %d))", cutInclNegMask, cutInclNegMask, cutInclNegMask))),
@@ -164,6 +203,23 @@ void cutflowTableFast(TString which_cutflow="SR", bool test=true) {
             cout << " & " << cutsGroupIncl[group.first][j];
         cout << " \\\\ ";
     }
+
+    if (outfilename != TString("")) {
+        std::ofstream outfile;
+        outfile.open(outfilename.Data());
+        outfile << "Inclusive:" << endl;
+        for (auto group : cutsGroupIncl)
+            outfile << " " << group.first;
+        for (auto j : cutOrder) {
+            outfile << endl << "cut " << j;
+            for (auto const & group : cutsGroupIncl) 
+                outfile << " & " << cutsGroupIncl[group.first][j];
+            outfile << " \\\\ ";
+        }
+        outfile.close();
+    }
+
+
     //cout << endl << endl << "Exclusive:" << endl;
     //for (auto group : cutsGroupExcl)
     //    cout << " " << group.first;
@@ -176,4 +232,6 @@ void cutflowTableFast(TString which_cutflow="SR", bool test=true) {
 
     cout << endl;
     printTimeElapsed(time_begin);
+
+    return 0;
 }

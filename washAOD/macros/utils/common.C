@@ -8,7 +8,7 @@ namespace common {
     } SignalInfo;
 
     typedef struct SampleInfo {
-        vector<TString> filenames;
+        std::vector<TString> filenames;
         TString label;
         Float_t xsec;
         Float_t sum_gen_wgt;
@@ -26,12 +26,12 @@ namespace common {
     }
 
     //vector<TString> listFiles(SampleInfo & sample, const char *dirname="", const char *ext=".root") {
-    vector<TString> listFiles(const char *dirname="", const char *ext=".root") {
+    std::vector<TString> listFiles(const char *dirname="", const char *ext=".root") {
         TSystemDirectory dir(dirname, dirname); 
         // First check if dirname is actually just a single .root file
         if (TString(dirname).EndsWith(TString(ext)))
-            return vector<TString>{TString(dirname)};
-        vector<TString> filenames;
+            return std::vector<TString>{TString(dirname)};
+        std::vector<TString> filenames;
         TList *files = dir.GetListOfFiles(); 
         if (files) { 
             TSystemFile *file; 
