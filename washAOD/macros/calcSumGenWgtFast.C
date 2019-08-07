@@ -5,6 +5,8 @@ using namespace common;
 
 using std::cout, std::endl, std::map, std::vector;
 
+#define NUM_FILES 1
+
 void calcSumGenWgtFast(int which=1) {
     TDatime time_begin;
 
@@ -16,7 +18,7 @@ void calcSumGenWgtFast(int which=1) {
     else if (which == 1)
         config_name = TString("configs/thirdrun/backgrounds_full.json");
     else if (which == 2)
-        config_name = TString("configs/backgrounds_subset.json");
+        config_name = TString("configs/thirdrun/backgrounds_subset.json");
     else if (which == 3)
         config_name = TString("configs/test.json");
     else {
@@ -56,7 +58,7 @@ void calcSumGenWgtFast(int which=1) {
 
         TChain * data_gen = new TChain("ntuples_gbm/genT");
 
-        int limit_num_files = -1;
+        int limit_num_files = NUM_FILES;
 
         int count = 0;
         for (auto const & filename : props.filenames) {

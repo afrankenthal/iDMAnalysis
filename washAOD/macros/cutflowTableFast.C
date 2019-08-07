@@ -148,7 +148,7 @@ int main(int argc, char ** argv) {
                     //&& TCut(Form("(%d == ((cuts ^ %d) & %d))", cutInclNegMask, cutInclNegMask, cutInclNegMask))),
                     "goff");
             TH1F * htemp = (TH1F*)gDirectory->Get("htemp");
-            cutsGroupIncl[props.group][j] = htemp->GetSumOfWeights();
+            cutsGroupIncl[props.group][j] += htemp->GetSumOfWeights();
         }
 
         //uint32_t cuts;
