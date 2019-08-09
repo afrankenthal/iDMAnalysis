@@ -72,8 +72,8 @@ def main():
         config.General.transferLogs = True
 
         config.JobType.pluginName = 'Analysis'
-        config.JobType.psetName = 'iDMAnalyzer_cfg.py'
-        #config.JobType.psetName = 'MetTrigSelfEffiForMuTrack_cfg.py'
+        #config.JobType.psetName = 'iDMAnalyzer_cfg.py'
+        config.JobType.psetName = 'MetTrigSelfEffiForMuTrack_cfg.py'
         #config.JobType.psetName = 'python/iDMAnalyzer_cfg.py'
         #config.JobType.maxMemoryMB = 4000
         #config.JobType.numCores = 1
@@ -82,8 +82,8 @@ def main():
         #config.Data.outputPrimaryDataset = 'TrigRecoEffStudies'
         #config.Data.splitting = 'Automatic'
 #<<<<<<< HEAD
-        config.Data.splitting = 'LumiBased'
-        #config.Data.splitting = 'FileBased'
+        #config.Data.splitting = 'LumiBased'
+        config.Data.splitting = 'FileBased'
         config.Data.unitsPerJob = 100
         config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/signal/MetTrigStudyv10/'
 #=======
@@ -196,11 +196,11 @@ def main():
 	#samples = Di_sample
 	#samples = WMuNu_sample
 #	samples = trig_data
-	samples = prompt_data
+#	samples = prompt_data
 
-	#samples = TT_sample
-	samples.update(trig_data)
-	#samples.update(Wjets_sample)
+	samples = TT_sample
+	#samples.update(trig_data)
+	samples.update(Wjets_sample)
 	#samples.update(Di_sample)
 	#samples.update(WMuNu_sample)
 #	samples.update(TT_sample)
