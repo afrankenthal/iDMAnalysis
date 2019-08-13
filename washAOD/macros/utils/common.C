@@ -1,3 +1,6 @@
+#ifndef COMMON_H
+#define COMMON_H
+
 namespace common {
 
     typedef struct SignalInfo {
@@ -50,3 +53,5 @@ namespace common {
     bool readCutBit(uint32_t cuts, int bit) { return cuts & (1 << bit); }
 
 }
+
+#endif // COMMON_H

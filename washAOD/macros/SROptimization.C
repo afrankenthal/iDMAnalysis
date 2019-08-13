@@ -25,10 +25,12 @@ int main(int argc, char ** argv) {
 //void cutflowTableFast() { //int argc, char **argv) { //TString which_cutflow="SR", bool test=true) {
     TDatime time_begin;
 
-    cxxopts::Options options("Cutflow tables", "Compute cutflows of signal and backgrounds");
+    cxxopts::Options options("Optimize SR", "Optimize SR by computing varying cuts and computing S/B significance");
     options.add_options()
         ("c,config", "Config file to use", cxxopts::value<std::string>()->default_value("configs/signal_local.json"))
-        ("w,which", "Which cutflow to use", cxxopts::value<std::string>()->default_value("SR"))
+        ("f,cutflow", "Which cutflow to use", cxxopts::value<std::string>()->default_value("SR"))
+        ("p,param", "Which param to set", cxxopts::value<std::string>()->default_value("abs(reco_vtx_dR)"))
+        ("v,value", "Which cut value to set param", cxxopts::value<float>()->default_value("0.8"))
         ("o,outfile", "Output file", cxxopts::value<std::string>()->default_value(""))
         ("h,help", "Print help and exit.")
     ;
@@ -40,9 +42,16 @@ int main(int argc, char ** argv) {
     }
 
     // Program options
-    TString which_cutflow = TString(result["which"].as<std::string>());
+    TString which_cutflow = TString(result["cutflow"].as<std::string>());
     vector<TString> config_filenames{TString(result["config"].as<std::string>())};
     TString outfilename = TString(result["outfile"].as<std::string>());
+    TString custom_cut = TString(result["param"].as<std::string>());
+    Float_t dR_cut = result["value"].as<float>(); 
+    Int_t dR_cut_mask = 1, nHighPtJets_cut_mask = 1;
+    if (custom_cut.Contains("dR"))
+        dR_cut_mask = 2;
+    else 
+        nHighPtJets_cut_mask = 2;
     
     map<TString, SampleInfo> samples;
 
@@ -84,10 +93,10 @@ int main(int argc, char ** argv) {
     }
 
     vector<int> cutOrder { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 19, 20 };
-    // Mask -- 1: require cut bit set; 0: require cut bit unset; -1:  cut bit can be anything
+    // Mask -- 1: require cut bit set; 0: require cut bit unset; -1:  cut bit can be anything; 2: custom
     vector<int> cutMask;
     if (which_cutflow == "SR")
-        cutMask = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+        cutMask = { 1, 1, 1, 1, nHighPtJets_cut_mask, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, dR_cut_mask, 1, 1, 1, 1, 1, 1, 1 };
     else if (which_cutflow == "SR_noBTagging")
         cutMask = { 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
     else if (which_cutflow == "CR_QCD")
@@ -122,13 +131,18 @@ int main(int argc, char ** argv) {
         data_reco->GetEntries();
         data_reco->AddFriend(data_gen, "nutples_gbm/genT");
 
+
+
         uint32_t cutInclPosMask = 0, cutInclNegMask = 0;
         //uint32_t cutExcl;
+        bool bCustom = false;
         for (auto j : cutOrder) {
             if (cutMask[j] == 1)
                 cutInclPosMask |= (1 << j); 
             else if (cutMask[j] == 0)
                 cutInclNegMask |= (1 << j);
+            else if (cutMask[j] == 2)
+                bCustom = true;
             //cutExclMask = 1 << j;
 
             // Handle categories cut (GBM-GBM, GBM-DSA, DSA-DSA)
@@ -140,15 +154,26 @@ int main(int argc, char ** argv) {
             else if (j == 23) 
                 cutInclPosMask &= ~((1 << 21) | (1 << 22));
 
-            data_reco->Draw("1",
-                    TCut(Form("(gen_wgt * %f * %f / %f)", lumi, props.xsec, props.sum_gen_wgt))
-                    * (TCut(Form("%d == (cuts&%d)", cutInclPosMask, cutInclPosMask))
-                    && TCut(Form("0 == (cuts&%d)", cutInclNegMask))), // XOR
-                    //&& TCut(Form("%d == (((cuts | %d) & (!cuts | !%d)) & %d)", cutInclNegMask, cutInclNegMask, cutInclNegMask, cutInclNegMask))), // XOR
-                                //lumi, props.xsec, props.sum_gen_wgt, cutInclPosMask, cutInclPosMask)), //cutInclNegMask, cutInclNegMask, cutInclNegMask)),
-                    //* TCut(Form("gen_wgt * %f * %f / %f", lumi, props.xsec, props.sum_gen_wgt)),
-                    //&& TCut(Form("(%d == ((cuts ^ %d) & %d))", cutInclNegMask, cutInclNegMask, cutInclNegMask))),
-                    "goff");
+            if (bCustom) 
+                data_reco->Draw("1",
+                        TCut(Form("(gen_wgt * %f * %f / %f)", lumi, props.xsec, props.sum_gen_wgt))
+                        * (TCut(Form("%d == (cuts&%d)", cutInclPosMask, cutInclPosMask))
+                        && TCut(Form("0 == (cuts&%d)", cutInclNegMask)) && TCut(Form("%s < %f", custom_cut.Data(), dR_cut))), 
+                        //&& TCut(Form("%d == (((cuts | %d) & (!cuts | !%d)) & %d)", cutInclNegMask, cutInclNegMask, cutInclNegMask, cutInclNegMask))), // XOR
+                                    //lumi, props.xsec, props.sum_gen_wgt, cutInclPosMask, cutInclPosMask)), //cutInclNegMask, cutInclNegMask, cutInclNegMask)),
+                        //* TCut(Form("gen_wgt * %f * %f / %f", lumi, props.xsec, props.sum_gen_wgt)),
+                        //&& TCut(Form("(%d == ((cuts ^ %d) & %d))", cutInclNegMask, cutInclNegMask, cutInclNegMask))),
+                        "goff");
+            else 
+                data_reco->Draw("1",
+                        TCut(Form("(gen_wgt * %f * %f / %f)", lumi, props.xsec, props.sum_gen_wgt))
+                        * (TCut(Form("%d == (cuts&%d)", cutInclPosMask, cutInclPosMask))
+                        && TCut(Form("0 == (cuts&%d)", cutInclNegMask))), 
+                        //&& TCut(Form("%d == (((cuts | %d) & (!cuts | !%d)) & %d)", cutInclNegMask, cutInclNegMask, cutInclNegMask, cutInclNegMask))), // XOR
+                                    //lumi, props.xsec, props.sum_gen_wgt, cutInclPosMask, cutInclPosMask)), //cutInclNegMask, cutInclNegMask, cutInclNegMask)),
+                        //* TCut(Form("gen_wgt * %f * %f / %f", lumi, props.xsec, props.sum_gen_wgt)),
+                        //&& TCut(Form("(%d == ((cuts ^ %d) & %d))", cutInclNegMask, cutInclNegMask, cutInclNegMask))),
+                        "goff");
             TH1F * htemp = (TH1F*)gDirectory->Get("htemp");
             cutsGroupIncl[props.group][j] += htemp->GetSumOfWeights();
         }

@@ -1,6 +1,6 @@
 {
     "test": {
-        "dir": "../test.root",
+        "dir": ["../test.root"],
         "group": "test",
         "limit_num_files": -1,
         "sum_gen_wgt": 126.0,
