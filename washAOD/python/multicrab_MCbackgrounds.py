@@ -80,10 +80,10 @@ def main():
 
 
         #config.Data.outputPrimaryDataset = 'TrigRecoEffStudies'
-        #config.Data.splitting = 'Automatic'
-        config.Data.splitting = 'FileBased'
-        config.Data.unitsPerJob = 10
-        config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_thirdrun'
+        config.Data.splitting = 'Automatic'
+        #config.Data.splitting = 'FileBased'
+        #config.Data.unitsPerJob = 10
+        config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/data'
         config.Data.publication = False
 
         #config.Site.ignoreGlobalBlacklist = True
@@ -172,6 +172,14 @@ def main():
         'singleMu_RunD_Jan':'/SingleMuon/Run2018D-22Jan2019-v2/AOD',
         #'singleMu_RunD_Apr':'/SingleMuon/Run2018D-30Apr2019-v1/AOD'
         }
+        data_ABC_samples = {
+                'MET_Run2018A':'/MET/Run2018A-17Sep2018-v1/AOD',
+                'MET_Run2018B':'/MET/Run2018B-17Sep2018-v1/AOD',
+                'MET_Run2018C':'/MET/Run2018C-17Sep2018-v1/AOD'
+        }
+        data_D_samples = {
+                'MET_Run2018D':'/MET/Run2018D-PromptReco-v2/AOD'
+        }
         extra_samples = {
             'ZZTo2L2Nu_ext2':'/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext2-v2/AODSIM'
         }
@@ -188,11 +196,12 @@ def main():
         #samples = QCD_sample
         #samples = TT_sample
         #samples = ZJets_sample
-        samples = WJets_sample
+        #samples = WJets_sample
         #samples = DY_sample
         #samples = Di_sample
         #samples = WMuNu_sample
         #samples = trig_data
+        samples = data_ABC_samples
 
         #samples = TT_sample
         #samples.update(Wjets_sample)

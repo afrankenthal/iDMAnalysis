@@ -13,6 +13,11 @@ options.register('year',
         VarParsing.VarParsing.multiplicity.singleton,
         VarParsing.VarParsing.varType.int,
         "sample of the year")
+options.register('data',
+        0,
+        VarParsing.VarParsing.multiplicity.singleton,
+        VarParsing.VarParsing.varType.int,
+        "Run on data (1) or MC (0)")
 
 
 options.parseArguments()
@@ -49,7 +54,10 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 if options.year == 2017:
     process.GlobalTag.globaltag = '94X_mc2017_realistic_v15'
 if options.year == 2018:
-    process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v15'
+    if options.data == 0:
+        process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v15'
+    elif options.data == 1:
+        process.GlobalTag.globaltag = '102X_dataRun2_Sep2018ABC_v2'
 
 process.MessageLogger = cms.Service("MessageLogger",
         destinations   =  cms.untracked.vstring('messages', 'cerr'),
