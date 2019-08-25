@@ -57,6 +57,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
 
         edm::Service<TFileService> fs;
 
+        bool isData;
+
         // Tags
         const edm::InputTag bTagProbbTag_;
         const edm::InputTag bTagProbbbTag_;
@@ -73,6 +75,13 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag pileupInfosTag_;
         const edm::InputTag genEvtInfoTag_;
         const std::string processName_;
+        const edm::InputTag HBHENoiseFilterResultProducerTag_;
+        const edm::InputTag primaryVertexFilterTag_;
+        const edm::InputTag globalSuperTightHalo2016FilterTag_;
+        const edm::InputTag EcalDeadCellTriggerPrimitiveFilterTag_;
+        const edm::InputTag ecalBadCalibFilterTag_;
+        const edm::InputTag BadPFMuonFilterTag_;
+        const edm::InputTag muonBadTrackFilterTag_;
 
         // Tokens
         const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbToken_;
@@ -88,6 +97,13 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::EDGetTokenT<trigger::TriggerEvent> trigEventToken_;
         const edm::EDGetTokenT<std::vector<PileupSummaryInfo>> pileupInfosToken_;
         const edm::EDGetTokenT<GenEventInfoProduct> genEvtInfoToken_;
+        const edm::EDGetTokenT<bool>HBHENoiseFilterResultProducerToken_;
+        const edm::EDGetTokenT<int>primaryVertexFilterToken_;
+        const edm::EDGetTokenT<bool>globalSuperTightHalo2016FilterToken_;
+        const edm::EDGetTokenT<bool>EcalDeadCellTriggerPrimitiveFilterToken_;
+        const edm::EDGetTokenT<bool>ecalBadCalibFilterToken_;
+        const edm::EDGetTokenT<bool>BadPFMuonFilterToken_;
+        const edm::EDGetTokenT<bool>muonBadTrackFilterToken_;
 
         // Handles
         edm::Handle<reco::JetTagCollection> bTagProbbHandle_;
@@ -103,6 +119,13 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         edm::Handle<trigger::TriggerEvent> trigEventHandle_;
         edm::Handle<std::vector<PileupSummaryInfo>> pileupInfosHandle_;
         edm::Handle<GenEventInfoProduct> genEvtInfoHandle_;
+        edm::Handle<bool> HBHENoiseFilterResultProducerHandle_;
+        edm::Handle<int> primaryVertexFilterHandle_;
+        edm::Handle<bool> globalSuperTightHalo2016FilterHandle_;
+        edm::Handle<bool> EcalDeadCellTriggerPrimitiveFilterHandle_;
+        edm::Handle<bool> ecalBadCalibFilterHandle_;
+        edm::Handle<bool> BadPFMuonFilterHandle_;
+        edm::Handle<bool> muonBadTrackFilterHandle_;
         
         std::string trigPath_;
         HLTConfigProvider hltConfig_;
@@ -113,7 +136,11 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
 
         // Trigger and event number branches
         unsigned int fired_;
-        unsigned long long event_;
+        unsigned long long eventNum_;
+        unsigned long long runNum_;
+        unsigned long long lumiSec_;
+
+        uint32_t METFiltersFailBits_;
 
         // Gen branches
         
@@ -121,6 +148,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         int genpuobs_;
         int genputrue_;
         float genwgt_;
+        int npv_;
         // Gen muon
         std::vector<float> genPt_;
         std::vector<float> genEta_;

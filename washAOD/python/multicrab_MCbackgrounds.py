@@ -77,12 +77,14 @@ def main():
         #config.JobType.psetName = 'python/iDMAnalyzer_cfg.py'
         #config.JobType.maxMemoryMB = 4000
         #config.JobType.numCores = 1
+        isData = 1
+        config.JobType.pyCfgParams = ['data={}'.format(isData)]
 
 
         #config.Data.outputPrimaryDataset = 'TrigRecoEffStudies'
-        config.Data.splitting = 'Automatic'
-        #config.Data.splitting = 'FileBased'
-        #config.Data.unitsPerJob = 10
+        #config.Data.splitting = 'Automatic'
+        config.Data.splitting = 'LumiBased'
+        config.Data.unitsPerJob = 100
         config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/data'
         config.Data.publication = False
 
@@ -211,7 +213,7 @@ def main():
         for sample, dataset in samples.items():
 
             config.Data.inputDataset = dataset
-            config.General.requestName = 'iDMAnalysis_' + sample
+            config.General.requestName = 'iDMAnalysis_' + sample 
             #config.Data.outputDatasetTag = sample
             #config.Data.userInputFiles = open(basedir + sample + '.list').readlines()
 

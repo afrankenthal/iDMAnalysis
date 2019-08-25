@@ -16,7 +16,7 @@ options.register('year',
 options.register('data',
         0,
         VarParsing.VarParsing.multiplicity.singleton,
-        VarParsing.VarParsing.varType.int,
+        VarParsing.VarParsing.varType.bool,
         "Run on data (1) or MC (0)")
 
 
@@ -35,7 +35,12 @@ if options.test:
             #options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-5p25_dMchi-0p5_ctau-100/iDM_Mchi-5p25_dMchi-0p5_mZDinput-15p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_9905963_AOD_ctau-100.root'
             #options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-60p0_dMchi-20p0_ctau-1/iDM_Mchi-60p0_dMchi-20p0_mZDinput-150p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_9868345_AOD_ctau-1.root'
             #options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-5p25_dMchi-0p5_ctau-100/iDM_Mchi-5p25_dMchi-0p5_mZDinput-15p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_10109056_AOD_ctau-100.root'
-            options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-60p0_dMchi-20p0_ctau-100/iDM_Mchi-60p0_dMchi-20p0_mZDinput-150p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_1547134_AOD_ctau-100.root'
+            if options.data:
+                #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018C/MET/AOD/17Sep2018-v1/60000/FF66CD3E-969F-3644-8A5F-542FD5B56676.root'
+                #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018C/MET/AOD/17Sep2018-v1/100000/15CAEDFA-86F6-924D-B216-C81ACFE0DCEA.root'
+                options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018A/MET/AOD/17Sep2018-v1/60001/ABDA7B68-11D2-3E4E-B0A7-5F28E1FAB9ED.root'
+            else:
+                options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-60p0_dMchi-20p0_ctau-100/iDM_Mchi-60p0_dMchi-20p0_mZDinput-150p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_1547134_AOD_ctau-100.root'
     elif 'lxplus' in platform.node():
         options.inputFiles = 'file:/eos/user/w/wsi/prelimSamples/SIDMmumu_Mps-200_MZp-1p2_ctau-1_12714105_AOD.root'
     options.maxEvents = -1
@@ -54,10 +59,10 @@ process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condD
 if options.year == 2017:
     process.GlobalTag.globaltag = '94X_mc2017_realistic_v15'
 if options.year == 2018:
-    if options.data == 0:
-        process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v15'
-    elif options.data == 1:
+    if options.data:
         process.GlobalTag.globaltag = '102X_dataRun2_Sep2018ABC_v2'
+    else:
+        process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v15'
 
 process.MessageLogger = cms.Service("MessageLogger",
         destinations   =  cms.untracked.vstring('messages', 'cerr'),
@@ -98,29 +103,39 @@ process.TFileService = cms.Service("TFileService",
         closeFileFast = cms.untracked.bool(True)
         )
 
+process.load('iDMSkimmer.washAOD.myMETFilters_cff')
+
 from iDMSkimmer.washAOD.genTuplizer_cfi import genTuplizer
 process.GEN = genTuplizer.clone()
 
 ## Signal Region efficiency
 from iDMSkimmer.washAOD.iDMAnalyzer_cfi import iDMAnalyzer
 #process.SREffi_dsa = iDMAnalyzer.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
-process.ntuples_gbm = iDMAnalyzer.clone(muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+process.ntuples_gbm = iDMAnalyzer.clone(muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
 #process.SREffi_rsa = iDMAnalyzer.clone(muTrack2 = cms.InputTag('refittedStandAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
-process.ntuples_dgm = iDMAnalyzer.clone(muTrack2 = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
+process.ntuples_dgm = iDMAnalyzer.clone(muTrack2 = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
 #process.SREffi_sam = iDMAnalyzer.clone(muTrack2 = cms.InputTag('standAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
 
 ## constructing the path
-if options.year == 2017:
-    process.p = cms.Path(process.GEN
+#if options.year == 2017:
+#    process.p = cms.Path(process.GEN
+#            #+ process.SREffi_dsa
+#            + process.ntuples_gbm
+#            #+ process.SREffi_rsa
+#            + process.ntuples_dgm
+#            #+ process.SREffi_sam
+#            )
+
+if options.data:
+    process.p = cms.Path(process.metFilters
             #+ process.SREffi_dsa
             + process.ntuples_gbm
             #+ process.SREffi_rsa
             + process.ntuples_dgm
             #+ process.SREffi_sam
             )
-
-if options.year == 2018:
-    process.p = cms.Path(process.GEN 
+else:
+    process.p = cms.Path(process.GEN
             #+ process.SREffi_dsa
             + process.ntuples_gbm
             #+ process.SREffi_rsa
