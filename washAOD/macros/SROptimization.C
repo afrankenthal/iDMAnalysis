@@ -27,7 +27,7 @@ int main(int argc, char ** argv) {
 
     cxxopts::Options options("Optimize SR", "Optimize SR by computing varying cuts and computing S/B significance");
     options.add_options()
-        ("c,config", "Config file to use", cxxopts::value<std::string>()->default_value("configs/signal_local.json"))
+        ("c,config", "Config file to use", cxxopts::value<std::string>()->default_value("../configs/signal_local.json"))
         ("f,cutflow", "Which cutflow to use", cxxopts::value<std::string>()->default_value("SR"))
         ("p,param", "Which param to set", cxxopts::value<std::string>()->default_value("abs(reco_vtx_dR)"))
         ("v,value", "Which cut value to set param", cxxopts::value<float>()->default_value("0.8"))

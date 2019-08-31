@@ -27,7 +27,7 @@ int main(int argc, char ** argv) {
 
     cxxopts::Options options("Cutflow tables", "Compute cutflows of signal and backgrounds");
     options.add_options()
-        ("c,config", "Config file to use", cxxopts::value<std::string>()->default_value("configs/signal_local.json"))
+        ("c,config", "Config file to use", cxxopts::value<std::string>()->default_value("../configs/signal_local.json"))
         ("w,which", "Which cutflow to use", cxxopts::value<std::string>()->default_value("SR"))
         ("o,outfile", "Output file", cxxopts::value<std::string>()->default_value(""))
         ("h,help", "Print help and exit.")
