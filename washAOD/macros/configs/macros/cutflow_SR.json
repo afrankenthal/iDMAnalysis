@@ -1,0 +1,23 @@
+{
+    "mMainAnalysis": {
+        "region": "SR",
+        "plots": [
+            {
+                "quantity": "reco_METmu_dphi",
+                "name": "MET_mu_dphi",
+                "title": "#Delta#Phi(MET, muons)",
+                "nbins": 50,
+                "lowX": -3.2,
+                "highX": 3.2
+            },
+            {
+                "quantity": "reco_vtx_dR",
+                "name": "mu_dR",
+                "title": "muon #DeltaR",
+                "nbins": 50,
+                "lowX": 0,
+                "highX": 6.5
+            }
+        ]
+    }
+}

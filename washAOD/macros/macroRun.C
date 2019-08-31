@@ -23,6 +23,7 @@
 #include "mSumGenWgts.C"
 #include "mSROptimization.C"
 #include "mNminus1Plots.C"
+#include "mMainAnalysis.C"
 
 #include "utils/common.C"
 using namespace common;
@@ -40,9 +41,10 @@ int main(int argc, char ** argv) {
 
     cxxopts::Options options("macroRun", "Run configurable macros with common IO interface");
     options.add_options()
-        ("s,signal", "Signal sample config file to use", cxxopts::value<std::string>()->default_value("configs/thirdrun/signal.json"))
-        ("b,background", "Background sample config file to use", cxxopts::value<std::string>()->default_value("configs/thirdrun/backgrounds_subset.json"))
-        ("m,macro", "Macro config file to use", cxxopts::value<std::string>()->default_value("configs/macros/nminus1.json"))
+        ("s,signal", "Signal sample config file to use", cxxopts::value<std::string>()->default_value("")) //configs/thirdrun/signal.json"))
+        ("b,background", "Background sample config file to use", cxxopts::value<std::string>()->default_value("")) //configs/thirdrun/backgrounds_subset.json"))
+        ("d,data", "Data sample config file to use", cxxopts::value<std::string>()->default_value("")) //configs/data.json"))
+        ("m,macro", "Macro config file to use", cxxopts::value<std::string>()->default_value("")) //configs/macros/nminus1.json"))
         ("o,outfile", "Output file", cxxopts::value<std::string>()->default_value(""))
         ("h,help", "Print help and exit.")
     ;
@@ -57,7 +59,8 @@ int main(int argc, char ** argv) {
     //TString which_cutflow = TString(result["which"].as<std::string>());
     vector<TString> sample_config_filenames {
         TString(result["background"].as<std::string>()),
-        TString(result["signal"].as<std::string>())
+        TString(result["signal"].as<std::string>()),
+        TString(result["data"].as<std::string>())
     };
     TString macro_filename = TString(result["macro"].as<std::string>());
     TString outfilename = TString(result["outfile"].as<std::string>());
@@ -66,10 +69,13 @@ int main(int argc, char ** argv) {
     macro_map["mSumGenWgts"] = &macro::mSumGenWgts;
     macro_map["mSROptimization"] = &macro::mSROptimization;
     macro_map["mNminus1Plots"] = &macro::mNminus1Plots;
+    macro_map["mMainAnalysis"] = &macro::mMainAnalysis;
     
     map<TString, SampleInfo> samples;
 
     for (auto config_filename : sample_config_filenames) { 
+        if (config_filename == "") continue;
+
         std::ifstream config_file(config_filename.Data());
         json configs;
         config_file >> configs;
@@ -100,10 +106,14 @@ int main(int argc, char ** argv) {
     macro_config_file >> macro_configs;
 
     for (auto const & [macro, cfg] : macro_configs.items()) {
+        if (macro == "mMainAnalysis")
+            cfg["outfilename"] = outfilename.Data();
+
         if (macro == "mSumGenWgts") 
-            macro_map[macro](samples, json({{"sample_config_filename",sample_config_filenames[0].Data()}}));
-        else
-            macro_map[macro](samples, cfg); // invoke macro with samples from above and cfg from json
+            cfg = json({{"sample_config_filename",sample_config_filenames[0].Data()}});
+            //macro_map[macro](samples, json({{"sample_config_filename",sample_config_filenames[0].Data()}}));
+
+        macro_map[macro](samples, cfg); // invoke macro with samples from above and cfg from json
     }
 
     cout << endl;

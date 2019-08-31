@@ -3,6 +3,15 @@
 
 namespace common {
 
+    typedef struct TH1Info {
+        TString quantity;
+        TString name;
+        TString title;
+        Int_t nbins;
+        Double_t lowX;
+        Double_t highX;
+    } TH1Info;
+
     typedef struct SignalInfo {
         TString m1;
         TString dmchi;
