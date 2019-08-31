@@ -97,8 +97,6 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
 
 void iDMAnalyzer::beginJob()
 {
-    eventCounter = 0;
-
     recoT = fs->make<TTree>("recoT", "");
 
     recoT->Branch("event_num", &eventNum_);
@@ -423,7 +421,10 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             recoPFJetPt_.push_back(jet_i->pt());
        		recoPFJetEta_.push_back(jet_i->eta());
        		recoPFJetPhi_.push_back(jet_i->phi());
-            recoPFJetBTag_.push_back(bTagsProbb[i].second+bTagsProbbb[i].second);
+            if (bTagsProbb.size() > i && bTagsProbbb.size() > i)
+                recoPFJetBTag_.push_back(bTagsProbb[i].second+bTagsProbbb[i].second);
+            else
+                recoPFJetBTag_.push_back(-10000);
         }
     }
 
@@ -901,7 +902,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     setCutBit(5);
     if (recoPFNHighPtJet_ <= 2) 
         for (int i = 0; i < recoPFNHighPtJet_; i++) 
-            if (recoPFJetBTag_[i] > 0.4184)
+            if (recoPFJetBTag_[i] > 0.4184) // || recoPFJetBTag_[i] < 0) --> negative if no b-tagging info for some reason (but don't veto on negative)
                 clearCutBit(5);
 
     // dsa muon cuts

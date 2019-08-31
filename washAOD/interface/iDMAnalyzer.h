@@ -45,8 +45,6 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         static void fillDescriptions(edm::ConfigurationDescriptions&);
 
     private:
-        int eventCounter;
-
         bool getCollections(const edm::Event&);
 
         virtual void beginJob() override;

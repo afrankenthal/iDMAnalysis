@@ -38,7 +38,10 @@ if options.test:
             if options.data:
                 #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018C/MET/AOD/17Sep2018-v1/60000/FF66CD3E-969F-3644-8A5F-542FD5B56676.root'
                 #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018C/MET/AOD/17Sep2018-v1/100000/15CAEDFA-86F6-924D-B216-C81ACFE0DCEA.root'
-                options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018A/MET/AOD/17Sep2018-v1/60001/ABDA7B68-11D2-3E4E-B0A7-5F28E1FAB9ED.root'
+                #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018A/MET/AOD/17Sep2018-v1/60001/ABDA7B68-11D2-3E4E-B0A7-5F28E1FAB9ED.root'
+                #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018B/MET/AOD/17Sep2018-v1/120000/F099DF9A-6FF6-594A-9865-EB7125104EDF.root'
+                #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018B/MET/AOD/17Sep2018-v1/120000/6ECBC797-E226-FA47-BBAE-C79150CCBA41.root'
+                options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018B/MET/AOD/17Sep2018-v1/120000/572AAC76-E629-DC44-A27A-0F327B99FA7A.root'
             else:
                 options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-60p0_dMchi-20p0_ctau-100/iDM_Mchi-60p0_dMchi-20p0_mZDinput-150p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_1547134_AOD_ctau-100.root'
     elif 'lxplus' in platform.node():

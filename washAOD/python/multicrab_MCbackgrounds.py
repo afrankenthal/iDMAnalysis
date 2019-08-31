@@ -82,9 +82,9 @@ def main():
 
 
         #config.Data.outputPrimaryDataset = 'TrigRecoEffStudies'
-        #config.Data.splitting = 'Automatic'
-        config.Data.splitting = 'LumiBased'
-        config.Data.unitsPerJob = 100
+        config.Data.splitting = 'Automatic'
+        #config.Data.splitting = 'LumiBased'
+        #config.Data.unitsPerJob = 100
         config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/data'
         config.Data.publication = False
 
@@ -213,7 +213,7 @@ def main():
         for sample, dataset in samples.items():
 
             config.Data.inputDataset = dataset
-            config.General.requestName = 'iDMAnalysis_' + sample 
+            config.General.requestName = 'iDMAnalysis_' + sample
             #config.Data.outputDatasetTag = sample
             #config.Data.userInputFiles = open(basedir + sample + '.list').readlines()
 
