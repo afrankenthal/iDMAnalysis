@@ -4,20 +4,45 @@
         "plots": [
             {
                 "quantity": "reco_METmu_dphi",
+                "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "5p25_100", "60p0_1", "52p5_1000" ],
+                "cuts": [0, 3, 5, 18, 19, 20, 21],
                 "name": "MET_mu_dphi",
                 "title": "#Delta#Phi(MET, muons)",
-                "nbins": 50,
+                "nbins": 26,
                 "lowX": -3.2,
                 "highX": 3.2
             },
             {
                 "quantity": "reco_vtx_dR",
+                "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "5p25_100", "60p0_1", "52p5_1000" ],
+                "cuts": [0, 3, 5, 18, 19, 20, 21],
                 "name": "mu_dR",
                 "title": "muon #DeltaR",
-                "nbins": 50,
+                "nbins": 26,
                 "lowX": 0,
                 "highX": 6.5
+            },
+            {
+                "quantity": "reco_vtx_vxy",
+                "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "5p25_100", "60p0_1", "52p5_1000" ],
+                "cuts": [0, 3, 5, 18, 19, 20, 21],
+                "name": "reco_vtx_vxy",
+                "title": "Muon pair vxy [cm]",
+                "nbins": 50,
+                "lowX": 0,
+                "highX": 1000 
+            },
+            {
+                "quantity": "reco_PF_n_highPt_jets",
+                "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "5p25_100", "60p0_1", "52p5_1000" ],
+                "cuts": [0, 3, 5, 18, 19, 20, 21],
+                "name": "reco_PF_n_highPt_jets",
+                "title": "Number of high-pT jets",
+                "nbins": 10,
+                "lowX": 0,
+                "highX": 9 
             }
         ]
     }
 }
+
