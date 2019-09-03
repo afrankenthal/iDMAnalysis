@@ -92,9 +92,11 @@ public :
    virtual void    SlaveTerminate();
    virtual void    Terminate();
 
-   void SetParams(Double_t sum_gen_wgt, Double_t xsec, Double_t lumi, TString region);
+   void doFills(int cut, double weight);
+   void SetParams(common::SampleInfo sample_info, Double_t lumi, TString region);
    void SetHistos(std::map<TString, common::TH1Info*> histos_info) { histos_info_ = histos_info; }
    std::vector<double> GetCutflow() { return cutflow_; }
+   std::map<TString, std::map<int, TH1F*>> GetHistograms() { return cutflowHistos_; }
 
    ClassDef(mainAnalysisSelectorMC,0);
 
@@ -102,6 +104,7 @@ public :
    std::map<TString, common::TH1Info*> histos_info_;
    std::map<TString, std::map<int, TH1F*>> cutflowHistos_;
 
+   common::SampleInfo sample_info_;
    Double_t sum_gen_wgt_;
    Double_t xsec_;
    Double_t lumi_;

@@ -24,6 +24,7 @@
 #include "mSROptimization.C"
 #include "mNminus1Plots.C"
 #include "mMainAnalysis.C"
+#include "mMakePlotsFromFile.C"
 
 #include "utils/common.C"
 using namespace common;
@@ -46,6 +47,7 @@ int main(int argc, char ** argv) {
         ("d,data", "Data sample config file to use", cxxopts::value<std::string>()->default_value("")) //configs/data.json"))
         ("m,macro", "Macro config file to use", cxxopts::value<std::string>()->default_value("")) //configs/macros/nminus1.json"))
         ("o,outfile", "Output file", cxxopts::value<std::string>()->default_value(""))
+        ("i,infile", "Input file", cxxopts::value<std::string>()->default_value(""))
         ("h,help", "Print help and exit.")
     ;
     auto result = options.parse(argc, argv);
@@ -63,13 +65,15 @@ int main(int argc, char ** argv) {
         TString(result["data"].as<std::string>())
     };
     TString macro_filename = TString(result["macro"].as<std::string>());
-    TString outfilename = TString(result["outfile"].as<std::string>());
+    TString out_filename = TString(result["outfile"].as<std::string>());
+    TString in_filename = TString(result["infile"].as<std::string>());
 
     macro_map["mCutflowTables"] = &macro::mCutflowTables;
     macro_map["mSumGenWgts"] = &macro::mSumGenWgts;
     macro_map["mSROptimization"] = &macro::mSROptimization;
     macro_map["mNminus1Plots"] = &macro::mNminus1Plots;
     macro_map["mMainAnalysis"] = &macro::mMainAnalysis;
+    macro_map["mMakePlotsFromFile"] = &macro::mMakePlotsFromFile;
     
     map<TString, SampleInfo> samples;
 
@@ -94,7 +98,8 @@ int main(int argc, char ** argv) {
                 cfg["sum_gen_wgt"].get<float>(), // sum_gen_wgt
                 cfg["limit_num_files"].get<int>(), // limit_num_files
                 1, // weight
-                TString(cfg["group"].get<std::string>()), // plot group
+                TString(cfg["group"].get<std::string>()), // sample group
+                common::mapMODE[TString(cfg["mode"].get<std::string>())], // mode: 0 = SIGNAL, 1 = BKG, 2 = DATA
                 (cfg.find("color") != cfg.end() ? cfg["color"].get<int>() : color++), // line color
                 (config_filename.Contains("signal") ? 2 : 1) // line style (bkg vs signal)
             };
@@ -107,7 +112,9 @@ int main(int argc, char ** argv) {
 
     for (auto const & [macro, cfg] : macro_configs.items()) {
         if (macro == "mMainAnalysis")
-            cfg["outfilename"] = outfilename.Data();
+            cfg["outfilename"] = out_filename.Data();
+        if (macro == "mMakePlotsFromFile")
+            cfg["infilename"] = in_filename.Data();
 
         if (macro == "mSumGenWgts") 
             cfg = json({{"sample_config_filename",sample_config_filenames[0].Data()}});
