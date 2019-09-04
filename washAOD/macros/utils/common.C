@@ -11,11 +11,11 @@ namespace common {
         TString legend;
         Int_t color;
         STYLE style; // mainly solid (1) or dashed (2)
-        MODE mode; // 1 for line (signal), 0 for fill (background), -1 for data (dot)
+        MODE mode; // 0 for fill (background), 1 for marker (data), 2 for line (signal)
     } GroupPlotInfo;
 
     std::map<TString, GroupPlotInfo> group_plot_info{
-        {"DY", GroupPlotInfo{"Z(ll)+Jets", kBlack, SOLID, BKG}},
+        {"DY", GroupPlotInfo{"Z(ll)+Jets", kOrange, SOLID, BKG}},
         {"QCD", GroupPlotInfo{"QCD", kRed, SOLID, BKG}},
         {"Multiboson", GroupPlotInfo{"Di-/Tri-boson", kGreen, SOLID, BKG}},
         {"ZJets", GroupPlotInfo{"Z(#nu#nu)+Jets", 4, SOLID, BKG}},
@@ -24,6 +24,7 @@ namespace common {
         {"60p0_1", GroupPlotInfo{"(50,70) GeV, 100 mm", kBlack, DASHED, SIGNAL}},
         {"5p25_100", GroupPlotInfo{"(5,5.5) GeV, 1 mm", kCyan, DASHED, SIGNAL}},
         {"52p5_1000", GroupPlotInfo{"(50,55) GeV, 1000 mm", kOrange, DASHED, SIGNAL}},
+        {"data", GroupPlotInfo{"Data", kBlack, SOLID, DATA}},
     };
 
     typedef struct TH1Info {

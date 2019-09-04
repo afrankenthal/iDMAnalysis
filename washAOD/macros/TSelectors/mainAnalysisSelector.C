@@ -1,5 +1,5 @@
-#define mainAnalysisSelectorMC_cxx
-// The class definition in mainAnalysisSelectorMC.h has been generated automatically
+#define mainAnalysisSelector_cxx
+// The class definition in mainAnalysisSelector.h has been generated automatically
 // by the ROOT utility TTree::MakeSelector(). This class is derived
 // from the ROOT class TSelector. For more information on the TSelector
 // framework see $ROOTSYS/README/README.SELECTOR or the ROOT User Manual.
@@ -19,27 +19,42 @@
 //
 // To use this file, try the following session on your Tree T:
 //
-// root> T->Process("mainAnalysisSelectorMC.C")
-// root> T->Process("mainAnalysisSelectorMC.C","some options")
-// root> T->Process("mainAnalysisSelectorMC.C+")
+// root> T->Process("mainAnalysisSelector.C")
+// root> T->Process("mainAnalysisSelector.C","some options")
+// root> T->Process("mainAnalysisSelector.C+")
 //
 
 
-#include "mainAnalysisSelectorMC.h"
+#include "mainAnalysisSelector.h"
 #include <TH2.h>
 #include <TStyle.h>
 
-void mainAnalysisSelectorMC::SetParams(common::SampleInfo sample_info, Double_t lumi, TString region = "SR") {
+void mainAnalysisSelector::SetMode(common::MODE mode) { 
+    mode_ = mode; 
+    if (mode_ == common::DATA)
+        MET_filters_fail_bits = make_unique<TTreeReaderValue<UInt_t>>(fReader, "MET_filters_fail_bits");
+    else
+        gen_wgt = make_unique<TTreeReaderValue<Float_t>>(fReader, "gen_wgt");
+}
+
+void mainAnalysisSelector::SetParams(common::SampleInfo sample_info, Double_t lumi, TString region = "SR") {
     sample_info_ = sample_info;
     sum_gen_wgt_ = sample_info_.sum_gen_wgt;
     xsec_ = sample_info_.xsec;
     lumi_ = lumi;
     std::cout << "sum_gen_wgt: " << sum_gen_wgt_ << ", xsec: " << xsec_ << " [pb], lumi: " << lumi_ << " [1/pb]" << std::endl;
 
+    //if (mode_ == common::DATA) {
+    //    MET_filters_fail_bits = make_unique<TTreeReaderValue<Int_t>>(fReader, "MET_filters_fail_bits");
+    //}
+    //else {
+    //    gen_wgt = make_unique<TTreeReaderValue<Float_t>>(fReader, "gen_wgt");
+    //}
+
     region_ = region;
 }
 
-void mainAnalysisSelectorMC::Begin(TTree * /*tree*/)
+void mainAnalysisSelector::Begin(TTree * /*tree*/)
 {
    // The Begin() function is called at the start of the query.
    // When running with PROOF Begin() is only called on the client.
@@ -48,7 +63,7 @@ void mainAnalysisSelectorMC::Begin(TTree * /*tree*/)
    TString option = GetOption();
 }
 
-void mainAnalysisSelectorMC::SlaveBegin(TTree * /*tree*/)
+void mainAnalysisSelector::SlaveBegin(TTree * /*tree*/)
 {
    // The SlaveBegin() function is called after the Begin() function.
    // When running with PROOF SlaveBegin() is called on each slave server.
@@ -67,6 +82,10 @@ void mainAnalysisSelectorMC::SlaveBegin(TTree * /*tree*/)
            cutflowHistos_[name][cut]->Sumw2();
            if (common::group_plot_info[sample_info_.group].mode == common::BKG) 
                cutflowHistos_[name][cut]->SetFillColor(common::group_plot_info[sample_info_.group].color);
+           else if (common::group_plot_info[sample_info_.group].mode == common::DATA) {
+               cutflowHistos_[name][cut]->SetMarkerColor(common::group_plot_info[sample_info_.group].color);
+               cutflowHistos_[name][cut]->SetMarkerStyle(common::group_plot_info[sample_info_.group].style);
+           }
            else if (common::group_plot_info[sample_info_.group].mode == common::SIGNAL) {
                cutflowHistos_[name][cut]->SetLineColor(common::group_plot_info[sample_info_.group].color);
                cutflowHistos_[name][cut]->SetLineStyle(common::group_plot_info[sample_info_.group].style);
@@ -76,7 +95,7 @@ void mainAnalysisSelectorMC::SlaveBegin(TTree * /*tree*/)
    }
 }
 
-void mainAnalysisSelectorMC::doFills(int cut, double weight) {
+void mainAnalysisSelector::doFills(int cut, double weight) {
    // Map between the actual variables and their string representation
    // For automating things and allowing flexibility via configs
    std::map<TString, Double_t> mapVariables;
@@ -94,7 +113,7 @@ void mainAnalysisSelectorMC::doFills(int cut, double weight) {
            hists[cut]->Fill(mapVariables[histos_info_[name]->quantity], weight);
 }
 
-Bool_t mainAnalysisSelectorMC::Process(Long64_t entry)
+Bool_t mainAnalysisSelector::Process(Long64_t entry)
 {
    // The Process() function is called for each entry in the tree (or possibly
    // keyed object in the case of PROOF) to be processed. The entry argument
@@ -112,13 +131,27 @@ Bool_t mainAnalysisSelectorMC::Process(Long64_t entry)
    //
    // The return value is currently not used.
 
+
    fReader.SetLocalEntry(entry);
+
    
-   double weight = (*gen_wgt) * xsec_ * lumi_ / sum_gen_wgt_;
+   // data weight is always 1
+   double weight = 1;
+   if (mode_ != common::DATA)
+       weight = (**gen_wgt) * xsec_ * lumi_ / sum_gen_wgt_;
 
    int cut = 0;
 
    doFills(cut++, weight);
+
+   // TODO MC doesn't have MET filters yet, just make the cut pass
+   if (mode_ == common::DATA) {
+       if ((**MET_filters_fail_bits)) return false;
+       doFills(cut++, weight);
+   }
+   else {
+       doFills(cut++, weight);
+   }
 
    // Trigger check
    if (!(*trig_fired)) return false;
@@ -201,7 +234,7 @@ Bool_t mainAnalysisSelectorMC::Process(Long64_t entry)
    return kTRUE;
 }
 
-void mainAnalysisSelectorMC::SlaveTerminate()
+void mainAnalysisSelector::SlaveTerminate()
 {
    // The SlaveTerminate() function is called after all entries or objects
    // have been processed. When running with PROOF SlaveTerminate() is called
@@ -211,7 +244,7 @@ void mainAnalysisSelectorMC::SlaveTerminate()
 
 }
 
-void mainAnalysisSelectorMC::Terminate()
+void mainAnalysisSelector::Terminate()
 {
    // The Terminate() function is the last function to be called during
    // a query. It always runs on the client, it can be used to present

@@ -5,8 +5,8 @@
 // found on file: root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_thirdrun/QCD_bEnriched_HT700to1000_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_QCD_bEnriched_HT700to1000/190722_042845/0000/merged_39e87f58-7dd3-4764-9ef7-df13c05061c3_06.root
 //////////////////////////////////////////////////////////
 
-#ifndef mainAnalysisSelectorMC_h
-#define mainAnalysisSelectorMC_h
+#ifndef mainAnalysisSelector_h
+#define mainAnalysisSelector_h
 
 #include <TROOT.h>
 #include <TChain.h>
@@ -26,13 +26,12 @@
 
 
 
-class mainAnalysisSelectorMC : public TSelector {
+class mainAnalysisSelector : public TSelector {
 public :
    TTreeReader     fReader;  //!the tree reader
    TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
 
    // Readers to access the data (delete the ones you do not need).
-   TTreeReaderValue<ULong64_t> event_n = {fReader, "event_n"};
    TTreeReaderValue<UInt_t> trig_fired = {fReader, "trig_fired"};
    TTreeReaderValue<Int_t> reco_n_dsa = {fReader, "reco_n_dsa"};
    TTreeReaderValue<Int_t> reco_n_good_dsa = {fReader, "reco_n_good_dsa"};
@@ -73,11 +72,17 @@ public :
    TTreeReaderValue<Float_t> reco_PF_METjet_dphi = {fReader, "reco_PF_METjet_dphi"};
    TTreeReaderValue<Float_t> reco_MHT_Pt = {fReader, "reco_MHT_Pt"};
    TTreeReaderValue<UInt_t> cuts = {fReader, "cuts"};
-   TTreeReaderValue<Float_t> gen_wgt = {fReader, "gen_wgt"};
+   // Branches that are only present in either data or MC (need dynamic allocation)
+   // DATA
+   std::unique_ptr<TTreeReaderValue<UInt_t>> MET_filters_fail_bits;
+   //TTreeReaderValue<ULong64_t> num_event = {fReader, "num_event"};
+   // MC
+   std::unique_ptr<TTreeReaderValue<Float_t>> gen_wgt; // = {fReader, "gen_wgt"};
+   //TTreeReaderValue<ULong64_t> event_n = {fReader, "event_n"};
 
 
-   mainAnalysisSelectorMC(TTree * /*tree*/ =0) : cutflow_(30, 0.0) { }
-   virtual ~mainAnalysisSelectorMC() { }
+   mainAnalysisSelector(TTree * /*tree*/ =0) : cutflow_(30, 0.0) { }
+   virtual ~mainAnalysisSelector() { }
    virtual Int_t   Version() const { return 2; }
    virtual void    Begin(TTree *tree);
    virtual void    SlaveBegin(TTree *tree);
@@ -93,12 +98,13 @@ public :
    virtual void    Terminate();
 
    void doFills(int cut, double weight);
+   void SetMode(common::MODE mode);
    void SetParams(common::SampleInfo sample_info, Double_t lumi, TString region);
    void SetHistos(std::map<TString, common::TH1Info*> histos_info) { histos_info_ = histos_info; }
    std::vector<double> GetCutflow() { return cutflow_; }
    std::map<TString, std::map<int, TH1F*>> GetHistograms() { return cutflowHistos_; }
 
-   ClassDef(mainAnalysisSelectorMC,0);
+   ClassDef(mainAnalysisSelector,0);
 
    std::vector<double> cutflow_;
    std::map<TString, common::TH1Info*> histos_info_;
@@ -108,14 +114,15 @@ public :
    Double_t sum_gen_wgt_;
    Double_t xsec_;
    Double_t lumi_;
+   common::MODE mode_;
    TString region_;
 
 };
 
 #endif
 
-#ifdef mainAnalysisSelectorMC_cxx
-void mainAnalysisSelectorMC::Init(TTree *tree)
+#ifdef mainAnalysisSelector_cxx
+void mainAnalysisSelector::Init(TTree *tree)
 {
    // The Init() function is called when the selector needs to initialize
    // a new tree or chain. Typically here the reader is initialized.
@@ -127,7 +134,7 @@ void mainAnalysisSelectorMC::Init(TTree *tree)
    fReader.SetTree(tree);
 }
 
-Bool_t mainAnalysisSelectorMC::Notify()
+Bool_t mainAnalysisSelector::Notify()
 {
    // The Notify() function is called when a new file is opened. This
    // can be either for a new TTree in a TChain or when when a new TTree
@@ -139,4 +146,4 @@ Bool_t mainAnalysisSelectorMC::Notify()
 }
 
 
-#endif // #ifdef mainAnalysisSelectorMC_cxx
+#endif // #ifdef mainAnalysisSelector_cxx
