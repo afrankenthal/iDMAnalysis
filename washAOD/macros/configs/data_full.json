@@ -3,7 +3,7 @@
         "dir": ["root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/data/MET/crab_iDMAnalysis_MET_Run2018A_v2/190826_054750/0000/"],
         "group": "data",
         "mode": "DATA",
-        "limit_num_files": 1,
+        "limit_num_files": -1,
         "sum_gen_wgt": -1,
         "xsec": -1
     },
@@ -11,7 +11,7 @@
         "dir": ["root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/data/MET/crab_iDMAnalysis_MET_Run2018B_v2/190826_054726/0000/"],
         "group": "data",
         "mode": "DATA",
-        "limit_num_files": 1,
+        "limit_num_files": -1,
         "sum_gen_wgt": -1,
         "xsec": -1
     },
@@ -19,7 +19,7 @@
         "dir": ["root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/data/MET/crab_iDMAnalysis_MET_Run2018C_v2/190826_054703/0000/"],
         "group": "data",
         "mode": "DATA",
-        "limit_num_files": 1,
+        "limit_num_files": -1,
         "sum_gen_wgt": -1,
         "xsec": -1
     }
