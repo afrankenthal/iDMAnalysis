@@ -82,7 +82,8 @@ namespace macro {
                 hs->GetYaxis()->SetTitle("Events");
                 hs->SetTitle("");
                 writeExtraText = true;
-                lumi_13TeV = "59.97 fb^{-1}";
+                //lumi_13TeV = "59.97 fb^{-1}";
+                lumi_13TeV = "29.41 fb^{-1}";
                 CMS_lumi(c, 4);
                 c->SetLogy();
             }
@@ -107,7 +108,7 @@ namespace macro {
                     else if (TString(hs->GetName()).Contains("BKG"))
                         legend->AddEntry((TH1F*)h, "", "f");
                     else if (TString(hs->GetName()).Contains("DATA"))
-                        legend->AddEntry((TH1F*)h, "", "p");
+                        legend->AddEntry((TH1F*)h, "", "lep");
                 }
             }
             legend->Draw();

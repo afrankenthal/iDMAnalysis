@@ -44,13 +44,6 @@ void mainAnalysisSelector::SetParams(common::SampleInfo sample_info, Double_t lu
     lumi_ = lumi;
     std::cout << "sum_gen_wgt: " << sum_gen_wgt_ << ", xsec: " << xsec_ << " [pb], lumi: " << lumi_ << " [1/pb]" << std::endl;
 
-    //if (mode_ == common::DATA) {
-    //    MET_filters_fail_bits = make_unique<TTreeReaderValue<Int_t>>(fReader, "MET_filters_fail_bits");
-    //}
-    //else {
-    //    gen_wgt = make_unique<TTreeReaderValue<Float_t>>(fReader, "gen_wgt");
-    //}
-
     region_ = region;
 }
 
@@ -85,6 +78,7 @@ void mainAnalysisSelector::SlaveBegin(TTree * /*tree*/)
            else if (common::group_plot_info[sample_info_.group].mode == common::DATA) {
                cutflowHistos_[name][cut]->SetMarkerColor(common::group_plot_info[sample_info_.group].color);
                cutflowHistos_[name][cut]->SetMarkerStyle(common::group_plot_info[sample_info_.group].style);
+               cutflowHistos_[name][cut]->SetMarkerSize(0.9);
            }
            else if (common::group_plot_info[sample_info_.group].mode == common::SIGNAL) {
                cutflowHistos_[name][cut]->SetLineColor(common::group_plot_info[sample_info_.group].color);
@@ -104,6 +98,9 @@ void mainAnalysisSelector::doFills(int cut, double weight) {
    mapVariables["reco_vtx_vxy"] = *reco_vtx_vxy;
    mapVariables["reco_METmu_dphi"] = *reco_METmu_dphi;
    mapVariables["reco_PF_n_highPt_jets"] = (Double_t)(*reco_PF_n_highPt_jets);
+   mapVariables["reco_PF_MET_pt"] = *reco_PF_MET_pt;
+   mapVariables["reco_PF_jet_pt[0]"] = (reco_PF_jet_pt.GetSize() > 0 ? reco_PF_jet_pt[0] : -10);
+   mapVariables["reco_sel_mu_pt[0]"] = (reco_sel_mu_pt.GetSize() > 0 ? reco_sel_mu_pt[0] : -10);
 
    cutflow_[cut] += weight;
 

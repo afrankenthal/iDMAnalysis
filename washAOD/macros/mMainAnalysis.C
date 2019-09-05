@@ -20,7 +20,6 @@ using namespace common;
 #include "utils/json.hpp"
 using json = nlohmann::json;
 #include "utils/cxxopts.hpp"
-//#include "TSelectors/mainAnalysisSelectorData.h"
 #include "TSelectors/mainAnalysisSelector.h"
 
 using std::cout, std::endl, std::map, std::vector;
@@ -69,8 +68,8 @@ namespace macro {
             }
         }
 
-        //Float_t lumi = 59.97 * 1000; // 1/pb
-        Float_t lumi = 29.41 * 1000; // 1/pb
+        Float_t lumi = 59.97 * 1000; // 1/pb
+        //Float_t lumi = 29.41 * 1000; // 1/pb
 
         // TODO re-run latest ntuplizer with MC so can have single selector class
         mainAnalysisSelector * MCSelector = (mainAnalysisSelector*)TSelector::GetSelector("TSelectors/mainAnalysisSelector.C+");
@@ -135,43 +134,6 @@ namespace macro {
                         all_hstacks[hist_name][props.mode][cut]->Add(hist);
                 }
             }
-
-            //if (!isData) { // MC
-
-                //MCSelector->SetParams(props, lumi, region);
-                //data_reco->Process(MCSelector);
-
-                //cutflow = MCSelector->GetCutflow();
-                //cutsInclusive.insert(std::make_pair(sample, cutflow));
-                //if (cutsGroupInclusive.find(props.group) == cutsGroupInclusive.end())
-                    //cutsGroupInclusive.insert(std::make_pair(props.group, cutflow));
-                //else
-                    //std::transform(cutsGroupInclusive[props.group].begin(), cutsGroupInclusive[props.group].end(), cutflow.begin(), cutsGroupInclusive[props.group].begin(), std::plus<double>( )); // sum std::vectors element-wise
-
-                //map<TString, map<int, TH1F*>> sample_histos = MCSelector->GetHistograms();
-                //for (auto & [hist_name, hists] : sample_histos) {
-                    //for (auto & [cut, hist] : hists) {
-                        //TList * hist_list = all_hstacks[hist_name][props.mode][cut]->GetHists();
-                        //bool kFound = false;
-                        //TIter next(hist_list);
-                        //TH1F * h; 
-                        //while ((h=(TH1F*)next())) {
-                            //if (TString(h->GetName()) == TString(hist->GetName())) { // hist already exists in stack
-                                //h->Add(hist);
-                                //kFound = true;
-                            //}
-                        //}
-                        //if (!kFound) // first time hist is filled, so add to stack
-                            //all_hstacks[hist_name][props.mode][cut]->Add(hist);
-                    //}
-                //}
-            //}
-            //else { // data
-                
-                //data_reco->Process(dataSelector);//"mainAnalysisSelectorData.C+");
-
-                ////cutflow = DataSelector->GetCutflow();
-            //}
         }
 
         cout << "Inclusive cutflow:" << endl;

@@ -1,11 +1,12 @@
 #ifndef COMMON_H
 #define COMMON_H
+#include <TColor.h>
 
 namespace common {
 
     enum MODE { BKG, DATA, SIGNAL };
     std::map<TString, MODE> mapMODE{ {"BKG",BKG}, {"DATA",DATA}, {"SIGNAL",SIGNAL} };
-    enum STYLE { SOLID=1, DASHED };
+    enum STYLE { SOLID=1, DASHED, MARKER=20 };
 
     typedef struct GroupPlotInfo {
         TString legend;
@@ -22,9 +23,9 @@ namespace common {
         {"WJets", GroupPlotInfo{"W(l#nu)+Jets", kYellow, SOLID, BKG}},
         {"Top", GroupPlotInfo{"Top", 6, SOLID, BKG}},
         {"60p0_1", GroupPlotInfo{"(50,70) GeV, 100 mm", kBlack, DASHED, SIGNAL}},
-        {"5p25_100", GroupPlotInfo{"(5,5.5) GeV, 1 mm", kCyan, DASHED, SIGNAL}},
-        {"52p5_1000", GroupPlotInfo{"(50,55) GeV, 1000 mm", kOrange, DASHED, SIGNAL}},
-        {"data", GroupPlotInfo{"Data", kBlack, SOLID, DATA}},
+        {"5p25_100", GroupPlotInfo{"(5,5.5) GeV, 1 mm", kBlue, DASHED, SIGNAL}},
+        {"52p5_1000", GroupPlotInfo{"(50,55) GeV, 1000 mm", kGreen, DASHED, SIGNAL}},
+        {"data", GroupPlotInfo{"Data", kBlack, MARKER, DATA}},
     };
 
     typedef struct TH1Info {
