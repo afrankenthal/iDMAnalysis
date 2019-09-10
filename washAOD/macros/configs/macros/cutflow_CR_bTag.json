@@ -1,6 +1,6 @@
 {
     "mMainAnalysis": {
-        "region": "CR_dR",
+        "region": "CR_bTag",
         "plots": [
             {
                 "quantity": "reco_METmu_dphi",
