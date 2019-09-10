@@ -71,7 +71,10 @@ void mainAnalysisSelector::SlaveBegin(TTree * /*tree*/)
    for (auto & [name, hist] : histos_info_) {
        if (std::find(hist->groups.begin(), hist->groups.end(), sample_info_.group) == hist->groups.end()) continue;
        for (auto cut : hist->cuts) {
-           cutflowHistos_[name][cut] = new TH1F(Form("%s_cut%d_%s", name.Data(), cut, sample_info_.group.Data()), common::group_plot_info[sample_info_.group].legend, hist->nbins, hist->lowX, hist->highX);
+           if (hist->nbinsY == -1) // 1D plot
+               cutflowHistos_[name][cut] = new TH1F(Form("%s_cut%d_%s", name.Data(), cut, sample_info_.group.Data()), common::group_plot_info[sample_info_.group].legend, hist->nbinsX, hist->lowX, hist->highX);
+           else // 2D plot
+               cutflowHistos_[name][cut] = new TH2F(Form("%s_cut%d_%s", name.Data(), cut, sample_info_.group.Data()), common::group_plot_info[sample_info_.group].legend, hist->nbinsX, hist->lowX, hist->highX, hist->nbinsY, hist->lowY, hist->highY);
            cutflowHistos_[name][cut]->Sumw2();
            if (common::group_plot_info[sample_info_.group].mode == common::BKG) 
                cutflowHistos_[name][cut]->SetFillColor(common::group_plot_info[sample_info_.group].color);
@@ -106,8 +109,13 @@ void mainAnalysisSelector::doFills(int cut, double weight) {
 
    // Only fill cuts that are present in the config
    for (auto & [name, hists] : cutflowHistos_)
-       if (std::find(histos_info_[name]->cuts.begin(), histos_info_[name]->cuts.end(), cut) != histos_info_[name]->cuts.end())
-           hists[cut]->Fill(mapVariables[histos_info_[name]->quantity], weight);
+       if (std::find(histos_info_[name]->cuts.begin(), histos_info_[name]->cuts.end(), cut) != histos_info_[name]->cuts.end()) {
+           if (histos_info_[name]->nbinsY == -1) // 1D plot
+               hists[cut]->Fill(mapVariables[histos_info_[name]->quantity], weight);
+           else // 2D plot
+               ((TH2F*)hists[cut])->Fill(mapVariables[histos_info_[name]->quantity], mapVariables[histos_info_[name]->quantity2], weight);
+       }
+
 }
 
 Bool_t mainAnalysisSelector::Process(Long64_t entry)
@@ -172,7 +180,7 @@ Bool_t mainAnalysisSelector::Process(Long64_t entry)
    doFills(cut++, weight);
 
    // None of the 1-or-2 high-pT jets is b-tagged
-   if (region_ == "CR_QCD") {
+   if (region_ == "CR_bTag") {
        for (int i = 0; i < *reco_PF_n_highPt_jets; i++)
            if (reco_PF_jet_BTag[i] < 0.4184) return false; // Medium operating point
    }

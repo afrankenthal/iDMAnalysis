@@ -25,6 +25,7 @@
 #include "mNminus1Plots.C"
 #include "mMainAnalysis.C"
 #include "mMakePlotsFromFile.C"
+#include "mSaveCanvases.C"
 
 #include "utils/common.C"
 using namespace common;
@@ -46,7 +47,7 @@ int main(int argc, char ** argv) {
         ("b,background", "Background sample config file to use", cxxopts::value<std::string>()->default_value("")) //configs/thirdrun/backgrounds_subset.json"))
         ("d,data", "Data sample config file to use", cxxopts::value<std::string>()->default_value("")) //configs/data.json"))
         ("m,macro", "Macro config file to use", cxxopts::value<std::string>()->default_value("")) //configs/macros/nminus1.json"))
-        ("o,outfile", "Output file", cxxopts::value<std::string>()->default_value(""))
+        ("o,outfile", "Output file or directory (depends on macro)", cxxopts::value<std::string>()->default_value(""))
         ("i,infile", "Input file", cxxopts::value<std::string>()->default_value(""))
         ("h,help", "Print help and exit.")
     ;
@@ -68,12 +69,14 @@ int main(int argc, char ** argv) {
     TString out_filename = TString(result["outfile"].as<std::string>());
     TString in_filename = TString(result["infile"].as<std::string>());
 
+    // Map between macro name and actual function reference
     macro_map["mCutflowTables"] = &macro::mCutflowTables;
     macro_map["mSumGenWgts"] = &macro::mSumGenWgts;
     macro_map["mSROptimization"] = &macro::mSROptimization;
     macro_map["mNminus1Plots"] = &macro::mNminus1Plots;
     macro_map["mMainAnalysis"] = &macro::mMainAnalysis;
     macro_map["mMakePlotsFromFile"] = &macro::mMakePlotsFromFile;
+    macro_map["mSaveCanvases"] = &macro::mSaveCanvases;
     
     map<TString, SampleInfo> samples;
 
@@ -118,7 +121,11 @@ int main(int argc, char ** argv) {
 
         if (macro == "mSumGenWgts") 
             cfg = json({{"sample_config_filename",sample_config_filenames[0].Data()}});
-            //macro_map[macro](samples, json({{"sample_config_filename",sample_config_filenames[0].Data()}}));
+
+        if (macro == "mSaveCanvases") {
+            cfg["outdir"] = out_filename.Data();
+            cfg["infilename"] = in_filename.Data();
+        }
 
         macro_map[macro](samples, cfg); // invoke macro with samples from above and cfg from json
     }

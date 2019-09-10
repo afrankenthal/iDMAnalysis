@@ -100,15 +100,15 @@ public :
    void doFills(int cut, double weight);
    void SetMode(common::MODE mode);
    void SetParams(common::SampleInfo sample_info, Double_t lumi, TString region);
-   void SetHistos(std::map<TString, common::TH1Info*> histos_info) { histos_info_ = histos_info; }
+   void SetHistos(std::map<TString, common::THInfo*> histos_info) { histos_info_ = histos_info; }
    std::vector<double> GetCutflow() { return cutflow_; }
-   std::map<TString, std::map<int, TH1F*>> GetHistograms() { return cutflowHistos_; }
+   std::map<TString, std::map<int, TH1*>> GetHistograms() { return cutflowHistos_; }
 
    ClassDef(mainAnalysisSelector,0);
 
    std::vector<double> cutflow_;
-   std::map<TString, common::TH1Info*> histos_info_;
-   std::map<TString, std::map<int, TH1F*>> cutflowHistos_;
+   std::map<TString, common::THInfo*> histos_info_;
+   std::map<TString, std::map<int, TH1*>> cutflowHistos_;
 
    common::SampleInfo sample_info_;
    Double_t sum_gen_wgt_;

@@ -1,5 +1,6 @@
 #ifndef COMMON_H
 #define COMMON_H
+
 #include <TColor.h>
 
 namespace common {
@@ -25,18 +26,23 @@ namespace common {
         {"60p0_1", GroupPlotInfo{"(50,70) GeV, 100 mm", kBlack, DASHED, SIGNAL}},
         {"5p25_100", GroupPlotInfo{"(5,5.5) GeV, 1 mm", kBlue, DASHED, SIGNAL}},
         {"52p5_1000", GroupPlotInfo{"(50,55) GeV, 1000 mm", kGreen, DASHED, SIGNAL}},
-        {"data", GroupPlotInfo{"Data", kBlack, MARKER, DATA}},
+        {"data", GroupPlotInfo{"Data", kBlack, MARKER, DATA}}
     };
 
-    typedef struct TH1Info {
+    typedef struct THInfo {
         TString quantity;
         std::vector<std::string> groups;
         std::vector<int> cuts;
         TString name;
         TString title;
-        Int_t nbins;
+        Int_t nbinsX;
         Double_t lowX;
         Double_t highX;
+        // 2D plot params
+        TString quantity2;
+        Int_t nbinsY;
+        Double_t lowY;
+        Double_t highY;
     } TH1Info;
 
     typedef struct SignalInfo {
@@ -59,13 +65,38 @@ namespace common {
         int style;
     } SampleInfo;
 
+    std::map<int, std::string> cut_descriptions {
+        {0, "No cuts"},
+        {1, "MET filter bits pass"},
+        {2, "120 GeV MET trigger fired"},
+        {3, "MET > 200 GeV"},
+        {4, "Leading jet pT > 120 GeV"},
+        {5, "nJets < 3 (pT > 30 GeV)"},
+        {6, "0 b-tagged jets"},
+        {7, "2 dSA muons"},
+        {8, "muon 1: >= 2 muon planes"},
+        {9, "muon 1: >= 12 muon hits"},
+        {10, "muon 1: #chi2 < 10"},
+        {11, "muon 1: pT > 5 GeV"},
+        {12, "muon 1: eta < 2.4"},
+        {13, "muon 2: >= 2 muon planes"},
+        {14, "muon 2: >= 12 muon hits"},
+        {15, "muon 2: #chi2 < 10"},
+        {16, "muon 2: pT > 5 GeV"},
+        {17, "muon 2: eta < 2.4"},
+        {18, "muon dR < 0.9"},
+        {19, "muons: OSSF"},
+        {20, "0 GM-dSA matched"},
+        {21, "1 GM-dSA matched"},
+        {22, "2 GM-dSA matched"}
+    };
+
     void printTimeElapsed(TDatime begin) {
         TDatime end;
         std::cout << "Time elapsed: " << (end.Convert() - begin.Convert()) << " seconds"
             << " or " << (end.Convert() - begin.Convert())/3600.0 << " hours" << std::endl;
     }
 
-    //vector<TString> listFiles(SampleInfo & sample, const char *dirname="", const char *ext=".root") {
     std::vector<TString> listFiles(const char *dirname="", const char *ext=".root") {
         TSystemDirectory dir(dirname, dirname); 
         // First check if dirname is actually just a single .root file
@@ -81,7 +112,6 @@ namespace common {
                 fname = file->GetName(); 
                 if (!file->IsDirectory() && fname.EndsWith(ext)) 
                     filenames.push_back(Form("%s/%s", dirname, fname.Data()));
-                    //sample.filenames.push_back(Form("%s/%s", dirname, fname.Data()));
             }
         } 
         return filenames;
@@ -89,6 +119,6 @@ namespace common {
 
     bool readCutBit(uint32_t cuts, int bit) { return cuts & (1 << bit); }
 
-}
+} // namespace common
 
 #endif // COMMON_H

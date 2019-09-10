@@ -1,6 +1,6 @@
 #include <string.h>
 #include <fstream>
-#include <iostream>
+
 #include <iomanip>
 #include <algorithm>
 
@@ -13,6 +13,7 @@
 #include <TApplication.h>
 #include <TCut.h>
 #include <TH1F.h>
+#include <TH2F.h>
 #include <TSelector.h>
 
 #include "utils/common.C"
@@ -32,21 +33,26 @@ namespace macro {
         map<TString, vector<Double_t>> cutsInclusive;
         map<TString, vector<Double_t>> cutsGroupInclusive;
 
-        map<TString, TH1Info*> histos_info;
+        map<TString, THInfo*> histos_info;
 
         // macro options
 
         json plots_cfg = cfg["plots"];
         for (auto & plot : plots_cfg) 
-            histos_info[plot["name"].get<std::string>()] = new TH1Info{
+            histos_info[plot["name"].get<std::string>()] = new THInfo{
                     plot["quantity"].get<std::string>(),
                     plot["groups"].get<std::vector<std::string>>(),
                     plot["cuts"].get<std::vector<int>>(),
                     plot["name"].get<std::string>(), 
                     plot["title"].get<std::string>(),
-                    plot["nbins"].get<int>(),
+                    plot["nbinsX"].get<int>(),
                     plot["lowX"].get<double>(),
-                    plot["highX"].get<double>()
+                    plot["highX"].get<double>(),
+                    // optional params --> 2D plot
+                    plot.value("quantity2", ""),
+                    plot.value("nbinsY", -1), 
+                    plot.value("lowY", -1.0),
+                    plot.value("highY", -1.0)
                     };
 
         TString out_filename = TString(cfg["outfilename"].get<std::string>());
@@ -86,7 +92,7 @@ namespace macro {
             bool isData = (props.mode == common::DATA);
             bool doSubsetOnly = (props.limit_num_files != -1);
 
-            cout << "sample: " << sample << endl;
+            cout << "Sample: " << sample << endl;
             if (props.sum_gen_wgt < 0.1 && !isData) continue; // don't have data yet for these samples, continue
 
             TChain * data_reco = new TChain("ntuples_gbm/recoT");
@@ -117,7 +123,7 @@ namespace macro {
             else
                 std::transform(cutsGroupInclusive[props.group].begin(), cutsGroupInclusive[props.group].end(), cutflow.begin(), cutsGroupInclusive[props.group].begin(), std::plus<double>( )); // sum std::vectors element-wise
 
-            map<TString, map<int, TH1F*>> sample_histos = currentSelector->GetHistograms();
+            map<TString, map<int, TH1*>> sample_histos = currentSelector->GetHistograms();
             for (auto & [hist_name, hists] : sample_histos) {
                 for (auto & [cut, hist] : hists) {
                     TList * hist_list = all_hstacks[hist_name][props.mode][cut]->GetHists();

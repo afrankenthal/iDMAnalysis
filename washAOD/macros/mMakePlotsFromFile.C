@@ -13,7 +13,6 @@
 #include <TApplication.h>
 #include <TCut.h>
 #include <TH1F.h>
-#include <TSelector.h>
 
 #include "utils/common.C"
 using namespace common;
@@ -86,6 +85,17 @@ namespace macro {
                 lumi_13TeV = "29.41 fb^{-1}";
                 CMS_lumi(c, 4);
                 c->SetLogy();
+                // Make cut description label
+                int cut;
+                TString tok;
+                Ssiz_t from = 0;
+                while (hs_basename.Tokenize(tok, from, "_")) 
+                  if (tok.Contains("cut")) 
+                      cut = (((TObjString*)(tok.Tokenize("t")->At(1)))->String()).Atoi();
+                TLatex cut_label;
+                cut_label.SetNDC();
+                cut_label.SetTextSize(0.025);
+                cut_label.DrawLatex(0.3, 0.9, common::cut_descriptions[cut].c_str());
             }
             //hs->GetStack()->Last()->Draw("E");
             //canvases.push_back(std::move(c));
@@ -100,6 +110,8 @@ namespace macro {
             TObject * hs;
             while ((hs = next())) {
                 if (TString(hs->ClassName()) != TString("THStack")) continue;
+                // TODO Handle 2D plots
+                if (TString(hs->GetName()).Contains("_vs_")) continue; // skip 2D plots for now
                 TIter next2((TList*)(((THStack*)hs)->GetHists()));
                 TH1F * h;
                 while ((h = (TH1F*)next2())) {
