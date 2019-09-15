@@ -71,7 +71,10 @@ namespace macro {
             TCanvas * c = (TCanvas*)in_file->Get(canvas_name);
             c->cd();
             c->SaveAs(Form("%s/%s/%s_cut%02d.pdf", out_dir.Data(), canvas_subdir.Data(), canvas_subdir.Data(), cut_num));
-            c->SaveAs(Form("%s/%s/%s_cut%02d.png", out_dir.Data(), canvas_subdir.Data(), canvas_subdir.Data(), cut_num));
+            TImage *img = TImage::Create();
+            img->FromPad(c);
+            img->WriteImage(Form("%s/%s/%s_cut%02d.png", out_dir.Data(), canvas_subdir.Data(), canvas_subdir.Data(), cut_num));
+            //c->SaveAs(Form("%s/%s/%s_cut%02d.png", out_dir.Data(), canvas_subdir.Data(), canvas_subdir.Data(), cut_num));
             c->SaveAs(Form("%s/%s/%s_cut%02d.root", out_dir.Data(), canvas_subdir.Data(), canvas_subdir.Data(), cut_num));
             //c->SaveAs(Form("%s/%s.C", out_dir.Data(), canvas_name.Data())); // FIXME Getting error on this one
         }

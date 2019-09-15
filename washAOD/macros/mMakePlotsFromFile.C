@@ -61,11 +61,32 @@ namespace macro {
             TString hs_suffix = ((TObjString*)(hs_name.Tokenize("-")->At(1)))->String();
             bool newCanvas = false;
             if (canvases.find(hs_basename) == canvases.end()) {
-                canvases[hs_basename] = std::make_unique<TCanvas>(Form("canvas_%s", hs_basename.Data()));
                 newCanvas = true;
+                canvases[hs_basename] = std::make_unique<TCanvas>(Form("canvas_%s", hs_basename.Data()));
+                auto * c = canvases[hs_basename].get();
+                c->Range(0,0,1,1);
+                c->Divide(1,2);
+                // top pad
+                c->cd(1);
+                gPad->SetPad(0.01, 0.33, 0.99, 0.99);
+                gPad->Draw(); 
+                gPad->cd();
+                gPad->SetTopMargin(0.1);
+                gPad->SetBottomMargin(0.01);
+                gPad->SetRightMargin(0.1);
+                gPad->SetFillStyle(0);
+                // bottom pad
+                c->cd(2);
+                gPad->SetPad(0.01, 0.01, 0.99, 0.32);
+                gPad->Draw();
+                gPad->cd();
+                gPad->SetTopMargin(0.01);
+                gPad->SetBottomMargin(0.3);
+                gPad->SetRightMargin(0.1);
+                gPad->SetFillStyle(0);
             }
             auto * c = canvases[hs_basename].get();
-            c->cd();
+            c->cd(1); // top pad, the plot one
             TString drawOption = "";
             if (hs_suffix == "SIG")
                 drawOption += "HIST NOSTACK";
@@ -79,12 +100,19 @@ namespace macro {
             if (newCanvas) {
                 hs->GetXaxis()->SetTitle(hs->GetTitle());
                 hs->GetYaxis()->SetTitle("Events");
+                hs->GetXaxis()->SetTitleSize(0.00);
+                hs->GetHistogram()->GetYaxis()->SetLabelSize(0.05);
+                hs->GetHistogram()->GetYaxis()->SetTitleSize(0.06);
+                hs->GetHistogram()->GetYaxis()->SetTitleOffset(0.76);
                 hs->SetTitle("");
+                hs->GetHistogram()->SetLabelSize(0.0);
                 writeExtraText = true;
                 //lumi_13TeV = "59.97 fb^{-1}";
                 lumi_13TeV = "29.41 fb^{-1}";
-                CMS_lumi(c, 4);
-                c->SetLogy();
+                //CMS_lumi(c, 4);
+                //c->SetLogy();
+                CMS_lumi((TPad*)gPad, 4);
+                gPad->SetLogy();
                 // Make cut description label
                 int cut;
                 TString tok;
@@ -94,19 +122,47 @@ namespace macro {
                       cut = (((TObjString*)(tok.Tokenize("t")->At(1)))->String()).Atoi();
                 TLatex cut_label;
                 cut_label.SetNDC();
-                cut_label.SetTextSize(0.025);
-                cut_label.DrawLatex(0.3, 0.9, common::cut_descriptions[cut].c_str());
+                cut_label.SetTextSize(0.05);
+                cut_label.DrawLatexNDC(0.35, 0.85, common::cut_descriptions[cut].c_str());
             }
             //hs->GetStack()->Last()->Draw("E");
             //canvases.push_back(std::move(c));
         }
+        // Make ratio subplot
+        for (auto & pair : canvases) {
+            auto * c = pair.second.get();
+            //c->cd(1); // second subpad, the ratio one
+            //TPad * top_pad = (TPad*)c->GetPad(1);
+            TPad * top_pad = (TPad*)c->GetPrimitive(Form("%s_1", c->GetName()));
+            TString canvas_name = TString(c->GetName()).ReplaceAll("canvas_", "");
+            THStack * data_hist = (THStack*)top_pad->GetPrimitive(Form("%s-DATA", canvas_name.Data()));
+            THStack * MC_hist = (THStack*)top_pad->GetPrimitive(Form("%s-BKG", canvas_name.Data()));
+            if (data_hist && MC_hist) {
+                TH1F * ratio_hist = (TH1F*)(((TH1F*)data_hist->GetStack()->Last())->Clone());
+                ratio_hist->SetDirectory(0);
+                ratio_hist->Divide(((TH1F*)MC_hist->GetStack()->Last()));
+                c->cd(2); // switch to bottom pad
+                ratio_hist->Draw();
+                ratio_hist->SetMaximum(2.1);
+                ratio_hist->SetMinimum(0.0);
+                ratio_hist->SetTitle("");
+                ratio_hist->GetXaxis()->SetTitle(MC_hist->GetHistogram()->GetXaxis()->GetTitle());
+                ratio_hist->GetXaxis()->SetTitleSize(0.12);
+                ratio_hist->GetXaxis()->SetLabelSize(0.11);
+                ratio_hist->GetYaxis()->SetTitle("Data/MC");
+                ratio_hist->GetYaxis()->SetTitleSize(0.12);
+                ratio_hist->GetYaxis()->SetLabelSize(0.11);
+                ratio_hist->GetYaxis()->SetNdivisions(5);
+                ratio_hist->GetYaxis()->SetTitleOffset(0.35);
+            }
+        }
         // Build legend for all canvases
         for (auto & pair : canvases) {
             auto * c = pair.second.get();
-            c->cd();
-            TLegend * legend = new TLegend(0.55, 0.65, 0.9, 0.90);
+            c->cd(1);
+            TLegend * legend = new TLegend(0.60, 0.50, 1.1, 0.80);
             legend->SetFillStyle(0);
-            TIter next((TList*)c->GetListOfPrimitives());
+            TIter next((TList*)gPad->GetListOfPrimitives());
             TObject * hs;
             while ((hs = next())) {
                 if (TString(hs->ClassName()) != TString("THStack")) continue;
@@ -124,14 +180,15 @@ namespace macro {
                 }
             }
             legend->Draw();
+            gPad->Modified();
         }
-        
         // Figure out which THStack has highest maximum
         map<TString, Double_t> maxima;
         for (auto & pair : canvases) {
             maxima[pair.first] = -1000;
             auto * c = pair.second.get();
-            TIter next((TList*)c->GetListOfPrimitives());
+            c->cd(1);
+            TIter next((TList*)gPad->GetListOfPrimitives());
             TObject * h;
             while ((h = next())) {
                 if (TString(h->ClassName()) != TString("THStack")) continue;
@@ -141,7 +198,8 @@ namespace macro {
         // Set this maximum to all THStacks
         for (auto & pair : canvases) {
             auto * c = pair.second.get();
-            TIter next((TList*)c->GetListOfPrimitives());
+            c->cd(1);
+            TIter next((TList*)gPad->GetListOfPrimitives());
             TObject * h;
             while ((h = next())) {
                 if (TString(h->ClassName()) != TString("THStack")) continue;
@@ -149,6 +207,7 @@ namespace macro {
                 ((THStack*)h)->SetMinimum(0.01);
             }
             //c->RedrawAxis();
+            //gPad->Modified();
             c->Modified();
         }
         // Save canvases
