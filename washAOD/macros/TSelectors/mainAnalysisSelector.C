@@ -104,6 +104,9 @@ void mainAnalysisSelector::doFills(int cut, double weight) {
    mapVariables["reco_PF_MET_pt"] = *reco_PF_MET_pt;
    mapVariables["reco_PF_jet_pt[0]"] = (reco_PF_jet_pt.GetSize() > 0 ? reco_PF_jet_pt[0] : -10);
    mapVariables["reco_sel_mu_pt[0]"] = (reco_sel_mu_pt.GetSize() > 0 ? reco_sel_mu_pt[0] : -10);
+   mapVariables["reco_sel_mu_pt[1]"] = (reco_sel_mu_pt.GetSize() > 1 ? reco_sel_mu_pt[1] : -10);
+   mapVariables["reco_n_dsa"] = *reco_n_dsa;
+   mapVariables["reco_n_good_dsa"] = *reco_n_good_dsa;
 
    cutflow_[cut] += weight;
 
