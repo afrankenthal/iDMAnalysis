@@ -3,6 +3,7 @@
 #include "FWCore/ParameterSet/interface/ConfigurationDescriptions.h"
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 #include "DataFormats/Math/interface/deltaR.h"
+#include "DataFormats/Math/interface/deltaPhi.h"
 
 MetTrigSelfEffiForMuTrack::MetTrigSelfEffiForMuTrack(const edm::ParameterSet& ps) :
     muTrackTag_(ps.getParameter<edm::InputTag>("muTrack")),
@@ -10,6 +11,7 @@ MetTrigSelfEffiForMuTrack::MetTrigSelfEffiForMuTrack(const edm::ParameterSet& ps
 //    genParticleTag_(ps.getParameter<edm::InputTag>("genParticle")),
 //    genJetTag_(ps.getParameter<edm::InputTag>("genJet")),
 //    genMetTag_(ps.getParameter<edm::InputTag>("genMet")),
+    caloMetTag_(ps.getParameter<edm::InputTag>("caloMet")),
     recoMetTag_(ps.getParameter<edm::InputTag>("recoMet")),
     recoJetTag_(ps.getParameter<edm::InputTag>("recoJet")),
     trigResultsTag_(ps.getParameter<edm::InputTag>("trigResult")),
@@ -23,6 +25,7 @@ MetTrigSelfEffiForMuTrack::MetTrigSelfEffiForMuTrack(const edm::ParameterSet& ps
 //    genParticleToken_(consumes<reco::GenParticleCollection>(genParticleTag_)),
 //    genJetToken_(consumes<reco::GenJetCollection>(genJetTag_)),
 //    genMetToken_(consumes<reco::GenMETCollection>(genMetTag_)),
+    caloMetToken_(consumes<reco::CaloMETCollection>(caloMetTag_)),
     recoMetToken_(consumes<reco::PFMETCollection>(recoMetTag_)),
     recoJetToken_(consumes<reco::PFJetCollection>(recoJetTag_)),
     trigResultsToken_(consumes<edm::TriggerResults>(trigResultsTag_)),
@@ -42,6 +45,7 @@ void MetTrigSelfEffiForMuTrack::fillDescriptions(edm::ConfigurationDescriptions&
 //    desc.add<edm::InputTag>("genJet", edm::InputTag("ak4GenJets"));
     desc.add<edm::InputTag>("recoJet", edm::InputTag("ak4PFJets"));
 //    desc.add<edm::InputTag>("genMet", edm::InputTag("genMetTrue"));
+    desc.add<edm::InputTag>("caloMet", edm::InputTag("caloMet"));
     desc.add<edm::InputTag>("recoMet", edm::InputTag("pfMet"));
     desc.add<edm::InputTag>("trigResult", edm::InputTag("TriggerResults","","HLT"));
     desc.add<edm::InputTag>("trigEvent", edm::InputTag("hltTriggerSummaryAOD","","HLT"));
@@ -65,6 +69,8 @@ void MetTrigSelfEffiForMuTrack::beginJob()
     muTrackT_->Branch("recoJetPt", &recoJetPt_, "recoJetPt/F");
     muTrackT_->Branch("recoJetEta", &recoJetEta_, "recoJetEta/F");
     muTrackT_->Branch("recoJetPhi", &recoJetPhi_, "recoJetPhi/F");
+    muTrackT_->Branch("chargeHadronFraction", &chargedHadronEnergyFraction_, "chargedHadronEnergyFraction/F");
+    muTrackT_->Branch("neutralHadronFraction", &neutralHadronEnergyFraction_, "neutralHadronEnergyFraction/F");
     muTrackT_->Branch("recoJetPt1", &recoJetPt1_, "recoJetPt1/F");
     muTrackT_->Branch("recoJetEta1", &recoJetEta1_, "recoJetEta1/F");
     muTrackT_->Branch("recoJetPhi1", &recoJetPhi1_, "recoJetPhi1/F");
@@ -73,9 +79,13 @@ void MetTrigSelfEffiForMuTrack::beginJob()
     muTrackT_->Branch("recoJetPhi2", &recoJetPhi2_, "recoJetPhi2/F");
 //    muTrackT_->Branch("genLeadMetPt", &genLeadMetPt_, "genLeadMetPt/F");
 //    muTrackT_->Branch("genSubLeadMetPt", &genSubLeadMetPt_, "genSubLeadMetPt/F");
+    muTrackT_->Branch("caloPFMetPt", &caloPFMetPt_, "caloPFMetPt/F");
+    muTrackT_->Branch("caloPFMetEta", &caloPFMetEta_, "caloPFMetEta/F");
+    muTrackT_->Branch("caloPFMetPhi", &caloPFMetPhi_, "caloPFMetPhi/F");
     muTrackT_->Branch("recoPFMetPt", &recoPFMetPt_, "recoPFMetPt/F");
     muTrackT_->Branch("recoPFMetEta", &recoPFMetEta_, "recoPFMetEta/F");
     muTrackT_->Branch("recoPFMetPhi", &recoPFMetPhi_, "recoPFMetPhi/F");
+    muTrackT_->Branch("recoPFMETJetDeltaPhi", &recoPFMETJetDeltaPhi_ , "recoPFMETJetDeltaPhi/F");
     muTrackT_->Branch("genwgt", &genwgt_, "genwgt/F");
     genweight_ = fs->make<TTree>("GenWeight", "");
     genweight_->Branch("genwgt", &genwgt_, "genwgt/F");
@@ -134,6 +144,11 @@ void MetTrigSelfEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::Eve
 //            << endl;
 //        return;
 //    }
+    iEvent.getByToken(caloMetToken_, caloMetHandle_);
+    if (!caloMetHandle_.isValid()) {
+        LogError("trigEffiForMuTrack") << "trigEffiForMuTrack::analyze: Error in getting caloMet product from Event!" << endl;
+        return;
+    }
     iEvent.getByToken(recoMetToken_, recoMetHandle_);
     if (!recoMetHandle_.isValid()) {
         LogError("trigEffiForMuTrack") << "trigEffiForMuTrack::analyze: Error in getting recoMet product from Event!" << endl;
@@ -261,6 +276,8 @@ void MetTrigSelfEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::Eve
     double largestEta1 = 0.0, largestPhi1 = 0.0;
     double largestPt2 = 0.0;
     double largestEta2 = 0.0, largestPhi2 = 0.0;
+    chargedHadronEnergyFraction_ = 0.0;
+    neutralHadronEnergyFraction_ = 0.0;
     for (size_t i(0); i != recoJetHandle_->size(); ++i) {
         reco::PFJetRef jetr(recoJetHandle_, i);
         if (jetr->pt() > largestPt) {
@@ -273,14 +290,16 @@ void MetTrigSelfEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::Eve
             largestPt = jetr->pt();
             largestEta = jetr->eta();
             largestPhi = jetr->phi();
+	    chargedHadronEnergyFraction_ = jetr->chargedHadronEnergyFraction();
+	    neutralHadronEnergyFraction_ = jetr->neutralHadronEnergyFraction();
         }
         else if (jetr->pt() > largestPt1) {
-	    largestPt1 = largestPt;
-	    largestEta1 = largestEta;
-	    largestPhi1 = largestPhi;
-            largestPt = jetr->pt();
-            largestEta = jetr->eta();
-            largestPhi = jetr->phi();
+	    largestPt2 = largestPt1;
+	    largestEta2 = largestEta1;
+	    largestPhi2 = largestPhi1;
+            largestPt1 = jetr->pt();
+            largestEta1 = jetr->eta();
+            largestPhi1 = jetr->phi();
         }
         else if (jetr->pt() > largestPt2) {
             largestPt2 = jetr->pt();
@@ -303,10 +322,18 @@ void MetTrigSelfEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::Eve
 //    genLeadMetPt_ = metr->pt();
 //    reco::GenMETRef metr2(genMetHandle_, 1);
 //    genSubLeadMetPt_ = metr2->pt();
+    reco::CaloMETRef metr3c(caloMetHandle_, 0);
+    caloPFMetPt_ = metr3c->pt();
+    caloPFMetEta_ = metr3c->eta();
+    caloPFMetPhi_ = metr3c->phi();
     reco::PFMETRef metr3(recoMetHandle_, 0);
     recoPFMetPt_ = metr3->pt();
     recoPFMetEta_ = metr3->eta();
     recoPFMetPhi_ = metr3->phi();
+    
+
+
+    recoPFMETJetDeltaPhi_ = reco::deltaPhi(recoJetPhi_, recoPFMetPhi_);
     
     //save if Enriched criteria is met
     bool enrich = false;

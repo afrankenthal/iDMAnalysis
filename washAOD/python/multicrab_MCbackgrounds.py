@@ -82,10 +82,10 @@ def main():
         #config.Data.outputPrimaryDataset = 'TrigRecoEffStudies'
         #config.Data.splitting = 'Automatic'
 #<<<<<<< HEAD
-        #config.Data.splitting = 'LumiBased'
-        config.Data.splitting = 'FileBased'
+        config.Data.splitting = 'LumiBased'
+        #config.Data.splitting = 'FileBased'
         config.Data.unitsPerJob = 100
-        config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/signal/MetTrigStudyv10/'
+        config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/signal/MetTrigStudyv13/'
 #=======
 #        config.Data.splitting = 'FileBased'
 #        config.Data.unitsPerJob = 1
@@ -162,14 +162,21 @@ def main():
 	WMuNu_sample = {
 	'WMuNu': '/WToMuNu_M-200_TuneCP5_13TeV-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
 	}
-	trig_data = {
-	'singleMu_RunA_Jun':'/SingleMuon/Run2018A-06Jun2018-v1/AOD',
+	single_data = {
+#	'singleMu_RunA_Jun':'/SingleMuon/Run2018A-06Jun2018-v1/AOD',
 	'singleMu_RunA_Sep':'/SingleMuon/Run2018A-17Sep2018-v2/AOD',
-	'singleMu_RunA_May':'/SingleMuon/Run2018A-22May2018-v1/AOD',
+#	'singleMu_RunA_May':'/SingleMuon/Run2018A-22May2018-v1/AOD',
 	'singleMu_RunB_Sep':'/SingleMuon/Run2018B-17Sep2018-v1/AOD',
 	'singleMu_RunC_Sep':'/SingleMuon/Run2018C-17Sep2018-v1/AOD',
 	'singleMu_RunD_Jan':'/SingleMuon/Run2018D-22Jan2019-v2/AOD',
-	'singleMu_RunD_Apr':'/SingleMuon/Run2018D-30Apr2019-v1/AOD'
+#	'singleMu_RunD_Apr':'/SingleMuon/Run2018D-30Apr2019-v1/AOD'
+	}	
+	double_data = {
+	'doubleMu_RunA_Sep':'/DoubleMuon/Run2018A-17Sep2018-v2/AOD',
+	'doubleMu_RunB_Sep':'/DoubleMuon/Run2018B-17Sep2018-v1/AOD',
+#	'doubleMu_RunB_Sep26':'/DoubleMuon/Run2018B-26Sep2018-v1/AOD',
+	'doubleMu_RunC_Sep':'/DoubleMuon/Run2018C-17Sep2018-v1/AOD',
+	'doubleMu_RunD_Jan':'/DoubleMuon/Run2018D-PromptReco-v2/AOD',
 	}	
 
 	prompt_data = {
@@ -195,20 +202,21 @@ def main():
 	#samples = DY_sample
 	#samples = Di_sample
 	#samples = WMuNu_sample
-#	samples = trig_data
+	samples = single_data
 #	samples = prompt_data
 
-	samples = TT_sample
-	#samples.update(trig_data)
-	samples.update(Wjets_sample)
-	#samples.update(Di_sample)
-	#samples.update(WMuNu_sample)
+#	samples = TT_sample
+#	samples.update(single_data)
+#	samples.update(double_data)
+#	samples.update(Wjets_sample)
+#	samples.update(Di_sample)
+#	samples.update(WMuNu_sample)
 #	samples.update(TT_sample)
         for sample, dataset in samples.items():
 
             config.Data.inputDataset = dataset
             #config.General.requestName = 'iDMAnalysis_' + sample 
-            config.General.requestName = 'METTrigEffiv6_' + sample 
+            config.General.requestName = 'METTrigEffiv9_' + sample 
             #config.Data.outputDatasetTag = sample
             #config.Data.userInputFiles = open(basedir + sample + '.list').readlines()
 

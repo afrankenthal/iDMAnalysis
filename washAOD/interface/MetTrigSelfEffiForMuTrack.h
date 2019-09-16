@@ -25,6 +25,8 @@
 #include "DataFormats/METReco/interface/GenMETFwd.h"
 #include "DataFormats/METReco/interface/GenMETCollection.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
+#include "DataFormats/METReco/interface/CaloMET.h"
+#include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/METReco/interface/PFMET.h"
 #include "DataFormats/METReco/interface/PFMETCollection.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
@@ -58,6 +60,7 @@ class MetTrigSelfEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRun
 //        const edm::InputTag genParticleTag_;
 //       const edm::InputTag genJetTag_;
 //        const edm::InputTag genMetTag_;
+        const edm::InputTag caloMetTag_;
         const edm::InputTag recoMetTag_;
         const edm::InputTag recoJetTag_;
         const edm::InputTag trigResultsTag_;
@@ -71,6 +74,7 @@ class MetTrigSelfEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRun
         const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
 //        const edm::EDGetTokenT<reco::GenJetCollection> genJetToken_;
 //        const edm::EDGetTokenT<reco::GenMETCollection> genMetToken_;
+        const edm::EDGetTokenT<reco::CaloMETCollection> caloMetToken_;
         const edm::EDGetTokenT<reco::PFMETCollection> recoMetToken_;
         const edm::EDGetTokenT<reco::PFJetCollection> recoJetToken_;
         const edm::EDGetTokenT<edm::TriggerResults> trigResultsToken_;
@@ -84,6 +88,7 @@ class MetTrigSelfEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRun
 //        edm::Handle<reco::GenParticleCollection> genParticleHandle_;
 //        edm::Handle<reco::GenJetCollection> genJetHandle_;
 //        edm::Handle<reco::GenMETCollection> genMetHandle_;
+        edm::Handle<reco::CaloMETCollection> caloMetHandle_;
         edm::Handle<reco::PFMETCollection> recoMetHandle_;
         edm::Handle<reco::PFJetCollection> recoJetHandle_;
         edm::Handle<edm::TriggerResults> trigResultsHandle_;
@@ -110,6 +115,9 @@ class MetTrigSelfEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRun
 //        float genJetPt_;
 //        float genLeadMetPt_;
 //        float genSubLeadMetPt_;
+        float caloPFMetPt_;
+        float caloPFMetEta_;
+        float caloPFMetPhi_;
         float recoPFMetPt_;
         float recoPFMetEta_;
         float recoPFMetPhi_;
@@ -123,6 +131,9 @@ class MetTrigSelfEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRun
         float recoJetEta2_;
         float recoJetPhi2_;
 	float genwgt_;
+	float chargedHadronEnergyFraction_;
+	float neutralHadronEnergyFraction_;
+	float recoPFMETJetDeltaPhi_;
 
         TTree *muTrackT_;
         TTree *genweight_;
