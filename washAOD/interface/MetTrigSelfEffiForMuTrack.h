@@ -134,6 +134,7 @@ class MetTrigSelfEffiForMuTrack : public edm::one::EDAnalyzer<edm::one::WatchRun
 	float chargedHadronEnergyFraction_;
 	float neutralHadronEnergyFraction_;
 	float recoPFMETJetDeltaPhi_;
+	float recoil_;
 
         TTree *muTrackT_;
         TTree *genweight_;

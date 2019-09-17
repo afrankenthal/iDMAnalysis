@@ -4,6 +4,7 @@
 #include "FWCore/ParameterSet/interface/ParameterSetDescription.h"
 #include "DataFormats/Math/interface/deltaR.h"
 #include "DataFormats/Math/interface/deltaPhi.h"
+#include <cmath>
 
 MetTrigSelfEffiForMuTrack::MetTrigSelfEffiForMuTrack(const edm::ParameterSet& ps) :
     muTrackTag_(ps.getParameter<edm::InputTag>("muTrack")),
@@ -69,7 +70,7 @@ void MetTrigSelfEffiForMuTrack::beginJob()
     muTrackT_->Branch("recoJetPt", &recoJetPt_, "recoJetPt/F");
     muTrackT_->Branch("recoJetEta", &recoJetEta_, "recoJetEta/F");
     muTrackT_->Branch("recoJetPhi", &recoJetPhi_, "recoJetPhi/F");
-    muTrackT_->Branch("chargeHadronFraction", &chargedHadronEnergyFraction_, "chargedHadronEnergyFraction/F");
+    muTrackT_->Branch("chargedHadronFraction", &chargedHadronEnergyFraction_, "chargedHadronEnergyFraction/F");
     muTrackT_->Branch("neutralHadronFraction", &neutralHadronEnergyFraction_, "neutralHadronEnergyFraction/F");
     muTrackT_->Branch("recoJetPt1", &recoJetPt1_, "recoJetPt1/F");
     muTrackT_->Branch("recoJetEta1", &recoJetEta1_, "recoJetEta1/F");
@@ -79,9 +80,10 @@ void MetTrigSelfEffiForMuTrack::beginJob()
     muTrackT_->Branch("recoJetPhi2", &recoJetPhi2_, "recoJetPhi2/F");
 //    muTrackT_->Branch("genLeadMetPt", &genLeadMetPt_, "genLeadMetPt/F");
 //    muTrackT_->Branch("genSubLeadMetPt", &genSubLeadMetPt_, "genSubLeadMetPt/F");
-    muTrackT_->Branch("caloPFMetPt", &caloPFMetPt_, "caloPFMetPt/F");
-    muTrackT_->Branch("caloPFMetEta", &caloPFMetEta_, "caloPFMetEta/F");
-    muTrackT_->Branch("caloPFMetPhi", &caloPFMetPhi_, "caloPFMetPhi/F");
+    muTrackT_->Branch("caloMetPt", &caloPFMetPt_, "caloPFMetPt/F");
+    muTrackT_->Branch("caloMetEta", &caloPFMetEta_, "caloPFMetEta/F");
+    muTrackT_->Branch("caloMetPhi", &caloPFMetPhi_, "caloPFMetPhi/F");
+    muTrackT_->Branch("recoil", &recoil_, "recoil/F");
     muTrackT_->Branch("recoPFMetPt", &recoPFMetPt_, "recoPFMetPt/F");
     muTrackT_->Branch("recoPFMetEta", &recoPFMetEta_, "recoPFMetEta/F");
     muTrackT_->Branch("recoPFMetPhi", &recoPFMetPhi_, "recoPFMetPhi/F");
@@ -227,10 +229,14 @@ void MetTrigSelfEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::Eve
 //        genVz_.push_back(genP->vz());
 //    }
 
+    float px = 0.0;
+    float py = 0.0;
     for (const auto& recoMu : muRefs) {
         pt_ .push_back(recoMu->pt());
         eta_.push_back(recoMu->eta());
         phi_.push_back(recoMu->phi());
+	px += recoMu->px();
+	py += recoMu->py();
     }
 
     // trigger firing condition
@@ -330,10 +336,12 @@ void MetTrigSelfEffiForMuTrack::analyze(const edm::Event& iEvent, const edm::Eve
     recoPFMetPt_ = metr3->pt();
     recoPFMetEta_ = metr3->eta();
     recoPFMetPhi_ = metr3->phi();
-    
+   float metPx = metr3->px();
+   float metPy = metr3->py();
+   recoil_ = sqrt((metPx+px)*(metPx+px) + (metPy+py)*(metPy+py));
 
 
-    recoPFMETJetDeltaPhi_ = reco::deltaPhi(recoJetPhi_, recoPFMetPhi_);
+    recoPFMETJetDeltaPhi_ = reco::deltaPhi(recoJetPhi_, atan2(metPy+py,metPx+px));
     
     //save if Enriched criteria is met
     bool enrich = false;

@@ -85,7 +85,7 @@ def main():
         config.Data.splitting = 'LumiBased'
         #config.Data.splitting = 'FileBased'
         config.Data.unitsPerJob = 100
-        config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/signal/MetTrigStudyv13/'
+        config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/signal/MetTrigStudyv14/'
 #=======
 #        config.Data.splitting = 'FileBased'
 #        config.Data.unitsPerJob = 1
@@ -216,7 +216,7 @@ def main():
 
             config.Data.inputDataset = dataset
             #config.General.requestName = 'iDMAnalysis_' + sample 
-            config.General.requestName = 'METTrigEffiv9_' + sample 
+            config.General.requestName = 'METTrigEffiv10' + sample
             #config.Data.outputDatasetTag = sample
             #config.Data.userInputFiles = open(basedir + sample + '.list').readlines()
 
