@@ -1,7 +1,10 @@
 *.pyc
 *.log
 *.root
-firefighter/.vscode/*
+*.so
+*.pcm
+*.d
 messages.txt
 nohup.out
 washAOD/python/crab/*
+washAOD/python/*
