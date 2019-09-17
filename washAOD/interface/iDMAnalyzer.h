@@ -218,11 +218,13 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
 
         // Jet reco branches
         int recoPFNJet_;
+        int recoPFNPassIDJet_;
         int recoPFNHighPtJet_;
         std::vector<float> recoPFJetPt_;
         std::vector<float> recoPFJetEta_;
         std::vector<float> recoPFJetPhi_;
         std::vector<float> recoPFJetBTag_;
+        bool recoPFHEMFlag_;
 
         float recoPFMETJetDeltaPhi_;
 
@@ -234,5 +236,6 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         inline void setCutBit(int bit) { cuts_ |= (1 << bit); }
         inline void clearCutBit(int bit) { cuts_ &= ~(1 << bit); }
 };
+
 
 #endif

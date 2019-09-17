@@ -136,11 +136,13 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_PF_MET_pt", &recoPFMetPt_);
     recoT->Branch("reco_PF_MET_phi", &recoPFMetPhi_);
     recoT->Branch("reco_PF_n_jets", &recoPFNJet_);
+    recoT->Branch("reco_PF_n_passID_jets", &recoPFNPassIDJet_);
     recoT->Branch("reco_PF_n_highPt_jets", &recoPFNHighPtJet_);
     recoT->Branch("reco_PF_jet_pt", &recoPFJetPt_);
     recoT->Branch("reco_PF_jet_eta", &recoPFJetEta_);
     recoT->Branch("reco_PF_jet_phi", &recoPFJetPhi_);
     recoT->Branch("reco_PF_jet_BTag", &recoPFJetBTag_);
+    recoT->Branch("reco_PF_HEM_flag", &recoPFHEMFlag_);
     recoT->Branch("reco_PF_METjet_dphi", &recoPFMETJetDeltaPhi_);
     recoT->Branch("reco_MHT_Pt", &MHTPt_);
     recoT->Branch("cuts", &cuts_);
@@ -374,6 +376,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoPFJetEta_.clear();
     recoPFJetPhi_.clear();
     recoPFJetBTag_.clear();
+    recoPFHEMFlag_ = false;
     selectedMuonsPt_.clear();
     selectedMuonsEta_.clear();
     selectedMuonsPhi_.clear();
@@ -405,31 +408,6 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         MHT += jet.p4();
     }
     MHTPt_ = MHT.pt();
-    
-    // Get 10 top leading jets info, sorted by pT
-    // Note that jet collection is already sorted by pT
-    const reco::JetTagCollection & bTagsProbb = *(bTagProbbHandle_.product());
-    const reco::JetTagCollection & bTagsProbbb = *(bTagProbbbHandle_.product());
-    recoPFNJet_ = recoJetHandle_->size(); 
-    recoPFNHighPtJet_ = 0;
-    for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
-        reco::PFJetRef jet_i(recoJetHandle_, i);
-        if (jet_i->pt() > 30) {
-            recoPFNHighPtJet_++;
-        }
-        if (i < 10) {
-            recoPFJetPt_.push_back(jet_i->pt());
-       		recoPFJetEta_.push_back(jet_i->eta());
-       		recoPFJetPhi_.push_back(jet_i->phi());
-            if (bTagsProbb.size() > i && bTagsProbbb.size() > i)
-                recoPFJetBTag_.push_back(bTagsProbb[i].second+bTagsProbbb[i].second);
-            else
-                recoPFJetBTag_.push_back(-10000);
-        }
-    }
-
-    // Calculate angle between MET and leading jet
-    recoPFMETJetDeltaPhi_ = reco::deltaPhi(recoPFJetPhi_[0], recoPFMetPhi_);
 
     // Sort dSA muons (note that muon collection is *not* sorted by pT at first)
     recoNMu_ = muTrackHandle1_->size();
@@ -459,6 +437,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         muGoodTracksIdx.push_back(i);
     }
+    recoNGoodDSAMu_ = muGoodTracksIdx.size();
     
     // Create separate collection for good quality global muons
     vector<int> muGoodTracksIdx2{};
@@ -473,7 +452,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         muGoodTracksIdx2.push_back(i);
     }
     
-    // Only add good muons info to ntuple
+    // Only add good muons' info to ntuple
     for (size_t i = 0; i < muGoodTracksIdx.size(); i++) {
         reco::TrackRef mu_i = muTracks1[muGoodTracksIdx[i]];
         recoPt_.push_back(mu_i->pt());
@@ -487,8 +466,81 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         recoTrkNumHits_.push_back(mu_i->hitPattern().numberOfValidMuonHits());
     }
 
-    recoNGoodDSAMu_ = muGoodTracksIdx.size();
+    // Apply Jet loose ID to jet collection, tag passes/fails on a side vector
+    // Additionally mitigate HEM issue on chambers 15 and 16
+    vector<bool> jetIDResults;
+    for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+        reco::PFJetRef jet_i(recoJetHandle_, i);
+        bool jetIDResult = true;
+        if (
+                jet_i->neutralHadronEnergyFraction() > 0.99 || 
+                jet_i->neutralEmEnergyFraction() > 0.99 ||
+                jet_i->numberOfDaughters() <= 1
+           )
+            jetIDResult = false;
+        if (jet_i->eta() < 2.4) {
+            if (
+                    jet_i->chargedHadronEnergyFraction() <= 0 ||
+                    jet_i->chargedEmEnergyFraction() > 0.99 ||
+                    jet_i->chargedMultiplicity() <= 0
+               )
+                jetIDResult = false;
+        }
+        jetIDResults.push_back(jetIDResult);
+
+        // If passed jet is located in HEM region, veto the event
+        // Has to happpen before jet ID, so don't check for jetIDResult
+        double pt = jet_i->pt(), eta = jet_i->eta(), phi = jet_i->phi();
+        if (pt > 30 && eta > -3.0 && eta < -1.4 && phi > -1.57 && phi < -0.87)
+            recoPFHEMFlag_ = true;
+    }
     
+    // Perform cross-cleaning in jet collection with good-quality dSA muons
+    for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+        // Skip failed ID jets
+        if (!jetIDResults[i]) continue;
+        reco::PFJetRef jet_i(recoJetHandle_, i);
+        for (size_t j = 0; j < muGoodTracksIdx.size(); ++j) {
+            reco::TrackRef mu_j = muTracks1[muGoodTracksIdx[j]];
+            double dR = reco::deltaR(*jet_i, *mu_j);
+            // if muon and jet match in dR fail the ID jet
+            // because the jet is probably a muon instead
+            if (dR < 0.3)
+                jetIDResults[i] = false;
+        }
+    }
+    
+    // Get 10 top leading jets info, sorted by pT
+    // Note that jet collection is already sorted by pT
+    // Only pick jets that have passed loose ID and cross-cleaning
+    const reco::JetTagCollection & bTagsProbb = *(bTagProbbHandle_.product());
+    const reco::JetTagCollection & bTagsProbbb = *(bTagProbbbHandle_.product());
+    recoPFNJet_ = recoJetHandle_->size(); 
+    recoPFNPassIDJet_ = 0;
+    recoPFNHighPtJet_ = 0;
+    for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+        // Exclude jets that didn't pass ID above
+        if (!jetIDResults[i]) continue;
+        recoPFNPassIDJet_++;
+
+        reco::PFJetRef jet_i(recoJetHandle_, i);
+        if (jet_i->pt() > 30) {
+            recoPFNHighPtJet_++;
+        }
+        if (i < 10) {
+            recoPFJetPt_.push_back(jet_i->pt());
+       		recoPFJetEta_.push_back(jet_i->eta());
+       		recoPFJetPhi_.push_back(jet_i->phi());
+            if (bTagsProbb.size() > i && bTagsProbbb.size() > i)
+                recoPFJetBTag_.push_back(bTagsProbb[i].second+bTagsProbbb[i].second);
+            else
+                recoPFJetBTag_.push_back(-10000);
+        }
+    }
+
+    // Calculate angle between MET and leading jet
+    recoPFMETJetDeltaPhi_ = reco::deltaPhi(recoPFJetPhi_[0], recoPFMetPhi_);
+
     // Pick pair of dSA muons with smallest vertex chi square fit
     bool fFoundValidVertex = false;
     int dSAIdx[2]; dSAIdx[0] = -1; dSAIdx[1] = -1;
@@ -512,12 +564,12 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
                 trans_tracks.push_back(theB->build(muTracks1[muGoodTracksIdx[j]]));
                 tv = kvf.vertex(trans_tracks);
                 if (tv.isValid()) {
-                    fFoundValidVertex = true;
                     reco::Vertex vertex = reco::Vertex(tv);
                     float vxy = sqrt(vertex.x()*vertex.x() + vertex.y()*vertex.y());
                     float sigma_vxy = (1/vxy)*(vertex.x()*vertex.xError() + vertex.y()*vertex.yError());
                     float vtxChi2 = vertex.normalizedChi2();
                     if (vtxChi2 < recoVtxReducedChi2_) {
+                        fFoundValidVertex = true;
                         recoVtxReducedChi2_ = vtxChi2;
                         recoVtxVxy_ = vxy;
                         recoVtxSigmaVxy_ = sigma_vxy;
@@ -871,6 +923,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
 
     /******* BEGINNING OF CUTS ******/
+    // Pre-computation of some cuts, stored in bits
 
     cuts_ = 0;
 
