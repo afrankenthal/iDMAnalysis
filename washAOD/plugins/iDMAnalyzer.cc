@@ -527,10 +527,11 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         if (jet_i->pt() > 30) {
             recoPFNHighPtJet_++;
         }
-        if (i < 10) {
+        if (recoPFJetPt_.size() < 10) {
             recoPFJetPt_.push_back(jet_i->pt());
        		recoPFJetEta_.push_back(jet_i->eta());
        		recoPFJetPhi_.push_back(jet_i->phi());
+            // TODO: figure out how BtagProbb(b) collections actually behave
             if (bTagsProbb.size() > i && bTagsProbbb.size() > i)
                 recoPFJetBTag_.push_back(bTagsProbb[i].second+bTagsProbbb[i].second);
             else
@@ -539,7 +540,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     }
 
     // Calculate angle between MET and leading jet
-    recoPFMETJetDeltaPhi_ = reco::deltaPhi(recoPFJetPhi_[0], recoPFMetPhi_);
+    recoPFMETJetDeltaPhi_ = -9999;
+    if (recoPFJetPhi_.size() > 0)
+        recoPFMETJetDeltaPhi_ = reco::deltaPhi(recoPFJetPhi_[0], recoPFMetPhi_);
 
     // Pick pair of dSA muons with smallest vertex chi square fit
     bool fFoundValidVertex = false;
@@ -921,9 +924,8 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         genT->Fill();
     }
 
-
     /******* BEGINNING OF CUTS ******/
-    // Pre-computation of some cuts, stored in bits
+    // Pre-compute some cuts, store in bits
 
     cuts_ = 0;
 
@@ -939,8 +941,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         setCutBit(2);
 
     // One leading reco jet w/ pT > 120...
-    if (recoPFJetPt_[0] > 120)
-        setCutBit(3);
+    if (recoPFJetPt_.size() > 0)
+        if (recoPFJetPt_[0] > 120)
+            setCutBit(3);
     
     // ...and only one extra jet w/ pT > 30 GeV
     
