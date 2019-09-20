@@ -112,7 +112,7 @@
         "mode": "BKG",
         "limit_num_files": -1,
         "sum_gen_wgt": 2147483648.0,
-        "xsec": 687.1
+        "xsec": 87.3
     },
     "TTToHadronic": {
         "dir": [
@@ -123,7 +123,7 @@
         "mode": "BKG",
         "limit_num_files": -1,
         "sum_gen_wgt": 8589934592.0,
-        "xsec": 687.1 
+        "xsec": 380.1 
     },
     "TTToSemiLeptonic": {
         "dir": [
@@ -133,7 +133,7 @@
         "mode": "BKG",
         "limit_num_files": -1,
         "sum_gen_wgt": 1271417984.0,
-        "xsec": 687.1
+        "xsec": 364.3
     },
     "WJetsToLNu_HT-100To200": {
         "dir": [
