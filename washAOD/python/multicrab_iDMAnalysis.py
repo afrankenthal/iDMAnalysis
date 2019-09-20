@@ -50,7 +50,7 @@ def getOptions():
 
     parser.add_option('-s', '--sampleType',
                       dest = 'sampleType',
-                      default = 'MC',
+                      default = 'custom',
                       help = "Which kind of sample to process ('MC' (default), 'data' or 'custom')",
                       metavar = 'STYP')
 
@@ -220,7 +220,10 @@ def main():
         elif options.sampleType == 'MC':
             samples = full_MC_samples
         elif options.sampleType == 'custom':
-            samples = merge_dicts(QCD, TTbar) # -------> Pick your custom samples here!
+            samples = merge_dicts() # -------> Pick your custom samples here!
+            if (len(samples) == 0):
+                print "Error! No samples selected to be processed."
+                sys.exit()
         else:
             print "Error! SampleType option {} not recognized.".format(options.sampleType)
             sys.exit()
@@ -251,7 +254,7 @@ def main():
     # All other commands can be simply executed.
     elif options.workArea:
 
-        for dir in osdir(options.workArea):
+        for dir in os.listdir(options.workArea):
             projDir = os.path.join(options.workArea, dir)
             if not os.path.isdir(projDir):
                 continue
