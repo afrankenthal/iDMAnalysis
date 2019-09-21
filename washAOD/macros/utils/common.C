@@ -23,9 +23,9 @@ namespace common {
         {"ZJets", GroupPlotInfo{"Z(#nu#nu)+Jets", 4, SOLID, BKG}},
         {"WJets", GroupPlotInfo{"W(l#nu)+Jets", kYellow, SOLID, BKG}},
         {"Top", GroupPlotInfo{"Top", 6, SOLID, BKG}},
-        {"60p0_1", GroupPlotInfo{"(50,70) GeV, 100 mm", kBlack, DASHED, SIGNAL}},
-        {"5p25_100", GroupPlotInfo{"(5,5.5) GeV, 1 mm", kBlue, DASHED, SIGNAL}},
-        {"52p5_1000", GroupPlotInfo{"(50,55) GeV, 1000 mm", kGreen, DASHED, SIGNAL}},
+        {"60p0_1", GroupPlotInfo{"(50,70) GeV, 100 mm", kBlack, SOLID, SIGNAL}},
+        {"5p25_100", GroupPlotInfo{"(5,5.5) GeV, 1 mm", kBlue, SOLID, SIGNAL}},
+        {"52p5_1000", GroupPlotInfo{"(50,55) GeV, 1000 mm", kOrange, SOLID, SIGNAL}},
         {"data", GroupPlotInfo{"Data", kBlack, MARKER, DATA}}
     };
 

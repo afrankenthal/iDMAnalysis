@@ -104,7 +104,7 @@ int main(int argc, char ** argv) {
                 TString(cfg["group"].get<std::string>()), // sample group
                 common::mapMODE[TString(cfg["mode"].get<std::string>())], // mode: 0 = SIGNAL, 1 = BKG, 2 = DATA
                 (cfg.find("color") != cfg.end() ? cfg["color"].get<int>() : color++), // line color
-                (config_filename.Contains("signal") ? 2 : 1) // line style (bkg vs signal)
+                (config_filename.Contains("signal") ? 1 : 1) // line style (bkg vs signal)
             };
         }
     }

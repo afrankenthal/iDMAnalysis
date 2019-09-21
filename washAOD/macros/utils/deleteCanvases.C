@@ -1,6 +1,10 @@
-void deleteCanvases() {
+void deleteCanvases(TString filename) {
+    if (filename == "") {
+        std::cout << "No filename!" << endl;
+        return;
+    }
 
-    TFile * file = new TFile("plots_CR_dR.root", "UPDATE");
+    TFile * file = new TFile(filename.Data(), "UPDATE");
     
     TIter next((TList*)file->GetListOfKeys());
     TKey * key;

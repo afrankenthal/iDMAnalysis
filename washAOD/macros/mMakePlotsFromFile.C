@@ -88,7 +88,7 @@ namespace macro {
             auto * c = canvases[hs_basename].get();
             c->cd(1); // top pad, the plot one
             TString drawOption = "";
-            if (hs_suffix == "SIG")
+            if (hs_suffix == "SIGNAL")
                 drawOption += "HIST NOSTACK";
             else if (hs_suffix == "BKG")
                 drawOption += "HIST";
@@ -97,6 +97,13 @@ namespace macro {
             if (!newCanvas)
                 drawOption += " SAME";
             hs->Draw(drawOption.Data());
+            if (hs_suffix == "BKG") {
+                TH1F * sum_hist = ((TH1F*)(hs->GetStack()->Last()));
+                sum_hist->SetMarkerSize(0);
+                sum_hist->SetFillStyle(3254);
+                sum_hist->SetFillColor(kGray+3);
+                sum_hist->Draw("E2 SAME");
+            }
             if (newCanvas) {
                 hs->GetXaxis()->SetTitle(hs->GetTitle());
                 hs->GetYaxis()->SetTitle("Events");
@@ -108,10 +115,10 @@ namespace macro {
                 hs->GetHistogram()->SetLabelSize(0.0);
                 writeExtraText = true;
                 //lumi_13TeV = "59.97 fb^{-1}";
-                lumi_13TeV = "29.41 fb^{-1}";
+                lumi_13TeV = "29.41 fb^{-1} ";
                 //CMS_lumi(c, 4);
                 //c->SetLogy();
-                CMS_lumi((TPad*)gPad, 4);
+                CMS_lumi((TPad*)gPad, 4, 0);
                 gPad->SetLogy();
                 // Make cut description label
                 int cut;
@@ -123,7 +130,7 @@ namespace macro {
                 TLatex cut_label;
                 cut_label.SetNDC();
                 cut_label.SetTextSize(0.05);
-                cut_label.DrawLatexNDC(0.35, 0.85, common::cut_descriptions[cut].c_str());
+                cut_label.DrawLatexNDC(0.25, 0.85, common::cut_descriptions[cut].c_str());
             }
             //hs->GetStack()->Last()->Draw("E");
             //canvases.push_back(std::move(c));
@@ -139,12 +146,15 @@ namespace macro {
             THStack * MC_hist = (THStack*)top_pad->GetPrimitive(Form("%s-BKG", canvas_name.Data()));
             if (data_hist && MC_hist) {
                 TH1F * ratio_hist = (TH1F*)(((TH1F*)data_hist->GetStack()->Last())->Clone());
+                ratio_hist->Sumw2();
                 ratio_hist->SetDirectory(0);
-                ratio_hist->Divide(((TH1F*)MC_hist->GetStack()->Last()));
+                TH1F * h2 = (TH1F*)(MC_hist->GetStack()->Last());
+                h2->Sumw2();
+                ratio_hist->Divide(h2);
                 c->cd(2); // switch to bottom pad
-                ratio_hist->Draw();
+                ratio_hist->Draw("EP");
                 ratio_hist->SetMaximum(2.1);
-                ratio_hist->SetMinimum(0.0);
+                ratio_hist->SetMinimum(-0.1);
                 ratio_hist->SetTitle("");
                 ratio_hist->GetXaxis()->SetTitle(MC_hist->GetHistogram()->GetXaxis()->GetTitle());
                 ratio_hist->GetXaxis()->SetTitleSize(0.12);
@@ -154,14 +164,35 @@ namespace macro {
                 ratio_hist->GetYaxis()->SetLabelSize(0.11);
                 ratio_hist->GetYaxis()->SetNdivisions(5);
                 ratio_hist->GetYaxis()->SetTitleOffset(0.35);
+                
+                // ratio line
+                TLine * ratio_line = new TLine();
+                ratio_line->SetLineColor(kRed);
+                ratio_line->SetLineWidth(2);
+                // set line params
+                ratio_line->SetX1(ratio_hist->GetXaxis()->GetXmin());
+                ratio_line->SetX2(ratio_hist->GetXaxis()->GetXmax());
+                ratio_line->SetY1(1.0);
+                ratio_line->SetY2(1.0);
+                ratio_line->Draw("SAME");
+                //ratio_hist->Draw("EP SAME");
+
+                // MC errors
+                TH1F * MC_error = (TH1F*)h2->Clone();
+                MC_error->Divide(MC_error);
+                MC_error->SetMarkerSize(0);
+                MC_error->SetFillStyle(3254);
+                MC_error->SetFillColor(kGray+3);
+                MC_error->Draw("SAME E2");
             }
         }
         // Build legend for all canvases
         for (auto & pair : canvases) {
             auto * c = pair.second.get();
             c->cd(1);
-            TLegend * legend = new TLegend(0.60, 0.50, 1.1, 0.80);
+            TLegend * legend = new TLegend(0.62, 0.45, 0.92, 0.85);
             legend->SetFillStyle(0);
+            legend->SetTextSize(0.037);
             TIter next((TList*)gPad->GetListOfPrimitives());
             TObject * hs;
             while ((hs = next())) {
