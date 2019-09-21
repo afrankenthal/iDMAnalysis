@@ -87,6 +87,7 @@ void mainAnalysisSelector::SlaveBegin(TTree * /*tree*/)
                cutflowHistos_[name][cut]->SetLineColor(common::group_plot_info[sample_info_.group].color);
                cutflowHistos_[name][cut]->SetLineStyle(common::group_plot_info[sample_info_.group].style);
                cutflowHistos_[name][cut]->SetLineWidth(2);
+               cutflowHistos_[name][cut]->SetMarkerSize(0);
            }
        }
    }

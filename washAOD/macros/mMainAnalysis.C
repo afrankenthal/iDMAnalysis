@@ -57,20 +57,13 @@ namespace macro {
 
         TString out_filename = TString(cfg["outfilename"].get<std::string>());
         TString region = TString(cfg["region"].get<std::string>());
-        //TString custom_cut = TString(cfg["param"].get<std::string>());
-        //Float_t dR_cut = cfg["value"].get<float>(); 
-        //Int_t dR_cut_mask = 1, nHighPtJets_cut_mask = 1;
-        //if (custom_cut.Contains("dR"))
-        //    dR_cut_mask = 2;
-        //else 
-        //    nHighPtJets_cut_mask = 2;
 
-        map<TString, map<common::MODE, map<int, THStack*>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
+        map<TString, map<common::MODE, map<int, vector<TH1*>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
         for (auto & [name, info] : histos_info) {
             for (auto cut : info->cuts) {
-                all_hstacks[name][common::BKG][cut] = new THStack(Form("%s_cut%d-BKG", name.Data(), cut), info->title);
-                all_hstacks[name][common::DATA][cut] = new THStack(Form("%s_cut%d-DATA", name.Data(), cut), info->title);
-                all_hstacks[name][common::SIGNAL][cut] = new THStack(Form("%s_cut%d-SIG", name.Data(), cut), info->title);
+                all_hstacks[name][common::BKG][cut] = vector<TH1*>();
+                all_hstacks[name][common::DATA][cut] = vector<TH1*>();
+                all_hstacks[name][common::SIGNAL][cut] = vector<TH1*>();
             }
         }
 
@@ -126,18 +119,15 @@ namespace macro {
             map<TString, map<int, TH1*>> sample_histos = currentSelector->GetHistograms();
             for (auto & [hist_name, hists] : sample_histos) {
                 for (auto & [cut, hist] : hists) {
-                    TList * hist_list = all_hstacks[hist_name][props.mode][cut]->GetHists();
                     bool kFound = false;
-                    TIter next(hist_list);
-                    TH1F * h; 
-                    while ((h=(TH1F*)next())) {
-                        if (TString(h->GetName()) == TString(hist->GetName())) { // hist already exists in stack
-                            h->Add(hist);
+                    for (TH1 * existing_hist : all_hstacks[hist_name][props.mode][cut]) {
+                        if (TString(existing_hist->GetName()) == TString(hist->GetName())) { // hist already exists in stack
+                            existing_hist->Add(hist);
                             kFound = true;
                         }
                     }
-                    if (!kFound) // first time hist is filled, so add to stack
-                        all_hstacks[hist_name][props.mode][cut]->Add(hist);
+                    if (!kFound) // first time hist is referenced, so add to stack
+                        all_hstacks[hist_name][props.mode][cut].push_back(hist);
                 }
             }
         }
@@ -156,11 +146,26 @@ namespace macro {
         }
 
         TFile * outfile = new TFile(out_filename, "RECREATE");
-        for (auto & [plot_name, modes] : all_hstacks)
-            for (auto & [mode, cuts] : modes)
-                for (auto & [cut, stack] : cuts) 
-                    if (stack->GetNhists() > 0)
-                        stack->Write();
+        for (auto & [plot_name, modes] : all_hstacks) {
+            for (auto & [mode, cuts] : modes) {
+                for (auto & [cut, hist_vec] : cuts) {
+                    THStack * hstack;
+                    if (mode == common::BKG)
+                        hstack = new THStack(Form("%s_cut%d-BKG", plot_name.Data(), cut), histos_info[plot_name]->title);
+                    else if (mode == common::DATA)
+                        hstack = new THStack(Form("%s_cut%d-DATA", plot_name.Data(), cut), histos_info[plot_name]->title);
+                    else if (mode == common::SIGNAL)
+                        hstack = new THStack(Form("%s_cut%d-SIGNAL", plot_name.Data(), cut), histos_info[plot_name]->title);
+                    // sort by "smallest integral first"
+                    std::sort(hist_vec.begin(), hist_vec.end(),
+                            [](TH1 *a, TH1 *b) { return a->Integral() < b->Integral(); });
+                    for (auto hist : hist_vec)
+                        hstack->Add(hist);
+                    if (hstack->GetNhists() > 0)
+                        hstack->Write();
+                }
+            }
+        }
         outfile->Close();
 
         return 0;
