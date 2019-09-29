@@ -1,5 +1,8 @@
-{
-    "mMakePlotsFromFile": {
-        "infilename": "test.root"
+[
+    {
+        "name": "mMakePlotsFromFile",
+        "config": {
+            "infilename": "test.root"
+        }
     }
-}
+]

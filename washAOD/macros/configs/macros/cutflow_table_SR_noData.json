@@ -1,6 +1,9 @@
-{
-    "mMainAnalysis": {
-        "region": "SR"
+[
+    {
+        "name": "mMainAnalysis",
+        "config": {
+            "region": "SR"
+        }
     }
-}
+]
 
