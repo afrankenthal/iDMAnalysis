@@ -30,6 +30,7 @@
 #include "DataFormats/HLTReco/interface/TriggerObject.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
+#include "JetMETCorrections/JetCorrector/interface/JetCorrector.h"
 
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
@@ -80,6 +81,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag ecalBadCalibFilterTag_;
         const edm::InputTag BadPFMuonFilterTag_;
         const edm::InputTag muonBadTrackFilterTag_;
+        const edm::InputTag mJetCorrectorTag_;
 
         // Tokens
         const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbToken_;
@@ -102,6 +104,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::EDGetTokenT<bool>ecalBadCalibFilterToken_;
         const edm::EDGetTokenT<bool>BadPFMuonFilterToken_;
         const edm::EDGetTokenT<bool>muonBadTrackFilterToken_;
+        const edm::EDGetTokenT<reco::JetCorrector> mJetCorrectorToken_;
 
         // Handles
         edm::Handle<reco::JetTagCollection> bTagProbbHandle_;
@@ -124,6 +127,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         edm::Handle<bool> ecalBadCalibFilterHandle_;
         edm::Handle<bool> BadPFMuonFilterHandle_;
         edm::Handle<bool> muonBadTrackFilterHandle_;
+        edm::Handle<reco::JetCorrector> jetCorrectorHandle_;
         
         std::string trigPath_;
         HLTConfigProvider hltConfig_;

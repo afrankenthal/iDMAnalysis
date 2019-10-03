@@ -40,9 +40,13 @@ if options.test:
                 #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018A/MET/AOD/17Sep2018-v1/60001/ABDA7B68-11D2-3E4E-B0A7-5F28E1FAB9ED.root'
                 #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018B/MET/AOD/17Sep2018-v1/120000/F099DF9A-6FF6-594A-9865-EB7125104EDF.root'
                 #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018B/MET/AOD/17Sep2018-v1/120000/6ECBC797-E226-FA47-BBAE-C79150CCBA41.root'
+                # data AOD test
                 options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018B/MET/AOD/17Sep2018-v1/120000/572AAC76-E629-DC44-A27A-0F327B99FA7A.root'
             else:
-                options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-60p0_dMchi-20p0_ctau-100/iDM_Mchi-60p0_dMchi-20p0_mZDinput-150p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_1547134_AOD_ctau-100.root'
+                # background AOD test
+                options.inputFiles = 'root://cmsxrootd.fnal.gov////store/mc/RunIIAutumn18DRPremix/ZJetsToNuNu_HT-400To600_13TeV-madgraph/AODSIM/102X_upgrade2018_realistic_v15-v2/260000/FFF1E16F-A07D-ED45-9970-E077E64935DD.root'
+                # signal AOD test
+                #options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/signal/Mchi-60p0_dMchi-20p0_ctau-100/iDM_Mchi-60p0_dMchi-20p0_mZDinput-150p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_1547134_AOD_ctau-100.root'
     options.maxEvents = -1
     options.outputFile = 'test.root'
 else:
@@ -69,7 +73,7 @@ if options.year == 2018:
     # else it's MC
     else:
         #process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v15'
-        process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v19'
+        process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v18'
 
 process.MessageLogger = cms.Service("MessageLogger",
         destinations   =  cms.untracked.vstring('messages', 'cerr'),
@@ -111,15 +115,22 @@ process.TFileService = cms.Service("TFileService",
         )
 
 process.load('iDMSkimmer.washAOD.myMETFilters_cff')
+process.load('JetMETCorrections.Configuration.JetCorrectors_cff')
 
 ## Gen-level event analyzer
 from iDMSkimmer.washAOD.genTuplizer_cfi import genTuplizer
 process.GEN = genTuplizer.clone()
 
+## Jet corrector to use
+if options.data:
+    corrLabel = cms.InputTag('ak4PFCHSL1FastL2L3ResidualCorrector')
+else:
+    corrLabel = cms.InputTag('ak4PFCHSL1FastL2L3Corrector')
+
 ## Main iDM analyzer
 from iDMSkimmer.washAOD.iDMAnalyzer_cfi import iDMAnalyzer
-process.ntuples_gbm = iDMAnalyzer.clone(muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
-process.ntuples_dgm = iDMAnalyzer.clone(muTrack2 = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
+process.ntuples_gbm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
+process.ntuples_dgm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
 #process.SREffi_rsa = iDMAnalyzer.clone(muTrack2 = cms.InputTag('refittedStandAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
 #process.SREffi_dsa = iDMAnalyzer.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
 #process.SREffi_sam = iDMAnalyzer.clone(muTrack2 = cms.InputTag('standAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
@@ -127,6 +138,7 @@ process.ntuples_dgm = iDMAnalyzer.clone(muTrack2 = cms.InputTag('displacedGlobal
 if options.data:
     process.p = cms.Path(
         process.metFilters
+        + process.ak4PFCHSL1FastL2L3ResidualCorrectorChain
         + process.ntuples_gbm
         + process.ntuples_dgm
         #+ process.SREffi_rsa
@@ -137,6 +149,7 @@ else:
     process.p = cms.Path(
         process.GEN
         + process.metFilters
+        + process.ak4PFCHSL1FastL2L3CorrectorChain
         + process.ntuples_gbm
         + process.ntuples_dgm
         #+ process.SREffi_rsa

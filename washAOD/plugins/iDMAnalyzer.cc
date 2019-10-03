@@ -46,6 +46,7 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     ecalBadCalibFilterTag_("ecalBadCalibFilter"),
     BadPFMuonFilterTag_("BadPFMuonFilter"),
     muonBadTrackFilterTag_("muonBadTrackFilter"),
+    mJetCorrectorTag_(ps.getParameter<edm::InputTag>("corrLabel")),
     
     bTagProbbToken_(consumes<reco::JetTagCollection>(bTagProbbTag_)),
     bTagProbbbToken_(consumes<reco::JetTagCollection>(bTagProbbbTag_)),
@@ -66,7 +67,8 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     EcalDeadCellTriggerPrimitiveFilterToken_(consumes<bool>(EcalDeadCellTriggerPrimitiveFilterTag_)),
     ecalBadCalibFilterToken_(consumes<bool>(ecalBadCalibFilterTag_)),
     BadPFMuonFilterToken_(consumes<bool>(BadPFMuonFilterTag_)),
-    muonBadTrackFilterToken_(consumes<bool>(muonBadTrackFilterTag_))
+    muonBadTrackFilterToken_(consumes<bool>(muonBadTrackFilterTag_)),
+    mJetCorrectorToken_(consumes<reco::JetCorrector>(mJetCorrectorTag_))
 {
     usesResource("TFileService");
 }
@@ -85,13 +87,14 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     desc.add<edm::InputTag>("genJet", edm::InputTag("ak4GenJets"));
     desc.add<edm::InputTag>("genMet", edm::InputTag("genMetTrue"));
     desc.add<edm::InputTag>("recoMet", edm::InputTag("pfMet"));
-    desc.add<edm::InputTag>("recoJet", edm::InputTag("ak4PFJets"));
+    desc.add<edm::InputTag>("recoJet", edm::InputTag("ak4PFJetsCHS"));
     desc.add<edm::InputTag>("trigResult", edm::InputTag("TriggerResults", "", "HLT"));
     desc.add<edm::InputTag>("trigEvent", edm::InputTag("hltTriggerSummaryAOD", "", "HLT"));
     desc.add<std::string>("trigPath", "Defaultshouldntbecalled");
     desc.add<edm::InputTag>("pileups", edm::InputTag("addPileupInfo"));
     desc.add<edm::InputTag>("genEvt", edm::InputTag("generator"));
     desc.add<std::string>("processName", "HLT");
+    desc.add<edm::InputTag>("corrLabel", edm::InputTag("defaultshouldntbecalled"));
     descriptions.add("iDMAnalyzer", desc);
 }
 
@@ -291,6 +294,11 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
     iEvent.getByToken(muonBadTrackFilterToken_, muonBadTrackFilterHandle_);
     if (!muonBadTrackFilterHandle_.isValid()) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "muonBadTrackFilter");
+        return false;
+    }
+    iEvent.getByToken(mJetCorrectorToken_, jetCorrectorHandle_);
+    if (!jetCorrectorHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "mJetCorrector");
         return false;
     }
 
@@ -505,35 +513,56 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             double dR = reco::deltaR(*jet_i, *mu_j);
             // if muon and jet match in dR fail the ID jet
             // because the jet is probably a muon instead
-            if (dR < 0.3)
+            if (dR < 0.4)
                 jetIDResults[i] = false;
         }
     }
+
+    // Apply JEC to jets that pass ID
+    // Need to re-order jets by pT after this
+    // vector key: index that will be changed after re-ordering
+    // vector value1: corrected pT, value2: original key to refer back to
+    vector<std::pair<double, size_t>> jetCorrections;
+    for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+        reco::PFJetRef jet_i(recoJetHandle_, i);
+        double jec = jetCorrectorHandle_->correction(*jet_i);
+        jetCorrections.push_back(std::make_pair<double,int>(jet_i->pt()*jec, i));
+    }
+    auto reverseSort = [](const std::pair<int,int> &a, const std::pair<int,int> &b) {
+        return (a.first > b.first); 
+    };
+    sort(jetCorrections.begin(), jetCorrections.end(), reverseSort);
     
-    // Get 10 top leading jets info, sorted by pT
-    // Note that jet collection is already sorted by pT
+    // Get 10 top leading jets info, sorted by corrected pT
     // Only pick jets that have passed loose ID and cross-cleaning
     const reco::JetTagCollection & bTagsProbb = *(bTagProbbHandle_.product());
     const reco::JetTagCollection & bTagsProbbb = *(bTagProbbbHandle_.product());
     recoPFNJet_ = recoJetHandle_->size(); 
     recoPFNPassIDJet_ = 0;
     recoPFNHighPtJet_ = 0;
-    for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+    //for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+    for (size_t i = 0; i < jetCorrections.size(); ++i) {
+        size_t index = jetCorrections[i].second;
+
         // Exclude jets that didn't pass ID above
-        if (!jetIDResults[i]) continue;
+        if (!jetIDResults[index]) continue;
         recoPFNPassIDJet_++;
 
-        reco::PFJetRef jet_i(recoJetHandle_, i);
-        if (jet_i->pt() > 30) {
+        // Use original set of quantities except for pt, which is JEC-corrected
+        reco::PFJetRef jet_i(recoJetHandle_, index);
+        //if (jet_i->pt() > 30) {
+        if (jetCorrections[i].first > 30) {
             recoPFNHighPtJet_++;
         }
         if (recoPFJetPt_.size() < 10) {
-            recoPFJetPt_.push_back(jet_i->pt());
+            //recoPFJetPt_.push_back(jet_i->pt());
+            recoPFJetPt_.push_back(jetCorrections[i].first);
        		recoPFJetEta_.push_back(jet_i->eta());
        		recoPFJetPhi_.push_back(jet_i->phi());
             // TODO: figure out how BtagProbb(b) collections actually behave
+            // FIXME this might be problematic with the jet corrections, keep in mind
             if (bTagsProbb.size() > i && bTagsProbbb.size() > i)
-                recoPFJetBTag_.push_back(bTagsProbb[i].second+bTagsProbbb[i].second);
+                recoPFJetBTag_.push_back(bTagsProbb[index].second+bTagsProbbb[index].second);
             else
                 recoPFJetBTag_.push_back(-10000);
         }
