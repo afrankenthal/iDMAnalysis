@@ -86,7 +86,7 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     desc.add<edm::InputTag>("genParticle", edm::InputTag("genParticles"));
     desc.add<edm::InputTag>("genJet", edm::InputTag("ak4GenJets"));
     desc.add<edm::InputTag>("genMet", edm::InputTag("genMetTrue"));
-    desc.add<edm::InputTag>("recoMet", edm::InputTag("pfMet"));
+    desc.add<edm::InputTag>("recoMet", edm::InputTag("pfMetT0rtT1Txy"));
     desc.add<edm::InputTag>("recoJet", edm::InputTag("ak4PFJetsCHS"));
     desc.add<edm::InputTag>("trigResult", edm::InputTag("TriggerResults", "", "HLT"));
     desc.add<edm::InputTag>("trigEvent", edm::InputTag("hltTriggerSummaryAOD", "", "HLT"));

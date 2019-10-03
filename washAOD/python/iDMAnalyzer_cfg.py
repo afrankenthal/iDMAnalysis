@@ -127,6 +127,12 @@ if options.data:
 else:
     corrLabel = cms.InputTag('ak4PFCHSL1FastL2L3Corrector')
 
+## MET correction
+process.load("JetMETCorrections.Type1MET.correctionTermsPfMetType0RecoTrack_cff")
+process.load("JetMETCorrections.Type1MET.correctionTermsPfMetType1Type2_cff")
+process.load("JetMETCorrections.Type1MET.correctionTermsPfMetMult_cff")
+process.load("JetMETCorrections.Type1MET.correctedMet_cff")
+
 ## Main iDM analyzer
 from iDMSkimmer.washAOD.iDMAnalyzer_cfi import iDMAnalyzer
 process.ntuples_gbm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
@@ -139,6 +145,10 @@ if options.data:
     process.p = cms.Path(
         process.metFilters
         + process.ak4PFCHSL1FastL2L3ResidualCorrectorChain
+        + process.correctionTermsPfMetType1Type2
+        + process.correctionTermsPfMetType0RecoTrack
+        + process.correctionTermsPfMetMult
+        + process.pfMetT0rtT1Txy
         + process.ntuples_gbm
         + process.ntuples_dgm
         #+ process.SREffi_rsa
@@ -149,6 +159,10 @@ else:
     process.p = cms.Path(
         process.GEN
         + process.metFilters
+        + process.correctionTermsPfMetType1Type2
+        + process.correctionTermsPfMetType0RecoTrack
+        + process.correctionTermsPfMetMult
+        + process.pfMetT0rtT1Txy
         + process.ak4PFCHSL1FastL2L3CorrectorChain
         + process.ntuples_gbm
         + process.ntuples_dgm
