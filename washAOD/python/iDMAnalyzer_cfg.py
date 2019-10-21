@@ -14,12 +14,12 @@ options.register('year',
         VarParsing.VarParsing.varType.int,
         "sample of the year")
 options.register('data',
-        0,
+        False,
         VarParsing.VarParsing.multiplicity.singleton,
         VarParsing.VarParsing.varType.bool,
         "Run on data (1) or MC (0)")
 options.register('Run2018D',
-        0,
+        False,
         VarParsing.VarParsing.multiplicity.singleton,
         VarParsing.VarParsing.varType.bool,
         "Is this sample Run2018D (different GT), yes (1) or no (0)")
@@ -35,10 +35,6 @@ if options.test:
         if options.year == 2018:
             #options.inputFiles = 'root://cmseos.fnal.gov////store/group/lpcmetx/iDM/AOD/2018/GenFilter_1or2jets_icckw1_drjj0_xptj80_xqcut20_qcut20/Mchi-60p0_dMchi-20p0_ctau-10/iDM_Mchi-60p0_dMchi-20p0_mZDinput-150p0_ctau-0_1or2jets_icckw1_drjj0_xptj80_xqcut20_9576064_AOD_ctau-10.root'
             if options.data:
-                #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018C/MET/AOD/17Sep2018-v1/60000/FF66CD3E-969F-3644-8A5F-542FD5B56676.root'
-                #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018C/MET/AOD/17Sep2018-v1/100000/15CAEDFA-86F6-924D-B216-C81ACFE0DCEA.root'
-                #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018A/MET/AOD/17Sep2018-v1/60001/ABDA7B68-11D2-3E4E-B0A7-5F28E1FAB9ED.root'
-                #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018B/MET/AOD/17Sep2018-v1/120000/F099DF9A-6FF6-594A-9865-EB7125104EDF.root'
                 #options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018B/MET/AOD/17Sep2018-v1/120000/6ECBC797-E226-FA47-BBAE-C79150CCBA41.root'
                 # data AOD test
                 options.inputFiles = 'root://cmsxrootd.fnal.gov////store/data/Run2018B/MET/AOD/17Sep2018-v1/120000/572AAC76-E629-DC44-A27A-0F327B99FA7A.root'
@@ -117,10 +113,6 @@ process.TFileService = cms.Service("TFileService",
 process.load('iDMSkimmer.washAOD.myMETFilters_cff')
 process.load('JetMETCorrections.Configuration.JetCorrectors_cff')
 
-## Gen-level event analyzer
-from iDMSkimmer.washAOD.genTuplizer_cfi import genTuplizer
-process.GEN = genTuplizer.clone()
-
 ## Jet corrector to use
 if options.data:
     corrLabel = cms.InputTag('ak4PFCHSL1FastL2L3ResidualCorrector')
@@ -133,17 +125,31 @@ process.load("JetMETCorrections.Type1MET.correctionTermsPfMetType1Type2_cff")
 process.load("JetMETCorrections.Type1MET.correctionTermsPfMetMult_cff")
 process.load("JetMETCorrections.Type1MET.correctedMet_cff")
 
+## Electron and photon VID
+from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
+dataFormat = DataFormat.AOD
+switchOnVIDElectronIdProducer(process, dataFormat)
+switchOnVIDPhotonIdProducer(process, dataFormat)
+# define which IDs we want to produce
+id_e_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff']
+id_ph_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff']
+#add them to the VID producer
+for idmod in id_e_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
+for idmod in id_ph_modules:
+    setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
+
+
 ## Main iDM analyzer
 from iDMSkimmer.washAOD.iDMAnalyzer_cfi import iDMAnalyzer
 process.ntuples_gbm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
 process.ntuples_dgm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
-#process.SREffi_rsa = iDMAnalyzer.clone(muTrack2 = cms.InputTag('refittedStandAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
-#process.SREffi_dsa = iDMAnalyzer.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
-#process.SREffi_sam = iDMAnalyzer.clone(muTrack2 = cms.InputTag('standAloneMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'))
 
 if options.data:
     process.p = cms.Path(
         process.metFilters
+        + process.egmGsfElectronIDSequence
+        + process.egmPhotonIDSequence
         + process.ak4PFCHSL1FastL2L3ResidualCorrectorChain
         + process.correctionTermsPfMetType1Type2
         + process.correctionTermsPfMetType0RecoTrack
@@ -151,14 +157,12 @@ if options.data:
         + process.pfMetT0rtT1Txy
         + process.ntuples_gbm
         + process.ntuples_dgm
-        #+ process.SREffi_rsa
-        #+ process.SREffi_dsa
-        #+ process.SREffi_sam
     )
 else:
     process.p = cms.Path(
-        process.GEN
-        + process.metFilters
+        process.metFilters
+        + process.egmGsfElectronIDSequence 
+        + process.egmPhotonIDSequence
         + process.correctionTermsPfMetType1Type2
         + process.correctionTermsPfMetType0RecoTrack
         + process.correctionTermsPfMetMult
@@ -166,7 +170,4 @@ else:
         + process.ak4PFCHSL1FastL2L3CorrectorChain
         + process.ntuples_gbm
         + process.ntuples_dgm
-        #+ process.SREffi_rsa
-        #+ process.SREffi_dsa
-        #+ process.SREffi_sam
     )

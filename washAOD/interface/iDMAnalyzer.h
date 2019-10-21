@@ -31,6 +31,11 @@
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
 #include "JetMETCorrections/JetCorrector/interface/JetCorrector.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
+#include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
+#include "DataFormats/EgammaCandidates/interface/Photon.h"
+#include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
+#include "DataFormats/Common/interface/ValueMap.h"
 
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
@@ -82,6 +87,10 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag BadPFMuonFilterTag_;
         const edm::InputTag muonBadTrackFilterTag_;
         const edm::InputTag mJetCorrectorTag_;
+        const edm::InputTag recoElectronTag_;
+        const edm::InputTag recoElectronIDTag_;
+        const edm::InputTag recoPhotonTag_;
+        const edm::InputTag recoPhotonIDTag_;
 
         // Tokens
         const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbToken_;
@@ -105,6 +114,10 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::EDGetTokenT<bool>BadPFMuonFilterToken_;
         const edm::EDGetTokenT<bool>muonBadTrackFilterToken_;
         const edm::EDGetTokenT<reco::JetCorrector> mJetCorrectorToken_;
+        const edm::EDGetTokenT<reco::GsfElectronCollection> recoElectronToken_;
+        const edm::EDGetTokenT<edm::ValueMap<float>> recoElectronIDToken_;
+        const edm::EDGetTokenT<reco::PhotonCollection> recoPhotonToken_;
+        const edm::EDGetTokenT<edm::ValueMap<bool>> recoPhotonIDToken_;
 
         // Handles
         edm::Handle<reco::JetTagCollection> bTagProbbHandle_;
@@ -128,7 +141,13 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         edm::Handle<bool> BadPFMuonFilterHandle_;
         edm::Handle<bool> muonBadTrackFilterHandle_;
         edm::Handle<reco::JetCorrector> jetCorrectorHandle_;
+        edm::Handle<reco::GsfElectronCollection> recoElectronHandle_;
+        edm::Handle<edm::ValueMap<float>> recoElectronIDHandle_;
+        edm::Handle<reco::PhotonCollection> recoPhotonHandle_;
+        edm::Handle<edm::ValueMap<bool>> recoPhotonIDHandle_;
         
+        std::vector<std::string> triggerPathsWithoutVersionNum_;
+        std::vector<std::string> triggerPathsWithVersionNum_;
         std::string trigPath_;
         HLTConfigProvider hltConfig_;
 
@@ -151,28 +170,44 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         int genputrue_;
         float genwgt_;
         int npv_;
-        // Gen muon
+        // Gen particles
+        int nGen_;
+        std::vector<int> genID_;
+        // Only save hard-process gen particles
+        //std::vector<bool> genHardProcess_;
+        std::vector<int> genCharge_;
         std::vector<float> genPt_;
         std::vector<float> genEta_;
         std::vector<float> genPhi_;
+        std::vector<float> genPz_;
         std::vector<float> genEn_;
         std::vector<float> genVxy_;
         std::vector<float> genVz_;
-        std::vector<float> genDr_;
-        // Chi1 DM
-        std::vector<float> genChi1Pt_;
-        std::vector<float> genChi1Eta_;
-        std::vector<float> genChi1Phi_;
-        std::vector<float> genChi1En_;
-        std::vector<float> genChi1Vxy_;
-        std::vector<float> genChi1Vz_;
-        // Chi2 DM
-        std::vector<float> genChi2Pt_;
-        std::vector<float> genChi2Eta_;
-        std::vector<float> genChi2Phi_;
-        std::vector<float> genChi2En_;
-        std::vector<float> genChi2Vxy_;
-        std::vector<float> genChi2Vz_;
+        std::vector<float> genMass_;
+        
+        // Gen muon
+        //std::vector<float> genPt_;
+        //std::vector<float> genEta_;
+        //std::vector<float> genPhi_;
+        //std::vector<float> genEn_;
+        //std::vector<float> genVxy_;
+        //std::vector<float> genVz_;
+        //std::vector<float> genDr_;
+        //// Chi1 DM
+        //std::vector<float> genChi1Pt_;
+        //std::vector<float> genChi1Eta_;
+        //std::vector<float> genChi1Phi_;
+        //std::vector<float> genChi1En_;
+        //std::vector<float> genChi1Vxy_;
+        //std::vector<float> genChi1Vz_;
+        //// Chi2 DM
+        //std::vector<float> genChi2Pt_;
+        //std::vector<float> genChi2Eta_;
+        //std::vector<float> genChi2Phi_;
+        //std::vector<float> genChi2En_;
+        //std::vector<float> genChi2Vxy_;
+        //std::vector<float> genChi2Vz_;
+        
         // Gen jet
         std::vector<float> genJetPt_;
         std::vector<float> genJetEta_;
@@ -231,6 +266,10 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         bool recoPFHEMFlag_;
 
         float recoPFMETJetDeltaPhi_;
+
+        // Vetoes
+        bool isElectron_;
+        bool isPhoton_;
 
         // MHT reco branch
         float MHTPt_;
