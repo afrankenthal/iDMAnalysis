@@ -1,5 +1,7 @@
 #!/bin/bash
 
+# Argument expected: name of crab work area
+
 if [ $# -eq 0 ]; then
     echo "No arguments supplied"
     exit
