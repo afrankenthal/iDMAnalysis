@@ -1,13 +1,13 @@
 #include "CMS_lumi.h"
-#include <iostream>
 
-void CMS_lumi(TPad * pad, int iPeriod, int iPosX)
-{
+void CMS_lumi(TPad * pad, int iPeriod, int iPosX) {
+
     const TString  cmsText     = "CMS";
     const Double_t cmsTextFont = 61;  // default is helvetic-bold
 
     // extraText is either "Simulation" or "Preliminary"
     const Bool_t   writeExtraText  = 1;
+    const TString extraText = "Preliminary";
     const Double_t extraTextFont   = 52;  // default is helvetica-italics
 
     const Bool_t writeLumiText = 1;

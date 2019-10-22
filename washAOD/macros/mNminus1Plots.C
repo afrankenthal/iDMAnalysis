@@ -1,10 +1,4 @@
-#include "utils/tdrstyle.C"
-#include "utils/json.hpp"
-using json = nlohmann::json;
-#include "utils/common.C"
-using namespace common;
-
-using std::cout, std::endl, std::map, std::vector;
+#include "mNminus1Plots.h"
 
 namespace macro {
 

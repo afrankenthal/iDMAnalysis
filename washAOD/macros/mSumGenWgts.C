@@ -1,9 +1,4 @@
-#include "utils/json.hpp"
-using json = nlohmann::json;
-#include "utils/common.C"
-using namespace common;
-
-using std::cout, std::endl, std::map, std::vector;
+#include "mSumGenWgts.h"
 
 namespace macro {
 
@@ -33,7 +28,7 @@ namespace macro {
             Float_t gen_wgt;
             data_gen->SetBranchAddress("gen_wgt", &gen_wgt);
             data_gen->GetEntries();
-            Float_t sum_gen_wgt = 0;
+            Double_t sum_gen_wgt = 0;
             for (int i = 0; i < data_gen->GetEntries(); i++) {
                 data_gen->GetEntry(i);
                 sum_gen_wgt += gen_wgt;

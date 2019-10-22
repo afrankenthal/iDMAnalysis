@@ -19,15 +19,15 @@
 #include <THStack.h>
 #include <TLegend.h>
 
-#include "mCutflowTables.C"
-#include "mSumGenWgts.C"
-#include "mSROptimization.C"
-#include "mNminus1Plots.C"
-#include "mMainAnalysis.C"
-#include "mMakePlotsFromFile.C"
-#include "mSaveCanvases.C"
+#include "mCutflowTables.h"
+#include "mSumGenWgts.h"
+#include "mSROptimization.h"
+#include "mNminus1Plots.h"
+#include "mMainAnalysis.h"
+#include "mMakePlotsFromFile.h"
+#include "mSaveCanvases.h"
 
-#include "utils/common.C"
+#include "utils/common.h"
 using namespace common;
 #include "utils/json.hpp"
 using json = nlohmann::json;

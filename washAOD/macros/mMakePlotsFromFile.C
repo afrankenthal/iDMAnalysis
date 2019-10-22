@@ -1,27 +1,6 @@
-#include <string.h>
-#include <fstream>
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
+#include "mMakePlotsFromFile.h"
 
-#include <TDatime.h>
-#include <TCollection.h>
-#include <TSystemFile.h>
-#include <TSystemDirectory.h>
-#include <TString.h>
-#include <TChain.h>
-#include <TApplication.h>
-#include <TCut.h>
-#include <TH1F.h>
-
-#include "utils/common.C"
-using namespace common;
-#include "utils/json.hpp"
-using json = nlohmann::json;
-#include "utils/cxxopts.hpp"
-#include "utils/CMS_lumi.C"
-
-using std::cout, std::endl, std::map, std::vector;
+TString lumi_13TeV = "59.74 fb^{-1} ";
 
 namespace macro {
 
@@ -113,9 +92,8 @@ namespace macro {
                 hs->GetHistogram()->GetYaxis()->SetTitleOffset(0.76);
                 hs->SetTitle("");
                 hs->GetHistogram()->SetLabelSize(0.0);
-                writeExtraText = true;
-                //lumi_13TeV = "59.97 fb^{-1}";
-                lumi_13TeV = "29.41 fb^{-1} ";
+                const bool writeExtraText = true;
+                //lumi_13TeV = "29.41 fb^{-1} ";
                 //CMS_lumi(c, 4);
                 //c->SetLogy();
                 CMS_lumi((TPad*)gPad, 4, 0);
