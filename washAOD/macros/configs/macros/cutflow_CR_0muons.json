@@ -2,7 +2,7 @@
     {
         "name": "mMainAnalysis",
         "config": {
-            "region": "CR_nJets",
+            "region": "CR_0muons",
             "plots": [
                 {
                     "quantity": "reco_METmu_dphi",
