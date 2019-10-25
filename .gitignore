@@ -7,4 +7,4 @@
 messages.txt
 nohup.out
 washAOD/python/crab/*
-washAOD/python/*
+washAOD/python/*.pyc
