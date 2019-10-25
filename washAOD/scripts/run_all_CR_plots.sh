@@ -6,6 +6,10 @@ if [ $# -eq 0 ]; then
     echo "No arguments supplied!"
     exit
 fi
+if [ $# -eq 1 ]; then
+    echo "Only 1 argument supplied!"
+    exit
+fi
 
 # FIXME run from macros from now
 MACRODIR=.
@@ -13,11 +17,13 @@ SCRIPTDIR=../scripts
 
 OUTFILE=$MACRODIR/$1
 
+REGION=$2
+
 echo -e "\n\n\n"
 echo "Making cutflows from Ntuples..."
 echo -e "\n\n\n"
 
-$MACRODIR/bin/macroRun -m $MACRODIR/configs/macros/cutflow_CR_nJets.json -d $MACRODIR/configs/samples/fifthrun/data_full.json -b $MACRODIR/configs/samples/fifthrun/backgrounds_InclDibos_TTJets_full.json -o $OUTFILE
+$MACRODIR/bin/macroRun -m "$MACRODIR/configs/macros/cutflow_CR_${REGION}.json" -d $MACRODIR/configs/samples/sixthrun/data_full.json -b $MACRODIR/configs/samples/sixthrun/backgrounds_full.json -o $OUTFILE
 
 echo -e "\n\n\n"
 echo "Creating plots from cutflows..."
@@ -44,6 +50,8 @@ echo -e "\n\n\n"
 
 eos root://eosuser.cern.ch/ mkdir /eos/user/a/asterenb/www/iDM/plots/$FILEBASE/
 
-xrdcp -r $MACRODIR/plots/$FILEBASE/ root://eosuser.cern.ch//eos/user/a/asterenb/www/iDM/plots/$FILEBASE/
+#xrdcp --parallel 4 -r $MACRODIR/plots/$FILEBASE/ root://eosuser.cern.ch//eos/user/a/asterenb/www/iDM/plots/
+xrdcp --parallel 4 -r $MACRODIR/plots/$FILEBASE root://eosuser.cern.ch//eos/user/a/asterenb/www/iDM/plots
+
 
 echo "Done!"
