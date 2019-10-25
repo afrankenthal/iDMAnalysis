@@ -1,8 +1,11 @@
-{
-    "mSROptimization" : {
-        "param" : "abs(reco_vtx_dR)",
-        "value" : 0.9,
-        "cutflow" : "SR",
-        "outfilename" : "test_lala.json"
+[
+    {
+        "name": "mSROptimization",
+        "config" : {
+            "param" : "abs(reco_vtx_dR)",
+            "value" : 0.9,
+            "cutflow" : "SR",
+            "outfilename" : "test_lala.json"
+        }
     }
-}
+]

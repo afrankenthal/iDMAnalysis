@@ -46,6 +46,13 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     ecalBadCalibFilterTag_("ecalBadCalibFilter"),
     BadPFMuonFilterTag_("BadPFMuonFilter"),
     muonBadTrackFilterTag_("muonBadTrackFilter"),
+    mJetCorrectorTag_(ps.getParameter<edm::InputTag>("corrLabel")),
+    recoElectronTag_("gedGsfElectrons"),
+    recoElectronIDTag_("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V2-medium"),
+    //recoElectronIDTag_("eidLoose"),
+    recoPhotonTag_("gedPhotons"),
+    recoPhotonIDTag_("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V2-medium"),
+    //recoPhotonIDTag_("PhotonIDProdGED", "PhotonCutBasedIDLoose"),
     
     bTagProbbToken_(consumes<reco::JetTagCollection>(bTagProbbTag_)),
     bTagProbbbToken_(consumes<reco::JetTagCollection>(bTagProbbbTag_)),
@@ -66,7 +73,12 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     EcalDeadCellTriggerPrimitiveFilterToken_(consumes<bool>(EcalDeadCellTriggerPrimitiveFilterTag_)),
     ecalBadCalibFilterToken_(consumes<bool>(ecalBadCalibFilterTag_)),
     BadPFMuonFilterToken_(consumes<bool>(BadPFMuonFilterTag_)),
-    muonBadTrackFilterToken_(consumes<bool>(muonBadTrackFilterTag_))
+    muonBadTrackFilterToken_(consumes<bool>(muonBadTrackFilterTag_)),
+    mJetCorrectorToken_(consumes<reco::JetCorrector>(mJetCorrectorTag_)),
+    recoElectronToken_(consumes<reco::GsfElectronCollection>(recoElectronTag_)),
+    recoElectronIDToken_(consumes<edm::ValueMap<float>>(recoElectronIDTag_)),
+    recoPhotonToken_(consumes<reco::PhotonCollection>(recoPhotonTag_)),
+    recoPhotonIDToken_(consumes<edm::ValueMap<bool>>(recoPhotonIDTag_))
 {
     usesResource("TFileService");
 }
@@ -84,14 +96,15 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     desc.add<edm::InputTag>("genParticle", edm::InputTag("genParticles"));
     desc.add<edm::InputTag>("genJet", edm::InputTag("ak4GenJets"));
     desc.add<edm::InputTag>("genMet", edm::InputTag("genMetTrue"));
-    desc.add<edm::InputTag>("recoMet", edm::InputTag("pfMet"));
-    desc.add<edm::InputTag>("recoJet", edm::InputTag("ak4PFJets"));
+    desc.add<edm::InputTag>("recoMet", edm::InputTag("pfMetT0rtT1Txy"));
+    desc.add<edm::InputTag>("recoJet", edm::InputTag("ak4PFJetsCHS"));
     desc.add<edm::InputTag>("trigResult", edm::InputTag("TriggerResults", "", "HLT"));
     desc.add<edm::InputTag>("trigEvent", edm::InputTag("hltTriggerSummaryAOD", "", "HLT"));
     desc.add<std::string>("trigPath", "Defaultshouldntbecalled");
     desc.add<edm::InputTag>("pileups", edm::InputTag("addPileupInfo"));
     desc.add<edm::InputTag>("genEvt", edm::InputTag("generator"));
     desc.add<std::string>("processName", "HLT");
+    desc.add<edm::InputTag>("corrLabel", edm::InputTag("defaultshouldntbecalled"));
     descriptions.add("iDMAnalyzer", desc);
 }
 
@@ -146,6 +159,8 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_PF_METjet_dphi", &recoPFMETJetDeltaPhi_);
     recoT->Branch("reco_MHT_Pt", &MHTPt_);
     recoT->Branch("cuts", &cuts_);
+    recoT->Branch("is_electron", &isElectron_);
+    recoT->Branch("is_photon", &isPhoton_);
 
     if (!isData) {
 
@@ -155,25 +170,29 @@ void iDMAnalyzer::beginJob()
         genT->Branch("gen_pu_obs", &genpuobs_);
         genT->Branch("gen_pu_true", &genputrue_);
         genT->Branch("gen_wgt", &genwgt_);
-        genT->Branch("gen_mu_pt", &genPt_);
-        genT->Branch("gen_mu_eta", &genEta_);
-        genT->Branch("gen_mu_phi", &genPhi_);
-        genT->Branch("gen_mu_energy", &genEn_);
-        genT->Branch("gen_mu_dR", &genDr_);
-        genT->Branch("gen_mu_vxy", &genVxy_);
-        genT->Branch("gen_mu_vz", &genVz_);
-        genT->Branch("gen_chi1_pt", &genChi1Pt_);
-        genT->Branch("gen_chi1_eta", &genChi1Eta_);
-        genT->Branch("gen_chi1_phi", &genChi1Phi_);
-        genT->Branch("gen_chi1_energy", &genChi1En_);
-        genT->Branch("gen_chi1_vxy", &genChi1Vxy_);
-        genT->Branch("gen_chi1_vz", &genChi1Vz_);
-        genT->Branch("gen_chi2_pt", &genChi2Pt_);
-        genT->Branch("gen_chi2_eta", &genChi2Eta_);
-        genT->Branch("gen_chi2_phi", &genChi2Phi_);
-        genT->Branch("gen_chi2_energy", &genChi2En_);
-        genT->Branch("gen_chi2_vxy", &genChi2Vxy_);
-        genT->Branch("gen_chi2_vz", &genChi2Vz_);
+        genT->Branch("gen_ID", &genID_);
+        //genT->Branch("gen_hard_process", &genHardProcess_);
+        genT->Branch("gen_charge", &genCharge_);
+        genT->Branch("gen_pt", &genPt_);
+        genT->Branch("gen_eta", &genEta_);
+        genT->Branch("gen_phi", &genPhi_);
+        genT->Branch("gen_pz", &genPz_);
+        genT->Branch("gen_energy", &genEn_);
+        genT->Branch("gen_vxy", &genVxy_);
+        genT->Branch("gen_vz", &genVz_);
+        genT->Branch("gen_mass", &genMass_);
+        //genT->Branch("gen_chi1_pt", &genChi1Pt_);
+        //genT->Branch("gen_chi1_eta", &genChi1Eta_);
+        //genT->Branch("gen_chi1_phi", &genChi1Phi_);
+        //genT->Branch("gen_chi1_energy", &genChi1En_);
+        //genT->Branch("gen_chi1_vxy", &genChi1Vxy_);
+        //genT->Branch("gen_chi1_vz", &genChi1Vz_);
+        //genT->Branch("gen_chi2_pt", &genChi2Pt_);
+        //genT->Branch("gen_chi2_eta", &genChi2Eta_);
+        //genT->Branch("gen_chi2_phi", &genChi2Phi_);
+        //genT->Branch("gen_chi2_energy", &genChi2En_);
+        //genT->Branch("gen_chi2_vxy", &genChi2Vxy_);
+        //genT->Branch("gen_chi2_vz", &genChi2Vz_);
         genT->Branch("gen_jet_pt", &genJetPt_);
         genT->Branch("gen_jet_eta", &genJetEta_);
         genT->Branch("gen_jet_phi", &genJetPhi_);
@@ -247,17 +266,40 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "trigEvent");
         return false;
     }
+    triggerPathsWithoutVersionNum_.clear();
+    triggerPathsWithoutVersionNum_.push_back("HLT_PFMET120_PFMHT120_IDTight");
+    triggerPathsWithoutVersionNum_.push_back("HLT_PFMET130_PFMHT130_IDTight");
+    triggerPathsWithoutVersionNum_.push_back("HLT_PFMET140_PFMHT140_IDTight");
+    triggerPathsWithoutVersionNum_.push_back("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight");
+    triggerPathsWithoutVersionNum_.push_back("HLT_PFMETNoMu130_PFMHTNoMu130_IDTight");
+    triggerPathsWithoutVersionNum_.push_back("HLT_PFMETNoMu140_PFMHTNoMu140_IDTight");
+    triggerPathsWithoutVersionNum_.push_back("HLT_PFMET120_PFMHT120_IDTight_PFHT60");
     const std::vector<std::string>& pathNames = hltConfig_.triggerNames();
-    const std::vector<std::string> matchedPaths(hltConfig_.restoreVersion(pathNames, trigPathNoVer_));
-    if (matchedPaths.size() == 0) {
-        LogError("TriggerError") << "Could not find matched full trigger path with -> " << trigPathNoVer_;
-        return false;
+    triggerPathsWithVersionNum_.clear();
+    for (auto trigPathNoVersion : triggerPathsWithoutVersionNum_) {
+        auto matchedPaths(hltConfig_.restoreVersion(pathNames, trigPathNoVersion));
+        if (matchedPaths.size() == 0) {
+            LogError("TriggerError") << "Could not find matched full trigger path with -> " << trigPathNoVersion;
+            return false;
+        }
+        triggerPathsWithVersionNum_.push_back(matchedPaths[0]);
+        if (hltConfig_.triggerIndex(matchedPaths[0]) >= hltConfig_.size()) {
+            LogError("TriggerError") << "Cannot find trigger path -> " << matchedPaths[0];
+            return false;
+        }
     }
-    trigPath_ = matchedPaths[0];
-    if (hltConfig_.triggerIndex(trigPath_) >= hltConfig_.size()) {
-        LogError("TriggerError") << "Cannot find trigger path -> " << trigPath_;
-        return false;
-    }
+
+    //const std::vector<std::string> matchedPaths(hltConfig_.restoreVersion(pathNames, trigPathNoVer_));
+    //if (matchedPaths.size() == 0) {
+    //    LogError("TriggerError") << "Could not find matched full trigger path with -> " << trigPathNoVer_;
+    //    return false;
+    //}
+    //trigPath_ = matchedPaths[0];
+    //if (hltConfig_.triggerIndex(trigPath_) >= hltConfig_.size()) {
+    //    LogError("TriggerError") << "Cannot find trigger path -> " << trigPath_;
+    //    return false;
+    //}
+    
     iEvent.getByToken(HBHENoiseFilterResultProducerToken_, HBHENoiseFilterResultProducerHandle_);
     if (!HBHENoiseFilterResultProducerHandle_.isValid()) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "HBHENoiseFilter");
@@ -291,6 +333,31 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
     iEvent.getByToken(muonBadTrackFilterToken_, muonBadTrackFilterHandle_);
     if (!muonBadTrackFilterHandle_.isValid()) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "muonBadTrackFilter");
+        return false;
+    }
+    iEvent.getByToken(mJetCorrectorToken_, jetCorrectorHandle_);
+    if (!jetCorrectorHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "mJetCorrector");
+        return false;
+    }
+    iEvent.getByToken(recoElectronToken_, recoElectronHandle_);
+    if (!recoElectronHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "recoElectron");
+        return false;
+    }
+    iEvent.getByToken(recoElectronIDToken_, recoElectronIDHandle_);
+    if (!recoElectronIDHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "recoElectronID");
+        return false;
+    }
+    iEvent.getByToken(recoPhotonToken_, recoPhotonHandle_);
+    if (!recoPhotonHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "recoPhoton");
+        return false;
+    }
+    iEvent.getByToken(recoPhotonIDToken_, recoPhotonIDHandle_);
+    if (!recoPhotonIDHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "recoPhotonID");
         return false;
     }
 
@@ -392,8 +459,36 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     MHTPt_ = -9999;
     recoNMatchedGBMvDSA_ = -1;
 
+    isElectron_ = false;
+    const edm::ValueMap<float> & eIDmap = *recoElectronIDHandle_;
+    //std::cout << "e coll size " << recoElectronHandle_->size() << std::endl;
+    //std::cout << "e ID size " << eIDmap.size() << std::endl;
+    for (size_t i = 0; i < recoElectronHandle_->size(); i++) {
+        reco::GsfElectronRef electronRef(recoElectronHandle_, i);
+        if ((int)eIDmap[electronRef] % 2 == 1)
+            isElectron_ = true;
+        //std::cout << "eID = " << eIDmap[electronRef] << std::endl;
+    }
+
+    isPhoton_ = false;
+    const edm::ValueMap<bool> & phIDmap = *recoPhotonIDHandle_;
+    //std::cout << "ph coll size " << recoPhotonHandle_->size() << std::endl;
+    //std::cout << "ph ID size " << phIDmap.size() << std::endl;
+    for (size_t i = 0; i < recoPhotonHandle_->size(); i++) {
+        reco::PhotonRef photonRef(recoPhotonHandle_, i);
+        if (phIDmap[photonRef])
+            isPhoton_ = true;
+        //std::cout << "eID = " << phIDmap[photonRef] << std::endl;
+    }
+
     // Trigger check firing bit (MET+MHT 120 GeV trigger)
-    fired_ = trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath_));
+    fired_ = 0;
+    for (size_t i = 0; i < triggerPathsWithVersionNum_.size(); i++) {
+        std::string trigPath = triggerPathsWithVersionNum_[i];
+        fired_ |= (trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath)) << i);
+    }
+
+    //fired_ = trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath_));
 
     // get MET
     // assumes 0-th element of recoMet collection is largest pt (and only?) element
@@ -432,7 +527,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             muTracks1[i]->hitPattern().numberOfValidMuonHits() < 12 ||
             muTracks1[i]->normalizedChi2() > 10 ||
 	       	muTracks1[i]->pt() < 5 ||
-            muTracks1[i]->eta() > 2.4) {
+            abs(muTracks1[i]->eta()) > 2.4) {
                 continue;
         }
         muGoodTracksIdx.push_back(i);
@@ -446,7 +541,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             muTracks2[i]->hitPattern().numberOfValidMuonHits() < 12 ||
             muTracks2[i]->normalizedChi2() > 10 ||
 	       	muTracks2[i]->pt() < 5 ||
-            muTracks2[i]->eta() > 2.4) {
+            abs(muTracks2[i]->eta()) > 2.4) {
                 continue;
         }
         muGoodTracksIdx2.push_back(i);
@@ -478,7 +573,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
                 jet_i->numberOfDaughters() <= 1
            )
             jetIDResult = false;
-        if (jet_i->eta() < 2.4) {
+        if (abs(jet_i->eta()) < 2.4) {
             if (
                     jet_i->chargedHadronEnergyFraction() <= 0 ||
                     jet_i->chargedEmEnergyFraction() > 0.99 ||
@@ -505,41 +600,65 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             double dR = reco::deltaR(*jet_i, *mu_j);
             // if muon and jet match in dR fail the ID jet
             // because the jet is probably a muon instead
-            if (dR < 0.3)
+            if (dR < 0.4)
                 jetIDResults[i] = false;
         }
     }
+
+    // Apply JEC to jets that pass ID
+    // Need to re-order jets by pT after this
+    // vector key: index that will be changed after re-ordering
+    // vector value1: corrected pT, value2: original key to refer back to
+    vector<std::pair<double, size_t>> jetCorrections;
+    for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+        reco::PFJetRef jet_i(recoJetHandle_, i);
+        double jec = jetCorrectorHandle_->correction(*jet_i);
+        jetCorrections.push_back(std::make_pair<double,int>(jet_i->pt()*jec, i));
+    }
+    auto reverseSort = [](const std::pair<int,int> &a, const std::pair<int,int> &b) {
+        return (a.first > b.first); 
+    };
+    sort(jetCorrections.begin(), jetCorrections.end(), reverseSort);
     
-    // Get 10 top leading jets info, sorted by pT
-    // Note that jet collection is already sorted by pT
+    // Get 10 top leading jets info, sorted by corrected pT
     // Only pick jets that have passed loose ID and cross-cleaning
     const reco::JetTagCollection & bTagsProbb = *(bTagProbbHandle_.product());
     const reco::JetTagCollection & bTagsProbbb = *(bTagProbbbHandle_.product());
     recoPFNJet_ = recoJetHandle_->size(); 
     recoPFNPassIDJet_ = 0;
     recoPFNHighPtJet_ = 0;
-    for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+    //for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+    for (size_t i = 0; i < jetCorrections.size(); ++i) {
+        size_t index = jetCorrections[i].second;
+
         // Exclude jets that didn't pass ID above
-        if (!jetIDResults[i]) continue;
+        if (!jetIDResults[index]) continue;
         recoPFNPassIDJet_++;
 
-        reco::PFJetRef jet_i(recoJetHandle_, i);
-        if (jet_i->pt() > 30) {
+        // Use original set of quantities except for pt, which is JEC-corrected
+        reco::PFJetRef jet_i(recoJetHandle_, index);
+        //if (jet_i->pt() > 30) {
+        if (jetCorrections[i].first > 30) {
             recoPFNHighPtJet_++;
         }
-        if (i < 10) {
-            recoPFJetPt_.push_back(jet_i->pt());
+        if (recoPFJetPt_.size() < 10 && jetCorrections[i].first > 30) {
+            //recoPFJetPt_.push_back(jet_i->pt());
+            recoPFJetPt_.push_back(jetCorrections[i].first);
        		recoPFJetEta_.push_back(jet_i->eta());
        		recoPFJetPhi_.push_back(jet_i->phi());
+            // TODO: figure out how BtagProbb(b) collections actually behave
+            // FIXME this might be problematic with the jet corrections, keep in mind
             if (bTagsProbb.size() > i && bTagsProbbb.size() > i)
-                recoPFJetBTag_.push_back(bTagsProbb[i].second+bTagsProbbb[i].second);
+                recoPFJetBTag_.push_back(bTagsProbb[index].second+bTagsProbbb[index].second);
             else
-                recoPFJetBTag_.push_back(-10000);
+                recoPFJetBTag_.push_back(-9999);
         }
     }
 
     // Calculate angle between MET and leading jet
-    recoPFMETJetDeltaPhi_ = reco::deltaPhi(recoPFJetPhi_[0], recoPFMetPhi_);
+    recoPFMETJetDeltaPhi_ = -9999;
+    if (recoPFJetPhi_.size() > 0)
+        recoPFMETJetDeltaPhi_ = reco::deltaPhi(recoPFJetPhi_[0], recoPFMetPhi_);
 
     // Pick pair of dSA muons with smallest vertex chi square fit
     bool fFoundValidVertex = false;
@@ -819,25 +938,31 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
     if (!isData) {
 
+        nGen_ = (int)genParticleHandle_->size();
+        genID_.clear();
+        //genHardProcess_.clear();
+        genCharge_.clear();
         genPt_.clear();
         genEta_.clear();
         genPhi_.clear();
+        genPz_.clear();
         genEn_.clear();
         genVxy_.clear();
         genVz_.clear();
-        genChi1Pt_.clear();
-        genChi1Eta_.clear();
-        genChi1Phi_.clear();
-        genChi1En_.clear();
-        genChi1Vxy_.clear();
-        genChi1Vz_.clear();
-        genChi2Pt_.clear();
-        genChi2Eta_.clear();
-        genChi2Phi_.clear();
-        genChi2En_.clear();
-        genChi2Vxy_.clear();
-        genChi2Vz_.clear();
-        genDr_.clear();
+        genMass_.clear();
+        //genChi1Pt_.clear();
+        //genChi1Eta_.clear();
+        //genChi1Phi_.clear();
+        //genChi1En_.clear();
+        //genChi1Vxy_.clear();
+        //genChi1Vz_.clear();
+        //genChi2Pt_.clear();
+        //genChi2Eta_.clear();
+        //genChi2Phi_.clear();
+        //genChi2En_.clear();
+        //genChi2Vxy_.clear();
+        //genChi2Vz_.clear();
+        //genDr_.clear();
         genJetPt_.clear();
         genJetEta_.clear();
         genJetPhi_.clear();
@@ -862,44 +987,60 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             }
         }
 
+        for (size_t i = 0; i < genParticleHandle_->size(); i++) {
+            reco::GenParticleRef genParticle(genParticleHandle_, i);
+            if (!genParticle->isHardProcess()) continue;
+            genID_.push_back(genParticle->pdgId());
+            //genHardProcess_.push_back(genParticle->isHardProcess());
+            genCharge_.push_back(genParticle->charge());
+            genPt_.push_back(genParticle->pt());
+            genEta_.push_back(genParticle->eta());
+            genPhi_.push_back(genParticle->phi());
+            genPz_.push_back(genParticle->pz());
+            genEn_.push_back(genParticle->energy());
+            genVxy_.push_back(genParticle->vertex().rho());
+            genVz_.push_back(genParticle->vz());
+            genMass_.push_back(genParticle->mass());
+        }
+
         // all hard-process gen muons
-        for (size_t i = 0; i < genParticleHandle_->size(); i++) {
-            reco::GenParticleRef genParticle(genParticleHandle_, i);
-            if (genParticle->isHardProcess() && (std::abs(genParticle->pdgId()) == 13)) {
-                genPt_.push_back(genParticle->pt());
-                genEta_.push_back(genParticle->eta());
-                genPhi_.push_back(genParticle->phi());
-                genEn_.push_back(genParticle->energy());
-                genVxy_.push_back(genParticle->vertex().rho());
-                genVz_.push_back(genParticle->vz());
-            }
-        }
+        //for (size_t i = 0; i < genParticleHandle_->size(); i++) {
+        //    reco::GenParticleRef genParticle(genParticleHandle_, i);
+        //    if (genParticle->isHardProcess() && (std::abs(genParticle->pdgId()) == 13)) {
+        //        genPt_.push_back(genParticle->pt());
+        //        genEta_.push_back(genParticle->eta());
+        //        genPhi_.push_back(genParticle->phi());
+        //        genEn_.push_back(genParticle->energy());
+        //        genVxy_.push_back(genParticle->vertex().rho());
+        //        genVz_.push_back(genParticle->vz());
+        //    }
+        //}
 
-        // all hard-process gen DM_Chi1
-        for (size_t i = 0; i < genParticleHandle_->size(); i++) {
-            reco::GenParticleRef genParticle(genParticleHandle_, i);
-            if (genParticle->isHardProcess() && (std::abs(genParticle->pdgId()) == 1000022)) {
-                genChi1Pt_.push_back(genParticle->pt());
-                genChi1Eta_.push_back(genParticle->eta());
-                genChi1Phi_.push_back(genParticle->phi());
-                genChi1En_.push_back(genParticle->energy());
-                genChi1Vxy_.push_back(genParticle->vertex().rho());
-                genChi1Vz_.push_back(genParticle->vz());
-            }
-        }
+        //// all hard-process gen DM_Chi1
+        //for (size_t i = 0; i < genParticleHandle_->size(); i++) {
+        //    reco::GenParticleRef genParticle(genParticleHandle_, i);
+        //    if (genParticle->isHardProcess() && (std::abs(genParticle->pdgId()) == 1000022)) {
+        //        genChi1Pt_.push_back(genParticle->pt());
+        //        genChi1Eta_.push_back(genParticle->eta());
+        //        genChi1Phi_.push_back(genParticle->phi());
+        //        genChi1En_.push_back(genParticle->energy());
+        //        genChi1Vxy_.push_back(genParticle->vertex().rho());
+        //        genChi1Vz_.push_back(genParticle->vz());
+        //    }
+        //}
 
-        // all hard-process gen DM_Chi2
-        for (size_t i = 0; i < genParticleHandle_->size(); i++) {
-            reco::GenParticleRef genParticle(genParticleHandle_, i);
-            if (genParticle->isHardProcess() && (std::abs(genParticle->pdgId()) == 1000023)) {
-                genChi2Pt_.push_back(genParticle->pt());
-                genChi2Eta_.push_back(genParticle->eta());
-                genChi2Phi_.push_back(genParticle->phi());
-                genChi2En_.push_back(genParticle->energy());
-                genChi2Vxy_.push_back(genParticle->vertex().rho());
-                genChi2Vz_.push_back(genParticle->vz());
-            }
-        }
+        //// all hard-process gen DM_Chi2
+        //for (size_t i = 0; i < genParticleHandle_->size(); i++) {
+        //    reco::GenParticleRef genParticle(genParticleHandle_, i);
+        //    if (genParticle->isHardProcess() && (std::abs(genParticle->pdgId()) == 1000023)) {
+        //        genChi2Pt_.push_back(genParticle->pt());
+        //        genChi2Eta_.push_back(genParticle->eta());
+        //        genChi2Phi_.push_back(genParticle->phi());
+        //        genChi2En_.push_back(genParticle->energy());
+        //        genChi2Vxy_.push_back(genParticle->vertex().rho());
+        //        genChi2Vz_.push_back(genParticle->vz());
+        //    }
+        //}
 
         // all gen jets
         for (size_t i = 0; i < genJetHandle_->size(); i++) {
@@ -921,9 +1062,8 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         genT->Fill();
     }
 
-
     /******* BEGINNING OF CUTS ******/
-    // Pre-computation of some cuts, stored in bits
+    // Pre-compute some cuts, store in bits
 
     cuts_ = 0;
 
@@ -939,8 +1079,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         setCutBit(2);
 
     // One leading reco jet w/ pT > 120...
-    if (recoPFJetPt_[0] > 120)
-        setCutBit(3);
+    if (recoPFJetPt_.size() > 0)
+        if (recoPFJetPt_[0] > 120)
+            setCutBit(3);
     
     // ...and only one extra jet w/ pT > 30 GeV
     
@@ -973,7 +1114,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
         if (mu_i->pt() > 5)
             setCutBit(9 + i*numMuCuts);
-        if (mu_i->eta() < 2.4)
+        if (abs(mu_i->eta()) < 2.4)
             setCutBit(10 + i*numMuCuts);
         //if (abs(mu_tmp->dxy()) > 0.1 && abs(mu_tmp->dxy()) < 700)
          //   cutsVec[9 + i*numMuCuts] = 1;

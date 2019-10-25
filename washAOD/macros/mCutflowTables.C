@@ -1,23 +1,4 @@
-#include <string.h>
-#include <fstream>
-#include <iostream>
-#include <iomanip>
-using std::cout, std::endl, std::map, std::vector;
-
-#include <TDatime.h>
-#include <TCollection.h>
-#include <TSystemFile.h>
-#include <TSystemDirectory.h>
-#include <TString.h>
-#include <TChain.h>
-#include <TApplication.h>
-#include <TCut.h>
-#include <TH1F.h>
-
-#include "utils/common.C"
-using namespace common;
-#include "utils/json.hpp"
-using json = nlohmann::json;
+#include "mCutflowTables.h"
 
 namespace macro {
 

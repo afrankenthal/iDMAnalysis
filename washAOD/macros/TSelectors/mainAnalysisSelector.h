@@ -21,9 +21,9 @@
 // Headers needed by this particular selector
 #include <vector>
 #include <map>
+#include <memory>
 
-#include "../utils/common.C"
-
+#include "../utils/common.h"
 
 
 class mainAnalysisSelector : public TSelector {
@@ -32,6 +32,7 @@ public :
    TTree          *fChain = 0;   //!pointer to the analyzed TTree or TChain
 
    // Readers to access the data (delete the ones you do not need).
+   TTreeReaderValue<Int_t> npv = {fReader, "npv"};
    TTreeReaderValue<UInt_t> trig_fired = {fReader, "trig_fired"};
    TTreeReaderValue<Int_t> reco_n_dsa = {fReader, "reco_n_dsa"};
    TTreeReaderValue<Int_t> reco_n_good_dsa = {fReader, "reco_n_good_dsa"};
@@ -78,7 +79,10 @@ public :
    //TTreeReaderValue<ULong64_t> num_event = {fReader, "num_event"};
    // MC
    std::unique_ptr<TTreeReaderValue<Float_t>> gen_wgt; // = {fReader, "gen_wgt"};
+   std::unique_ptr<TTreeReaderValue<Int_t>> gen_pu_true;
    //TTreeReaderValue<ULong64_t> event_n = {fReader, "event_n"};
+   std::unique_ptr<TTreeReaderArray<Float_t>> gen_pt;
+   std::unique_ptr<TTreeReaderArray<Int_t>> gen_id;
 
 
    mainAnalysisSelector(TTree * /*tree*/ =0) : cutflow_(30, 0.0) { }
@@ -104,7 +108,7 @@ public :
    std::vector<double> GetCutflow() { return cutflow_; }
    std::map<TString, std::map<int, TH1*>> GetHistograms() { return cutflowHistos_; }
 
-   ClassDef(mainAnalysisSelector,0);
+   ClassDef(mainAnalysisSelector,2);
 
    std::vector<double> cutflow_;
    std::map<TString, common::THInfo*> histos_info_;
@@ -116,6 +120,10 @@ public :
    Double_t lumi_;
    common::MODE mode_;
    TString region_;
+
+   TH1F * sf_z_qcd, * sf_z_ewk;
+   TH1F * sf_w_qcd, * sf_w_ewk;
+   TH1F * sf_pu;
 
 };
 

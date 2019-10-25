@@ -1,5 +1,8 @@
-{
-    "mNminus1Plots" : {
-        "fSave" : true
+[
+    {
+        "name": "mNminus1Plots",
+        "config" : {
+            "fSave" : true
+        }
     }
-}
+]

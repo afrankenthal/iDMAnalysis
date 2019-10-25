@@ -6,8 +6,8 @@
         ],
         "group": "DY",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 1784095.25,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 16777216.0,
         "xsec": 5340
     },
     "DYJetsToLL_M-5to50": {
@@ -16,8 +16,8 @@
         ],
         "group": "DY",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 218159.703125,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 2092439.125,
         "xsec": 66040
     },
     "QCD_bEnriched_HT1000to1500": {
@@ -26,8 +26,8 @@
         ],
         "group": "QCD",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 328672.09375,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 492013.46875,
         "xsec": 46.5
     },
     "QCD_bEnriched_HT100to200": {
@@ -36,8 +36,8 @@
         ],
         "group": "QCD",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 191642.40625,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 16777216.0,
         "xsec": 1122000
     },
     "QCD_bEnriched_HT1500to2000": {
@@ -46,8 +46,8 @@
         ],
         "group": "QCD",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 224958.3125,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 409149.1875,
         "xsec": 3.719
     },
     "QCD_bEnriched_HT2000toINF": {
@@ -56,8 +56,8 @@
         ],
         "group": "QCD",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 124923.90625,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 396596.96875,
         "xsec": 0.6479
     },
     "QCD_bEnriched_HT200to300": {
@@ -67,8 +67,8 @@
         ],
         "group": "QCD",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 273733.75,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 15274315.0,
         "xsec": 80170
     },
     "QCD_bEnriched_HT300to500": {
@@ -77,8 +77,8 @@
         ],
         "group": "QCD",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 325287.78125,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 12031728.0,
         "xsec": 16690
     },
     "QCD_bEnriched_HT500to700": {
@@ -87,8 +87,8 @@
         ],
         "group": "QCD",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 315169.9375,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 10367249.0,
         "xsec": 1480
     },
     "QCD_bEnriched_HT700to1000": {
@@ -97,8 +97,8 @@
         ],
         "group": "QCD",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 331161.15625,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 2027057.625,
         "xsec": 296.7
     },
     "TTTo2L2Nu": {
@@ -110,9 +110,9 @@
         ],
         "group": "Top",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 27320030.0,
-        "xsec": 687.1
+        "limit_num_files": -1,
+        "sum_gen_wgt": 2147483648.0,
+        "xsec": 87.3
     },
     "TTToHadronic": {
         "dir": [
@@ -121,9 +121,9 @@
         ],
         "group": "Top",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 120956488.0,
-        "xsec": 687.1
+        "limit_num_files": -1,
+        "sum_gen_wgt": 8589934592.0,
+        "xsec": 380.1 
     },
     "TTToSemiLeptonic": {
         "dir": [
@@ -131,9 +131,9 @@
         ],
         "group": "Top",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 109992136.0,
-        "xsec": 687.1
+        "limit_num_files": -1,
+        "sum_gen_wgt": 1271417984.0,
+        "xsec": 364.3
     },
     "WJetsToLNu_HT-100To200": {
         "dir": [
@@ -141,8 +141,8 @@
         ],
         "group": "WJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 114136.3671875,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 788269.375,
         "xsec": 1393
     },
     "WJetsToLNu_HT-1200To2500": {
@@ -151,8 +151,8 @@
         ],
         "group": "WJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 329514.0,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 7590003.0,
         "xsec": 1.083
     },
     "WJetsToLNu_HT-200To400": {
@@ -162,8 +162,8 @@
         ],
         "group": "WJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 346222.375,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 16777220.0,
         "xsec": 405.8
     },
     "WJetsToLNu_HT-2500ToInf": {
@@ -172,8 +172,8 @@
         ],
         "group": "WJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 233289.921875,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 3106478.5,
         "xsec": 0.008
     },
     "WJetsToLNu_HT-400To600": {
@@ -182,8 +182,8 @@
         ],
         "group": "WJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 263432.8125,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 5907609.0,
         "xsec": 57.79
     },
     "WJetsToLNu_HT-600To800": {
@@ -193,8 +193,8 @@
         ],
         "group": "WJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 330316.4375,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 16777220.0,
         "xsec": 12.91
     },
     "WJetsToLNu_HT-70To100": {
@@ -204,8 +204,8 @@
         ],
         "group": "WJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 359672.8125,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 16777216.0,
         "xsec": 1288
     },
     "WJetsToLNu_HT-800To1200": {
@@ -214,8 +214,8 @@
         ],
         "group": "WJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 23865.611328125,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 8377135.5,
         "xsec": 5.447
     },
     "WWJJToLNuLNu": {
@@ -224,8 +224,8 @@
         ],
         "group": "Multiboson",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 177308.28125,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 493780.71875,
         "xsec": 2.163
     },
     "WWTo2L2Nu": {
@@ -234,8 +234,8 @@
         ],
         "group": "Multiboson",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 3731509.5,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 83285480.0,
         "xsec": 11.08
     },
     "WWW": {
@@ -244,8 +244,8 @@
         ],
         "group": "Multiboson",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 5166.06982421875,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 48140.4375,
         "xsec": 0.2154
     },
     "WWZ": {
@@ -254,8 +254,8 @@
         ],
         "group": "Multiboson",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 35381.421875,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 41778.23828125,
         "xsec": 0.1676
     },
     "WZTo3LNu": {
@@ -264,8 +264,8 @@
         ],
         "group": "Multiboson",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 4180.44140625,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 8881740.0,
         "xsec": 4.658
     },
     "WZZ": {
@@ -274,7 +274,7 @@
         ],
         "group": "Multiboson",
         "mode": "BKG",
-        "limit_num_files": 1,
+        "limit_num_files": -1,
         "sum_gen_wgt": 14276.0,
         "xsec": 0.057
     },
@@ -285,8 +285,8 @@
         ],
         "group": "ZJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 273949.78125,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 16777216.0,
         "xsec": 304
     },
     "ZJetsToNuNu_HT-1200To2500": {
@@ -295,8 +295,8 @@
         ],
         "group": "ZJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 236348.0,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 340174.78125,
         "xsec": 0.3425
     },
     "ZJetsToNuNu_HT-200To400": {
@@ -306,8 +306,8 @@
         ],
         "group": "ZJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 376232.75,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 16777220.0,
         "xsec": 91.61
     },
     "ZJetsToNuNu_HT-2500ToInf": {
@@ -316,15 +316,15 @@
         ],
         "group": "ZJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 128352.34375,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 350183.84375,
         "xsec": 0.005263
     },
     "ZJetsToNuNu_HT-400To600": {
         "dir": [],
         "group": "ZJets",
         "mode": "BKG",
-        "limit_num_files": 1,
+        "limit_num_files": -1,
         "sum_gen_wgt": 0.0,
         "xsec": 13.1
     },
@@ -334,8 +334,8 @@
         ],
         "group": "ZJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 364397.96875,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 5707841.5,
         "xsec": 3.259
     },
     "ZJetsToNuNu_HT-800To1200": {
@@ -344,8 +344,8 @@
         ],
         "group": "ZJets",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 134988.875,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 2060129.75,
         "xsec": 1.496
     },
     "ZZTo2L2Nu": {
@@ -354,8 +354,8 @@
         ],
         "group": "Multiboson",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 202300.515625,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 4556718.0,
         "xsec": 0.6008
     },
     "ZZZ": {
@@ -364,7 +364,7 @@
         ],
         "group": "Multiboson",
         "mode": "BKG",
-        "limit_num_files": 1,
+        "limit_num_files": -1,
         "sum_gen_wgt": 3674.798583984375,
         "xsec": 0.0147
     },
@@ -374,8 +374,8 @@
         ],
         "group": "Top",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 11795806.0,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 252129712.0,
         "xsec": 34.97
     },
     "tW_top": {
@@ -384,8 +384,8 @@
         ],
         "group": "Top",
         "mode": "BKG",
-        "limit_num_files": 1,
-        "sum_gen_wgt": 11987104.0,
+        "limit_num_files": -1,
+        "sum_gen_wgt": 313040608.0,
         "xsec": 34.91
     }
 }

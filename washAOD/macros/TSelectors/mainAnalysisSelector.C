@@ -32,9 +32,13 @@
 void mainAnalysisSelector::SetMode(common::MODE mode) { 
     mode_ = mode; 
     if (mode_ == common::DATA)
-        MET_filters_fail_bits = make_unique<TTreeReaderValue<UInt_t>>(fReader, "MET_filters_fail_bits");
-    else
-        gen_wgt = make_unique<TTreeReaderValue<Float_t>>(fReader, "gen_wgt");
+        MET_filters_fail_bits = std::make_unique<TTreeReaderValue<UInt_t>>(fReader, "MET_filters_fail_bits");
+    else {
+        gen_wgt = std::make_unique<TTreeReaderValue<Float_t>>(fReader, "gen_wgt");
+        gen_pu_true = std::make_unique<TTreeReaderValue<Int_t>>(fReader, "gen_pu_true");
+        gen_pt = std::make_unique<TTreeReaderArray<Float_t>>(fReader, "gen_pt"); // FIXME
+        gen_id = std::make_unique<TTreeReaderArray<Int_t>>(fReader, "gen_ID"); // FIXME rightlabels
+    }
 }
 
 void mainAnalysisSelector::SetParams(common::SampleInfo sample_info, Double_t lumi, TString region = "SR") {
@@ -42,9 +46,35 @@ void mainAnalysisSelector::SetParams(common::SampleInfo sample_info, Double_t lu
     sum_gen_wgt_ = sample_info_.sum_gen_wgt;
     xsec_ = sample_info_.xsec;
     lumi_ = lumi;
-    std::cout << "sum_gen_wgt: " << sum_gen_wgt_ << ", xsec: " << xsec_ << " [pb], lumi: " << lumi_ << " [1/pb]" << std::endl;
+    std::cout << "sum_gen_wgt: " << sum_gen_wgt_ << ", xsec: " << xsec_ << " [pb], lumi: " << lumi_ << " [1/pb] " << std::endl;
 
     region_ = region;
+
+    // Set up QCD and EWK corrections
+    TFile * kfactors = new TFile("../data/kfactors.root");
+    TH1F * z_nlo = (TH1F*)kfactors->Get("ZJets_012j_NLO/nominal");
+    TH1F * z_ewk = (TH1F*)kfactors->Get("EWKcorr/Z");
+    TH1F * z_lo = (TH1F*)kfactors->Get("ZJets_LO/inv_pt");
+    sf_z_qcd = (TH1F*)z_nlo->Clone();
+    sf_z_qcd->Divide(z_lo);
+    sf_z_ewk = (TH1F*)z_ewk->Clone();
+    sf_z_ewk->Divide(z_lo);
+    TH1F * w_nlo = (TH1F*)kfactors->Get("WJets_012j_NLO/nominal");
+    TH1F * w_ewk = (TH1F*)kfactors->Get("EWKcorr/W");
+    TH1F * w_lo = (TH1F*)kfactors->Get("WJets_LO/inv_pt");
+    sf_w_qcd = (TH1F*)w_nlo->Clone();
+    sf_w_qcd->Divide(w_lo);
+    sf_w_ewk = (TH1F*)w_ewk->Clone();
+    sf_w_ewk->Divide(w_lo);
+    kfactors->Close();
+    
+    // Set up pileup corrections
+    TFile * pileup = new TFile("../data/puWeights_10x_56ifb.root");
+    TH1F * h_pu = (TH1F*)pileup->Get("puWeights");
+    sf_pu = (TH1F*)h_pu->Clone();
+    sf_pu->SetDirectory(0);
+    pileup->Close();
+
 }
 
 void mainAnalysisSelector::Begin(TTree * /*tree*/)
@@ -76,6 +106,7 @@ void mainAnalysisSelector::SlaveBegin(TTree * /*tree*/)
            else // 2D plot
                cutflowHistos_[name][cut] = new TH2F(Form("%s_cut%d_%s", name.Data(), cut, sample_info_.group.Data()), common::group_plot_info[sample_info_.group].legend, hist->nbinsX, hist->lowX, hist->highX, hist->nbinsY, hist->lowY, hist->highY);
            cutflowHistos_[name][cut]->Sumw2();
+           GetOutputList()->Add(cutflowHistos_[name][cut]);
            if (common::group_plot_info[sample_info_.group].mode == common::BKG) 
                cutflowHistos_[name][cut]->SetFillColor(common::group_plot_info[sample_info_.group].color);
            else if (common::group_plot_info[sample_info_.group].mode == common::DATA) {
@@ -87,6 +118,7 @@ void mainAnalysisSelector::SlaveBegin(TTree * /*tree*/)
                cutflowHistos_[name][cut]->SetLineColor(common::group_plot_info[sample_info_.group].color);
                cutflowHistos_[name][cut]->SetLineStyle(common::group_plot_info[sample_info_.group].style);
                cutflowHistos_[name][cut]->SetLineWidth(2);
+               cutflowHistos_[name][cut]->SetMarkerSize(0);
            }
        }
    }
@@ -139,15 +171,60 @@ Bool_t mainAnalysisSelector::Process(Long64_t entry)
    //
    // The return value is currently not used.
 
-
    fReader.SetLocalEntry(entry);
 
-   
    // data weight is always 1
    double weight = 1;
+
+   // MC gen weight, lumi, and cross-section
    if (mode_ != common::DATA)
        weight = (**gen_wgt) * xsec_ * lumi_ / sum_gen_wgt_;
 
+   // Top corrections
+   if (sample_info_.group == "Top") {
+       double sf_top = 1;
+       int n_top = 0;
+       for (int i = 0; i < (*gen_id).GetSize(); i++) {
+           if ((*gen_id)[i] == 6) {
+               sf_top *= (*gen_pt)[i];
+               n_top++;
+           }
+       }
+       if (n_top == 0)
+           std::cout << "ERROR! Sample group is 'Top' but no gen-level top quarks found." << std::endl;
+       else
+           sf_top = pow(sf_top, 1/n_top);
+       weight *= sf_top;
+   }
+
+   // ZJets+WJets NLO (QCD) and EWK corrections
+   if (sample_info_.group == "WJets") {
+       for (int i = 0; i < (*gen_id).GetSize(); i++) {
+           if ((*gen_id)[i] == 24) {
+               double w_pt = (*gen_pt)[i];
+               weight *= sf_w_qcd->GetBinContent(sf_w_qcd->FindBin(w_pt));
+               weight *= sf_w_ewk->GetBinContent(sf_w_ewk->FindBin(w_pt));
+           }
+       }
+   }
+   else if (sample_info_.group == "ZJets" || sample_info_.group == "DY") {
+       for (int i = 0; i < (*gen_id).GetSize(); i++) {
+           if ((*gen_id)[i] == 23) {
+               double z_pt = (*gen_pt)[i];
+               weight *= sf_z_qcd->GetBinContent(sf_z_qcd->FindBin(z_pt));
+               weight *= sf_z_ewk->GetBinContent(sf_z_ewk->FindBin(z_pt));
+           }
+       }
+   }
+   
+   /// Pileup corrections
+   if (mode_ != common::DATA) {
+       int pu_true = **gen_pu_true;
+       weight *= sf_pu->GetBinContent(sf_pu->FindBin((double)pu_true));
+   }
+
+   // Beginning of cuts
+   
    int cut = 0;
 
    doFills(cut++, weight);
@@ -170,6 +247,7 @@ Bool_t mainAnalysisSelector::Process(Long64_t entry)
    doFills(cut++, weight);
 
    // One leading reco PF jet w/ pT > 120...
+   if (reco_PF_jet_pt.GetSize() == 0) return false;
    if (reco_PF_jet_pt[0] < 120) return false;
    doFills(cut++, weight);
 
@@ -258,4 +336,5 @@ void mainAnalysisSelector::Terminate()
    // a query. It always runs on the client, it can be used to present
    // the results graphically or save the results to file.
 
+   //delete sf_pu;
 }

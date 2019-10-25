@@ -19,15 +19,15 @@
 #include <THStack.h>
 #include <TLegend.h>
 
-#include "mCutflowTables.C"
-#include "mSumGenWgts.C"
-#include "mSROptimization.C"
-#include "mNminus1Plots.C"
-#include "mMainAnalysis.C"
-#include "mMakePlotsFromFile.C"
-#include "mSaveCanvases.C"
+#include "mCutflowTables.h"
+#include "mSumGenWgts.h"
+#include "mSROptimization.h"
+#include "mNminus1Plots.h"
+#include "mMainAnalysis.h"
+#include "mMakePlotsFromFile.h"
+#include "mSaveCanvases.h"
 
-#include "utils/common.C"
+#include "utils/common.h"
 using namespace common;
 #include "utils/json.hpp"
 using json = nlohmann::json;
@@ -60,11 +60,13 @@ int main(int argc, char ** argv) {
 
     // Program options
     //TString which_cutflow = TString(result["which"].as<std::string>());
-    vector<TString> sample_config_filenames {
-        TString(result["background"].as<std::string>()),
-        TString(result["signal"].as<std::string>()),
-        TString(result["data"].as<std::string>())
-    };
+    vector<TString> sample_config_filenames {};
+    if (TString(result["background"].as<std::string>()) != "")
+        sample_config_filenames.push_back(TString(result["background"].as<std::string>()));
+    if (TString(result["signal"].as<std::string>()) != "")
+        sample_config_filenames.push_back(TString(result["signal"].as<std::string>()));
+    if (TString(result["data"].as<std::string>()) != "")
+        sample_config_filenames.push_back(TString(result["data"].as<std::string>()));
     TString macro_filename = TString(result["macro"].as<std::string>());
     TString out_filename = TString(result["outfile"].as<std::string>());
     TString in_filename = TString(result["infile"].as<std::string>());
@@ -81,7 +83,6 @@ int main(int argc, char ** argv) {
     map<TString, SampleInfo> samples;
 
     for (auto config_filename : sample_config_filenames) { 
-        if (config_filename == "") continue;
 
         std::ifstream config_file(config_filename.Data());
         json configs;
@@ -104,7 +105,7 @@ int main(int argc, char ** argv) {
                 TString(cfg["group"].get<std::string>()), // sample group
                 common::mapMODE[TString(cfg["mode"].get<std::string>())], // mode: 0 = SIGNAL, 1 = BKG, 2 = DATA
                 (cfg.find("color") != cfg.end() ? cfg["color"].get<int>() : color++), // line color
-                (config_filename.Contains("signal") ? 2 : 1) // line style (bkg vs signal)
+                (config_filename.Contains("signal") ? 1 : 1) // line style (bkg vs signal)
             };
         }
     }
@@ -113,14 +114,25 @@ int main(int argc, char ** argv) {
     json macro_configs;
     macro_config_file >> macro_configs;
 
-    for (auto const & [macro, cfg] : macro_configs.items()) {
+    //for (auto const & [macro, cfg] : macro_configs.items()) {
+    for (auto const & item : macro_configs) {
+        auto macro = item["name"].get<std::string>();
+        auto cfg = item["config"];
+
         if (macro == "mMainAnalysis")
             cfg["outfilename"] = out_filename.Data();
+
         if (macro == "mMakePlotsFromFile")
             cfg["infilename"] = in_filename.Data();
 
-        if (macro == "mSumGenWgts") 
-            cfg = json({{"sample_config_filename",sample_config_filenames[0].Data()}});
+        if (macro == "mSumGenWgts") {
+            if (sample_config_filenames.size() != 1) {
+                cout << "Can only run mSumGenWgts with 1 sample config!" << endl;
+                break;
+            }
+            cfg["sample_config_filename"] = sample_config_filenames[0].Data();
+            //cfg = json({{"sample_config_filename",sample_config_filenames[0].Data()}});
+        }
 
         if (macro == "mSaveCanvases") {
             cfg["outdir"] = out_filename.Data();

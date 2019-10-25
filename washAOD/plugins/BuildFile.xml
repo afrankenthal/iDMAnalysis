@@ -8,11 +8,11 @@
 <use name="DataFormats/TrackReco"/>
 <use name="DataFormats/MuonReco"/>
 <use name="DataFormats/ParticleFlowCandidate"/>
+<use name="DataFormats/EgammaCandidates"/>
 <use name="CommonTools/UtilAlgos"/>
 <use name="CommonTools/RecoAlgos"/>
 <use name="PhysicsTools/UtilAlgos"/>
 <use name="PhysicsTools/HepMCCandAlgos"/>
-
 <use name="TrackingTools/TransientTrack"/>
 <use name="TrackingTools/Records"/>
 <use name="RecoVertex/VertexPrimitives"/>

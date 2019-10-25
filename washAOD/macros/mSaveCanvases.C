@@ -1,28 +1,4 @@
-#include <string.h>
-#include <fstream>
-#include <iostream>
-#include <iomanip>
-#include <algorithm>
-#include <experimental/filesystem>
-namespace fs = std::experimental::filesystem;
-
-#include <TDatime.h>
-#include <TCollection.h>
-#include <TSystemFile.h>
-#include <TSystemDirectory.h>
-#include <TString.h>
-#include <TChain.h>
-#include <TApplication.h>
-#include <TCut.h>
-#include <TH1F.h>
-
-#include "utils/common.C"
-using namespace common;
-#include "utils/json.hpp"
-using json = nlohmann::json;
-#include "utils/cxxopts.hpp"
-
-using std::cout, std::endl, std::map, std::vector;
+#include "mSaveCanvases.h"
 
 namespace macro {
 
@@ -46,7 +22,7 @@ namespace macro {
 
         fs::path dir(out_dir.Data());
         if (fs::exists(dir)) {
-            cout << "Error! Output directory already exists! Not overwriting." << endl;
+            cout << "Error! Output directory " << out_dir.Data() << " already exists! Not overwriting." << endl;
             return 0;
         }
         fs::create_directories(dir);

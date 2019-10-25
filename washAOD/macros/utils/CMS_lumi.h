@@ -1,40 +1,41 @@
-#include "TPad.h"
-#include "TLatex.h"
-#include "TLine.h"
-#include "TBox.h"
-#include "TASImage.h"
+#ifndef CMS_LUMI_HH
+#define CMS_LUMI_HH
+
+#include <TASImage.h>
+#include <TBox.h>
+#include <TLatex.h>
+#include <TLine.h>
+#include <TPad.h>
 
 //
 // Global variables
 //
 
-TString cmsText     = "CMS";
-float cmsTextFont   = 61;  // default is helvetic-bold
+extern const TString cmsText;
+extern const Double_t cmsTextFont;
 
-bool writeExtraText = false;
-TString extraText   = "Preliminary";
-float extraTextFont = 52;  // default is helvetica-italics
+extern const bool writeExtraText;
+extern const TString extraText;
+extern const Double_t extraTextFont;
 
-// text sizes and text offsets with respect to the top frame
-// in unit of the top margin size
-float lumiTextSize     = 0.6;
-float lumiTextOffset   = 0.2;
-float cmsTextSize      = 0.75;
-float cmsTextOffset    = 0.1;  // only used in outOfFrame version
+extern const Double_t lumiTextSize;
+extern const Double_t lumiTextOffset;
+extern const Double_t cmsTextSize;
+extern const Double_t cmsTextOffset;
 
-float relPosX    = 0.045;
-float relPosY    = 0.035;
-float relExtraDY = 1.2;
+extern const Double_t relPosX;
+extern const Double_t relPosY;
+extern const Double_t relExtraDY;
 
-// ratio of "CMS" and extra text size
-float extraOverCmsTextSize  = 0.76;
+extern const Double_t extraOverCmsTextSize;
 
-TString lumi_13TeV = "20.1 fb^{-1}";
-TString lumi_8TeV  = "19.7 fb^{-1}";
-TString lumi_7TeV  = "5.1 fb^{-1}";
-TString lumi_sqrtS = "";
+extern TString lumi_13TeV;
+//extern const TString lumi_8TeV;
+//extern const TString lumi_7TeV;
+//extern const TString lumi_sqrtS;
 
-bool drawLogo      = false;
+//extern bool drawLogo      = false;
 
 void CMS_lumi( TPad* pad, int iPeriod=3, int iPosX=10 );
 
+#endif // CMS_LUMI_HH

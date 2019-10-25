@@ -81,14 +81,10 @@ process.TFileService = cms.Service("TFileService",
 
 ## Trigger-reco efficiency
 from iDMSkimmer.washAOD.MetTrigSelfEffiForMuTrack_cfi import MetTrigSelfEffiForMuTrack
-#process.RECO_dsa = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'),trigPath0 = cms.string('HLT_Mu17'))
-process.RECO_dsa50 = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), trigPath0 = cms.string('HLT_Mu50'))
-process.RECO_dsaIso = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), trigPath0 = cms.string('HLT_IsoMu24'))
-process.RECO_dsa50_130 = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET130_PFMHT130_IDTight'), trigPath0 = cms.string('HLT_Mu50'))
-process.RECO_dsaIso_130 = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET130_PFMHT130_IDTight'), trigPath0 = cms.string('HLT_IsoMu24'))
-process.RECO_dsa50_140 = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET140_PFMHT140_IDTight'), trigPath0 = cms.string('HLT_Mu50'))
-process.RECO_dsaIso_140 = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET140_PFMHT140_IDTight'), trigPath0 = cms.string('HLT_IsoMu24'))
-#process.RECO_gbm50 = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), trigPath0 = cms.string('HLT_IsoMu24'), muTrack = cms.InputTag("globalMuons"))
+process.RECO_dsaIsoNoMu = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60'), trigPath0 = cms.string('HLT_IsoMu24'),muTrack = cms.InputTag("globalMuons"))
+process.RECO_dsaIso = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), trigPath0 = cms.string('HLT_IsoMu24'),muTrack = cms.InputTag("globalMuons"))
+#process.RECO_dsaIsoNoMu = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60'), trigPath0 = cms.string('HLT_IsoMu24'),muTrack = cms.InputTag('globalMuons'))
+#process.RECO_dsaIso = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), trigPath0 = cms.string('HLT_IsoMu24'),muTrack = cms.InputTag('globalMuons'))
 
 ## constructing the path
 #if options.year == 2017:
@@ -98,26 +94,31 @@ process.RECO_dsaIso_140 = MetTrigSelfEffiForMuTrack.clone(trigPath = cms.string(
 #                         + process.RECO_dsaIso
 #                         #+ process.RECO_gbm50
 #                         )
+
+process.load('iDMSkimmer.washAOD.myMETFilters_cff') 
+
 if options.year == 2017:
     process.p = cms.Path(
                          #process.RECO_dsa
-                          process.RECO_dsa50
+			process.metFilters+
+                          process.RECO_dsaIsoNoMu
                          + process.RECO_dsaIso
-                         + process.RECO_dsa50_130
-                         + process.RECO_dsaIso_130
-                         + process.RECO_dsa50_140
-                         + process.RECO_dsaIso_140
+                         #+ process.RECO_dsa50_130
+                         #+ process.RECO_dsaIso_130
+                         #+ process.RECO_dsa50_140
+                         #+ process.RECO_dsaIso_140
                          #+ process.RECO_gbm50
                          )
 
 if options.year == 2018:
     process.p = cms.Path(
                          #process.RECO_dsa
-                          process.RECO_dsa50
+			process.metFilters+
+                          process.RECO_dsaIsoNoMu
                          + process.RECO_dsaIso
-                         + process.RECO_dsa50_130
-                         + process.RECO_dsaIso_130
-                         + process.RECO_dsa50_140
-                         + process.RECO_dsaIso_140
+                         #+ process.RECO_dsa50_130
+                         #+ process.RECO_dsaIso_130
+                         #+ process.RECO_dsa50_140
+                         #+ process.RECO_dsaIso_140
                          #+ process.RECO_gbm50
                          )

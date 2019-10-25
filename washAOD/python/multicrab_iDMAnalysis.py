@@ -50,7 +50,7 @@ def getOptions():
 
     parser.add_option('-s', '--sampleType',
                       dest = 'sampleType',
-                      default = 'MC',
+                      default = 'custom',
                       help = "Which kind of sample to process ('MC' (default), 'data' or 'custom')",
                       metavar = 'STYP')
 
@@ -86,7 +86,10 @@ def main():
         from CRABClient.UserUtilities import config, getUsernameFromSiteDB
         config = config()
 
-        config.General.workArea = 'crab'
+        if not options.workArea:
+            config.General.workArea = 'crab'
+        else:
+            config.General.workArea = options.workArea
         config.General.transferOutputs = True
         config.General.transferLogs = True
 
@@ -97,17 +100,21 @@ def main():
         #config.JobType.maxMemoryMB = 4000
         #config.JobType.numCores = 1
 
+        config.Data.splitting = 'Automatic'
+        #config.Data.splitting = 'LumiBased'
+        #config.Data.unitsPerJob = 100
+        if isData == True:
+            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/data_sixthrun'
+        else:
+            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_sixthrun'
 
-        #config.Data.outputPrimaryDataset = 'TrigRecoEffStudies'
-        #config.Data.splitting = 'Automatic'
-        config.Data.splitting = 'LumiBased'
-        #config.Data.splitting = 'FileBased'
-        config.Data.unitsPerJob = 100
-        config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/signal/MetTrigStudyv14/'
         config.Data.publication = False
+        #config.Data.ignoreLocality = True
 
-        #config.Site.ignoreGlobalBlacklist = True
+        config.Site.ignoreGlobalBlacklist = True
         #config.Site.whitelist = ['T2_RU_ITEP']
+        #config.Site.whitelist = ['T2_DE_*', 'T2_EE_*', 'T2_ES_*', 'T2_FR_*', 'T2_GR_*', 'T2_HU_*', 'T2_IT_*', 'T2_RU_*', 'T2_UK_*']
+        config.Site.blacklist = ['T2_TW_NCHC','T2_BE_IIHE']
         #config.Site.blac = ['T3_RU_FIAN', 'T3_US_MIT', 'T3_US_UCD',
         #'T3_CO_Uniandes', 'T3_US_NotreDame', 
         #'T3_IN_PUHEP', 'T3_UK_ScotGrid_ECDF', 'T3_BY_NCPHEP',
@@ -134,13 +141,19 @@ def main():
             'QCD_bEnriched_HT2000toInf':'/QCD_bEnriched_HT2000toInf_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM'
         }
         TTbar = {
-            'TTTo2L2Nu':'/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-            'TTSemiLeptonic':'/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
-            'TTToHadronic':'/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
+            #'TTTo2L2Nu':'/TTTo2L2Nu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            #'TTSemiLeptonic':'/TTToSemiLeptonic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            #'TTToHadronic':'/TTToHadronic_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
             #'TT_diLept':'/TT_DiLept_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
+            'TTJets_NLO': '/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM'
             #'TTJets':'/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
         }
         SingleTop = {
+            'ST_s-channel': '/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v4/AODSIM',
+            #'ST_t-channel_top': '/ST_t-channel_top_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            'ST_t-channel_top_5f': '/ST_t-channel_top_5f_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            #'ST_t-channel_antitop': '/ST_t-channel_antitop_4f_InclusiveDecays_TuneCP5_13TeV-powheg-madspin-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            'ST_t-channel_antitop_5f': '/ST_t-channel_antitop_5f_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
             'tW_top':'/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v1/AODSIM',
             'tW_antitop':'/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v1/AODSIM'
         }
@@ -164,17 +177,27 @@ def main():
             'WJetsToLNu_HT-1200To2500':'/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
             'WJetsToLNu_HT-2500ToInf':'/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
         }
+        GJets = {
+            'GJets_HT-40to100':'/GJets_HT-40To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            'GJets_HT-100to200':'/GJets_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-4cores5k_102X_upgrade2018_realistic_v15-v1/AODSIM',
+            'GJets_HT-200to400':'/GJets_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            'GJets_HT-400to600':'/GJets_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            'GJets_HT-600toInf':'/GJets_HT-600ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM'
+        }
         DY = {
             #'DYJetsToTauTau':'/DYJetsToTauTau_ForcedMuDecay_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM',
             'DYJetsToLL_M-5to50':'/DYJetsToLL_M-5to50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
             'DYJetsToLL_M-50toInf':'/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
         }
         Diboson = {
-            'WZTo3LNu':'/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
-            'WWJJToLNuLNu':'/WWJJToLNuLNu_QCD_noTop_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
-            'ZZTo2L2Nu':'/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
-            'ZZTo2L2Nu_ext2':'/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext2-v2/AODSIM',
-            'WWTo2L2Nu':'/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
+            'WW': '/WW_TuneCP5_13TeV-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
+            'WZ': '/WZ_TuneCP5_13TeV-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v3/AODSIM',
+            'ZZ': '/ZZ_TuneCP5_13TeV-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
+            #'WZTo3LNu':'/WZTo3LNu_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
+            #'WWJJToLNuLNu':'/WWJJToLNuLNu_QCD_noTop_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
+            #'ZZTo2L2Nu':'/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
+            #'ZZTo2L2Nu_ext2':'/ZZTo2L2Nu_TuneCP5_13TeV_powheg_pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext2-v2/AODSIM',
+            #'WWTo2L2Nu':'/WWTo2L2Nu_NNPDF31_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
         }
         Triboson = {
             'WWZ':'/WWZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM',
@@ -183,7 +206,7 @@ def main():
             'WWW':'/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM'
         }
 
-        full_MC_samples = merge_dicts(QCD, TTbar, SingleTop, ZJets, WJets, DY, Diboson, Triboson)
+        full_MC_samples = merge_dicts(QCD, TTbar, SingleTop, ZJets, WJets, GJets, DY, Diboson, Triboson)
 
         #------ data -----#
 
@@ -200,9 +223,6 @@ def main():
 
         #------ Extra -----#
 
-        WMuNu_sample = {
-            'WMuNu': '/WToMuNu_M-200_TuneCP5_13TeV-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
-        }
         trig_data = {
             #'singleMu_RunA_Jun':'/SingleMuon/Run2018A-06Jun2018-v1/AOD',
             #'singleMu_RunA_Sep':'/SingleMuon/Run2018A-17Sep2018-v2/AOD',
@@ -221,7 +241,10 @@ def main():
         elif options.sampleType == 'MC':
             samples = full_MC_samples
         elif options.sampleType == 'custom':
-            samples = merge_dicts(QCD, TTbar) # -------> Pick your custom samples here!
+            samples = merge_dicts(GJets) # -------> Pick your custom samples here!
+            if (len(samples) == 0):
+                print "Error! No samples selected to be processed."
+                sys.exit()
         else:
             print "Error! SampleType option {} not recognized.".format(options.sampleType)
             sys.exit()
@@ -234,8 +257,7 @@ def main():
             config.JobType.pyCfgParams = ['data={}'.format(isData),'Run2018D={}'.format(isRun2018D)]
 
             config.Data.inputDataset = dataset
-            #config.General.requestName = 'iDMAnalysis_' + sample 
-            config.General.requestName = 'METTrigEffiv10' + sample
+            config.General.requestName = 'iDMAnalysis_' + sample 
             #config.Data.outputDatasetTag = sample
 
             #basedir = '/uscms/home/mreid/CRAB/signal_region_analysis/CMSSW_10_2_1/src/Firefighter/washAOD/data/iDM/2018/GenFilter/'
@@ -253,7 +275,7 @@ def main():
     # All other commands can be simply executed.
     elif options.workArea:
 
-        for dir in osdir(options.workArea):
+        for dir in os.listdir(options.workArea):
             projDir = os.path.join(options.workArea, dir)
             if not os.path.isdir(projDir):
                 continue
