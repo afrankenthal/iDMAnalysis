@@ -184,7 +184,7 @@ edm::Handle<bool> HBHENoiseFilterResultProducerHandle_;
 	float genrecoil_;
         TTree *genTrackT_;
 
-	bool runGen = true;
+	bool runGen = false;
         TTree *muTrackT_;
         TTree *genweight_;
 };
