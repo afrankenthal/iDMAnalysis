@@ -249,8 +249,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        Define("reco_sel_mu_phi1", takeSecondMuonPhi, {"reco_sel_mu_phi"}).
        Define("MET_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_MET_phi"});
 
-   // FIXME Some problem with ST_t-channel_antitop, gen info has errors so just set wgt to 1 for now
-   if (mode_ == common::DATA || sample_info_.label.Contains("ST_t-channel_antitop")) {
+   if (mode_ == common::DATA) {
        df_wgts = df_wgts.Define("wgt", "1.0");
    }
    else {
@@ -270,21 +269,28 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    cut_strings.push_back("1"); // cut 0 -- no cut
    cut_strings.push_back("MET_filters_fail_bits == 0");
    cut_strings.push_back("reco_PF_HEM_flag == 0");
-   cut_strings.push_back("trig_fired == 1");
-   cut_strings.push_back("reco_PF_MET_pt < 400");
+   cut_strings.push_back("trig_fired%2 == 1");
+   cut_strings.push_back("reco_PF_MET_pt > 200");
    cut_strings.push_back("reco_PF_jet_pt.size() > 0");
    cut_strings.push_back("for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (abs(reco_PF_jet_eta[i]) > 2.5) return false; return true;");
-   cut_strings.push_back("reco_PF_jet_pt[0] > 120");
-   cut_strings.push_back("MET_jet_phi_dphi > 0.5");
+   cut_strings.push_back("reco_PF_jet_pt[0] > 200");
+   cut_strings.push_back("is_electron == 0");
+   cut_strings.push_back("is_photon == 0");
+   if (region_ == "CR_0muons")
+       cut_strings.push_back("reco_n_good_dsa == 0");
+   else
+       cut_strings.push_back("reco_n_good_dsa >= 0");
+   cut_strings.push_back("MET_jet_phi_dphi > 1.0");
    //cut_strings.push_back("abs(reco_PF_jet_eta[0]) < 2.5");
-   if (region_ == "CR_nJets")
-       cut_strings.push_back("reco_PF_n_highPt_jets >= 3");
+   if (region_ == "CR_nJets" || region_ == "CR_0muons")
+       cut_strings.push_back("reco_PF_n_highPt_jets == 3");
    else
        cut_strings.push_back("reco_PF_n_highPt_jets < 3");
    if (region_ == "CR_bTag")
        cut_strings.push_back("for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (reco_PF_jet_BTag[i] < 0.4184) return false; return true;");
    else
        cut_strings.push_back("for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (reco_PF_jet_BTag[i] > 0.4184) return false; return true;");
+   cut_strings.push_back("reco_n_good_dsa >= 1");
    cut_strings.push_back("reco_dsa_idx0 > -9999 && reco_dsa_idx1 > -9999");
    cut_strings.push_back("reco_dsa_trk_n_planes[reco_dsa_idx0] >= 2");
    cut_strings.push_back("reco_dsa_trk_n_hits[reco_dsa_idx0] >= 12");
@@ -311,6 +317,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    auto df_filters = df_wgts.Filter(cut_strings[0].Data(), Form("Cut0"));
    cutflow_.push_back(df_filters.Sum<double>("wgt"));
    for (size_t cut = 1; cut < cut_strings.size(); cut++) {
+       // Last 3 cuts are not inclusive, so make copy to restore later
+       auto temp_df = df_filters;
+
        df_filters = df_filters.Filter(cut_strings[cut].Data(), Form("Cut%d", cut));
        cutflow_.push_back(df_filters.Sum<double>("wgt"));
        // make all requested histograms for each cut
@@ -323,9 +332,10 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                all_histos_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, sample_info_.group.Data()), common::group_plot_info[sample_info_.group].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
            else
                std::cout << "Hist type not recognized!" << std::endl;
-
-         //hists[cut].push_back(df_filters.Histo1D<float,double>("reco_PF_MET_pt", "wgt"));
        }
+       // restore df if it's one of the 3 SR definitions
+       if (cut_strings[cut].Contains("reco_n_gbmdsa_match"))
+           df_filters = temp_df;
    }
 
    if (mode_ != common::DATA) {

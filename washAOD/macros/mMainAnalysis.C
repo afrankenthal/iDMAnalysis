@@ -123,10 +123,12 @@ namespace macro {
 
 //#pragma omp critical
 //{ 
+            // if first sample in group, create entry
             if (cutsGroupInclusive.find(props.group) == cutsGroupInclusive.end())
                 cutsGroupInclusive.insert(std::make_pair(props.group, cutflow));
-            else
-                std::transform(cutsGroupInclusive[props.group].begin(), cutsGroupInclusive[props.group].end(), cutflow.begin(), cutsGroupInclusive[props.group].begin(), std::plus<double>( )); // sum std::vectors element-wise
+            else // otherwie, sum std::vectors element-wise
+                std::transform(cutsGroupInclusive[props.group].begin(), cutsGroupInclusive[props.group].end(), 
+                        cutflow.begin(), cutsGroupInclusive[props.group].begin(), std::plus<double>());
 //}
 
             //map<TString, map<int, TH1*>> sample_histos = currentSelector->GetHistograms();
@@ -168,29 +170,6 @@ namespace macro {
             }
         }
 
-        std::ofstream cutflow_file(Form("%s_cutflow.txt", out_filename.Data()));
-        cout << "Inclusive cutflow:" << endl;
-        cout << std::setprecision(1) << std::fixed;
-        for (auto group : cutsGroupInclusive) {
-            cout << " " << group.first;
-            cutflow_file << " " << group.first;
-        }
-        auto first = cutsGroupInclusive.begin();
-        size_t vec_size;
-        if (cutsGroupInclusive.size() > 0)
-            vec_size = first->second.size();
-        else
-            vec_size = 0;
-        for (size_t cut = 0; cut < vec_size; cut++) {
-            cout << endl << "cut " << cut;
-            cutflow_file << endl << "cut " << cut;
-            for (auto const & group : cutsGroupInclusive) {
-                cout << " & " << cutsGroupInclusive[group.first][cut];
-                cutflow_file << " & " << cutsGroupInclusive[group.first][cut];
-            }
-            cout << " \\\\ ";
-            cutflow_file << " \\\\ ";
-        }
 
         TFile * outfile = new TFile(out_filename, "RECREATE");
         for (auto & [plot_name, modes] : all_hstacks) {
@@ -216,6 +195,83 @@ namespace macro {
             }
         }
         outfile->Close();
+
+        // Print Latex cutflow table to file
+        
+        out_filename.ReplaceAll(".root", "_cutflow.txt");
+        std::ofstream cutflow_file(out_filename.Data());
+
+        cutflow_file << "Cut# & Data & Bkg &";
+        for (auto const & [group, all_cut_numbers] : cutsGroupInclusive)
+            if (group != TString("data"))
+                cutflow_file << " & " << group;
+
+        auto first_vec = cutsGroupInclusive.begin();
+        size_t vec_size = (cutsGroupInclusive.size() > 0) ? first_vec->second.size() : 0;
+
+        for (size_t cut = 0; cut < vec_size; cut++) {
+            cutflow_file << endl << "cut" << cut;
+
+            Double_t total_background = 0.0;
+            for (auto const & [group, all_cut_numbers] : cutsGroupInclusive)
+                if (group != TString("data"))
+                    total_background += all_cut_numbers[cut];
+
+            Double_t total_data = (cutsGroupInclusive.find("data") != cutsGroupInclusive.end()) ? 
+                cutsGroupInclusive["data"][cut] : 0.0;
+            cutflow_file << " & " << total_data;
+            cutflow_file << " & " << total_background;
+
+            for (auto const & [group, all_cut_numbers] : cutsGroupInclusive)
+                if (group != TString("data"))
+                    cutflow_file << " & " << all_cut_numbers[cut];
+
+            cutflow_file << " \\\\ ";
+        }
+
+        cutflow_file.close();
+        cutflow_file.clear();
+        
+        // Print csv cutflow table to file and cout
+
+        out_filename.ReplaceAll(".txt", ".csv");
+        cutflow_file.open(out_filename.Data());
+
+        cout << "Inclusive cutflow:" << endl;
+        cout << "Cut# Data Bkg";
+        cutflow_file << "Cut# Data Bkg";
+        for (auto const & [group, all_cut_numbers] : cutsGroupInclusive) {
+            cout << " " << group;
+            cutflow_file << " " << group;
+        }
+
+        first_vec = cutsGroupInclusive.begin();
+        vec_size = (cutsGroupInclusive.size() > 0) ? first_vec->second.size() : 0;
+
+        cout << std::setprecision(1) << std::fixed;
+        for (size_t cut = 0; cut < vec_size; cut++) {
+            cout << endl << "cut" << cut;
+            cutflow_file << endl << "cut" << cut;
+
+            Double_t total_background = 0.0;
+            for (auto const & [group, all_cut_numbers] : cutsGroupInclusive)
+                if (group != TString("data"))
+                    total_background += all_cut_numbers[cut];
+
+            Double_t total_data = (cutsGroupInclusive.find("data") != cutsGroupInclusive.end()) ? 
+                cutsGroupInclusive["data"][cut] : 0.0;
+            cutflow_file << " " << total_data;
+            cutflow_file << " " << total_background;
+            cout << " " << total_data;
+            cout << " " << total_background;
+
+            for (auto const & [group, all_cut_numbers] : cutsGroupInclusive) {
+                if (group != TString("data")) {
+                    cout << " " << all_cut_numbers[cut];
+                    cutflow_file << " " << all_cut_numbers[cut];
+                }
+            }
+        }
 
         return 0;
     }
