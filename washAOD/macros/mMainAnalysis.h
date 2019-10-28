@@ -33,7 +33,7 @@ using std::cout, std::endl, std::map, std::vector;
 
 namespace macro {
 
-    bool mMainAnalysis(map<TString, SampleInfo> samples, json cfg); 
+    bool mMainAnalysis(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg); 
 }
 
 #endif // mMAINANALYSIS_HH

@@ -35,7 +35,7 @@ using json = nlohmann::json;
 
 using std::cout, std::endl, std::map, std::vector;
 
-using FUNCPTR =  bool(*)(map<TString, SampleInfo>, json); // make map of macros
+using FUNCPTR =  bool(*)(map<TString, SampleInfo>, vector<CutInfo>, json); // make map of macros
 std::unordered_map<std::string, FUNCPTR> macro_map;
 
 int main(int argc, char ** argv) {
@@ -47,6 +47,7 @@ int main(int argc, char ** argv) {
         ("b,background", "Background sample config file to use", cxxopts::value<std::string>()->default_value("")) //configs/thirdrun/backgrounds_subset.json"))
         ("d,data", "Data sample config file to use", cxxopts::value<std::string>()->default_value("")) //configs/data.json"))
         ("m,macro", "Macro config file to use", cxxopts::value<std::string>()->default_value("")) //configs/macros/nminus1.json"))
+        ("c,cuts", "Cuts config file to use", cxxopts::value<std::string>()->default_value("")) //configs/cuts/CR_nJets.json"))
         ("o,outfile", "Output file or directory (depends on macro)", cxxopts::value<std::string>()->default_value(""))
         ("i,infile", "Input file", cxxopts::value<std::string>()->default_value(""))
         ("h,help", "Print help and exit.")
@@ -68,6 +69,7 @@ int main(int argc, char ** argv) {
     if (TString(result["data"].as<std::string>()) != "")
         sample_config_filenames.push_back(TString(result["data"].as<std::string>()));
     TString macro_filename = TString(result["macro"].as<std::string>());
+    TString cuts_filename = TString(result["cuts"].as<std::string>());
     TString out_filename = TString(result["outfile"].as<std::string>());
     TString in_filename = TString(result["infile"].as<std::string>());
 
@@ -103,11 +105,27 @@ int main(int argc, char ** argv) {
                 cfg["limit_num_files"].get<int>(), // limit_num_files
                 1, // weight
                 TString(cfg["group"].get<std::string>()), // sample group
-                common::mapMODE[TString(cfg["mode"].get<std::string>())], // mode: 0 = SIGNAL, 1 = BKG, 2 = DATA
+                mapMODE[TString(cfg["mode"].get<std::string>())], // mode: 0 = SIGNAL, 1 = BKG, 2 = DATA
                 (cfg.find("color") != cfg.end() ? cfg["color"].get<int>() : color++), // line color
                 (config_filename.Contains("signal") ? 1 : 1) // line style (bkg vs signal)
             };
         }
+    }
+
+    std::ifstream cut_configs_file(cuts_filename.Data());
+    json cut_configs;
+    cut_configs_file >> cut_configs;
+
+    vector<CutInfo> cuts_info;
+    for (auto const & item : cut_configs) {
+        auto cut = TString(item["cut"].get<std::string>());
+        auto description = TString(item["description"].get<std::string>());
+        std::string inclusive;
+        if (item.find("inclusive") != item.end())
+            inclusive = TString(item["inclusive"].get<std::string>());
+        else
+            inclusive = TString("yes");
+        cuts_info.push_back(CutInfo{cut, description, inclusive});
     }
 
     std::ifstream macro_config_file(macro_filename.Data());
@@ -139,7 +157,7 @@ int main(int argc, char ** argv) {
             cfg["infilename"] = in_filename.Data();
         }
 
-        macro_map[macro](samples, cfg); // invoke macro with samples from above and cfg from json
+        macro_map[macro](samples, cuts_info, cfg); // invoke macro with samples from above and cfg from json
     }
 
     cout << endl;

@@ -34,6 +34,7 @@ public :
 
    //void doFills(int cut, double weight);
    void SetParams(common::SampleInfo sample_info, Double_t lumi, TString region);
+   void SetCuts(std::vector<common::CutInfo> cuts_info);
    void SetHistos(std::map<TString, common::THInfo*> histos_info) { histos_info_ = histos_info; }
    //std::vector<double> GetCutflow() { return cutflow_; }
    std::vector<ROOT::RDF::RResultPtr<ROOT::RDF::RDFDetail::SumReturnType_t<double>>> GetCutflow() { return cutflow_; }
@@ -48,11 +49,14 @@ public :
    std::map<TString, std::map<int, ROOT::RDF::RResultPtr<TH1D>>> all_histos_;
    std::vector<ROOT::RDF::RResultPtr<ROOT::RDF::RDFDetail::SumReturnType_t<double>>> cutflow_;
 
+   std::vector<common::CutInfo> cuts_info_;
+
    common::SampleInfo sample_info_;
    Double_t sum_gen_wgt_;
    Double_t xsec_;
    Double_t lumi_;
    common::MODE mode_;
+   TString group_;
    TString region_;
 
    TH1F * sf_z_qcd, * sf_z_ewk;

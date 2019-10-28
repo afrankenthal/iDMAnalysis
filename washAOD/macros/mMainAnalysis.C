@@ -2,7 +2,7 @@
 
 namespace macro {
 
-    bool mMainAnalysis(map<TString, SampleInfo> samples, json cfg) {
+    bool mMainAnalysis(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
         setTDRStyle();
 
         map<TString, vector<Double_t>> cutsInclusive;
@@ -66,6 +66,7 @@ namespace macro {
 
         RDFAnalysis * dfAnalysis = new RDFAnalysis();
         dfAnalysis->SetHistos(histos_info);
+        dfAnalysis->SetCuts(cuts_info);
 
         // Process each sample at a time (e.g. QCD_HT100-200)
         // TODO make this parallel
@@ -201,7 +202,7 @@ namespace macro {
         out_filename.ReplaceAll(".root", "_cutflow.txt");
         std::ofstream cutflow_file(out_filename.Data());
 
-        cutflow_file << "Cut# & Data & Bkg &";
+        cutflow_file << "Cut# & Description & Data & Bkg &";
         for (auto const & [group, all_cut_numbers] : cutsGroupInclusive)
             if (group != TString("data"))
                 cutflow_file << " & " << group;
@@ -210,7 +211,7 @@ namespace macro {
         size_t vec_size = (cutsGroupInclusive.size() > 0) ? first_vec->second.size() : 0;
 
         for (size_t cut = 0; cut < vec_size; cut++) {
-            cutflow_file << endl << "cut" << cut;
+            cutflow_file << endl << "cut" << cut << " & " << cuts_info[cut].description;
 
             Double_t total_background = 0.0;
             for (auto const & [group, all_cut_numbers] : cutsGroupInclusive)
@@ -238,9 +239,10 @@ namespace macro {
         cutflow_file.open(out_filename.Data());
 
         cout << "Inclusive cutflow:" << endl;
-        cout << "Cut# Data Bkg";
-        cutflow_file << "Cut# Data Bkg";
+        cout << "Cut# Description Data Bkg";
+        cutflow_file << "Cut# Description Data Bkg";
         for (auto const & [group, all_cut_numbers] : cutsGroupInclusive) {
+            if (group == TString("data")) continue;
             cout << " " << group;
             cutflow_file << " " << group;
         }
@@ -250,8 +252,8 @@ namespace macro {
 
         cout << std::setprecision(1) << std::fixed;
         for (size_t cut = 0; cut < vec_size; cut++) {
-            cout << endl << "cut" << cut;
-            cutflow_file << endl << "cut" << cut;
+            cout << endl << "cut" << cut << " " << "\"" << cuts_info[cut].description << "\"";
+            cutflow_file << endl << "cut" << cut << " " << "\"" << cuts_info[cut].description << "\"";
 
             Double_t total_background = 0.0;
             for (auto const & [group, all_cut_numbers] : cutsGroupInclusive)
@@ -266,10 +268,9 @@ namespace macro {
             cout << " " << total_background;
 
             for (auto const & [group, all_cut_numbers] : cutsGroupInclusive) {
-                if (group != TString("data")) {
-                    cout << " " << all_cut_numbers[cut];
-                    cutflow_file << " " << all_cut_numbers[cut];
-                }
+                if (group == TString("data")) continue;
+                cout << " " << all_cut_numbers[cut];
+                cutflow_file << " " << all_cut_numbers[cut];
             }
         }
 

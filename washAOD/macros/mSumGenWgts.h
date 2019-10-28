@@ -16,7 +16,7 @@ using std::cout, std::endl, std::map, std::vector;
 
 namespace macro {
 
-    bool mSumGenWgts(map<TString, SampleInfo> samples, json cfg);
+    bool mSumGenWgts(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg);
 
 }
 

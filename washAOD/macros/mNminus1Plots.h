@@ -19,7 +19,7 @@ using std::cout, std::endl, std::map, std::vector;
 
 namespace macro {
 
-    bool mNminus1Plots(map<TString, SampleInfo> samples, json cfg);
+    bool mNminus1Plots(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg);
 
 } // namespace macro
 

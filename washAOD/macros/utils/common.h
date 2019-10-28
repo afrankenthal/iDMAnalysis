@@ -52,6 +52,12 @@ namespace common {
         int color;
     } SignalInfo;
 
+    typedef struct CutInfo {
+        TString cut;
+        TString description;
+        TString inclusive;
+    } CutInfo;
+
     typedef struct SampleInfo {
         std::vector<TString> filenames;
         TString label;
