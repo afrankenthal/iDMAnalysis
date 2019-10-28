@@ -95,6 +95,7 @@ def main():
 
         config.JobType.pluginName = 'Analysis'
         config.JobType.psetName = 'iDMAnalyzer_cfg.py'
+        #config.JobType.psetName = 'python/iDMAnalyzer_cfg.py'
         #config.JobType.maxMemoryMB = 4000
         #config.JobType.numCores = 1
 
@@ -105,6 +106,7 @@ def main():
             config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/data_sixthrun'
         else:
             config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_sixthrun'
+
         config.Data.publication = False
         #config.Data.ignoreLocality = True
 
@@ -125,7 +127,6 @@ def main():
         #--------------------------------------------------------
 
         # Will submit one task for each of these input datasets.
-
         #------ MC backgrounds -----#
 
         QCD = {

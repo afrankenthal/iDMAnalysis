@@ -6,7 +6,7 @@
 #### Choose lpcuser and comment out the "input mode" 
 #### you don't want to use
 
-lpcuser=as2872
+#lpcuser=as2872
 basedir="2018/signal"
 
 # Use single mass and ctau parameter
@@ -31,10 +31,10 @@ dirs="Mchi-${mchi}_dMchi-${dmchi}_ctau-${ctau}"
 for dir in $dirs; do
     echo "Processing $dir"
     #eos root://cmseos.fnal.gov ls /store/user/$lpcuser/iDM/AOD_Samples/$basedir/$dir > data/iDM/$basedir/${dir}.list
-    eos root://cmseos.fnal.gov ls /store/group/lpcmetx/iDM/AOD/$basedir/$dir > data/iDM/$basedir/${dir}.list
-    sed -i '/MINIAOD/d' data/iDM/$basedir/${dir}.list
+    eos root://cmseos.fnal.gov ls /store/group/lpcmetx/iDM/AOD/$basedir/$dir > ../data/iDM/$basedir/${dir}.list
+    sed -i '/MINIAOD/d' ../data/iDM/$basedir/${dir}.list
     #sed -i "s|^|root://cmsxrootd-site.fnal.gov//store/user/$lpcuser/iDM/AOD_Samples/$basedir/$dir/|" data/iDM/$basedir/${dir}.list
-    sed -i "s|^|root://cmsxrootd-site.fnal.gov//store/group/lpcmetx/iDM/AOD/$basedir/$dir/|" data/iDM/$basedir/${dir}.list
+    sed -i "s|^|root://cmsxrootd-site.fnal.gov//store/group/lpcmetx/iDM/AOD/$basedir/$dir/|" ../data/iDM/$basedir/${dir}.list
 done
 
 #basename="Mchi-${mchi}_dMchi-${dmchi}_ctau-${ctau}"
