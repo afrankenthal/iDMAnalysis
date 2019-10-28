@@ -108,7 +108,7 @@ def main():
         config.Data.publication = False
         #config.Data.ignoreLocality = True
 
-        config.Site.ignoreGlobalBlacklist = True
+        #config.Site.ignoreGlobalBlacklist = True
         #config.Site.whitelist = ['T2_RU_ITEP']
         #config.Site.whitelist = ['T2_DE_*', 'T2_EE_*', 'T2_ES_*', 'T2_FR_*', 'T2_GR_*', 'T2_HU_*', 'T2_IT_*', 'T2_RU_*', 'T2_UK_*']
         config.Site.blacklist = ['T2_TW_NCHC','T2_BE_IIHE']
@@ -129,6 +129,16 @@ def main():
         #------ MC backgrounds -----#
 
         QCD = {
+            #'QCD_HT100to200':'/QCD_HT100to200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            'QCD_HT200to300':'/QCD_HT200to300_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            #'QCD_HT300to500':'/QCD_HT300to500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            #'QCD_HT500to700':'/QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            #'QCD_HT700to1000':'/QCD_HT700to1000_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            #'QCD_HT1000to1500':'/QCD_HT1000to1500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            #'QCD_HT1500to2000':'/QCD_HT1500to2000_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+            #'QCD_HT2000toInf':'/QCD_HT2000toInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
+        }
+        QCD_bEnriched = {
             'QCD_bEnriched_HT100to200':'/QCD_bEnriched_HT100to200_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
             'QCD_bEnriched_HT200to300':'/QCD_bEnriched_HT200to300_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
             'QCD_bEnriched_HT300to500':'/QCD_bEnriched_HT300to500_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM',
@@ -239,7 +249,7 @@ def main():
         elif options.sampleType == 'MC':
             samples = full_MC_samples
         elif options.sampleType == 'custom':
-            samples = merge_dicts(GJets) # -------> Pick your custom samples here!
+            samples = merge_dicts(QCD) # -------> Pick your custom samples here!
             if (len(samples) == 0):
                 print "Error! No samples selected to be processed."
                 sys.exit()
