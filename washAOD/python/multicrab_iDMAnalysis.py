@@ -94,8 +94,7 @@ def main():
         config.General.transferLogs = True
 
         config.JobType.pluginName = 'Analysis'
-        #config.JobType.psetName = 'iDMAnalyzer_cfg.py'
-        config.JobType.psetName = 'MetTrigSelfEffiForMuTrack_cfg.py'
+        config.JobType.psetName = 'iDMAnalyzer_cfg.py'
         #config.JobType.psetName = 'python/iDMAnalyzer_cfg.py'
         #config.JobType.maxMemoryMB = 4000
         #config.JobType.numCores = 1
