@@ -20,7 +20,7 @@
 #include <vector>
 #include <map>
 
-#include "utils/common.h"
+#include "../utils/common.h"
 
 
 class RDFAnalysis {

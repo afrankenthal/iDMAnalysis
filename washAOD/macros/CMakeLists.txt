@@ -24,7 +24,7 @@ add_custom_command(
                          Linkdef.h
     )
 
-add_executable(macroRun macroRun.C RDFAnalysis.C mSaveCanvases.C mCutflowTables.C mMainAnalysis.C mSROptimization.C mNminus1Plots.C mMakePlotsFromFile.C mSumGenWgts.C utils/common.C utils/CMS_lumi.C utils/tdrstyle.C TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx")
+add_executable(macroRun macroRun.C RDataFrameSelectors/RDFAnalysis.C mSaveCanvases.C mCutflowTables.C mMainAnalysis.C mSROptimization.C mNminus1Plots.C mMakePlotsFromFile.C mSumGenWgts.C utils/common.C utils/CMS_lumi.C utils/tdrstyle.C TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx")
 
 target_include_directories(macroRun PUBLIC utils)
 target_compile_features(macroRun PUBLIC cxx_std_17)

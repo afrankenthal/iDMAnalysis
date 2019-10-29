@@ -26,7 +26,7 @@ using namespace common;
 using json = nlohmann::json;
 #include "utils/tdrstyle.h"
 
-#include "RDFAnalysis.h"
+#include "RDataFrameSelectors/RDFAnalysis.h"
 #include "TSelectors/mainAnalysisSelector.h"
 
 using std::cout, std::endl, std::map, std::vector;
