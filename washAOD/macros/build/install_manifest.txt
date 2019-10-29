@@ -1,0 +1,3 @@
+/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/macroRun
+/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/mainAnalysisSelectorDict.cxx
+/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/mainAnalysisSelectorDict_rdict.pcm
