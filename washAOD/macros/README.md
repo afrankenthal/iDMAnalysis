@@ -11,7 +11,7 @@ The framework takes care of loading the samples and parsing them into a nice str
 The framework is meant to be run on the LPC, though it probably works on lxplus without major changes needed. It uses RDataFrame which is a recent ROOT feature, so after logging into the LPC first set up an LCG release with a new version of ROOT, such as LCG_96python3:
 
 ```bash
-$ source /cvmfs/sft.cern.ch/views/lcg/LCG_96python3/x86_64-slc6-gcc8-opt/setup.sh
+$ source /cvmfs/sft.cern.ch/lcg/views/LCG_96python3/x86_64-slc6-gcc8-opt/setup.sh
 ```
 (Only tested on SL6 for now, but hopefully CentOS 7 works too.) The ROOT version setup by this LCG is 6.18.00, and the compiler is GCC 8.2.0.
 

@@ -4,6 +4,7 @@
 *.so
 *.pcm
 *.d
+*.swp
 messages.txt
 nohup.out
 washAOD/python/crab/*

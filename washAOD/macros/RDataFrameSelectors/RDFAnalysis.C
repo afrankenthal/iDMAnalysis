@@ -1,29 +1,3 @@
-#define RDFAnalysis_cxx
-// The class definition in RDFAnalysis.h has been generated automatically
-// by the ROOT utility TTree::MakeSelector(). This class is derived
-// from the ROOT class TSelector. For more information on the TSelector
-// framework see $ROOTSYS/README/README.SELECTOR or the ROOT User Manual.
-
-
-// The following methods are defined in this file:
-//    Begin():        called every time a loop on the tree starts,
-//                    a convenient place to create your histograms.
-//    SlaveBegin():   called after Begin(), when on PROOF called only on the
-//                    slave servers.
-//    Process():      called for each event, in this function you decide what
-//                    to read and fill your histograms.
-//    SlaveTerminate: called at the end of the loop on the tree, when on PROOF
-//                    called only on the slave servers.
-//    Terminate():    called at the end of the loop on the tree,
-//                    a convenient place to draw/fit your histograms.
-//
-// To use this file, try the following session on your Tree T:
-//
-// root> T->Process("RDFAnalysis.C")
-// root> T->Process("RDFAnalysis.C","some options")
-// root> T->Process("RDFAnalysis.C+")
-//
-
 #include "RDFAnalysis.h"
 #include <TH2.h>
 #include <TStyle.h>
@@ -103,35 +77,6 @@ void RDFAnalysis::Begin() {
 //       }
 //   }
 }
-
-//void RDFAnalysis::doFills(int cut, double weight) {
-//   // Map between the actual variables and their string representation
-//   // For automating things and allowing flexibility via configs
-//   std::map<TString, Double_t> mapVariables;
-//   mapVariables["reco_PF_METjet_dphi"] = *reco_PF_METjet_dphi;
-//   mapVariables["reco_vtx_dR"] = *reco_vtx_dR;
-//   mapVariables["reco_vtx_vxy"] = *reco_vtx_vxy;
-//   mapVariables["reco_METmu_dphi"] = *reco_METmu_dphi;
-//   mapVariables["reco_PF_n_highPt_jets"] = (Double_t)(*reco_PF_n_highPt_jets);
-//   mapVariables["reco_PF_MET_pt"] = *reco_PF_MET_pt;
-//   mapVariables["reco_PF_jet_pt[0]"] = (reco_PF_jet_pt.GetSize() > 0 ? reco_PF_jet_pt[0] : -10);
-//   mapVariables["reco_sel_mu_pt[0]"] = (reco_sel_mu_pt.GetSize() > 0 ? reco_sel_mu_pt[0] : -10);
-//   mapVariables["reco_sel_mu_pt[1]"] = (reco_sel_mu_pt.GetSize() > 1 ? reco_sel_mu_pt[1] : -10);
-//   mapVariables["reco_n_dsa"] = *reco_n_dsa;
-//   mapVariables["reco_n_good_dsa"] = *reco_n_good_dsa;
-//
-//   cutflow_[cut] += weight;
-//
-//   // Only fill cuts that are present in the config
-//   for (auto & [name, hists] : cutflowHistos_)
-//       if (std::find(histos_info_[name]->cuts.begin(), histos_info_[name]->cuts.end(), cut) != histos_info_[name]->cuts.end()) {
-//           if (histos_info_[name]->nbinsY == -1) // 1D plot
-//               hists[cut]->Fill(mapVariables[histos_info_[name]->quantity], weight);
-//           else // 2D plot
-//               ((TH2F*)hists[cut])->Fill(mapVariables[histos_info_[name]->quantity], mapVariables[histos_info_[name]->quantity2], weight);
-//       }
-//
-//}
 
 Bool_t RDFAnalysis::Process(TChain * chain) {
 
@@ -349,12 +294,6 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    }
 
    df_filters.Report()->Print();
-
-   //TFile f(Form("deleteme/testDF_%s.root", sample_info_.label.Data()),"RECREATE");
-   //for (auto hist : hists)
-   //    hist->Write();
-   //f.Close();
-
 
    return kTRUE;
 }
