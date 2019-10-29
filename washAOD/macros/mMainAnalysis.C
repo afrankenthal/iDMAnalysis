@@ -3,6 +3,13 @@
 namespace macro {
 
     bool mMainAnalysis(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
+
+        // for main analysis macro cuts vector needs to be non-empty
+        if (cuts_info.size() == 0) {
+            cout << "Error! Main analysis requires specification of cuts. None found. Returning" << endl;
+            return 0;
+        }
+
         setTDRStyle();
 
         map<TString, vector<Double_t>> cutsInclusive;

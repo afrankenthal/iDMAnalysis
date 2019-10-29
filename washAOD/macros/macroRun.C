@@ -112,22 +112,32 @@ int main(int argc, char ** argv) {
         }
     }
 
-    std::ifstream cut_configs_file(cuts_filename.Data());
-    json cut_configs;
-    cut_configs_file >> cut_configs;
 
+    // Process cuts config json
     vector<CutInfo> cuts_info;
-    for (auto const & item : cut_configs) {
-        auto cut = TString(item["cut"].get<std::string>());
-        auto description = TString(item["description"].get<std::string>());
-        std::string inclusive;
-        if (item.find("inclusive") != item.end())
-            inclusive = TString(item["inclusive"].get<std::string>());
-        else
-            inclusive = TString("yes");
-        cuts_info.push_back(CutInfo{cut, description, inclusive});
+    if (cuts_filename != TString("")) {
+        std::ifstream cut_configs_file(cuts_filename.Data());
+        json cut_configs;
+        cut_configs_file >> cut_configs;
+
+        for (auto const & item : cut_configs) {
+            auto cut = TString(item["cut"].get<std::string>());
+            auto description = TString(item["description"].get<std::string>());
+            std::string inclusive;
+            if (item.find("inclusive") != item.end())
+                inclusive = TString(item["inclusive"].get<std::string>());
+            else
+                inclusive = TString("yes");
+            cuts_info.push_back(CutInfo{cut, description, inclusive});
+        }
     }
 
+    // Process macro config json and invoke configured macros
+    if (macro_filename == TString("")) {
+        cout << "Error! Need to specify a macro config json file. Exiting." << endl;
+        printTimeElapsed(time_begin);
+        return 1;
+    }
     std::ifstream macro_config_file(macro_filename.Data());
     json macro_configs;
     macro_config_file >> macro_configs;
