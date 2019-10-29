@@ -6,6 +6,7 @@ namespace macro {
 
         std::ifstream json_file(cfg["sample_config_filename"].get<std::string>());
         int limit_num_files = cfg["limit_num_files"].get<int>();
+        std::string out_filename = cfg["output_file"].get<std::string>();
         json in_json;
         json_file >> in_json;
         json out_json = in_json;
@@ -37,7 +38,10 @@ namespace macro {
             out_json[sample.Data()]["sum_gen_wgt"] = sum_gen_wgt;
             out_json[sample.Data()]["limit_num_files"] = limit_num_files;
         }
-        std::ofstream out("out.json");
+
+        if (out_filename == "")
+            out_filename = "out.json";
+        std::ofstream out(out_filename);
         out << std::setw(4) << out_json << endl;
 
         return 0;
