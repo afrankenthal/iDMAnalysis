@@ -10,3 +10,4 @@ washAOD/python/crab/*
 washAOD/python/*.pyc
 bin/
 studies/
+build/

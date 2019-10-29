@@ -2,7 +2,7 @@
 
 namespace macro {
 
-    bool mSumGenWgts(map<TString, SampleInfo> samples, json cfg) {
+    bool mSumGenWgts(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
         std::ifstream json_file(cfg["sample_config_filename"].get<std::string>());
         int limit_num_files = cfg["limit_num_files"].get<int>();

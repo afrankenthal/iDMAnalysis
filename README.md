@@ -1,42 +1,34 @@
 # iDMSkimmer
-iDM analysis code (skimming and trigger/reco efficiency)
+iDM Analysis repository (skimming, trigger/reco efficiency, and analysis)
 
-# Instruction
-
-## Setup
+## Environment setup
 
 ```bash
-# 2017
-export SCRAM_ARCH=slc6_amd64_gcc630
-cmsrel CMSSW_9_4_9
-cd CMSSW_9_4_9/src
+# For 2018
+cmsrel CMSSW_10_2_14
+cd CMSSW_10_2_14/src
 cmsenv
 
-# 2018
-export SCRAM_ARCH=slc6_amd64_gcc700
-cmsrel CMSSW_10_2_1
-cd CMSSW_10_2_1/src
+# For both years (needs testing to validate):
+cmsrel CMSSW_10_2_18
+cd CMSSW_10_2_18/src
 cmsenv
 
-git clone https://wsi@gitlab.cern.ch/wsi/Firefighter.git
-cd Firefighter
-scram b -j12
+git clone https://git@github.com:afrankenthal/iDMSkimmer.git
+cd iDMSkimmer/washAOD
+scram b -j8
 ```
 
-## Run
-```bash
-#voms-proxy-init -voms cms -valid 192:00
-```
-
-### Processing AOD
+## Running ntuplizer to make flat trees from AODs
 
 ```bash
-cd washAOD
+# Might need to renew your proxy:
+voms-proxy-init -voms cms -valid 192:00
 
-# run for test
-cmsRun python/tuplizer_cfg.py test=1
+# Test run
+cmsRun python/iDMAnalyzer_cfg.py test=1
 
-# run over samples
-cd test
-cat cmds.txt
+# Call multicrab to run over all samples
+cd python
+./multicrab_iDMAnalyzer -c submit -w WORKAREA -s X # where X = {data,MC,custom}
 ```

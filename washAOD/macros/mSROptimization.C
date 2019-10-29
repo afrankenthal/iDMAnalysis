@@ -2,7 +2,7 @@
 
 namespace macro {
 
-    bool mSROptimization(map<TString, SampleInfo> samples, json cfg) {
+    bool mSROptimization(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
         // macro options
         TString which_cutflow = TString(cfg["cutflow"].get<std::string>());

@@ -23,19 +23,19 @@ echo -e "\n\n\n"
 echo "Making cutflows from Ntuples..."
 echo -e "\n\n\n"
 
-$MACRODIR/bin/macroRun -m "$MACRODIR/configs/macros/cutflow_CR_${REGION}.json" -d $MACRODIR/configs/samples/sixthrun/data_full.json -b $MACRODIR/configs/samples/sixthrun/backgrounds_full.json -o $OUTFILE
+$MACRODIR/bin/macroRun -c "$MACRODIR/configs/cuts/CR_$REGION.json" -m "$MACRODIR/configs/macros/cutflow_CR_${REGION}.json" -d $MACRODIR/configs/samples/sixthrun/data_full.json -b $MACRODIR/configs/samples/sixthrun/backgrounds_full.json -o $OUTFILE
 
 echo -e "\n\n\n"
 echo "Creating plots from cutflows..."
 echo -e "\n\n\n"
 
-$MACRODIR/bin/macroRun -m $MACRODIR/configs/macros/MakePlots.json -i $OUTFILE
+$MACRODIR/bin/macroRun -c "$MACRODIR/configs/cuts/CR_$REGION.json" -m $MACRODIR/configs/macros/MakePlots.json -i $OUTFILE
 
 echo -e "\n\n\n"
 echo "Saving canvases to plots directory..."
 echo -e "\n\n\n"
 
-$MACRODIR/bin/macroRun -m $MACRODIR/configs/macros/SaveCanvases.json -i $OUTFILE
+$MACRODIR/bin/macroRun -c "$MACRODIR/configs/cuts/CR_$REGION.json" -m $MACRODIR/configs/macros/SaveCanvases.json -i $OUTFILE
 
 echo -e "\n\n\n"
 echo "Making HTML index pages..."
