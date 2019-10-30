@@ -74,18 +74,18 @@ CMakeFiles/macroRun.dir/macroRun.C.s: cmake_force
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/macroRun.dir/macroRun.C.s"
 	/cvmfs/sft.cern.ch/lcg/releases/gcc/8.2.0-3fa06/x86_64-slc6/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/macroRun.C -o CMakeFiles/macroRun.dir/macroRun.C.s
 
-CMakeFiles/macroRun.dir/RDFAnalysis.C.o: CMakeFiles/macroRun.dir/flags.make
-CMakeFiles/macroRun.dir/RDFAnalysis.C.o: ../RDFAnalysis.C
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/macroRun.dir/RDFAnalysis.C.o"
-	/cvmfs/sft.cern.ch/lcg/releases/gcc/8.2.0-3fa06/x86_64-slc6/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/macroRun.dir/RDFAnalysis.C.o -c /uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/RDFAnalysis.C
+CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.o: CMakeFiles/macroRun.dir/flags.make
+CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.o: ../RDataFrameSelectors/RDFAnalysis.C
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green --progress-dir=/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/build/CMakeFiles --progress-num=$(CMAKE_PROGRESS_3) "Building CXX object CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.o"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/8.2.0-3fa06/x86_64-slc6/bin/g++  $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -o CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.o -c /uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/RDataFrameSelectors/RDFAnalysis.C
 
-CMakeFiles/macroRun.dir/RDFAnalysis.C.i: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/macroRun.dir/RDFAnalysis.C.i"
-	/cvmfs/sft.cern.ch/lcg/releases/gcc/8.2.0-3fa06/x86_64-slc6/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/RDFAnalysis.C > CMakeFiles/macroRun.dir/RDFAnalysis.C.i
+CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.i: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Preprocessing CXX source to CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.i"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/8.2.0-3fa06/x86_64-slc6/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -E /uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/RDataFrameSelectors/RDFAnalysis.C > CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.i
 
-CMakeFiles/macroRun.dir/RDFAnalysis.C.s: cmake_force
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/macroRun.dir/RDFAnalysis.C.s"
-	/cvmfs/sft.cern.ch/lcg/releases/gcc/8.2.0-3fa06/x86_64-slc6/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/RDFAnalysis.C -o CMakeFiles/macroRun.dir/RDFAnalysis.C.s
+CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.s: cmake_force
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --green "Compiling CXX source to assembly CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.s"
+	/cvmfs/sft.cern.ch/lcg/releases/gcc/8.2.0-3fa06/x86_64-slc6/bin/g++ $(CXX_DEFINES) $(CXX_INCLUDES) $(CXX_FLAGS) -S /uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/RDataFrameSelectors/RDFAnalysis.C -o CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.s
 
 CMakeFiles/macroRun.dir/mSaveCanvases.C.o: CMakeFiles/macroRun.dir/flags.make
 CMakeFiles/macroRun.dir/mSaveCanvases.C.o: ../mSaveCanvases.C
@@ -246,7 +246,7 @@ CMakeFiles/macroRun.dir/TSelectors/mainAnalysisSelectorDict.cxx.s: cmake_force
 # Object files for target macroRun
 macroRun_OBJECTS = \
 "CMakeFiles/macroRun.dir/macroRun.C.o" \
-"CMakeFiles/macroRun.dir/RDFAnalysis.C.o" \
+"CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.o" \
 "CMakeFiles/macroRun.dir/mSaveCanvases.C.o" \
 "CMakeFiles/macroRun.dir/mCutflowTables.C.o" \
 "CMakeFiles/macroRun.dir/mMainAnalysis.C.o" \
@@ -264,7 +264,7 @@ macroRun_OBJECTS = \
 macroRun_EXTERNAL_OBJECTS =
 
 macroRun: CMakeFiles/macroRun.dir/macroRun.C.o
-macroRun: CMakeFiles/macroRun.dir/RDFAnalysis.C.o
+macroRun: CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.o
 macroRun: CMakeFiles/macroRun.dir/mSaveCanvases.C.o
 macroRun: CMakeFiles/macroRun.dir/mCutflowTables.C.o
 macroRun: CMakeFiles/macroRun.dir/mMainAnalysis.C.o

@@ -169,32 +169,32 @@ macroRun/fast:
 	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/build
 .PHONY : macroRun/fast
 
-RDFAnalysis.o: RDFAnalysis.C.o
+RDataFrameSelectors/RDFAnalysis.o: RDataFrameSelectors/RDFAnalysis.C.o
 
-.PHONY : RDFAnalysis.o
+.PHONY : RDataFrameSelectors/RDFAnalysis.o
 
 # target to build an object file
-RDFAnalysis.C.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/RDFAnalysis.C.o
-.PHONY : RDFAnalysis.C.o
+RDataFrameSelectors/RDFAnalysis.C.o:
+	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.o
+.PHONY : RDataFrameSelectors/RDFAnalysis.C.o
 
-RDFAnalysis.i: RDFAnalysis.C.i
+RDataFrameSelectors/RDFAnalysis.i: RDataFrameSelectors/RDFAnalysis.C.i
 
-.PHONY : RDFAnalysis.i
+.PHONY : RDataFrameSelectors/RDFAnalysis.i
 
 # target to preprocess a source file
-RDFAnalysis.C.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/RDFAnalysis.C.i
-.PHONY : RDFAnalysis.C.i
+RDataFrameSelectors/RDFAnalysis.C.i:
+	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.i
+.PHONY : RDataFrameSelectors/RDFAnalysis.C.i
 
-RDFAnalysis.s: RDFAnalysis.C.s
+RDataFrameSelectors/RDFAnalysis.s: RDataFrameSelectors/RDFAnalysis.C.s
 
-.PHONY : RDFAnalysis.s
+.PHONY : RDataFrameSelectors/RDFAnalysis.s
 
 # target to generate assembly for a file
-RDFAnalysis.C.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/RDFAnalysis.C.s
-.PHONY : RDFAnalysis.C.s
+RDataFrameSelectors/RDFAnalysis.C.s:
+	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.s
+.PHONY : RDataFrameSelectors/RDFAnalysis.C.s
 
 TSelectors/mainAnalysisSelector.o: TSelectors/mainAnalysisSelector.C.o
 
@@ -560,9 +560,9 @@ help:
 	@echo "... list_install_components"
 	@echo "... install/local"
 	@echo "... install"
-	@echo "... RDFAnalysis.o"
-	@echo "... RDFAnalysis.i"
-	@echo "... RDFAnalysis.s"
+	@echo "... RDataFrameSelectors/RDFAnalysis.o"
+	@echo "... RDataFrameSelectors/RDFAnalysis.i"
+	@echo "... RDataFrameSelectors/RDFAnalysis.s"
 	@echo "... TSelectors/mainAnalysisSelector.o"
 	@echo "... TSelectors/mainAnalysisSelector.i"
 	@echo "... TSelectors/mainAnalysisSelector.s"

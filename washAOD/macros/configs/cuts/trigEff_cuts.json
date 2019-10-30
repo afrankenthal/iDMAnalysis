@@ -1,0 +1,14 @@
+[
+    {
+        "cut": "1",
+        "description": "No cuts"
+    },
+    {
+	"cut":" ((abs(recoPFrecoilJetDeltaPhi_)) > 1.57)&&(neutralHadronFraction < 0.8)&&(chargedHadronFraction > 0.1)&&(pt > 40) && (abs(eta) < 2.4) && (recoJetPt > 120) &&(abs(recoJetEta)<2.4) &&(fired0==1)",
+	"description": "selection cuts"
+    },
+    {
+	"cut":"fired==1",
+	"description": "trigger fired"
+    }
+]
