@@ -2,7 +2,7 @@
 
 namespace macro {
 
-    bool mMainAnalysis(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
+    bool process(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
         // for main analysis macro cuts vector needs to be non-empty
         if (cuts_info.size() == 0) {

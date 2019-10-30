@@ -2,7 +2,7 @@
 
 namespace macro {
 
-    bool mCutflowTables(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
+    bool process(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
         map<TString, vector<Float_t>> cutsIncl, cutsExcl;
         map<TString, vector<Float_t>> cutsGroupIncl, cutsGroupExcl;

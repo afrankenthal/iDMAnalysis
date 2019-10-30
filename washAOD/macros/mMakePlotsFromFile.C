@@ -1,10 +1,10 @@
 #include "mMakePlotsFromFile.h"
 
-TString lumi_13TeV = "59.74 fb^{-1} ";
+//TString lumi_13TeV = "59.74 fb^{-1} ";
 
 namespace macro {
 
-    bool mMakePlotsFromFile([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
+    bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
         setTDRStyle();
 
         // macro options

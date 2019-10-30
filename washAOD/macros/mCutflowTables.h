@@ -23,6 +23,6 @@ using json = nlohmann::json;
 
 namespace macro {
 
-    bool mCutflowTables(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg);
+    extern "C" bool process(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg);
 
 }

@@ -51,7 +51,7 @@ void mainAnalysisSelector::SetParams(common::SampleInfo sample_info, Double_t lu
     region_ = region;
 
     // Set up QCD and EWK corrections
-    TFile * kfactors = new TFile("../data/kfactors.root");
+    TFile * kfactors = new TFile("../../data/kfactors.root");
     TH1F * z_nlo = (TH1F*)kfactors->Get("ZJets_012j_NLO/nominal");
     TH1F * z_ewk = (TH1F*)kfactors->Get("EWKcorr/Z");
     TH1F * z_lo = (TH1F*)kfactors->Get("ZJets_LO/inv_pt");
@@ -69,7 +69,7 @@ void mainAnalysisSelector::SetParams(common::SampleInfo sample_info, Double_t lu
     kfactors->Close();
     
     // Set up pileup corrections
-    TFile * pileup = new TFile("../data/puWeights_10x_56ifb.root");
+    TFile * pileup = new TFile("../../data/puWeights_10x_56ifb.root");
     TH1F * h_pu = (TH1F*)pileup->Get("puWeights");
     sf_pu = (TH1F*)h_pu->Clone();
     sf_pu->SetDirectory(0);

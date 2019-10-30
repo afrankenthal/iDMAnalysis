@@ -33,7 +33,7 @@ using std::cout, std::endl, std::map, std::vector;
 
 namespace macro {
 
-    bool mSaveCanvases([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg);
+    extern "C" bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg);
 
 }
 

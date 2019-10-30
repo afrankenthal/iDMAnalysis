@@ -11,25 +11,27 @@
 // Global variables
 //
 
-extern const TString cmsText;
-extern const Double_t cmsTextFont;
+extern "C" {
+    static const TString cmsText = "CMS";
+    static const Double_t cmsTextFont = 61;
 
-extern const bool writeExtraText;
-extern const TString extraText;
-extern const Double_t extraTextFont;
+    static const bool writeExtraText = 1;
+    static const TString extraText = "Preliminary";
+    static const Double_t extraTextFont = 52;
 
-extern const Double_t lumiTextSize;
-extern const Double_t lumiTextOffset;
-extern const Double_t cmsTextSize;
-extern const Double_t cmsTextOffset;
+    static const Double_t lumiTextSize = 0.6;
+    static const Double_t lumiTextOffset = 0.2;
+    static const Double_t cmsTextSize = 0.75;
+    static const Double_t cmsTextOffset = 0.1;
 
-extern const Double_t relPosX;
-extern const Double_t relPosY;
-extern const Double_t relExtraDY;
+    static const Double_t relPosX = 0.045;
+    static const Double_t relPosY = 0.035;
+    static const Double_t relExtraDY = 1.2;
 
-extern const Double_t extraOverCmsTextSize;
+    static const Double_t extraOverCmsTextSize = 0.76;
 
-extern TString lumi_13TeV;
+    static TString lumi_13TeV = "59.74 fb^{-1} ";
+}
 //extern const TString lumi_8TeV;
 //extern const TString lumi_7TeV;
 //extern const TString lumi_sqrtS;
