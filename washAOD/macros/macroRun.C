@@ -1,3 +1,4 @@
+#include <dlfcn.h>
 #include <fstream>
 #include <iostream>
 #include <iomanip>
@@ -19,13 +20,13 @@
 #include <THStack.h>
 #include <TLegend.h>
 
-#include "mCutflowTables.h"
-#include "mSumGenWgts.h"
-#include "mSROptimization.h"
-#include "mNminus1Plots.h"
-#include "mMainAnalysis.h"
-#include "mMakePlotsFromFile.h"
-#include "mSaveCanvases.h"
+//#include "mCutflowTables.h"
+//#include "mSumGenWgts.h"
+//#include "mSROptimization.h"
+//#include "mNminus1Plots.h"
+//#include "mMainAnalysis.h"
+//#include "mMakePlotsFromFile.h"
+//#include "mSaveCanvases.h"
 
 #include "utils/common.h"
 using namespace common;
@@ -74,13 +75,13 @@ int main(int argc, char ** argv) {
     TString in_filename = TString(result["infile"].as<std::string>());
 
     // Map between macro name and actual function reference
-    macro_map["mCutflowTables"] = &macro::mCutflowTables;
-    macro_map["mSumGenWgts"] = &macro::mSumGenWgts;
-    macro_map["mSROptimization"] = &macro::mSROptimization;
-    macro_map["mNminus1Plots"] = &macro::mNminus1Plots;
-    macro_map["mMainAnalysis"] = &macro::mMainAnalysis;
-    macro_map["mMakePlotsFromFile"] = &macro::mMakePlotsFromFile;
-    macro_map["mSaveCanvases"] = &macro::mSaveCanvases;
+    //macro_map["mCutflowTables"] = &macro::mCutflowTables;
+    //macro_map["mSumGenWgts"] = &macro::mSumGenWgts;
+    //macro_map["mSROptimization"] = &macro::mSROptimization;
+    //macro_map["mNminus1Plots"] = &macro::mNminus1Plots;
+    //macro_map["mMainAnalysis"] = &macro::mMainAnalysis;
+    //macro_map["mMakePlotsFromFile"] = &macro::mMakePlotsFromFile;
+    //macro_map["mSaveCanvases"] = &macro::mSaveCanvases;
     
     map<TString, SampleInfo> samples;
 
@@ -112,22 +113,32 @@ int main(int argc, char ** argv) {
         }
     }
 
-    std::ifstream cut_configs_file(cuts_filename.Data());
-    json cut_configs;
-    cut_configs_file >> cut_configs;
 
+    // Process cuts config json
     vector<CutInfo> cuts_info;
-    for (auto const & item : cut_configs) {
-        auto cut = TString(item["cut"].get<std::string>());
-        auto description = TString(item["description"].get<std::string>());
-        std::string inclusive;
-        if (item.find("inclusive") != item.end())
-            inclusive = TString(item["inclusive"].get<std::string>());
-        else
-            inclusive = TString("yes");
-        cuts_info.push_back(CutInfo{cut, description, inclusive});
+    if (cuts_filename != TString("")) {
+        std::ifstream cut_configs_file(cuts_filename.Data());
+        json cut_configs;
+        cut_configs_file >> cut_configs;
+
+        for (auto const & item : cut_configs) {
+            auto cut = TString(item["cut"].get<std::string>());
+            auto description = TString(item["description"].get<std::string>());
+            std::string inclusive;
+            if (item.find("inclusive") != item.end())
+                inclusive = TString(item["inclusive"].get<std::string>());
+            else
+                inclusive = TString("yes");
+            cuts_info.push_back(CutInfo{cut, description, inclusive});
+        }
     }
 
+    // Process macro config json and invoke configured macros
+    if (macro_filename == TString("")) {
+        cout << "Error! Need to specify a macro config json file. Exiting." << endl;
+        printTimeElapsed(time_begin);
+        return 1;
+    }
     std::ifstream macro_config_file(macro_filename.Data());
     json macro_configs;
     macro_config_file >> macro_configs;
@@ -157,7 +168,24 @@ int main(int argc, char ** argv) {
             cfg["infilename"] = in_filename.Data();
         }
 
-        macro_map[macro](samples, cuts_info, cfg); // invoke macro with samples from above and cfg from json
+        void * handle;
+        bool (*process)(map<TString, SampleInfo>, vector<CutInfo>, json);
+        if ( (handle = dlopen(Form("./lib%s.so", macro.c_str()), RTLD_NOW)) == NULL) {
+            cout << "Error! Could not find lib" << macro << ".so" << endl;
+            cout << "dlerror(): " << dlerror() << endl;
+            return 1;
+        }
+        dlerror();
+        process = (FUNCPTR)dlsym(handle, "process");
+        if (dlerror() != NULL) {
+            cout << "Error! Could not locate function 'process' inside lib" << macro << ".so" << endl;
+            dlclose(handle);
+            return 2;
+        }
+        process(samples, cuts_info, cfg);
+        dlclose(handle);
+
+        //macro_map[macro](samples, cuts_info, cfg); // invoke macro with samples from above and cfg from json
     }
 
     cout << endl;

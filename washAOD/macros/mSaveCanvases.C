@@ -2,7 +2,7 @@
 
 namespace macro {
 
-    bool mSaveCanvases([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
+    bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
         // macro options
         TString in_filename = TString(cfg["infilename"].get<std::string>());

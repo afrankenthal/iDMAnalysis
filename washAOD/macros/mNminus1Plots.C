@@ -2,7 +2,7 @@
 
 namespace macro {
 
-    bool mNminus1Plots(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) { 
+    bool process(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) { 
         bool fSave = cfg["fSave"].get<bool>();
 
         vector<int> colors{kBlack, kRed, kMagenta, kBlue,
