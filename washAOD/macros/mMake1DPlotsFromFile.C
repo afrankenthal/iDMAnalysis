@@ -1,4 +1,4 @@
-#include "mMakePlotsFromFile.h"
+#include "mMake1DPlotsFromFile.h"
 
 //TString lumi_13TeV = "59.74 fb^{-1} ";
 
@@ -34,6 +34,7 @@ namespace macro {
             auto key = (TKey*)keyAsObj;
             if (TString(key->GetClassName()) != "THStack") continue;
             TString hs_name = TString(key->GetName());
+            if (hs_name.Contains("_vs_")) continue; // mMake2DPlotsFromFile handles these
             cout << "Processing " << hs_name << ", class " << key->GetClassName() << endl;
             THStack * hs = (THStack*)in_file->Get(hs_name);
             TString hs_basename = ((TObjString*)(hs_name.Tokenize("-")->At(0)))->String();
