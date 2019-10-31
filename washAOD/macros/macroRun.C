@@ -150,6 +150,8 @@ int main(int argc, char ** argv) {
 
         if (macro == "mMainAnalysis")
             cfg["outfilename"] = out_filename.Data();
+        if (macro == "mTrigEff")
+            cfg["outfilename"] = out_filename.Data();
 
         if (macro == "mMakePlotsFromFile")
             cfg["infilename"] = in_filename.Data();

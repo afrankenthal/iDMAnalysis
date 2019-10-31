@@ -1,0 +1,21 @@
+[
+    {
+        "name": "mTrigEff",
+        "config": {
+            "region": "trigEff",
+            "plots": [
+                {
+                    "quantity": "recoPFMetPt",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "data" ],
+		    "cuts": [0],
+                    "type": "float",
+                    "name": "recoPFMetPt",
+                    "title": "MET pT [GeV]",
+                    "nbinsX": 50,
+                    "lowX": 0,
+                    "highX": 1000 
+                }
+            ]
+        }
+    }
+]

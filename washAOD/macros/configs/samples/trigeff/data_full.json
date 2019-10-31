@@ -6,7 +6,7 @@
         "group": "",
         "limit_num_files": -1,
         "mode": "",
-        "sum_gen_wgt": 241486700.0,
+        "sum_gen_wgt": 0.0,
         "xsec": -1
     },
     "singleMu_RunB_Sep": {
@@ -16,7 +16,7 @@
         "group": "",
         "limit_num_files": -1,
         "mode": "",
-        "sum_gen_wgt": 119874355.0,
+        "sum_gen_wgt": 0.0,
         "xsec": -1
     },
     "singleMu_RunC_Sep": {
@@ -26,7 +26,7 @@
         "group": "",
         "limit_num_files": -1,
         "mode": "",
-        "sum_gen_wgt": 109993083.0,
+        "sum_gen_wgt": 0.0,
         "xsec": -1
     },
     "singleMu_RunD_Jan": {
@@ -36,7 +36,7 @@
         "group": "",
         "limit_num_files": -1,
         "mode": "",
-        "sum_gen_wgt": 515009576.0,
+        "sum_gen_wgt": 0.0,
         "xsec": -1
     }
 }

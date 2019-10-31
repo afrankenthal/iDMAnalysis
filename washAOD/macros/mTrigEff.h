@@ -26,14 +26,15 @@ using namespace common;
 using json = nlohmann::json;
 #include "utils/tdrstyle.h"
 
-#include "RDataFrameSelectors/RDFAnalysis.h"
+//#include "RDataFrameSelectors/RDFAnalysis.h"
+#include "RDataFrameSelectors/RDFAnalysisTrig.h"
 #include "TSelectors/mainAnalysisSelector.h"
 
 using std::cout, std::endl, std::map, std::vector;
 
 namespace macro {
 
-    bool mMainAnalysis(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg); 
+    extern "C" bool process(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg); 
 }
 
 #endif // mTRIGEFF_HH

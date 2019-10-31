@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-set(macro_libs mCutflowTables mMainAnalysis mMakePlotsFromFile mNminus1Plots mSumGenWgts)
+set(macro_libs mCutflowTables mMainAnalysis mMakePlotsFromFile mNminus1Plots mSumGenWgts mTrigEff)
 
 project(macroRun VERSION 1.0
                  DESCRIPTION "macroRun"
@@ -37,6 +37,10 @@ foreach (macro_lib ${macro_libs})
         add_library(${macro_lib} SHARED ${macro_lib}.C utils/common.C utils/tdrstyle.C utils/CMS_lumi.C
             TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
             RDataFrameSelectors/RDFAnalysis.C)
+    elseif("x_${macro_lib}" STREQUAL "x_mTrigEff")
+        add_library(${macro_lib} SHARED ${macro_lib}.C utils/common.C utils/tdrstyle.C utils/CMS_lumi.C
+            TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
+            RDataFrameSelectors/RDFAnalysisTrig.C)
     else()
         add_library(${macro_lib} SHARED ${macro_lib}.C utils/common.C utils/tdrstyle.C utils/CMS_lumi.C)
     endif()

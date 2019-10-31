@@ -68,16 +68,27 @@ install/strip/fast: preinstall/fast
 	/cvmfs/sft.cern.ch/lcg/releases/CMake/3.14.3-34449/x86_64-slc6-gcc8-opt/bin/cmake -DCMAKE_INSTALL_DO_STRIP=1 -P cmake_install.cmake
 .PHONY : install/strip/fast
 
-# Special rule for the target edit_cache
-edit_cache:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
-	/cvmfs/sft.cern.ch/lcg/releases/CMake/3.14.3-34449/x86_64-slc6-gcc8-opt/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
-.PHONY : edit_cache
+# Special rule for the target install
+install: preinstall
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/cvmfs/sft.cern.ch/lcg/releases/CMake/3.14.3-34449/x86_64-slc6-gcc8-opt/bin/cmake -P cmake_install.cmake
+.PHONY : install
 
-# Special rule for the target edit_cache
-edit_cache/fast: edit_cache
+# Special rule for the target install
+install/fast: preinstall/fast
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
+	/cvmfs/sft.cern.ch/lcg/releases/CMake/3.14.3-34449/x86_64-slc6-gcc8-opt/bin/cmake -P cmake_install.cmake
+.PHONY : install/fast
 
-.PHONY : edit_cache/fast
+# Special rule for the target list_install_components
+list_install_components:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
+.PHONY : list_install_components
+
+# Special rule for the target list_install_components
+list_install_components/fast: list_install_components
+
+.PHONY : list_install_components/fast
 
 # Special rule for the target rebuild_cache
 rebuild_cache:
@@ -90,15 +101,16 @@ rebuild_cache/fast: rebuild_cache
 
 .PHONY : rebuild_cache/fast
 
-# Special rule for the target list_install_components
-list_install_components:
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Available install components are: \"Unspecified\""
-.PHONY : list_install_components
+# Special rule for the target edit_cache
+edit_cache:
+	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Running CMake cache editor..."
+	/cvmfs/sft.cern.ch/lcg/releases/CMake/3.14.3-34449/x86_64-slc6-gcc8-opt/bin/ccmake -S$(CMAKE_SOURCE_DIR) -B$(CMAKE_BINARY_DIR)
+.PHONY : edit_cache
 
-# Special rule for the target list_install_components
-list_install_components/fast: list_install_components
+# Special rule for the target edit_cache
+edit_cache/fast: edit_cache
 
-.PHONY : list_install_components/fast
+.PHONY : edit_cache/fast
 
 # Special rule for the target install/local
 install/local: preinstall
@@ -111,18 +123,6 @@ install/local/fast: preinstall/fast
 	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Installing only the local directory..."
 	/cvmfs/sft.cern.ch/lcg/releases/CMake/3.14.3-34449/x86_64-slc6-gcc8-opt/bin/cmake -DCMAKE_INSTALL_LOCAL_ONLY=1 -P cmake_install.cmake
 .PHONY : install/local/fast
-
-# Special rule for the target install
-install: preinstall
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/cvmfs/sft.cern.ch/lcg/releases/CMake/3.14.3-34449/x86_64-slc6-gcc8-opt/bin/cmake -P cmake_install.cmake
-.PHONY : install
-
-# Special rule for the target install
-install/fast: preinstall/fast
-	@$(CMAKE_COMMAND) -E cmake_echo_color --switch=$(COLOR) --cyan "Install the project..."
-	/cvmfs/sft.cern.ch/lcg/releases/CMake/3.14.3-34449/x86_64-slc6-gcc8-opt/bin/cmake -P cmake_install.cmake
-.PHONY : install/fast
 
 # The main all target
 all: cmake_check_build_system
@@ -157,6 +157,32 @@ depend:
 .PHONY : depend
 
 #=============================================================================
+# Target rules for targets named mMainAnalysis
+
+# Build rule for target.
+mMainAnalysis: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mMainAnalysis
+.PHONY : mMainAnalysis
+
+# fast build rule for target.
+mMainAnalysis/fast:
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/build
+.PHONY : mMainAnalysis/fast
+
+#=============================================================================
+# Target rules for targets named mNminus1Plots
+
+# Build rule for target.
+mNminus1Plots: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mNminus1Plots
+.PHONY : mNminus1Plots
+
+# fast build rule for target.
+mNminus1Plots/fast:
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/build
+.PHONY : mNminus1Plots/fast
+
+#=============================================================================
 # Target rules for targets named macroRun
 
 # Build rule for target.
@@ -169,13 +195,65 @@ macroRun/fast:
 	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/build
 .PHONY : macroRun/fast
 
+#=============================================================================
+# Target rules for targets named mMakePlotsFromFile
+
+# Build rule for target.
+mMakePlotsFromFile: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mMakePlotsFromFile
+.PHONY : mMakePlotsFromFile
+
+# fast build rule for target.
+mMakePlotsFromFile/fast:
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/build
+.PHONY : mMakePlotsFromFile/fast
+
+#=============================================================================
+# Target rules for targets named mCutflowTables
+
+# Build rule for target.
+mCutflowTables: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mCutflowTables
+.PHONY : mCutflowTables
+
+# fast build rule for target.
+mCutflowTables/fast:
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/build
+.PHONY : mCutflowTables/fast
+
+#=============================================================================
+# Target rules for targets named mSumGenWgts
+
+# Build rule for target.
+mSumGenWgts: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mSumGenWgts
+.PHONY : mSumGenWgts
+
+# fast build rule for target.
+mSumGenWgts/fast:
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/build
+.PHONY : mSumGenWgts/fast
+
+#=============================================================================
+# Target rules for targets named mTrigEff
+
+# Build rule for target.
+mTrigEff: cmake_check_build_system
+	$(MAKE) -f CMakeFiles/Makefile2 mTrigEff
+.PHONY : mTrigEff
+
+# fast build rule for target.
+mTrigEff/fast:
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/build
+.PHONY : mTrigEff/fast
+
 RDataFrameSelectors/RDFAnalysis.o: RDataFrameSelectors/RDFAnalysis.C.o
 
 .PHONY : RDataFrameSelectors/RDFAnalysis.o
 
 # target to build an object file
 RDataFrameSelectors/RDFAnalysis.C.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.o
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/RDataFrameSelectors/RDFAnalysis.C.o
 .PHONY : RDataFrameSelectors/RDFAnalysis.C.o
 
 RDataFrameSelectors/RDFAnalysis.i: RDataFrameSelectors/RDFAnalysis.C.i
@@ -184,7 +262,7 @@ RDataFrameSelectors/RDFAnalysis.i: RDataFrameSelectors/RDFAnalysis.C.i
 
 # target to preprocess a source file
 RDataFrameSelectors/RDFAnalysis.C.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.i
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/RDataFrameSelectors/RDFAnalysis.C.i
 .PHONY : RDataFrameSelectors/RDFAnalysis.C.i
 
 RDataFrameSelectors/RDFAnalysis.s: RDataFrameSelectors/RDFAnalysis.C.s
@@ -193,8 +271,35 @@ RDataFrameSelectors/RDFAnalysis.s: RDataFrameSelectors/RDFAnalysis.C.s
 
 # target to generate assembly for a file
 RDataFrameSelectors/RDFAnalysis.C.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/RDataFrameSelectors/RDFAnalysis.C.s
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/RDataFrameSelectors/RDFAnalysis.C.s
 .PHONY : RDataFrameSelectors/RDFAnalysis.C.s
+
+RDataFrameSelectors/RDFAnalysisTrig.o: RDataFrameSelectors/RDFAnalysisTrig.C.o
+
+.PHONY : RDataFrameSelectors/RDFAnalysisTrig.o
+
+# target to build an object file
+RDataFrameSelectors/RDFAnalysisTrig.C.o:
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/RDataFrameSelectors/RDFAnalysisTrig.C.o
+.PHONY : RDataFrameSelectors/RDFAnalysisTrig.C.o
+
+RDataFrameSelectors/RDFAnalysisTrig.i: RDataFrameSelectors/RDFAnalysisTrig.C.i
+
+.PHONY : RDataFrameSelectors/RDFAnalysisTrig.i
+
+# target to preprocess a source file
+RDataFrameSelectors/RDFAnalysisTrig.C.i:
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/RDataFrameSelectors/RDFAnalysisTrig.C.i
+.PHONY : RDataFrameSelectors/RDFAnalysisTrig.C.i
+
+RDataFrameSelectors/RDFAnalysisTrig.s: RDataFrameSelectors/RDFAnalysisTrig.C.s
+
+.PHONY : RDataFrameSelectors/RDFAnalysisTrig.s
+
+# target to generate assembly for a file
+RDataFrameSelectors/RDFAnalysisTrig.C.s:
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/RDataFrameSelectors/RDFAnalysisTrig.C.s
+.PHONY : RDataFrameSelectors/RDFAnalysisTrig.C.s
 
 TSelectors/mainAnalysisSelector.o: TSelectors/mainAnalysisSelector.C.o
 
@@ -202,7 +307,8 @@ TSelectors/mainAnalysisSelector.o: TSelectors/mainAnalysisSelector.C.o
 
 # target to build an object file
 TSelectors/mainAnalysisSelector.C.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/TSelectors/mainAnalysisSelector.C.o
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/TSelectors/mainAnalysisSelector.C.o
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/TSelectors/mainAnalysisSelector.C.o
 .PHONY : TSelectors/mainAnalysisSelector.C.o
 
 TSelectors/mainAnalysisSelector.i: TSelectors/mainAnalysisSelector.C.i
@@ -211,7 +317,8 @@ TSelectors/mainAnalysisSelector.i: TSelectors/mainAnalysisSelector.C.i
 
 # target to preprocess a source file
 TSelectors/mainAnalysisSelector.C.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/TSelectors/mainAnalysisSelector.C.i
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/TSelectors/mainAnalysisSelector.C.i
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/TSelectors/mainAnalysisSelector.C.i
 .PHONY : TSelectors/mainAnalysisSelector.C.i
 
 TSelectors/mainAnalysisSelector.s: TSelectors/mainAnalysisSelector.C.s
@@ -220,7 +327,8 @@ TSelectors/mainAnalysisSelector.s: TSelectors/mainAnalysisSelector.C.s
 
 # target to generate assembly for a file
 TSelectors/mainAnalysisSelector.C.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/TSelectors/mainAnalysisSelector.C.s
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/TSelectors/mainAnalysisSelector.C.s
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/TSelectors/mainAnalysisSelector.C.s
 .PHONY : TSelectors/mainAnalysisSelector.C.s
 
 TSelectors/mainAnalysisSelectorDict.o: TSelectors/mainAnalysisSelectorDict.cxx.o
@@ -229,7 +337,8 @@ TSelectors/mainAnalysisSelectorDict.o: TSelectors/mainAnalysisSelectorDict.cxx.o
 
 # target to build an object file
 TSelectors/mainAnalysisSelectorDict.cxx.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/TSelectors/mainAnalysisSelectorDict.cxx.o
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/TSelectors/mainAnalysisSelectorDict.cxx.o
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/TSelectors/mainAnalysisSelectorDict.cxx.o
 .PHONY : TSelectors/mainAnalysisSelectorDict.cxx.o
 
 TSelectors/mainAnalysisSelectorDict.i: TSelectors/mainAnalysisSelectorDict.cxx.i
@@ -238,7 +347,8 @@ TSelectors/mainAnalysisSelectorDict.i: TSelectors/mainAnalysisSelectorDict.cxx.i
 
 # target to preprocess a source file
 TSelectors/mainAnalysisSelectorDict.cxx.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/TSelectors/mainAnalysisSelectorDict.cxx.i
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/TSelectors/mainAnalysisSelectorDict.cxx.i
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/TSelectors/mainAnalysisSelectorDict.cxx.i
 .PHONY : TSelectors/mainAnalysisSelectorDict.cxx.i
 
 TSelectors/mainAnalysisSelectorDict.s: TSelectors/mainAnalysisSelectorDict.cxx.s
@@ -247,7 +357,8 @@ TSelectors/mainAnalysisSelectorDict.s: TSelectors/mainAnalysisSelectorDict.cxx.s
 
 # target to generate assembly for a file
 TSelectors/mainAnalysisSelectorDict.cxx.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/TSelectors/mainAnalysisSelectorDict.cxx.s
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/TSelectors/mainAnalysisSelectorDict.cxx.s
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/TSelectors/mainAnalysisSelectorDict.cxx.s
 .PHONY : TSelectors/mainAnalysisSelectorDict.cxx.s
 
 mCutflowTables.o: mCutflowTables.C.o
@@ -256,7 +367,7 @@ mCutflowTables.o: mCutflowTables.C.o
 
 # target to build an object file
 mCutflowTables.C.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mCutflowTables.C.o
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/mCutflowTables.C.o
 .PHONY : mCutflowTables.C.o
 
 mCutflowTables.i: mCutflowTables.C.i
@@ -265,7 +376,7 @@ mCutflowTables.i: mCutflowTables.C.i
 
 # target to preprocess a source file
 mCutflowTables.C.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mCutflowTables.C.i
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/mCutflowTables.C.i
 .PHONY : mCutflowTables.C.i
 
 mCutflowTables.s: mCutflowTables.C.s
@@ -274,7 +385,7 @@ mCutflowTables.s: mCutflowTables.C.s
 
 # target to generate assembly for a file
 mCutflowTables.C.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mCutflowTables.C.s
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/mCutflowTables.C.s
 .PHONY : mCutflowTables.C.s
 
 mMainAnalysis.o: mMainAnalysis.C.o
@@ -283,7 +394,7 @@ mMainAnalysis.o: mMainAnalysis.C.o
 
 # target to build an object file
 mMainAnalysis.C.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mMainAnalysis.C.o
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/mMainAnalysis.C.o
 .PHONY : mMainAnalysis.C.o
 
 mMainAnalysis.i: mMainAnalysis.C.i
@@ -292,7 +403,7 @@ mMainAnalysis.i: mMainAnalysis.C.i
 
 # target to preprocess a source file
 mMainAnalysis.C.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mMainAnalysis.C.i
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/mMainAnalysis.C.i
 .PHONY : mMainAnalysis.C.i
 
 mMainAnalysis.s: mMainAnalysis.C.s
@@ -301,7 +412,7 @@ mMainAnalysis.s: mMainAnalysis.C.s
 
 # target to generate assembly for a file
 mMainAnalysis.C.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mMainAnalysis.C.s
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/mMainAnalysis.C.s
 .PHONY : mMainAnalysis.C.s
 
 mMakePlotsFromFile.o: mMakePlotsFromFile.C.o
@@ -310,7 +421,7 @@ mMakePlotsFromFile.o: mMakePlotsFromFile.C.o
 
 # target to build an object file
 mMakePlotsFromFile.C.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mMakePlotsFromFile.C.o
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/mMakePlotsFromFile.C.o
 .PHONY : mMakePlotsFromFile.C.o
 
 mMakePlotsFromFile.i: mMakePlotsFromFile.C.i
@@ -319,7 +430,7 @@ mMakePlotsFromFile.i: mMakePlotsFromFile.C.i
 
 # target to preprocess a source file
 mMakePlotsFromFile.C.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mMakePlotsFromFile.C.i
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/mMakePlotsFromFile.C.i
 .PHONY : mMakePlotsFromFile.C.i
 
 mMakePlotsFromFile.s: mMakePlotsFromFile.C.s
@@ -328,7 +439,7 @@ mMakePlotsFromFile.s: mMakePlotsFromFile.C.s
 
 # target to generate assembly for a file
 mMakePlotsFromFile.C.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mMakePlotsFromFile.C.s
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/mMakePlotsFromFile.C.s
 .PHONY : mMakePlotsFromFile.C.s
 
 mNminus1Plots.o: mNminus1Plots.C.o
@@ -337,7 +448,7 @@ mNminus1Plots.o: mNminus1Plots.C.o
 
 # target to build an object file
 mNminus1Plots.C.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mNminus1Plots.C.o
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/mNminus1Plots.C.o
 .PHONY : mNminus1Plots.C.o
 
 mNminus1Plots.i: mNminus1Plots.C.i
@@ -346,7 +457,7 @@ mNminus1Plots.i: mNminus1Plots.C.i
 
 # target to preprocess a source file
 mNminus1Plots.C.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mNminus1Plots.C.i
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/mNminus1Plots.C.i
 .PHONY : mNminus1Plots.C.i
 
 mNminus1Plots.s: mNminus1Plots.C.s
@@ -355,62 +466,8 @@ mNminus1Plots.s: mNminus1Plots.C.s
 
 # target to generate assembly for a file
 mNminus1Plots.C.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mNminus1Plots.C.s
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/mNminus1Plots.C.s
 .PHONY : mNminus1Plots.C.s
-
-mSROptimization.o: mSROptimization.C.o
-
-.PHONY : mSROptimization.o
-
-# target to build an object file
-mSROptimization.C.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mSROptimization.C.o
-.PHONY : mSROptimization.C.o
-
-mSROptimization.i: mSROptimization.C.i
-
-.PHONY : mSROptimization.i
-
-# target to preprocess a source file
-mSROptimization.C.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mSROptimization.C.i
-.PHONY : mSROptimization.C.i
-
-mSROptimization.s: mSROptimization.C.s
-
-.PHONY : mSROptimization.s
-
-# target to generate assembly for a file
-mSROptimization.C.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mSROptimization.C.s
-.PHONY : mSROptimization.C.s
-
-mSaveCanvases.o: mSaveCanvases.C.o
-
-.PHONY : mSaveCanvases.o
-
-# target to build an object file
-mSaveCanvases.C.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mSaveCanvases.C.o
-.PHONY : mSaveCanvases.C.o
-
-mSaveCanvases.i: mSaveCanvases.C.i
-
-.PHONY : mSaveCanvases.i
-
-# target to preprocess a source file
-mSaveCanvases.C.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mSaveCanvases.C.i
-.PHONY : mSaveCanvases.C.i
-
-mSaveCanvases.s: mSaveCanvases.C.s
-
-.PHONY : mSaveCanvases.s
-
-# target to generate assembly for a file
-mSaveCanvases.C.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mSaveCanvases.C.s
-.PHONY : mSaveCanvases.C.s
 
 mSumGenWgts.o: mSumGenWgts.C.o
 
@@ -418,7 +475,7 @@ mSumGenWgts.o: mSumGenWgts.C.o
 
 # target to build an object file
 mSumGenWgts.C.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mSumGenWgts.C.o
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/mSumGenWgts.C.o
 .PHONY : mSumGenWgts.C.o
 
 mSumGenWgts.i: mSumGenWgts.C.i
@@ -427,7 +484,7 @@ mSumGenWgts.i: mSumGenWgts.C.i
 
 # target to preprocess a source file
 mSumGenWgts.C.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mSumGenWgts.C.i
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/mSumGenWgts.C.i
 .PHONY : mSumGenWgts.C.i
 
 mSumGenWgts.s: mSumGenWgts.C.s
@@ -436,8 +493,35 @@ mSumGenWgts.s: mSumGenWgts.C.s
 
 # target to generate assembly for a file
 mSumGenWgts.C.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/mSumGenWgts.C.s
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/mSumGenWgts.C.s
 .PHONY : mSumGenWgts.C.s
+
+mTrigEff.o: mTrigEff.C.o
+
+.PHONY : mTrigEff.o
+
+# target to build an object file
+mTrigEff.C.o:
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/mTrigEff.C.o
+.PHONY : mTrigEff.C.o
+
+mTrigEff.i: mTrigEff.C.i
+
+.PHONY : mTrigEff.i
+
+# target to preprocess a source file
+mTrigEff.C.i:
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/mTrigEff.C.i
+.PHONY : mTrigEff.C.i
+
+mTrigEff.s: mTrigEff.C.s
+
+.PHONY : mTrigEff.s
+
+# target to generate assembly for a file
+mTrigEff.C.s:
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/mTrigEff.C.s
+.PHONY : mTrigEff.C.s
 
 macroRun.o: macroRun.C.o
 
@@ -472,7 +556,12 @@ utils/CMS_lumi.o: utils/CMS_lumi.C.o
 
 # target to build an object file
 utils/CMS_lumi.C.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/utils/CMS_lumi.C.o
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/utils/CMS_lumi.C.o
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/utils/CMS_lumi.C.o
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/utils/CMS_lumi.C.o
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/utils/CMS_lumi.C.o
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/utils/CMS_lumi.C.o
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/utils/CMS_lumi.C.o
 .PHONY : utils/CMS_lumi.C.o
 
 utils/CMS_lumi.i: utils/CMS_lumi.C.i
@@ -481,7 +570,12 @@ utils/CMS_lumi.i: utils/CMS_lumi.C.i
 
 # target to preprocess a source file
 utils/CMS_lumi.C.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/utils/CMS_lumi.C.i
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/utils/CMS_lumi.C.i
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/utils/CMS_lumi.C.i
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/utils/CMS_lumi.C.i
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/utils/CMS_lumi.C.i
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/utils/CMS_lumi.C.i
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/utils/CMS_lumi.C.i
 .PHONY : utils/CMS_lumi.C.i
 
 utils/CMS_lumi.s: utils/CMS_lumi.C.s
@@ -490,7 +584,12 @@ utils/CMS_lumi.s: utils/CMS_lumi.C.s
 
 # target to generate assembly for a file
 utils/CMS_lumi.C.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/utils/CMS_lumi.C.s
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/utils/CMS_lumi.C.s
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/utils/CMS_lumi.C.s
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/utils/CMS_lumi.C.s
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/utils/CMS_lumi.C.s
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/utils/CMS_lumi.C.s
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/utils/CMS_lumi.C.s
 .PHONY : utils/CMS_lumi.C.s
 
 utils/common.o: utils/common.C.o
@@ -499,7 +598,13 @@ utils/common.o: utils/common.C.o
 
 # target to build an object file
 utils/common.C.o:
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/utils/common.C.o
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/utils/common.C.o
 	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/utils/common.C.o
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/utils/common.C.o
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/utils/common.C.o
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/utils/common.C.o
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/utils/common.C.o
 .PHONY : utils/common.C.o
 
 utils/common.i: utils/common.C.i
@@ -508,7 +613,13 @@ utils/common.i: utils/common.C.i
 
 # target to preprocess a source file
 utils/common.C.i:
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/utils/common.C.i
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/utils/common.C.i
 	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/utils/common.C.i
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/utils/common.C.i
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/utils/common.C.i
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/utils/common.C.i
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/utils/common.C.i
 .PHONY : utils/common.C.i
 
 utils/common.s: utils/common.C.s
@@ -517,7 +628,13 @@ utils/common.s: utils/common.C.s
 
 # target to generate assembly for a file
 utils/common.C.s:
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/utils/common.C.s
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/utils/common.C.s
 	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/utils/common.C.s
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/utils/common.C.s
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/utils/common.C.s
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/utils/common.C.s
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/utils/common.C.s
 .PHONY : utils/common.C.s
 
 utils/tdrstyle.o: utils/tdrstyle.C.o
@@ -526,7 +643,12 @@ utils/tdrstyle.o: utils/tdrstyle.C.o
 
 # target to build an object file
 utils/tdrstyle.C.o:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/utils/tdrstyle.C.o
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/utils/tdrstyle.C.o
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/utils/tdrstyle.C.o
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/utils/tdrstyle.C.o
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/utils/tdrstyle.C.o
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/utils/tdrstyle.C.o
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/utils/tdrstyle.C.o
 .PHONY : utils/tdrstyle.C.o
 
 utils/tdrstyle.i: utils/tdrstyle.C.i
@@ -535,7 +657,12 @@ utils/tdrstyle.i: utils/tdrstyle.C.i
 
 # target to preprocess a source file
 utils/tdrstyle.C.i:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/utils/tdrstyle.C.i
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/utils/tdrstyle.C.i
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/utils/tdrstyle.C.i
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/utils/tdrstyle.C.i
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/utils/tdrstyle.C.i
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/utils/tdrstyle.C.i
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/utils/tdrstyle.C.i
 .PHONY : utils/tdrstyle.C.i
 
 utils/tdrstyle.s: utils/tdrstyle.C.s
@@ -544,7 +671,12 @@ utils/tdrstyle.s: utils/tdrstyle.C.s
 
 # target to generate assembly for a file
 utils/tdrstyle.C.s:
-	$(MAKE) -f CMakeFiles/macroRun.dir/build.make CMakeFiles/macroRun.dir/utils/tdrstyle.C.s
+	$(MAKE) -f CMakeFiles/mMainAnalysis.dir/build.make CMakeFiles/mMainAnalysis.dir/utils/tdrstyle.C.s
+	$(MAKE) -f CMakeFiles/mNminus1Plots.dir/build.make CMakeFiles/mNminus1Plots.dir/utils/tdrstyle.C.s
+	$(MAKE) -f CMakeFiles/mMakePlotsFromFile.dir/build.make CMakeFiles/mMakePlotsFromFile.dir/utils/tdrstyle.C.s
+	$(MAKE) -f CMakeFiles/mCutflowTables.dir/build.make CMakeFiles/mCutflowTables.dir/utils/tdrstyle.C.s
+	$(MAKE) -f CMakeFiles/mSumGenWgts.dir/build.make CMakeFiles/mSumGenWgts.dir/utils/tdrstyle.C.s
+	$(MAKE) -f CMakeFiles/mTrigEff.dir/build.make CMakeFiles/mTrigEff.dir/utils/tdrstyle.C.s
 .PHONY : utils/tdrstyle.C.s
 
 # Help Target
@@ -554,15 +686,24 @@ help:
 	@echo "... clean"
 	@echo "... depend"
 	@echo "... install/strip"
-	@echo "... edit_cache"
-	@echo "... macroRun"
-	@echo "... rebuild_cache"
-	@echo "... list_install_components"
-	@echo "... install/local"
 	@echo "... install"
+	@echo "... list_install_components"
+	@echo "... rebuild_cache"
+	@echo "... edit_cache"
+	@echo "... mMainAnalysis"
+	@echo "... mNminus1Plots"
+	@echo "... macroRun"
+	@echo "... mMakePlotsFromFile"
+	@echo "... install/local"
+	@echo "... mCutflowTables"
+	@echo "... mSumGenWgts"
+	@echo "... mTrigEff"
 	@echo "... RDataFrameSelectors/RDFAnalysis.o"
 	@echo "... RDataFrameSelectors/RDFAnalysis.i"
 	@echo "... RDataFrameSelectors/RDFAnalysis.s"
+	@echo "... RDataFrameSelectors/RDFAnalysisTrig.o"
+	@echo "... RDataFrameSelectors/RDFAnalysisTrig.i"
+	@echo "... RDataFrameSelectors/RDFAnalysisTrig.s"
 	@echo "... TSelectors/mainAnalysisSelector.o"
 	@echo "... TSelectors/mainAnalysisSelector.i"
 	@echo "... TSelectors/mainAnalysisSelector.s"
@@ -581,15 +722,12 @@ help:
 	@echo "... mNminus1Plots.o"
 	@echo "... mNminus1Plots.i"
 	@echo "... mNminus1Plots.s"
-	@echo "... mSROptimization.o"
-	@echo "... mSROptimization.i"
-	@echo "... mSROptimization.s"
-	@echo "... mSaveCanvases.o"
-	@echo "... mSaveCanvases.i"
-	@echo "... mSaveCanvases.s"
 	@echo "... mSumGenWgts.o"
 	@echo "... mSumGenWgts.i"
 	@echo "... mSumGenWgts.s"
+	@echo "... mTrigEff.o"
+	@echo "... mTrigEff.i"
+	@echo "... mTrigEff.s"
 	@echo "... macroRun.o"
 	@echo "... macroRun.i"
 	@echo "... macroRun.s"
