@@ -1,8 +1,6 @@
 # Macros
 
-This is a self-contained macro framework similar in spirit to cmsRun. Eventually one will be able to write a new macro, compile it, and dynamically plug it into the framework. The point of entry is the file macroRun.C. Currently dynamic library loading is not fully implemented yet, so adding macros is still a manual process for now (see section 'Adding macros' below).
-
-The MC and data samples to use, as well as the cuts and histograms to make can all be specified at runtime via a collection of json config files (see 'Running' below).
+This is a self-contained macro framework similar in spirit to cmsRun. It allows one to write a new macro, and dynamically load it into the framework at runtime. The point of entry is the file macroRun.C. The MC and data samples to use, as well as the cuts and histograms to make can all be specified at runtime as well via a collection of json config files (see 'Running' below).
 
 The framework takes care of loading the samples and parsing them into a nice structure that can be easily used by any macro, to avoid code repetition and promote a uniform syntax across code with different purposes.
 
@@ -17,35 +15,37 @@ $ source /cvmfs/sft.cern.ch/lcg/views/LCG_96python3/x86_64-slc6-gcc8-opt/setup.s
 
 ## Compiling
 
-The framework has a CMakeLists.txt file to make it easy to build the executable. Just make a build directory, call cmake and then run make install to build:
+The framework has a CMakeLists.txt file to make it easy to build the executable and the macros as shared libraries. Just make a build directory, call cmake and then run make install to build:
 
 ```bash
 $ mkdir build
 $ cd build
 $ cmake ..
-$ make install
+$ make install -j8
 ```
 
-This will install the macroRun executable under macros/bin/macroRun, as well as needed ROOT dictionaries.
+This will install the libraries and the macroRun executable under macros/bin/, as well as needed ROOT dictionaries.
 
 ## Running
 
 To run, invoke macroRun with the desired set of configs (assuming you're at the build dir from the previous step):
 
 ```bash
-$ cd ..
-$ ./bin/macroRun -c configs/cuts/CUTFILENAME.json -m configs/macros/MACROFILENAME.json \
--b configs/samples/CRABITERATION/BACKGROUNDCONFIG.json -d configs/samples/CRABITERATION/DATACONFIG.json \
--s configs/samples/SIGNALCONFIG.json -o OUTFILE.root
+$ cd ../bin
+$ ./macroRun -c ../configs/cuts/CUTFILENAME.json -m ../configs/macros/MACROFILENAME.json \
+-b ../configs/samples/CRABITERATION/BACKGROUNDCONFIG.json -d ../configs/samples/CRABITERATION/DATACONFIG.json \
+-s ../configs/samples/SIGNALCONFIG.json -o OUTFILE.root
 ```
+
+(note the need to switch to the bin directory for now, in order to avoid having to specify LD_LIBRARY_PATH to find the macro libraries.)
 
 Capitalized names are placeholders for the actual config files and dirs. There's a config to define the desired set of cuts, another one to define the macros to run and each of theirconfigs, and a set of configs to specify the ntuples to run for each group of samples (data, background, and signal).
 
-Run './bin/macroRun -h' to see the expected syntax.
+Run '.macroRun -h' to see the expected syntax.
 
 ## Adding new macros
 
-As mentioned above, in time the framework will be able to dynamically load new macros, but for now to add a new macro to the framework go to macroRun.C, include the header of the macro, and add a line to create a map between its name (a string) and a pointer to the interface function, similar to the existing macros. This will ensure the entry point macroRun.C knows about the new macro. Note that all macros must have the same call signature.
+As mentioned above, the framework is able to dynamically load new macros. To create a new macro, add two new files 'mYourMacro.C' and 'mYourMacro.h' following the structure of an existing macro. Note that all macros must have the same call signature, with the same main function 'process'. Then add this new macro name (mYourMacro) to the list of libraries to be build in 'CMakeLists.txt' (near the top of the file). When you run 'make' from the build directory, it should compile the new macro and place it under bin/ to be used by the framework. Then all that's left is to create a .json config file uncer configs/macros/ to use the new macro.
 
 ## Current macros and workflow
 
@@ -58,7 +58,7 @@ The main analysis for iDM is done with a set of macros which are to be run in th
 One example of a workflow would be:
 
 ```bash
-$ ./bin/macroRun -c configs/cuts/CR_nJets.json -m configs/macros/cutflow_CR_nJets.json -b configs/samples/sixthrun/backgrounds_full.json -d configs/samples/sixthrun/data_full.json -o plots_CR_nJets_sixthrun.root
-$ ./bin/macroRun -c configs/cuts/CR_nJets.json -m configs/macros/MakePlots.json -i plots_CR_nJets_sixthrun.root
-$ ./bin/macroRun -c configs/cuts/CR_nJets.json -m configs/macros/SaveCanvases.json -i plots_CR_nJets_sixthrun.root
+$ ./macroRun -c ../configs/cuts/CR_nJets.json -m ../configs/macros/cutflow_CR_nJets.json -b ../configs/samples/sixthrun/backgrounds_full.json -d ../configs/samples/sixthrun/data_full.json -o plots_CR_nJets_sixthrun.root
+$ ./macroRun -c ../configs/cuts/CR_nJets.json -m ../configs/macros/MakePlots.json -i plots_CR_nJets_sixthrun.root
+$ ./macroRun -c ../configs/cuts/CR_nJets.json -m ../configs/macros/SaveCanvases.json -i plots_CR_nJets_sixthrun.root
 ```

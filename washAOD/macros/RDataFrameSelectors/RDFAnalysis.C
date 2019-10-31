@@ -52,7 +52,8 @@ void RDFAnalysis::Begin() {
    cutflow_.clear();
    cutflow_.resize(30);
 
-   all_histos_.clear();
+   all_histos_1D_.clear();
+   all_histos_2D_.clear();
 //   for (auto & [name, hist] : histos_info_) {
 //       if (std::find(hist->groups.begin(), hist->groups.end(), sample_info_.group) == hist->groups.end()) continue;
 //       for (auto cut : hist->cuts) {
@@ -82,7 +83,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     if (sum_gen_wgt_ < 0.1 && mode_ != common::DATA) return kFALSE;
 
-   all_histos_.clear();
+    all_histos_1D_.clear();
+    all_histos_2D_.clear();
     chain_ = chain;
 
     ROOT::EnableImplicitMT();
@@ -214,76 +216,49 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    
    std::vector<TString> cut_strings;
 
-   //cut_strings.push_back("1"); // cut 0 -- no cut
-   //cut_strings.push_back("MET_filters_fail_bits == 0");
-   //cut_strings.push_back("reco_PF_HEM_flag == 0");
-   //cut_strings.push_back("trig_fired%2 == 1");
-   //cut_strings.push_back("reco_PF_MET_pt > 200");
-   //cut_strings.push_back("reco_PF_jet_pt.size() > 0");
-   //cut_strings.push_back("for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (abs(reco_PF_jet_eta[i]) > 2.5) return false; return true;");
-   //cut_strings.push_back("reco_PF_jet_pt[0] > 200");
-   //cut_strings.push_back("is_electron == 0");
-   //cut_strings.push_back("is_photon == 0");
-   //if (region_ == "CR_0muons")
-   //    cut_strings.push_back("reco_n_good_dsa == 0");
-   //else
-   //    cut_strings.push_back("reco_n_good_dsa >= 0");
-   //cut_strings.push_back("MET_jet_phi_dphi > 1.0");
-   ////cut_strings.push_back("abs(reco_PF_jet_eta[0]) < 2.5");
-   //if (region_ == "CR_nJets" || region_ == "CR_0muons")
-   //    cut_strings.push_back("reco_PF_n_highPt_jets == 3");
-   //else
-   //    cut_strings.push_back("reco_PF_n_highPt_jets < 3");
-   //if (region_ == "CR_bTag")
-   //    cut_strings.push_back("for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (reco_PF_jet_BTag[i] < 0.4184) return false; return true;");
-   //else
-   //    cut_strings.push_back("for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (reco_PF_jet_BTag[i] > 0.4184) return false; return true;");
-   //cut_strings.push_back("reco_n_good_dsa >= 1");
-   //cut_strings.push_back("reco_dsa_idx0 > -9999 && reco_dsa_idx1 > -9999");
-   //cut_strings.push_back("reco_dsa_trk_n_planes[reco_dsa_idx0] >= 2");
-   //cut_strings.push_back("reco_dsa_trk_n_hits[reco_dsa_idx0] >= 12");
-   //cut_strings.push_back("reco_dsa_trk_chi2[reco_dsa_idx0] < 10");
-   //cut_strings.push_back("reco_dsa_pt[reco_dsa_idx0] > 5");
-   //cut_strings.push_back("abs(reco_dsa_eta[reco_dsa_idx0]) < 2.4");
-   //cut_strings.push_back("reco_dsa_trk_n_planes[reco_dsa_idx1] >= 2");
-   //cut_strings.push_back("reco_dsa_trk_n_hits[reco_dsa_idx1] >= 12");
-   //cut_strings.push_back("reco_dsa_trk_chi2[reco_dsa_idx1] < 10");
-   //cut_strings.push_back("reco_dsa_pt[reco_dsa_idx1] > 5");
-   //cut_strings.push_back("abs(reco_dsa_eta[reco_dsa_idx1]) < 2.4");
-   //if (region_ == "CR_dR")
-   //    cut_strings.push_back("reco_vtx_dR > 0.9");
-   //else
-   //    cut_strings.push_back("reco_vtx_dR < 0.9");
-   //cut_strings.push_back("reco_sel_mu_charge[0]+reco_sel_mu_charge[1] == 0");
-   //cut_strings.push_back("reco_n_gbmdsa_match == 0");
-   //cut_strings.push_back("reco_n_gbmdsa_match == 1");
-   //cut_strings.push_back("reco_n_gbmdsa_match == 2");
-
-
-   all_histos_.clear();
+   all_histos_1D_.clear();
+   all_histos_2D_.clear();
    cutflow_.clear();
    auto df_filters = df_wgts.Filter(cuts_info_[0].cut.Data(), Form("Cut0"));
    cutflow_.push_back(df_filters.Sum<double>("wgt"));
    for (size_t cut = 1; cut < cuts_info_.size(); cut++) {
-       // Last 3 cuts are not inclusive, so make copy to restore later
+       // Some cuts are not inclusive, so make copy to restore later in case
        auto temp_df = df_filters;
 
        df_filters = df_filters.Filter(cuts_info_[cut].cut.Data(), Form("Cut%d", cut));
        cutflow_.push_back(df_filters.Sum<double>("wgt"));
        // make all requested histograms for each cut
        for (auto & [histo_name, histo_info] : histos_info_) {
+           // if current sample's group is not included in histo's list of groups continue
            if (std::find(histo_info->groups.begin(), histo_info->groups.end(), group_) == histo_info->groups.end()) continue;
 
-           if (all_histos_.find(histo_name) == all_histos_.end())
-               all_histos_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH1D>>();
-           if (histo_info->type == "float")
-               all_histos_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
-           else if (histo_info->type == "int")
-               all_histos_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+           // split into 1D and 2D, and int and float cases
+           
+           if (histo_info->type == "float1D") {
+               // if this is first cut then initialize map
+               if (all_histos_1D_.find(histo_name) == all_histos_1D_.end())
+                   all_histos_1D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH1D>>();
+               all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+           }
+           else if (histo_info->type == "int1D") {
+               if (all_histos_1D_.find(histo_name) == all_histos_1D_.end())
+                   all_histos_1D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH1D>>();
+               all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+           }
+           else if (histo_info->type == "float2D") {
+               if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())
+                   all_histos_2D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH2D>>();
+               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<float,float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+           }
+           else if (histo_info->type == "int2D") {
+               if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())
+                   all_histos_2D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH2D>>();
+               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<int,int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+           }
            else
                std::cout << "Hist type not recognized!" << std::endl;
        }
-       // restore df if it's one of the 3 SR definitions
+       // restore df if it's one of the 3 SR definitions (or a otherwise non-inclusive cut)
        if (cuts_info_[cut].inclusive == "no") //cut_strings[cut].Contains("reco_n_gbmdsa_match"))
            df_filters = temp_df;
    }

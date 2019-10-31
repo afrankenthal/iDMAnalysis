@@ -153,7 +153,7 @@ int main(int argc, char ** argv) {
         if (macro == "mTrigEff")
             cfg["outfilename"] = out_filename.Data();
 
-        if (macro == "mMakePlotsFromFile")
+        if (macro == "mMake1DPlotsFromFile" || macro == "mMake2DPlotsFromFile")
             cfg["infilename"] = in_filename.Data();
 
         if (macro == "mSumGenWgts") {
