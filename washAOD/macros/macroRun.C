@@ -110,6 +110,7 @@ int main(int argc, char ** argv) {
                 (cfg.find("color") != cfg.end() ? cfg["color"].get<int>() : color++), // line color
                 (config_filename.Contains("signal") ? 1 : 1) // line style (bkg vs signal)
             };
+                cout<<"mapmode"<<TString(cfg["mode"].get<std::string>()) <<endl; // mode: 0 = SIGNAL, 1 = BKG, 2 = DATA
         }
     }
 

@@ -93,10 +93,8 @@ namespace macro {
             cout << "Sample: " << sample << endl;
             if (props.sum_gen_wgt < 0.1 && !isData) continue; // don't have data yet for these samples, continue
 
-            //TChain * data_reco = new TChain("ntuples_gbm/recoT");
-            //TChain * data_gen = new TChain("ntuples_gbm/genT");
-	    TChain * data_reco = new TChain("RECO_dsaIsoNoMu/MetTrigSelfEffiForMuTrack");
-            TChain * data_gen = new TChain("RECO_dsaIsoNoMu/GenWeight");
+            TChain * data_reco = new TChain("ntuples_gbm/recoT");
+            TChain * data_gen = new TChain("ntuples_gbm/genT");
             int count = 0;
             for (auto const & filename : props.filenames) {
                 if (count++ >= props.limit_num_files && doSubsetOnly) continue;

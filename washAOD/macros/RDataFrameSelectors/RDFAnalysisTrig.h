@@ -39,14 +39,16 @@ public :
    //std::vector<double> GetCutflow() { return cutflow_; }
    std::vector<ROOT::RDF::RResultPtr<ROOT::RDF::RDFDetail::SumReturnType_t<double>>> GetCutflow() { return cutflow_; }
    //std::map<TString, std::map<int, TH1*>> GetHistograms() { return all_histos_; }
-   std::map<TString, std::map<int, ROOT::RDF::RResultPtr<TH1D>>> GetHistograms() { return all_histos_; }
+   std::map<TString, std::map<int, ROOT::RDF::RResultPtr<TH1D>>> GetHistograms1D() { return all_histos_1D_; }
+   std::map<TString, std::map<int, ROOT::RDF::RResultPtr<TH2D>>> GetHistograms2D() { return all_histos_2D_; }
 
    TChain * chain_;
 
    //std::vector<double> cutflow_;
    std::map<TString, common::THInfo*> histos_info_;
    //std::map<TString, std::map<int, TH1*>> cutflowHistos_;
-   std::map<TString, std::map<int, ROOT::RDF::RResultPtr<TH1D>>> all_histos_;
+   std::map<TString, std::map<int, ROOT::RDF::RResultPtr<TH1D>>> all_histos_1D_;
+   std::map<TString, std::map<int, ROOT::RDF::RResultPtr<TH2D>>> all_histos_2D_;
    std::vector<ROOT::RDF::RResultPtr<ROOT::RDF::RDFDetail::SumReturnType_t<double>>> cutflow_;
 
    std::vector<common::CutInfo> cuts_info_;

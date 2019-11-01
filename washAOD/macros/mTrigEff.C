@@ -4,12 +4,12 @@ namespace macro {
 
     bool process(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
-	// for main analysis macro cuts vector needs to be non-empty
-	if (cuts_info.size() == 0) {
-		cout << "Error! Main analysis requires specification of cuts. None found. Returning" << endl;
-		return 0;
-	}
-
+        // for main analysis macro cuts vector needs to be non-empty
+        if (cuts_info.size() == 0) {
+            cout << "Error! Main analysis requires specification of cuts. None found. Returning" << endl;
+            return 0;
+        }
+ 
         setTDRStyle();
 
         map<TString, vector<Double_t>> cutsInclusive;
@@ -41,13 +41,13 @@ namespace macro {
         TString out_filename = TString(cfg["outfilename"].get<std::string>());
         TString region = TString(cfg["region"].get<std::string>());
 
-        map<TString, map<common::MODE, map<int, vector<TH1D*>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
+        map<TString, map<common::MODE, map<int, vector<TH1*>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
         //map<TString, map<common::MODE, map<int, vector<ROOT::RDF::RResultPtr<TH1D>>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
         for (auto & [name, info] : histos_info) {
             for (auto cut : info->cuts) {
-                all_hstacks[name][common::BKG][cut] = vector<TH1D*>();
-                all_hstacks[name][common::DATA][cut] = vector<TH1D*>();
-                all_hstacks[name][common::SIGNAL][cut] = vector<TH1D*>();
+                all_hstacks[name][common::BKG][cut] = vector<TH1*>();
+                all_hstacks[name][common::DATA][cut] = vector<TH1*>();
+                all_hstacks[name][common::SIGNAL][cut] = vector<TH1*>();
                 //all_hstacks[name][common::BKG][cut] = vector<ROOT::RDF::RResultPtr<TH1D>>();
                 //all_hstacks[name][common::DATA][cut] = vector<ROOT::RDF::RResultPtr<TH1D>>();
                 //all_hstacks[name][common::SIGNAL][cut] = vector<ROOT::RDF::RResultPtr<TH1D>>();
@@ -120,7 +120,7 @@ namespace macro {
             currentSelector->SetParams(props, lumi, region);
             dfAnalysis->SetParams(props, lumi, region);
             
-            // Try RDataFrame instead
+            // Use RDataFrame instead
             //data_reco->Process(currentSelector);
 
             dfAnalysis->Process(data_reco);
@@ -132,24 +132,20 @@ namespace macro {
             for (auto cut : cutflow_ptr)
                 cutflow.push_back(cut.GetValue());
 
-//#pragma omp critical
-//{ 
             // if first sample in group, create entry
             if (cutsGroupInclusive.find(props.group) == cutsGroupInclusive.end())
                 cutsGroupInclusive.insert(std::make_pair(props.group, cutflow));
             else // otherwie, sum std::vectors element-wise
                 std::transform(cutsGroupInclusive[props.group].begin(), cutsGroupInclusive[props.group].end(), 
                         cutflow.begin(), cutsGroupInclusive[props.group].begin(), std::plus<double>());
-//}
 
             //map<TString, map<int, TH1*>> sample_histos = currentSelector->GetHistograms();
-            map<TString, map<int, ROOT::RDF::RResultPtr<TH1D>>> all_sample_histos = dfAnalysis->GetHistograms();
-            for (auto & [histo_name, histos_by_cut] : all_sample_histos) {
+            map<TString, map<int, ROOT::RDF::RResultPtr<TH1D>>> all_sample_histos_1D = dfAnalysis->GetHistograms1D();
+            map<TString, map<int, ROOT::RDF::RResultPtr<TH2D>>> all_sample_histos_2D = dfAnalysis->GetHistograms2D();
+            for (auto & [histo_name, histos_by_cut] : all_sample_histos_2D) {
                 for (auto & [cut, histo] : histos_by_cut) {
                     bool kFound = false;
-//#pragma omp critical
-//{
-                    for (TH1D * existing_histo : all_hstacks[histo_name][props.mode][cut]) {
+                    for (TH1 * existing_histo : all_hstacks[histo_name][props.mode][cut]) {
                         if (TString(existing_histo->GetName()) == TString(histo->GetName())) { // hist already exists in stack
                             histo->Sumw2();
                             existing_histo->Add(histo.GetPtr());
@@ -157,7 +153,25 @@ namespace macro {
                         }
                     }
                     if (!kFound) { // first time hist is referenced, so add to stack
-                        TH1D * h_pointer = (TH1D*)(histo.GetPtr())->Clone();
+                        TH1 * h_pointer = (TH1*)(histo.GetPtr())->Clone();
+                        h_pointer->Sumw2();
+                        h_pointer->SetDirectory(0);
+                        all_hstacks[histo_name][props.mode][cut].push_back(h_pointer);
+                    }
+                }
+            }
+            for (auto & [histo_name, histos_by_cut] : all_sample_histos_1D) {
+                for (auto & [cut, histo] : histos_by_cut) {
+                    bool kFound = false;
+                    for (TH1 * existing_histo : all_hstacks[histo_name][props.mode][cut]) {
+                        if (TString(existing_histo->GetName()) == TString(histo->GetName())) { // hist already exists in stack
+                            histo->Sumw2();
+                            existing_histo->Add(histo.GetPtr());
+                            kFound = true;
+                        }
+                    }
+                    if (!kFound) { // first time hist is referenced, so add to stack
+                        TH1 * h_pointer = (TH1*)(histo.GetPtr())->Clone();
                         h_pointer->Sumw2();
                         h_pointer->SetDirectory(0);
                         if (props.mode == common::BKG) {
@@ -176,7 +190,6 @@ namespace macro {
                         }
                         all_hstacks[histo_name][props.mode][cut].push_back(h_pointer);
                     }
-//}
                 }
             }
         }

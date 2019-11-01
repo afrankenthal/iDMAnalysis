@@ -66,6 +66,37 @@ file(INSTALL DESTINATION "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  if(EXISTS "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmSaveCanvases.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmSaveCanvases.so")
+    file(RPATH_CHECK
+         FILE "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmSaveCanvases.so"
+         RPATH "")
+  endif()
+  list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
+   "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmSaveCanvases.so")
+  if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
+    message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+  endif()
+  if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
+    message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+  endif()
+file(INSTALL DESTINATION "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin" TYPE SHARED_LIBRARY FILES "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/build/libmSaveCanvases.so")
+  if(EXISTS "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmSaveCanvases.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmSaveCanvases.so")
+    file(RPATH_CHANGE
+         FILE "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmSaveCanvases.so"
+         OLD_RPATH "/cvmfs/sft.cern.ch/lcg/views/LCG_96python3/x86_64-slc6-gcc8-opt/lib:/cvmfs/sft.cern.ch/lcg/releases/vdt/0.4.3-992df/x86_64-slc6-gcc8-opt/lib:"
+         NEW_RPATH "")
+    if(CMAKE_INSTALL_DO_STRIP)
+      execute_process(COMMAND "/cvmfs/sft.cern.ch/lcg/releases/binutils/2.30-e5b21/x86_64-slc6/bin/strip" "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmSaveCanvases.so")
+    endif()
+  endif()
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
   if(EXISTS "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmCutflowTables.so" AND
      NOT IS_SYMLINK "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmCutflowTables.so")
     file(RPATH_CHECK
@@ -128,29 +159,60 @@ if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_
 endif()
 
 if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
-  if(EXISTS "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMakePlotsFromFile.so" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMakePlotsFromFile.so")
+  if(EXISTS "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake1DPlotsFromFile.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake1DPlotsFromFile.so")
     file(RPATH_CHECK
-         FILE "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMakePlotsFromFile.so"
+         FILE "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake1DPlotsFromFile.so"
          RPATH "")
   endif()
   list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
-   "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMakePlotsFromFile.so")
+   "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake1DPlotsFromFile.so")
   if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
   if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
     message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
   endif()
-file(INSTALL DESTINATION "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin" TYPE SHARED_LIBRARY FILES "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/build/libmMakePlotsFromFile.so")
-  if(EXISTS "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMakePlotsFromFile.so" AND
-     NOT IS_SYMLINK "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMakePlotsFromFile.so")
+file(INSTALL DESTINATION "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin" TYPE SHARED_LIBRARY FILES "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/build/libmMake1DPlotsFromFile.so")
+  if(EXISTS "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake1DPlotsFromFile.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake1DPlotsFromFile.so")
     file(RPATH_CHANGE
-         FILE "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMakePlotsFromFile.so"
+         FILE "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake1DPlotsFromFile.so"
          OLD_RPATH "/cvmfs/sft.cern.ch/lcg/views/LCG_96python3/x86_64-slc6-gcc8-opt/lib:/cvmfs/sft.cern.ch/lcg/releases/vdt/0.4.3-992df/x86_64-slc6-gcc8-opt/lib:"
          NEW_RPATH "")
     if(CMAKE_INSTALL_DO_STRIP)
-      execute_process(COMMAND "/cvmfs/sft.cern.ch/lcg/releases/binutils/2.30-e5b21/x86_64-slc6/bin/strip" "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMakePlotsFromFile.so")
+      execute_process(COMMAND "/cvmfs/sft.cern.ch/lcg/releases/binutils/2.30-e5b21/x86_64-slc6/bin/strip" "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake1DPlotsFromFile.so")
+    endif()
+  endif()
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+endif()
+
+if("x${CMAKE_INSTALL_COMPONENT}x" STREQUAL "xUnspecifiedx" OR NOT CMAKE_INSTALL_COMPONENT)
+  if(EXISTS "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake2DPlotsFromFile.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake2DPlotsFromFile.so")
+    file(RPATH_CHECK
+         FILE "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake2DPlotsFromFile.so"
+         RPATH "")
+  endif()
+  list(APPEND CMAKE_ABSOLUTE_DESTINATION_FILES
+   "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake2DPlotsFromFile.so")
+  if(CMAKE_WARN_ON_ABSOLUTE_INSTALL_DESTINATION)
+    message(WARNING "ABSOLUTE path INSTALL DESTINATION : ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+  endif()
+  if(CMAKE_ERROR_ON_ABSOLUTE_INSTALL_DESTINATION)
+    message(FATAL_ERROR "ABSOLUTE path INSTALL DESTINATION forbidden (by caller): ${CMAKE_ABSOLUTE_DESTINATION_FILES}")
+  endif()
+file(INSTALL DESTINATION "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin" TYPE SHARED_LIBRARY FILES "/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/build/libmMake2DPlotsFromFile.so")
+  if(EXISTS "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake2DPlotsFromFile.so" AND
+     NOT IS_SYMLINK "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake2DPlotsFromFile.so")
+    file(RPATH_CHANGE
+         FILE "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake2DPlotsFromFile.so"
+         OLD_RPATH "/cvmfs/sft.cern.ch/lcg/views/LCG_96python3/x86_64-slc6-gcc8-opt/lib:/cvmfs/sft.cern.ch/lcg/releases/vdt/0.4.3-992df/x86_64-slc6-gcc8-opt/lib:"
+         NEW_RPATH "")
+    if(CMAKE_INSTALL_DO_STRIP)
+      execute_process(COMMAND "/cvmfs/sft.cern.ch/lcg/releases/binutils/2.30-e5b21/x86_64-slc6/bin/strip" "$ENV{DESTDIR}/uscms/home/mreid/nobackup/CRAB/signal_region_analysis/CMSSW_10_2_18/src/iDMSkimmer/washAOD/macros/bin/libmMake2DPlotsFromFile.so")
     endif()
   endif()
 endif()
