@@ -301,6 +301,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         float recoPFMETMuonEtFraction_;
         float recoCaloMETPt_;
         float recoCaloMETPhi_;
+        float recoPFRecoilPt_;
+        float recoPFRecoilPhi_;
         float recoMmumu_;
         float recoDeltaPhiMETMu_;
 
@@ -321,10 +323,6 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         bool recoPFHEMFlag_;
 
         float recoPFMETJetDeltaPhi_;
-
-        // Vetoes
-        bool isElectron_;
-        bool isPhoton_;
 
         // MHT reco branch
         float MHTPt_;

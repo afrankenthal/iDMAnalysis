@@ -185,6 +185,8 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_PF_MET_phi", &recoPFMETPhi_);
     recoT->Branch("reco_Calo_MET_pt", &recoCaloMETPt_);
     recoT->Branch("reco_Calo_MET_phi", &recoCaloMETPhi_);
+    recoT->Branch("reco_PF_recoil_pt", &recoPFRecoilPt_);
+    recoT->Branch("reco_PF_recoil_phi", &recoPFRecoilPhi_);
     recoT->Branch("reco_PF_n_jets", &recoPFNJet_);
     recoT->Branch("reco_PF_n_passID_jets", &recoPFNPassIDJet_);
     recoT->Branch("reco_PF_n_highPt_jets", &recoPFNHighPtJet_);
@@ -539,54 +541,13 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoPFMETMuonEtFraction_ = -9999;
     recoCaloMETPt_ = -9999;
     recoCaloMETPhi_ = -9999;
+    recoPFRecoilPt_ = -9999;
+    recoPFRecoilPhi_ = -9999;
     recoMmumu_ = -9999;
     recoDeltaPhiMETMu_ = -9999;
     MHTPt_ = -9999;
     recoNMatchedGBMvDSA_ = -1;
-
-    // Add all electrons to ntuple, regardless of ID
-    // for now "good" electron means only ID is passed
-    // i.e. (IDmap % 2 == 1)
-    recoNElectron_ = recoElectronHandle_->size();
-    recoNGoodElectron_ = 0;
-    const edm::ValueMap<float> & eIDmap = *recoElectronIDHandle_;
-    for (size_t i = 0; i < recoElectronHandle_->size(); i++) {
-        reco::GsfElectronRef electronRef(recoElectronHandle_, i);
-        if ((int)eIDmap[electronRef] % 2 == 1)
-            recoNGoodElectron_++;
-        recoElectronPt_.push_back(electronRef->pt());
-        recoElectronEta_.push_back(electronRef->eta());
-        recoElectronPhi_.push_back(electronRef->phi());
-        recoElectronVxy_.push_back(electronRef->trackPositionAtVtx().rho());
-        recoElectronVz_.push_back(electronRef->trackPositionAtVtx().z());
-        recoElectronCharge_.push_back(electronRef->charge());
-        recoElectronIDResult_.push_back((int)eIDmap[electronRef]);
-    }
-
-    // Also add all photons to ntuple, regardless of ID
-    // Photon ID only produces 1 or 0
-    recoNPhoton_ = recoPhotonHandle_->size();
-    recoNGoodPhoton_ = 0;
-    const edm::ValueMap<bool> & phIDmap = *recoPhotonIDHandle_;
-    for (size_t i = 0; i < recoPhotonHandle_->size(); i++) {
-        reco::PhotonRef photonRef(recoPhotonHandle_, i);
-        if (phIDmap[photonRef])
-            recoNGoodPhoton_++;
-        recoPhotonPt_.push_back(photonRef->pt());
-        recoPhotonEta_.push_back(photonRef->eta());
-        recoPhotonPhi_.push_back(photonRef->phi());
-        recoPhotonIDResult_.push_back(phIDmap[photonRef]);
-    }
-
-    // Assign each trigger result to a different bit
-    fired_ = 0;
-    for (size_t i = 0; i < triggerPathsWithVersionNum_.size(); i++) {
-        std::string trigPath = triggerPathsWithVersionNum_[i];
-        fired_ |= (trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath)) << i);
-    }
-
-    //fired_ = trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath_));
-
+    
     // get MET
     // assumes 0-th element of PFMET collection is largest pt (and only?) element
     reco::PFMETRef PFMETr(recoPFMETHandle_, 0);
@@ -604,6 +565,59 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         MHT += jet.p4();
     }
     MHTPt_ = MHT.pt();
+    
+    // As we go along, calculate recoil with electrons, photons, and GM that passed ID
+    double recoil_px = PFMETr->px();
+    double recoil_py = PFMETr->py();
+
+    // Add all electrons to ntuple, regardless of ID
+    // for now "good" electron means only ID is passed
+    // i.e. (IDmap % 2 == 1)
+    recoNElectron_ = recoElectronHandle_->size();
+    recoNGoodElectron_ = 0;
+    const edm::ValueMap<float> & eIDmap = *recoElectronIDHandle_;
+    for (size_t i = 0; i < recoElectronHandle_->size(); i++) {
+        reco::GsfElectronRef electronRef(recoElectronHandle_, i);
+        if ((int)eIDmap[electronRef] % 2 == 1 && electronRef->pt() > 10 && abs(electronRef->eta() < 2.5)) {
+            recoNGoodElectron_++;
+            recoil_px += electronRef->px();
+            recoil_py += electronRef->py();
+        }
+        recoElectronPt_.push_back(electronRef->pt());
+        recoElectronEta_.push_back(electronRef->eta());
+        recoElectronPhi_.push_back(electronRef->phi());
+        recoElectronVxy_.push_back(electronRef->trackPositionAtVtx().rho());
+        recoElectronVz_.push_back(electronRef->trackPositionAtVtx().z());
+        recoElectronCharge_.push_back(electronRef->charge());
+        recoElectronIDResult_.push_back((int)eIDmap[electronRef]);
+    }
+
+    // Also add all photons to ntuple, regardless of ID
+    // Photon ID only produces 1 or 0
+    recoNPhoton_ = recoPhotonHandle_->size();
+    recoNGoodPhoton_ = 0;
+    const edm::ValueMap<bool> & phIDmap = *recoPhotonIDHandle_;
+    for (size_t i = 0; i < recoPhotonHandle_->size(); i++) {
+        reco::PhotonRef photonRef(recoPhotonHandle_, i);
+        if (phIDmap[photonRef] && photonRef->pt() > 15 && abs(photonRef->eta()) < 2.5) {
+            recoNGoodPhoton_++;
+            recoil_px += photonRef->px();
+            recoil_py += photonRef->py();
+        }
+        recoPhotonPt_.push_back(photonRef->pt());
+        recoPhotonEta_.push_back(photonRef->eta());
+        recoPhotonPhi_.push_back(photonRef->phi());
+        recoPhotonIDResult_.push_back(phIDmap[photonRef]);
+    }
+
+    // Assign each trigger result to a different bit
+    fired_ = 0;
+    for (size_t i = 0; i < triggerPathsWithVersionNum_.size(); i++) {
+        std::string trigPath = triggerPathsWithVersionNum_[i];
+        fired_ |= (trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath)) << i);
+    }
+
+    //fired_ = trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath_));
 
     // Sort dSA muons (note that muon collection is *not* sorted by pT at first)
     recoNDSA_ = muTrackHandle1_->size();
@@ -687,7 +701,14 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         recoGMTrkNumHits_.push_back(mu_i->hitPattern().numberOfValidMuonHits());
         recoGMTrkNumDTHits_.push_back(mu_i->hitPattern().numberOfValidMuonDTHits());
         recoGMTrkNumCSCHits_.push_back(mu_i->hitPattern().numberOfValidMuonCSCHits());
+        recoil_px += mu_i->px();
+        recoil_py += mu_i->py();
     }
+
+    // Calculate recoil pt after looking at all collections
+    recoPFRecoilPt_ = sqrt(recoil_px*recoil_px + recoil_py*recoil_py);
+    recoPFRecoilPhi_ = atan2(recoil_py, recoil_px);
+
 
     // Apply Jet loose ID to jet collection, tag passes/fails on a side vector
     // Additionally mitigate HEM issue on chambers 15 and 16
@@ -802,6 +823,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             recoPFJetChargedMultiplicity_.push_back(jet_i->chargedMultiplicity());
         }
     }
+
 
     // Calculate angle between MET and leading jet
     recoPFMETJetDeltaPhi_ = -9999;
