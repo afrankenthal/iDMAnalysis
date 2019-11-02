@@ -30,8 +30,9 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     muTrackTag2_(ps.getParameter<edm::InputTag>("muTrack2")),
     genParticleTag_(ps.getParameter<edm::InputTag>("genParticle")),
     genJetTag_(ps.getParameter<edm::InputTag>("genJet")),
-    genMetTag_(ps.getParameter<edm::InputTag>("genMet")),
-    recoMetTag_(ps.getParameter<edm::InputTag>("recoMet")),
+    genMETTag_(ps.getParameter<edm::InputTag>("genMET")),
+    recoPFMETTag_(ps.getParameter<edm::InputTag>("PFMET")),
+    recoCaloMETTag_(ps.getParameter<edm::InputTag>("caloMET")),
     recoJetTag_(ps.getParameter<edm::InputTag>("recoJet")),
     trigResultsTag_(ps.getParameter<edm::InputTag>("trigResult")),
     trigEventTag_(ps.getParameter<edm::InputTag>("trigEvent")),
@@ -40,6 +41,7 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     genEvtInfoTag_(ps.getParameter<edm::InputTag>("genEvt")),
     processName_(ps.getParameter<std::string>("processName")),
     HBHENoiseFilterResultProducerTag_("HBHENoiseFilterResultProducer","HBHENoiseFilterResult"),
+    HBHEIsoNoiseFilterResultProducerTag_("HBHENoiseFilterResultProducer","HBHEIsoNoiseFilterResult"),
     primaryVertexFilterTag_("myPrimaryVertexFilter"),
     globalSuperTightHalo2016FilterTag_("globalSuperTightHalo2016Filter"),
     EcalDeadCellTriggerPrimitiveFilterTag_("EcalDeadCellTriggerPrimitiveFilter"),
@@ -48,11 +50,9 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     muonBadTrackFilterTag_("muonBadTrackFilter"),
     mJetCorrectorTag_(ps.getParameter<edm::InputTag>("corrLabel")),
     recoElectronTag_("gedGsfElectrons"),
-    recoElectronIDTag_("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V2-medium"),
-    //recoElectronIDTag_("eidLoose"),
+    recoElectronIDTag_("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V2-loose"),
     recoPhotonTag_("gedPhotons"),
-    recoPhotonIDTag_("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V2-medium"),
-    //recoPhotonIDTag_("PhotonIDProdGED", "PhotonCutBasedIDLoose"),
+    recoPhotonIDTag_("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V2-loose"),
     
     bTagProbbToken_(consumes<reco::JetTagCollection>(bTagProbbTag_)),
     bTagProbbbToken_(consumes<reco::JetTagCollection>(bTagProbbbTag_)),
@@ -60,14 +60,16 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     muTrackToken2_(consumes<reco::TrackCollection>(muTrackTag2_)),
     genParticleToken_(consumes<reco::GenParticleCollection>(genParticleTag_)),
     genJetToken_(consumes<reco::GenJetCollection>(genJetTag_)),
-    genMetToken_(consumes<reco::GenMETCollection>(genMetTag_)),
-    recoMetToken_(consumes<reco::PFMETCollection>(recoMetTag_)),
+    genMETToken_(consumes<reco::GenMETCollection>(genMETTag_)),
+    recoPFMETToken_(consumes<reco::PFMETCollection>(recoPFMETTag_)),
+    recoCaloMETToken_(consumes<reco::CaloMETCollection>(recoCaloMETTag_)),
     recoJetToken_(consumes<reco::PFJetCollection>(recoJetTag_)),
     trigResultsToken_(consumes<edm::TriggerResults>(trigResultsTag_)),
     trigEventToken_(consumes<trigger::TriggerEvent>(trigEventTag_)),
     pileupInfosToken_(consumes<std::vector<PileupSummaryInfo>>(pileupInfosTag_)),
     genEvtInfoToken_(consumes<GenEventInfoProduct>(genEvtInfoTag_)),
     HBHENoiseFilterResultProducerToken_(consumes<bool>(HBHENoiseFilterResultProducerTag_)),
+    HBHEIsoNoiseFilterResultProducerToken_(consumes<bool>(HBHEIsoNoiseFilterResultProducerTag_)),
     primaryVertexFilterToken_(consumes<int>(primaryVertexFilterTag_)),
     globalSuperTightHalo2016FilterToken_(consumes<bool>(globalSuperTightHalo2016FilterTag_)),
     EcalDeadCellTriggerPrimitiveFilterToken_(consumes<bool>(EcalDeadCellTriggerPrimitiveFilterTag_)),
@@ -95,8 +97,9 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     desc.add<edm::InputTag>("muTrack2", edm::InputTag("globalMuons"));
     desc.add<edm::InputTag>("genParticle", edm::InputTag("genParticles"));
     desc.add<edm::InputTag>("genJet", edm::InputTag("ak4GenJets"));
-    desc.add<edm::InputTag>("genMet", edm::InputTag("genMetTrue"));
-    desc.add<edm::InputTag>("recoMet", edm::InputTag("pfMetT0rtT1Txy"));
+    desc.add<edm::InputTag>("genMET", edm::InputTag("genMetTrue"));
+    desc.add<edm::InputTag>("PFMET", edm::InputTag("pfMetT0rtT1Txy"));
+    desc.add<edm::InputTag>("caloMET", edm::InputTag("caloMet"));
     desc.add<edm::InputTag>("recoJet", edm::InputTag("ak4PFJetsCHS"));
     desc.add<edm::InputTag>("trigResult", edm::InputTag("TriggerResults", "", "HLT"));
     desc.add<edm::InputTag>("trigEvent", edm::InputTag("hltTriggerSummaryAOD", "", "HLT"));
@@ -118,19 +121,36 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("npv", &npv_);
     recoT->Branch("MET_filters_fail_bits", &METFiltersFailBits_);
     recoT->Branch("trig_fired", &fired_);
-    recoT->Branch("reco_n_dsa", &recoNMu_);
-    recoT->Branch("reco_n_good_dsa", &recoNGoodDSAMu_);
-    recoT->Branch("reco_dsa_pt",  &recoPt_);
-    recoT->Branch("reco_dsa_eta", &recoEta_);
-    recoT->Branch("reco_dsa_phi", &recoPhi_);
-    recoT->Branch("reco_dsa_dxy", &recoDxy_);
-    recoT->Branch("reco_dsa_dz",  &recoDz_);
-    recoT->Branch("reco_dsa_charge", &recoCharge_);
-    recoT->Branch("reco_dsa_trk_chi2", &recoTrkChi2_);
-    recoT->Branch("reco_dsa_trk_n_planes", &recoTrkNumPlanes_);
-    recoT->Branch("reco_dsa_trk_n_hits", &recoTrkNumHits_);
+    recoT->Branch("reco_n_dsa", &recoNDSA_);
+    recoT->Branch("reco_n_good_dsa", &recoNGoodDSA_);
+    recoT->Branch("reco_dsa_pt",  &recoDSAPt_);
+    recoT->Branch("reco_dsa_pt_error",  &recoDSAPtError_);
+    recoT->Branch("reco_dsa_eta", &recoDSAEta_);
+    recoT->Branch("reco_dsa_phi", &recoDSAPhi_);
+    recoT->Branch("reco_dsa_dxy", &recoDSADxy_);
+    recoT->Branch("reco_dsa_dz",  &recoDSADz_);
+    recoT->Branch("reco_dsa_charge", &recoDSACharge_);
+    recoT->Branch("reco_dsa_trk_chi2", &recoDSATrkChi2_);
+    recoT->Branch("reco_dsa_trk_n_planes", &recoDSATrkNumPlanes_);
+    recoT->Branch("reco_dsa_trk_n_hits", &recoDSATrkNumHits_);
+    recoT->Branch("reco_dsa_trk_n_DT_hits", &recoDSATrkNumDTHits_);
+    recoT->Branch("reco_dsa_trk_n_CSC_hits", &recoDSATrkNumCSCHits_);
     recoT->Branch("reco_dsa_idx0", &recoDSAIdx0_);
     recoT->Branch("reco_dsa_idx1", &recoDSAIdx1_);
+    recoT->Branch("reco_n_gm", &recoNGM_);
+    recoT->Branch("reco_n_good_gm", &recoNGoodGM_);
+    recoT->Branch("reco_gm_pt",  &recoGMPt_);
+    recoT->Branch("reco_gm_pt_error",  &recoGMPtError_);
+    recoT->Branch("reco_gm_eta", &recoGMEta_);
+    recoT->Branch("reco_gm_phi", &recoGMPhi_);
+    recoT->Branch("reco_gm_dxy", &recoGMDxy_);
+    recoT->Branch("reco_gm_dz",  &recoGMDz_);
+    recoT->Branch("reco_gm_charge", &recoGMCharge_);
+    recoT->Branch("reco_gm_trk_chi2", &recoGMTrkChi2_);
+    recoT->Branch("reco_gm_trk_n_planes", &recoGMTrkNumPlanes_);
+    recoT->Branch("reco_gm_trk_n_hits", &recoGMTrkNumHits_);
+    recoT->Branch("reco_gm_trk_n_DT_hits", &recoGMTrkNumDTHits_);
+    recoT->Branch("reco_gm_trk_n_CSC_hits", &recoGMTrkNumCSCHits_);
     recoT->Branch("reco_n_gbmdsa_match", &recoNMatchedGBMvDSA_);
     recoT->Branch("reco_gbmdsa_dR", &recoGBMDSADr_);
     recoT->Branch("reco_sel_mu_pt", &selectedMuonsPt_);
@@ -140,14 +160,31 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_sel_mu_dz", &selectedMuonsDz_);
     recoT->Branch("reco_sel_mu_charge", &selectedMuonsCharge_);
     recoT->Branch("reco_Mmumu",  &recoMmumu_);
-    recoT->Branch("reco_METmu_dphi", &recoDeltaPhiMetMu_);
+    recoT->Branch("reco_METmu_dphi", &recoDeltaPhiMETMu_);
     recoT->Branch("reco_vtx_vxy", &recoVtxVxy_);
     recoT->Branch("reco_vtx_vz",  &recoVtxVz_);
     recoT->Branch("reco_vtx_sigmavxy", &recoVtxSigmaVxy_);
     recoT->Branch("reco_vtx_reduced_chi2", &recoVtxReducedChi2_);
     recoT->Branch("reco_vtx_dR",  &recoVtxDr_);
-    recoT->Branch("reco_PF_MET_pt", &recoPFMetPt_);
-    recoT->Branch("reco_PF_MET_phi", &recoPFMetPhi_);
+    recoT->Branch("reco_n_electron", &recoNElectron_);
+    recoT->Branch("reco_n_good_electron", &recoNGoodElectron_);
+    recoT->Branch("reco_electron_pt",  &recoElectronPt_);
+    recoT->Branch("reco_electron_eta", &recoElectronEta_);
+    recoT->Branch("reco_electron_phi", &recoElectronPhi_);
+    recoT->Branch("reco_electron_vxy", &recoElectronVxy_);
+    recoT->Branch("reco_electron_vz",  &recoElectronVz_);
+    recoT->Branch("reco_electron_charge", &recoElectronCharge_);
+    recoT->Branch("reco_electron_id_result", &recoElectronIDResult_);
+    recoT->Branch("reco_n_photon", &recoNPhoton_);
+    recoT->Branch("reco_n_good_photon", &recoNGoodPhoton_);
+    recoT->Branch("reco_photon_pt",  &recoPhotonPt_);
+    recoT->Branch("reco_photon_eta", &recoPhotonEta_);
+    recoT->Branch("reco_photon_phi", &recoPhotonPhi_);
+    recoT->Branch("reco_photon_id_result", &recoPhotonIDResult_);
+    recoT->Branch("reco_PF_MET_pt", &recoPFMETPt_);
+    recoT->Branch("reco_PF_MET_phi", &recoPFMETPhi_);
+    recoT->Branch("reco_Calo_MET_pt", &recoCaloMETPt_);
+    recoT->Branch("reco_Calo_MET_phi", &recoCaloMETPhi_);
     recoT->Branch("reco_PF_n_jets", &recoPFNJet_);
     recoT->Branch("reco_PF_n_passID_jets", &recoPFNPassIDJet_);
     recoT->Branch("reco_PF_n_highPt_jets", &recoPFNHighPtJet_);
@@ -155,12 +192,14 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_PF_jet_eta", &recoPFJetEta_);
     recoT->Branch("reco_PF_jet_phi", &recoPFJetPhi_);
     recoT->Branch("reco_PF_jet_BTag", &recoPFJetBTag_);
+    recoT->Branch("reco_PF_jet_CHEF", &recoPFJetCHEF_);
+    recoT->Branch("reco_PF_jet_NHEF", &recoPFJetNHEF_);
+    recoT->Branch("reco_PF_jet_CEEF", &recoPFJetCEEF_);
+    recoT->Branch("reco_PF_jet_NEEF", &recoPFJetNEEF_);
     recoT->Branch("reco_PF_HEM_flag", &recoPFHEMFlag_);
     recoT->Branch("reco_PF_METjet_dphi", &recoPFMETJetDeltaPhi_);
     recoT->Branch("reco_MHT_Pt", &MHTPt_);
     recoT->Branch("cuts", &cuts_);
-    recoT->Branch("is_electron", &isElectron_);
-    recoT->Branch("is_photon", &isPhoton_);
 
     if (!isData) {
 
@@ -196,8 +235,8 @@ void iDMAnalyzer::beginJob()
         genT->Branch("gen_jet_pt", &genJetPt_);
         genT->Branch("gen_jet_eta", &genJetEta_);
         genT->Branch("gen_jet_phi", &genJetPhi_);
-        genT->Branch("gen_MET_pt", &genLeadMetPt_);
-        genT->Branch("gen_MET_phi", &genLeadMetPhi_);
+        genT->Branch("gen_MET_pt", &genLeadMETPt_);
+        genT->Branch("gen_MET_phi", &genLeadMETPhi_);
     }
 }
 
@@ -246,9 +285,14 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "muTrack2");
         return false;
     }
-    iEvent.getByToken(recoMetToken_, recoMetHandle_);
-    if (!recoMetHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "recoMET");
+    iEvent.getByToken(recoPFMETToken_, recoPFMETHandle_);
+    if (!recoPFMETHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "PFMET");
+        return false;
+    }
+    iEvent.getByToken(recoCaloMETToken_, recoCaloMETHandle_);
+    if (!recoCaloMETHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "CaloMET");
         return false;
     }
     iEvent.getByToken(recoJetToken_, recoJetHandle_);
@@ -274,6 +318,7 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
     triggerPathsWithoutVersionNum_.push_back("HLT_PFMETNoMu130_PFMHTNoMu130_IDTight");
     triggerPathsWithoutVersionNum_.push_back("HLT_PFMETNoMu140_PFMHTNoMu140_IDTight");
     triggerPathsWithoutVersionNum_.push_back("HLT_PFMET120_PFMHT120_IDTight_PFHT60");
+    triggerPathsWithoutVersionNum_.push_back("HLT_IsoMu24");
     const std::vector<std::string>& pathNames = hltConfig_.triggerNames();
     triggerPathsWithVersionNum_.clear();
     for (auto trigPathNoVersion : triggerPathsWithoutVersionNum_) {
@@ -303,6 +348,11 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
     iEvent.getByToken(HBHENoiseFilterResultProducerToken_, HBHENoiseFilterResultProducerHandle_);
     if (!HBHENoiseFilterResultProducerHandle_.isValid()) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "HBHENoiseFilter");
+        return false;
+    }
+    iEvent.getByToken(HBHEIsoNoiseFilterResultProducerToken_, HBHEIsoNoiseFilterResultProducerHandle_);
+    if (!HBHEIsoNoiseFilterResultProducerHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "HBHEIsoNoiseFilter");
         return false;
     }
     iEvent.getByToken(primaryVertexFilterToken_, primaryVertexFilterHandle_);
@@ -377,8 +427,8 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
             LogError("HandleError") << boost::str(boost::format(error_msg) % "genJet");
             return false;
         }
-        iEvent.getByToken(genMetToken_, genMetHandle_);
-        if (!genMetHandle_.isValid()) {
+        iEvent.getByToken(genMETToken_, genMETHandle_);
+        if (!genMETHandle_.isValid()) {
             LogError("HandleError") << boost::str(boost::format(error_msg) % "genMET");
             return false;
         }
@@ -413,36 +463,68 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     METFiltersFailBits_ = 0;
     if (!(*HBHENoiseFilterResultProducerHandle_)) // false means event is bad
         METFiltersFailBits_ |= (1 << 0);
-    if (!(*primaryVertexFilterHandle_)) // primaryVertexFilter == 0 means event is bad (number of vertices)
+    if (!(*HBHEIsoNoiseFilterResultProducerHandle_)) // false means event is bad
         METFiltersFailBits_ |= (1 << 1);
-    if (!(*globalSuperTightHalo2016FilterHandle_)) // false means event is bad
+    if (!(*primaryVertexFilterHandle_)) // primaryVertexFilter == 0 means event is bad (number of vertices)
         METFiltersFailBits_ |= (1 << 2);
-    if (!(*EcalDeadCellTriggerPrimitiveFilterHandle_)) // false means event is bad
+    if (!(*globalSuperTightHalo2016FilterHandle_)) // false means event is bad
         METFiltersFailBits_ |= (1 << 3);
-    if (!(*ecalBadCalibFilterHandle_)) // false means event is bad
+    if (!(*EcalDeadCellTriggerPrimitiveFilterHandle_)) // false means event is bad
         METFiltersFailBits_ |= (1 << 4);
-    if (!(*BadPFMuonFilterHandle_)) // false means event is bad
+    if (!(*ecalBadCalibFilterHandle_)) // false means event is bad
         METFiltersFailBits_ |= (1 << 5);
-    if (!(*muonBadTrackFilterHandle_)) // false means event is bad
+    if (!(*BadPFMuonFilterHandle_)) // false means event is bad
         METFiltersFailBits_ |= (1 << 6);
+    if (!(*muonBadTrackFilterHandle_)) // false means event is bad
+        METFiltersFailBits_ |= (1 << 7);
     
 
 
-    recoPt_ .clear();
-    recoEta_.clear();
-    recoPhi_.clear();
-    recoDxy_.clear();
-    recoDz_ .clear();
-    recoCharge_.clear();
-    recoTrkChi2_.clear();
-    recoTrkNumPlanes_.clear();
-    recoTrkNumHits_.clear();
+    recoDSAPt_.clear();
+    recoDSAPtError_.clear();
+    recoDSAEta_.clear();
+    recoDSAPhi_.clear();
+    recoDSADxy_.clear();
+    recoDSADz_.clear();
+    recoDSACharge_.clear();
+    recoDSATrkChi2_.clear();
+    recoDSATrkNumPlanes_.clear();
+    recoDSATrkNumHits_.clear();
+    recoDSATrkNumDTHits_.clear();
+    recoDSATrkNumCSCHits_.clear();
     recoDSAIdx0_ = -9999;
     recoDSAIdx1_ = -9999;
+    recoGMPt_.clear();
+    recoGMPtError_.clear();
+    recoGMEta_.clear();
+    recoGMPhi_.clear();
+    recoGMDxy_.clear();
+    recoGMDz_.clear();
+    recoGMCharge_.clear();
+    recoGMTrkChi2_.clear();
+    recoGMTrkNumPlanes_.clear();
+    recoGMTrkNumHits_.clear();
+    recoGMTrkNumDTHits_.clear();
+    recoGMTrkNumCSCHits_.clear();
+    recoElectronPt_.clear();
+    recoElectronEta_.clear();
+    recoElectronPhi_.clear();
+    recoElectronVxy_.clear();
+    recoElectronVz_.clear();
+    recoElectronCharge_.clear();
+    recoElectronIDResult_.clear();
+    recoPhotonPt_.clear();
+    recoPhotonEta_.clear();
+    recoPhotonPhi_.clear();
+    recoPhotonIDResult_.clear();
     recoPFJetPt_.clear();
     recoPFJetEta_.clear();
     recoPFJetPhi_.clear();
     recoPFJetBTag_.clear();
+    recoPFJetCHEF_.clear();
+    recoPFJetNHEF_.clear();
+    recoPFJetCEEF_.clear();
+    recoPFJetNEEF_.clear();
     recoPFHEMFlag_ = false;
     selectedMuonsPt_.clear();
     selectedMuonsEta_.clear();
@@ -452,36 +534,51 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     selectedMuonsCharge_.clear();
 
     fired_ = 0;
-    recoPFMetPt_ = -9999;
-    recoPFMetPhi_ = -9999;
+    recoPFMETPt_ = -9999;
+    recoPFMETPhi_ = -9999;
+    recoPFMETMuonEtFraction_ = -9999;
+    recoCaloMETPt_ = -9999;
+    recoCaloMETPhi_ = -9999;
     recoMmumu_ = -9999;
-    recoDeltaPhiMetMu_ = -9999;
+    recoDeltaPhiMETMu_ = -9999;
     MHTPt_ = -9999;
     recoNMatchedGBMvDSA_ = -1;
 
-    isElectron_ = false;
+    // Add all electrons to ntuple, regardless of ID
+    // for now "good" electron means only ID is passed
+    // i.e. (IDmap % 2 == 1)
+    recoNElectron_ = recoElectronHandle_->size();
+    recoNGoodElectron_ = 0;
     const edm::ValueMap<float> & eIDmap = *recoElectronIDHandle_;
-    //std::cout << "e coll size " << recoElectronHandle_->size() << std::endl;
-    //std::cout << "e ID size " << eIDmap.size() << std::endl;
     for (size_t i = 0; i < recoElectronHandle_->size(); i++) {
         reco::GsfElectronRef electronRef(recoElectronHandle_, i);
         if ((int)eIDmap[electronRef] % 2 == 1)
-            isElectron_ = true;
-        //std::cout << "eID = " << eIDmap[electronRef] << std::endl;
+            recoNGoodElectron_++;
+        recoElectronPt_.push_back(electronRef->pt());
+        recoElectronEta_.push_back(electronRef->eta());
+        recoElectronPhi_.push_back(electronRef->phi());
+        recoElectronVxy_.push_back(electronRef->trackPositionAtVtx().rho());
+        recoElectronVz_.push_back(electronRef->trackPositionAtVtx().z());
+        recoElectronCharge_.push_back(electronRef->charge());
+        recoElectronIDResult_.push_back((int)eIDmap[electronRef]);
     }
 
-    isPhoton_ = false;
+    // Also add all photons to ntuple, regardless of ID
+    // Photon ID only produces 1 or 0
+    recoNPhoton_ = recoPhotonHandle_->size();
+    recoNGoodPhoton_ = 0;
     const edm::ValueMap<bool> & phIDmap = *recoPhotonIDHandle_;
-    //std::cout << "ph coll size " << recoPhotonHandle_->size() << std::endl;
-    //std::cout << "ph ID size " << phIDmap.size() << std::endl;
     for (size_t i = 0; i < recoPhotonHandle_->size(); i++) {
         reco::PhotonRef photonRef(recoPhotonHandle_, i);
         if (phIDmap[photonRef])
-            isPhoton_ = true;
-        //std::cout << "eID = " << phIDmap[photonRef] << std::endl;
+            recoNGoodPhoton_++;
+        recoPhotonPt_.push_back(photonRef->pt());
+        recoPhotonEta_.push_back(photonRef->eta());
+        recoPhotonPhi_.push_back(photonRef->phi());
+        recoPhotonIDResult_.push_back(phIDmap[photonRef]);
     }
 
-    // Trigger check firing bit (MET+MHT 120 GeV trigger)
+    // Assign each trigger result to a different bit
     fired_ = 0;
     for (size_t i = 0; i < triggerPathsWithVersionNum_.size(); i++) {
         std::string trigPath = triggerPathsWithVersionNum_[i];
@@ -491,10 +588,14 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     //fired_ = trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath_));
 
     // get MET
-    // assumes 0-th element of recoMet collection is largest pt (and only?) element
-    reco::PFMETRef recoMetr(recoMetHandle_, 0);
-    recoPFMetPt_ = recoMetr->pt();
-    recoPFMetPhi_ = recoMetr->phi();
+    // assumes 0-th element of PFMET collection is largest pt (and only?) element
+    reco::PFMETRef PFMETr(recoPFMETHandle_, 0);
+    recoPFMETPt_ = PFMETr->pt();
+    recoPFMETPhi_ = PFMETr->phi();
+    recoPFMETMuonEtFraction_ = PFMETr->MuonEtFraction();
+    reco::CaloMETRef CaloMETr(recoCaloMETHandle_, 0);
+    recoCaloMETPt_ = CaloMETr->pt();
+    recoCaloMETPhi_ = CaloMETr->phi();
     
     // calculate MHT
     math::XYZTLorentzVector MHT;
@@ -505,7 +606,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     MHTPt_ = MHT.pt();
 
     // Sort dSA muons (note that muon collection is *not* sorted by pT at first)
-    recoNMu_ = muTrackHandle1_->size();
+    recoNDSA_ = muTrackHandle1_->size();
 
     vector<reco::TrackRef> muTracks1{};
     for (size_t i = 0; i < muTrackHandle1_->size(); i++) {
@@ -514,6 +615,8 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     sort(muTracks1.begin(), muTracks1.end(), [](const auto & l, const auto & r){ return l->pt() > r->pt(); });
 
     // Sort global muons (note that muon collection is *not* sorted by pT at first)
+    recoNGM_ = muTrackHandle2_->size();
+
     vector<reco::TrackRef> muTracks2{};
     for (size_t i = 0; i < muTrackHandle2_->size(); i++) {
         muTracks2.emplace_back(muTrackHandle2_, i);
@@ -532,9 +635,13 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         muGoodTracksIdx.push_back(i);
     }
-    recoNGoodDSAMu_ = muGoodTracksIdx.size();
+    recoNGoodDSA_ = muGoodTracksIdx.size();
     
     // Create separate collection for good quality global muons
+    // TODO: this needs to change, GMs have tracker info as well
+    // Cuts on muon chamber variables can be looser, while also
+    // implementing cuts on tracker variables (the whole point
+    // of having GMs as well)
     vector<int> muGoodTracksIdx2{};
     for (size_t i = 0; i < muTracks2.size(); i++) {
         if (muTracks2[i]->hitPattern().muonStationsWithValidHits() < 2 ||
@@ -546,19 +653,40 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         }
         muGoodTracksIdx2.push_back(i);
     }
+    recoNGoodGM_ = muGoodTracksIdx2.size();
     
     // Only add good muons' info to ntuple
     for (size_t i = 0; i < muGoodTracksIdx.size(); i++) {
         reco::TrackRef mu_i = muTracks1[muGoodTracksIdx[i]];
-        recoPt_.push_back(mu_i->pt());
-        recoEta_.push_back(mu_i->eta());
-        recoPhi_.push_back(mu_i->phi());
-        recoDxy_.push_back(mu_i->dxy());
-        recoDz_.push_back(mu_i->dz());
-        recoCharge_.push_back(mu_i->charge());
-        recoTrkChi2_.push_back(mu_i->normalizedChi2());
-        recoTrkNumPlanes_.push_back(mu_i->hitPattern().muonStationsWithValidHits());
-        recoTrkNumHits_.push_back(mu_i->hitPattern().numberOfValidMuonHits());
+        recoDSAPt_.push_back(mu_i->pt());
+        recoDSAPtError_.push_back(mu_i->ptError());
+        recoDSAEta_.push_back(mu_i->eta());
+        recoDSAPhi_.push_back(mu_i->phi());
+        recoDSADxy_.push_back(mu_i->dxy());
+        recoDSADz_.push_back(mu_i->dz());
+        recoDSACharge_.push_back(mu_i->charge());
+        recoDSATrkChi2_.push_back(mu_i->normalizedChi2());
+        recoDSATrkNumPlanes_.push_back(mu_i->hitPattern().muonStationsWithValidHits());
+        recoDSATrkNumHits_.push_back(mu_i->hitPattern().numberOfValidMuonHits());
+        recoDSATrkNumDTHits_.push_back(mu_i->hitPattern().numberOfValidMuonDTHits());
+        recoDSATrkNumCSCHits_.push_back(mu_i->hitPattern().numberOfValidMuonCSCHits());
+    }
+    // Only add good muons' info to ntuple
+    for (size_t i = 0; i < muGoodTracksIdx2.size(); i++) {
+        reco::TrackRef mu_i = muTracks2[muGoodTracksIdx2[i]];
+        recoGMPt_.push_back(mu_i->pt());
+        recoGMPtError_.push_back(mu_i->ptError());
+        recoDSAEta_.push_back(mu_i->eta());
+        recoGMEta_.push_back(mu_i->eta());
+        recoGMPhi_.push_back(mu_i->phi());
+        recoGMDxy_.push_back(mu_i->dxy());
+        recoGMDz_.push_back(mu_i->dz());
+        recoGMCharge_.push_back(mu_i->charge());
+        recoGMTrkChi2_.push_back(mu_i->normalizedChi2());
+        recoGMTrkNumPlanes_.push_back(mu_i->hitPattern().muonStationsWithValidHits());
+        recoGMTrkNumHits_.push_back(mu_i->hitPattern().numberOfValidMuonHits());
+        recoGMTrkNumDTHits_.push_back(mu_i->hitPattern().numberOfValidMuonDTHits());
+        recoGMTrkNumCSCHits_.push_back(mu_i->hitPattern().numberOfValidMuonCSCHits());
     }
 
     // Apply Jet loose ID to jet collection, tag passes/fails on a side vector
@@ -581,6 +709,15 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
                )
                 jetIDResult = false;
         }
+        // as per monojet, also check extra cuts for leading jet
+        if (i == 0) {
+            if (
+                    jet_i->chargedHadronEnergyFraction() < 0.1 ||
+                    jet_i->neutralHadronEnergyFraction() > 0.8
+               )
+                jetIDResult = false;
+        }
+
         jetIDResults.push_back(jetIDResult);
 
         // If passed jet is located in HEM region, veto the event
@@ -590,13 +727,15 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             recoPFHEMFlag_ = true;
     }
     
-    // Perform cross-cleaning in jet collection with good-quality dSA muons
+    // Perform cross-cleaning in jet collection with good-quality GM muons
+    // TODO: other option is that muon is coming out of jet, in that case
+    // want a way to reject entire event since it's probably J/Psi
     for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
         // Skip failed ID jets
         if (!jetIDResults[i]) continue;
         reco::PFJetRef jet_i(recoJetHandle_, i);
-        for (size_t j = 0; j < muGoodTracksIdx.size(); ++j) {
-            reco::TrackRef mu_j = muTracks1[muGoodTracksIdx[j]];
+        for (size_t j = 0; j < muGoodTracksIdx2.size(); ++j) {
+            reco::TrackRef mu_j = muTracks2[muGoodTracksIdx2[j]];
             double dR = reco::deltaR(*jet_i, *mu_j);
             // if muon and jet match in dR fail the ID jet
             // because the jet is probably a muon instead
@@ -604,6 +743,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
                 jetIDResults[i] = false;
         }
     }
+    // TODO: dSA muons dont contribute to PFJets so no need to cross-clean
+    // However, possible muons from J/Psi in jets --> how to mitigate?
+
 
     // Apply JEC to jets that pass ID
     // Need to re-order jets by pT after this
@@ -652,13 +794,19 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
                 recoPFJetBTag_.push_back(bTagsProbb[index].second+bTagsProbbb[index].second);
             else
                 recoPFJetBTag_.push_back(-9999);
+            recoPFJetCHEF_.push_back(jet_i->chargedHadronEnergyFraction());
+       		recoPFJetNHEF_.push_back(jet_i->neutralHadronEnergyFraction());
+       		recoPFJetCEEF_.push_back(jet_i->chargedEmEnergyFraction());
+       		recoPFJetNEEF_.push_back(jet_i->neutralEmEnergyFraction());
+            recoPFJetNumDaughters_.push_back(jet_i->numberOfDaughters());
+            recoPFJetChargedMultiplicity_.push_back(jet_i->chargedMultiplicity());
         }
     }
 
     // Calculate angle between MET and leading jet
     recoPFMETJetDeltaPhi_ = -9999;
     if (recoPFJetPhi_.size() > 0)
-        recoPFMETJetDeltaPhi_ = reco::deltaPhi(recoPFJetPhi_[0], recoPFMetPhi_);
+        recoPFMETJetDeltaPhi_ = reco::deltaPhi(recoPFJetPhi_[0], recoPFMETPhi_);
 
     // Pick pair of dSA muons with smallest vertex chi square fit
     bool fFoundValidVertex = false;
@@ -673,7 +821,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", theB);
     KalmanVertexFitter kvf(true);
 
-    if (recoNGoodDSAMu_ >= 2) {
+    if (recoNGoodDSA_ >= 2) {
         for (size_t i = 0; i < muGoodTracksIdx.size()-1; i++) {
             for (size_t j = i+1; j < muGoodTracksIdx.size(); j++) {
 
@@ -709,9 +857,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     nSelectedMuons_ = -1;
     if (fFoundValidVertex)
         nSelectedMuons_ = 2;
-    else if (recoNGoodDSAMu_ == 1)
+    else if (recoNGoodDSA_ == 1)
         nSelectedMuons_ = 1;
-    else if (recoNGoodDSAMu_ == 0)
+    else if (recoNGoodDSA_ == 0)
         nSelectedMuons_ = 0;
 
     // Now try to match global muons with selected dSA muons
@@ -799,15 +947,15 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         muon1 = muTracks2[muGoodTracksIdx2[smallest_i]];
         if (second_smallest_dR < 0.1)
             muon2 = muTracks2[muGoodTracksIdx2[second_smallest_i]];
-        else if (recoNGoodDSAMu_ >= 2)
+        else if (recoNGoodDSA_ >= 2)
             muon2 = muTracks1[dSAIdx[1-smallest_j]];
     }
-    else if (recoNGoodDSAMu_ >= 1) {
+    else if (recoNGoodDSA_ >= 1) {
         if (fFoundValidVertex)
             muon1 = muTracks1[dSAIdx[0]];
         else
             muon1 = muTracks1[0];
-        if (recoNGoodDSAMu_ >= 2) {
+        if (recoNGoodDSA_ >= 2) {
             if (fFoundValidVertex)
                 muon2 = muTracks1[dSAIdx[1]];
             else
@@ -843,8 +991,8 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     // Calculate delta phi between MET and selected muons
     if (fFoundValidVertex) {
         double avgMuPhi = atan2( (1/2)*(sin(muon1->phi()) + sin(muon2->phi())), (1/2)*(cos(muon1->phi()) + cos(muon2->phi())) );
-        double reducedPhiDiff = reco::deltaPhi(recoMetr->phi(), avgMuPhi);
-        recoDeltaPhiMetMu_ = reducedPhiDiff;
+        double reducedPhiDiff = reco::deltaPhi(PFMETr->phi(), avgMuPhi);
+        recoDeltaPhiMETMu_ = reducedPhiDiff;
     }
 
     // Calculate invariant mass of selected muons
@@ -972,8 +1120,8 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         genpuobs_ = -9999;
         genputrue_ = -9999;
         genwgt_ = -9999;
-        genLeadMetPt_ = -9999;
-        genLeadMetPhi_ = -9999;
+        genLeadMETPt_ = -9999;
+        genLeadMETPhi_ = -9999;
 
         // Gen weight
         genwgt_ = genEvtInfoHandle_->weight();
@@ -1051,12 +1199,12 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         }
 
         // Lead gen MET
-        genLeadMetPt_ = -9999;
-        genLeadMetPhi_ = -9999;
-        if (genMetHandle_->size() > 0) {
-            reco::GenMETRef metRef(genMetHandle_, 0);
-            genLeadMetPt_ = metRef->pt();
-            genLeadMetPhi_ = metRef->phi();
+        genLeadMETPt_ = -9999;
+        genLeadMETPhi_ = -9999;
+        if (genMETHandle_->size() > 0) {
+            reco::GenMETRef metRef(genMETHandle_, 0);
+            genLeadMETPt_ = metRef->pt();
+            genLeadMETPhi_ = metRef->phi();
         }
 
         genT->Fill();
@@ -1075,7 +1223,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         setCutBit(1);
 
     // MET offline selection of 200 GeV
-    if (recoPFMetPt_ > 200) 
+    if (recoPFMETPt_ > 200) 
         setCutBit(2);
 
     // One leading reco jet w/ pT > 120...
@@ -1121,7 +1269,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     }
 
     // Check dR between selected muons (SR)
-    if (recoNGoodDSAMu_ > 1 && fFoundValidVertex) 
+    if (recoNGoodDSA_ > 1 && fFoundValidVertex) 
         if (std::abs(recoVtxDr_) < 0.8)
             setCutBit(16);
 
@@ -1130,17 +1278,17 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         setCutBit(17);
 
     // Check OS muons
-    if (recoNGoodDSAMu_ > 1 && fFoundValidVertex)
+    if (recoNGoodDSA_ > 1 && fFoundValidVertex)
        if ((selectedMuonsCharge_[0]+selectedMuonsCharge_[1]) == 0)
             setCutBit(18);
     
     // Check DeltaPhi between MET and leading muon pair
-    if (recoNGoodDSAMu_ > 1 && fFoundValidVertex)
-        if (std::abs(recoDeltaPhiMetMu_) < 0.4)
+    if (recoNGoodDSA_ > 1 && fFoundValidVertex)
+        if (std::abs(recoDeltaPhiMETMu_) < 0.4)
             setCutBit(19);
     
     // Only have 1 good dSA muon (one-lepton CR)
-    if (recoNGoodDSAMu_ == 1 && nSelectedMuons_ == 1)
+    if (recoNGoodDSA_ == 1 && nSelectedMuons_ == 1)
         setCutBit(20);
 
     // Number of matched GBM-DSA muons

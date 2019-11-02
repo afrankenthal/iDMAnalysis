@@ -20,6 +20,8 @@
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
+#include "DataFormats/METReco/interface/CaloMET.h"
+#include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/METReco/interface/GenMET.h"
 #include "DataFormats/METReco/interface/GenMETFwd.h"
 #include "DataFormats/METReco/interface/GenMETCollection.h"
@@ -70,8 +72,9 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag muTrackTag2_;
         const edm::InputTag genParticleTag_;
         const edm::InputTag genJetTag_;
-        const edm::InputTag genMetTag_;
-        const edm::InputTag recoMetTag_;
+        const edm::InputTag genMETTag_;
+        const edm::InputTag recoPFMETTag_;
+        const edm::InputTag recoCaloMETTag_;
         const edm::InputTag recoJetTag_;
         const edm::InputTag trigResultsTag_;
         const edm::InputTag trigEventTag_;
@@ -80,6 +83,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag genEvtInfoTag_;
         const std::string processName_;
         const edm::InputTag HBHENoiseFilterResultProducerTag_;
+        const edm::InputTag HBHEIsoNoiseFilterResultProducerTag_;
         const edm::InputTag primaryVertexFilterTag_;
         const edm::InputTag globalSuperTightHalo2016FilterTag_;
         const edm::InputTag EcalDeadCellTriggerPrimitiveFilterTag_;
@@ -99,14 +103,16 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken2_;
         const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
         const edm::EDGetTokenT<reco::GenJetCollection> genJetToken_;
-        const edm::EDGetTokenT<reco::GenMETCollection> genMetToken_;
-        const edm::EDGetTokenT<reco::PFMETCollection> recoMetToken_;
+        const edm::EDGetTokenT<reco::GenMETCollection> genMETToken_;
+        const edm::EDGetTokenT<reco::PFMETCollection> recoPFMETToken_;
+        const edm::EDGetTokenT<reco::CaloMETCollection> recoCaloMETToken_;
         const edm::EDGetTokenT<reco::PFJetCollection> recoJetToken_;
         const edm::EDGetTokenT<edm::TriggerResults> trigResultsToken_;
         const edm::EDGetTokenT<trigger::TriggerEvent> trigEventToken_;
         const edm::EDGetTokenT<std::vector<PileupSummaryInfo>> pileupInfosToken_;
         const edm::EDGetTokenT<GenEventInfoProduct> genEvtInfoToken_;
         const edm::EDGetTokenT<bool>HBHENoiseFilterResultProducerToken_;
+        const edm::EDGetTokenT<bool>HBHEIsoNoiseFilterResultProducerToken_;
         const edm::EDGetTokenT<int>primaryVertexFilterToken_;
         const edm::EDGetTokenT<bool>globalSuperTightHalo2016FilterToken_;
         const edm::EDGetTokenT<bool>EcalDeadCellTriggerPrimitiveFilterToken_;
@@ -126,14 +132,16 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         edm::Handle<reco::TrackCollection> muTrackHandle2_;
         edm::Handle<reco::GenParticleCollection> genParticleHandle_;
         edm::Handle<reco::GenJetCollection> genJetHandle_;
-        edm::Handle<reco::GenMETCollection> genMetHandle_;
-        edm::Handle<reco::PFMETCollection> recoMetHandle_;
+        edm::Handle<reco::GenMETCollection> genMETHandle_;
+        edm::Handle<reco::PFMETCollection> recoPFMETHandle_;
+        edm::Handle<reco::CaloMETCollection> recoCaloMETHandle_;
         edm::Handle<reco::PFJetCollection> recoJetHandle_;
         edm::Handle<edm::TriggerResults> trigResultsHandle_;
         edm::Handle<trigger::TriggerEvent> trigEventHandle_;
         edm::Handle<std::vector<PileupSummaryInfo>> pileupInfosHandle_;
         edm::Handle<GenEventInfoProduct> genEvtInfoHandle_;
         edm::Handle<bool> HBHENoiseFilterResultProducerHandle_;
+        edm::Handle<bool> HBHEIsoNoiseFilterResultProducerHandle_;
         edm::Handle<int> primaryVertexFilterHandle_;
         edm::Handle<bool> globalSuperTightHalo2016FilterHandle_;
         edm::Handle<bool> EcalDeadCellTriggerPrimitiveFilterHandle_;
@@ -213,23 +221,42 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> genJetEta_;
         std::vector<float> genJetPhi_;
         // Gen MET
-        float genLeadMetPt_;
-        float genLeadMetPhi_;
+        float genLeadMETPt_;
+        float genLeadMETPhi_;
 
         // Reco dSA muon branches
-        int recoNMu_;
-        int recoNGoodDSAMu_;
-        std::vector<float> recoPt_;
-        std::vector<float> recoEta_;
-        std::vector<float> recoPhi_;
-        std::vector<float> recoDxy_;
-        std::vector<float> recoDz_;
-        std::vector<int> recoCharge_;
-        std::vector<float> recoTrkChi2_;
-        std::vector<float> recoTrkNumPlanes_;
-        std::vector<float> recoTrkNumHits_;
+        int recoNDSA_;
+        int recoNGoodDSA_;
+        std::vector<float> recoDSAPt_;
+        std::vector<float> recoDSAPtError_;
+        std::vector<float> recoDSAEta_;
+        std::vector<float> recoDSAPhi_;
+        std::vector<float> recoDSADxy_;
+        std::vector<float> recoDSADz_;
+        std::vector<int> recoDSACharge_;
+        std::vector<float> recoDSATrkChi2_;
+        std::vector<float> recoDSATrkNumPlanes_;
+        std::vector<float> recoDSATrkNumHits_;
+        std::vector<float> recoDSATrkNumDTHits_;
+        std::vector<float> recoDSATrkNumCSCHits_;
         int recoDSAIdx0_;
         int recoDSAIdx1_;
+        
+        // Reco GM branches
+        int recoNGM_;
+        int recoNGoodGM_;
+        std::vector<float> recoGMPt_;
+        std::vector<float> recoGMPtError_;
+        std::vector<float> recoGMEta_;
+        std::vector<float> recoGMPhi_;
+        std::vector<float> recoGMDxy_;
+        std::vector<float> recoGMDz_;
+        std::vector<int> recoGMCharge_;
+        std::vector<float> recoGMTrkChi2_;
+        std::vector<float> recoGMTrkNumPlanes_;
+        std::vector<float> recoGMTrkNumHits_;
+        std::vector<float> recoGMTrkNumDTHits_;
+        std::vector<float> recoGMTrkNumCSCHits_;
 
         // Selected muon branches
         int nSelectedMuons_;
@@ -241,6 +268,25 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> selectedMuonsDxy_;
         std::vector<float> selectedMuonsDz_;
         std::vector<int> selectedMuonsCharge_;
+        
+        // Reco electron branches
+        int recoNElectron_;
+        int recoNGoodElectron_;
+        std::vector<float> recoElectronPt_;
+        std::vector<float> recoElectronEta_;
+        std::vector<float> recoElectronPhi_;
+        std::vector<float> recoElectronVxy_;
+        std::vector<float> recoElectronVz_;
+        std::vector<int> recoElectronCharge_;
+        std::vector<int> recoElectronIDResult_;
+        
+        // Reco photon branches
+        int recoNPhoton_;
+        int recoNGoodPhoton_;
+        std::vector<float> recoPhotonPt_;
+        std::vector<float> recoPhotonEta_;
+        std::vector<float> recoPhotonPhi_;
+        std::vector<int> recoPhotonIDResult_;
 
         // Vertex branches
         float recoVtxVxy_;
@@ -250,10 +296,13 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         float recoVtxDr_;
 
         // MET reco branches
-        float recoPFMetPt_;
-        float recoPFMetPhi_;
+        float recoPFMETPt_;
+        float recoPFMETPhi_;
+        float recoPFMETMuonEtFraction_;
+        float recoCaloMETPt_;
+        float recoCaloMETPhi_;
         float recoMmumu_;
-        float recoDeltaPhiMetMu_;
+        float recoDeltaPhiMETMu_;
 
         // Jet reco branches
         int recoPFNJet_;
@@ -263,6 +312,12 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoPFJetEta_;
         std::vector<float> recoPFJetPhi_;
         std::vector<float> recoPFJetBTag_;
+        std::vector<float> recoPFJetCHEF_;
+        std::vector<float> recoPFJetNHEF_;
+        std::vector<float> recoPFJetCEEF_;
+        std::vector<float> recoPFJetNEEF_;
+        std::vector<float> recoPFJetNumDaughters_;
+        std::vector<float> recoPFJetChargedMultiplicity_;
         bool recoPFHEMFlag_;
 
         float recoPFMETJetDeltaPhi_;
