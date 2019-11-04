@@ -129,7 +129,12 @@ int main(int argc, char ** argv) {
                 inclusive = TString(item["inclusive"].get<std::string>());
             else
                 inclusive = TString("yes");
-            cuts_info.push_back(CutInfo{cut, description, inclusive});
+            std::string special;
+            if (item.find("special") != item.end())
+                special = TString(item["special"].get<std::string>());
+            else
+                special = TString("no");
+            cuts_info.push_back(CutInfo{cut, description, inclusive, special});
         }
     }
 

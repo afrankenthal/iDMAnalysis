@@ -73,6 +73,7 @@ namespace common {
         TString cut;
         TString description;
         TString inclusive;
+        TString special;
     } CutInfo;
 
     typedef struct SampleInfo {

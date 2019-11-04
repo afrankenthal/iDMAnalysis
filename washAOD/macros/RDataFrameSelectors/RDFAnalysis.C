@@ -6,7 +6,7 @@ void RDFAnalysis::SetCuts(std::vector<common::CutInfo> cuts_info) {
     cuts_info_ = cuts_info;
 }
 
-void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi, TString region = "SR") {
+void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi) {
     sample_info_ = sample_info;
     mode_ = sample_info_.mode;
     group_ = sample_info_.group;
@@ -14,8 +14,6 @@ void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi, TStri
     xsec_ = sample_info_.xsec;
     lumi_ = lumi;
     std::cout << "sum_gen_wgt: " << sum_gen_wgt_ << ", xsec: " << xsec_ << " [pb], lumi: " << lumi_ << " [1/pb] " << std::endl;
-
-    region_ = region;
 
     // Set up QCD and EWK corrections
     TFile * kfactors = new TFile("../../data/kfactors.root");

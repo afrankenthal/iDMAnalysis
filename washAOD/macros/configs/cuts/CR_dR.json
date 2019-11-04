@@ -48,9 +48,8 @@
         "description": "|#Delta#Phi(MET, jets)| > 1"
     },
     {
-        "cut": "reco_PF_n_highPt_jets >= 3",
-        "description": "nJets >= 3 (pT > 30 GeV)",
-        "special": "yes"
+        "cut": "reco_PF_n_highPt_jets < 3",
+        "description": "nJets < 3 (pT > 30 GeV)"
     },
     {
         "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (reco_PF_jet_BTag[i] > 0.4184) return false; return true;",
@@ -105,8 +104,9 @@
         "description": "dSA muon 2: |#eta| < 2.4"
     },
     {
-        "cut": "reco_vtx_dR < 0.9",
-        "description": "dR(muons) < 0.9"
+        "cut": "reco_vtx_dR > 0.9",
+        "description": "dR(muons) > 0.9",
+        "special": "yes"
     },
     {
         "cut": "reco_sel_mu_charge[0]+reco_sel_mu_charge[1] == 0",
