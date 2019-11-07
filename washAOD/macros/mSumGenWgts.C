@@ -17,8 +17,8 @@ namespace macro {
 
             cout << "Processing sample " << sample << ", " << props.filenames.size() << " files" << endl;
 
-            //TChain * data_gen = new TChain("ntuples_gbm/genT");
-            TChain * data_gen = new TChain("RECO_dsaIsoNoMu/GenWeight");
+            TChain * data_gen = new TChain("ntuples_gbm/genT");
+            //TChain * data_gen = new TChain("RECO_dsaIsoNoMu/GenWeight");
 
             int count = 0;
             for (auto const & filename : props.filenames) {
@@ -26,12 +26,12 @@ namespace macro {
                 data_gen->Add(filename);
             }
             data_gen->SetBranchStatus("*",0);
-            data_gen->SetBranchStatus("genwgt", 1);
-            //data_gen->SetBranchStatus("gen_wgt", 1);
+            //data_gen->SetBranchStatus("genwgt", 1);
+            data_gen->SetBranchStatus("gen_wgt", 1);
             Float_t gen_wgt;
             //Float_t genwgt;
-            data_gen->SetBranchAddress("genwgt", &gen_wgt);
-            //data_gen->SetBranchAddress("gen_wgt", &gen_wgt);
+            //data_gen->SetBranchAddress("genwgt", &gen_wgt);
+            data_gen->SetBranchAddress("gen_wgt", &gen_wgt);
             data_gen->GetEntries();
             Double_t sum_gen_wgt = 0;
             for (int i = 0; i < data_gen->GetEntries(); i++) {

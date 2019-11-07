@@ -85,6 +85,7 @@ Bool_t RDFAnalysisTrig::Process(TChain * chain) {
 
     all_histos_1D_.clear();
     all_histos_2D_.clear();
+    //eff_plot_.clear();
     chain_ = chain;
 
     ROOT::EnableImplicitMT();
@@ -223,6 +224,7 @@ Bool_t RDFAnalysisTrig::Process(TChain * chain) {
 
    all_histos_1D_.clear();
    all_histos_2D_.clear();
+  // eff_plot_.clear();
    cutflow_.clear();
    auto df_filters = df_wgts.Filter(cuts_info_[0].cut.Data(), Form("Cut0"));
    cutflow_.push_back(df_filters.Sum<double>("wgt"));
@@ -244,6 +246,11 @@ Bool_t RDFAnalysisTrig::Process(TChain * chain) {
                if (all_histos_1D_.find(histo_name) == all_histos_1D_.end())
                    all_histos_1D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH1D>>();
                all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+               //if (cuts_info_[cut].efficiency == "num"){
+                //   eff_plot_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH1D>>();
+              // eff_plot_[histo_name][0] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");}
+               //if (cuts_info_[cut].efficiency == "denom"){
+               //eff_plot_[histo_name][1] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");}
            }
            else if (histo_info->type == "int1D") {
                if (all_histos_1D_.find(histo_name) == all_histos_1D_.end())

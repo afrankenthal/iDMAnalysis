@@ -142,6 +142,7 @@ namespace macro {
             //map<TString, map<int, TH1*>> sample_histos = currentSelector->GetHistograms();
             map<TString, map<int, ROOT::RDF::RResultPtr<TH1D>>> all_sample_histos_1D = dfAnalysis->GetHistograms1D();
             map<TString, map<int, ROOT::RDF::RResultPtr<TH2D>>> all_sample_histos_2D = dfAnalysis->GetHistograms2D();
+           // map<TString, map<int, ROOT::RDF::RResultPtr<TH1D>>> eff_plots = dfAnalysis->GetHistogramsEffPlots();
             for (auto & [histo_name, histos_by_cut] : all_sample_histos_2D) {
                 for (auto & [cut, histo] : histos_by_cut) {
                     bool kFound = false;
@@ -215,6 +216,27 @@ namespace macro {
                         hstack->Add(hist);
                     if (hstack->GetNhists() > 0)
                         hstack->Write();
+		    
+		    if (cuts_info[cut].efficiency !="none"){
+                    THStack * hstack2;
+                   	 if (mode == common::BKG)
+                   	     hstack2 = new THStack(Form("%s_%scut%d-BKG", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut), histos_info[plot_name]->title);
+                   	 else if (mode == common::DATA)
+                   	     hstack2 = new THStack(Form("%s_%scut%d-DATA", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut), histos_info[plot_name]->title);
+                   	 else if (mode == common::SIGNAL)
+                   	     hstack2 = new THStack(Form("%s_%scut%d-SIGNAL", plot_name.Data(),cuts_info[cut].efficiency, cut), histos_info[plot_name]->title);
+		    
+	        
+                    //sort by "smallest integral first"
+                  //  std::sort(hist_vec.begin(), hist_vec.end(),
+                   //        [](TH1 *a, TH1 *b) { return a->Integral() < b->Integral(); });
+                    //std::sort(hist_vec.begin(), hist_vec.end(),
+                     //       [](auto & a, auto & b) { return a->Integral() < b->Integral(); });
+                    for (auto hist : hist_vec)
+                        hstack2->Add(hist);
+                    if (hstack2->GetNhists() > 0)
+                        hstack2->Write();
+		    }
                 }
             }
         }

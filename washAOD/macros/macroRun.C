@@ -125,11 +125,16 @@ int main(int argc, char ** argv) {
             auto cut = TString(item["cut"].get<std::string>());
             auto description = TString(item["description"].get<std::string>());
             std::string inclusive;
+            std::string efficiency;
             if (item.find("inclusive") != item.end())
                 inclusive = TString(item["inclusive"].get<std::string>());
             else
                 inclusive = TString("yes");
-            cuts_info.push_back(CutInfo{cut, description, inclusive});
+            if (item.find("efficiency") != item.end())
+                efficiency = TString(item["efficiency"].get<std::string>());
+            else
+                efficiency = TString("none");
+            cuts_info.push_back(CutInfo{cut, description, inclusive, efficiency});
         }
     }
 
@@ -153,7 +158,7 @@ int main(int argc, char ** argv) {
         if (macro == "mTrigEff")
             cfg["outfilename"] = out_filename.Data();
 
-        if (macro == "mMake1DPlotsFromFile" || macro == "mMake2DPlotsFromFile")
+        if (macro == "mMake1DPlotsFromFile" || macro == "mMake1DEffPlotsFromFile" ||macro == "mMake2DPlotsFromFile")
             cfg["infilename"] = in_filename.Data();
 
         if (macro == "mSumGenWgts") {

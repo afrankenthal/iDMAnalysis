@@ -35,6 +35,7 @@ namespace macro {
             if (TString(key->GetClassName()) != "THStack") continue;
             TString hs_name = TString(key->GetName());
             if (hs_name.Contains("_vs_")) continue; // mMake2DPlotsFromFile handles these
+	    if (hs_name.Contains("num") or hs_name.Contains("denom")) continue; // mMake1DEffPlotsFromFile handles these            
             cout << "Processing " << hs_name << ", class " << key->GetClassName() << endl;
             THStack * hs = (THStack*)in_file->Get(hs_name);
             TString hs_basename = ((TObjString*)(hs_name.Tokenize("-")->At(0)))->String();
@@ -109,7 +110,7 @@ namespace macro {
                 TLatex cut_label;
                 cut_label.SetNDC();
                 cut_label.SetTextSize(0.05);
-                cut_label.DrawLatexNDC(0.25, 0.85, common::cut_descriptions[cut].c_str());
+                cut_label.DrawLatexNDC(0.25, 0.85, cuts_info[cut].description.Data());
             }
             //hs->GetStack()->Last()->Draw("E");
             //canvases.push_back(std::move(c));

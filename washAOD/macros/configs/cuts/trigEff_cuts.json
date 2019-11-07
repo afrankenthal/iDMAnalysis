@@ -17,12 +17,14 @@
     },
     {
 	"cut": "abs(recoPFrecoilJetDeltaPhi_) > 1.57",
-	"description": "delta phi selection cut"
+	"description": "delta phi selection cut",
+	"efficiency": "denom"
     },
     {
 	"cut": "fired==1",
-	"description": "trigger fired"
-    }
+	"description": "trigger fired",
+	"efficiency": "num"
+    } 
 ]
  //  {
 //	"cut":"((abs(recoPFrecoilJetDeltaPhi_)) > 1.57)/*&&(neutralHadronFraction < 0.8)&&(chargedHadronFraction > 0.1)*/&&(pt > 40) && (abs(eta) < 2.4) && (recoJetPt > 120) &&(abs(recoJetEta)<2.4) &&(fired0==1)",
