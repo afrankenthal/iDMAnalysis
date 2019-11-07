@@ -1,6 +1,6 @@
 [
     {
-        "name": "mTrigEff",
+        "name": "mMainAnalysis",
         "config": {
             "region": "trigEff",
             "plots": [

@@ -109,8 +109,13 @@ namespace macro {
                       cut = (((TObjString*)(tok.Tokenize("t")->At(1)))->String()).Atoi();
                 TLatex cut_label;
                 cut_label.SetNDC();
+
                 cut_label.SetTextSize(0.05);
-                cut_label.DrawLatexNDC(0.25, 0.85, cuts_info[cut].description.Data());
+
+                if (cuts_info[cut].special == TString("yes"))
+                    cut_label.SetTextColor(kRed);
+
+                cut_label.DrawLatexNDC(0.25, 0.85, cuts_info[cut].description.Data()); //common::cut_descriptions[cut].c_str());
             }
             //hs->GetStack()->Last()->Draw("E");
             //canvases.push_back(std::move(c));
@@ -177,8 +182,8 @@ namespace macro {
             TObject * hs;
             while ((hs = next())) {
                 if (TString(hs->ClassName()) != TString("THStack")) continue;
-                // TODO Handle 2D plots
-                if (TString(hs->GetName()).Contains("_vs_")) continue; // skip 2D plots for now
+                // mMake2DPlotsFromFile.C handles 2D plots
+                if (TString(hs->GetName()).Contains("_vs_")) continue;
                 TIter next2((TList*)(((THStack*)hs)->GetHists()));
                 TH1F * h;
                 while ((h = (TH1F*)next2())) {
@@ -214,14 +219,14 @@ namespace macro {
             TObject * h;
             while ((h = next())) {
                 if (TString(h->ClassName()) != TString("THStack")) continue;
-                ((THStack*)h)->SetMaximum(5*maxima[pair.first]);
+                ((THStack*)h)->SetMaximum(10*maxima[pair.first]);
                 ((THStack*)h)->SetMinimum(0.01);
             }
             //c->RedrawAxis();
             //gPad->Modified();
             c->Modified();
         }
-        // Save canvases
+        // Write canvases to ROOT file
         for (auto & pair : canvases) {
             pair.second.get()->Write();
             //delete c;

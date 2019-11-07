@@ -33,7 +33,7 @@ public :
    void    Terminate();
 
    //void doFills(int cut, double weight);
-   void SetParams(common::SampleInfo sample_info, Double_t lumi, TString region);
+   void SetParams(common::SampleInfo sample_info, Double_t lumi);
    void SetCuts(std::vector<common::CutInfo> cuts_info);
    void SetHistos(std::map<TString, common::THInfo*> histos_info) { histos_info_ = histos_info; }
    //std::vector<double> GetCutflow() { return cutflow_; }
@@ -59,7 +59,6 @@ public :
    Double_t lumi_;
    common::MODE mode_;
    TString group_;
-   TString region_;
 
    TH1F * sf_z_qcd, * sf_z_ewk;
    TH1F * sf_w_qcd, * sf_w_ewk;

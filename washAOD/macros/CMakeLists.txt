@@ -33,8 +33,8 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_library(MATH_LIBRARY m)
 
 foreach (macro_lib ${macro_libs})
-    if("x_${macro_lib}" STREQUAL "x_mMainAnalysis")
-        add_library(${macro_lib} SHARED ${macro_lib}.C utils/common.C utils/tdrstyle.C utils/CMS_lumi.C
+    if("x_${macro_lib}" STREQUAL "x_mMainAnalysis" OR "x_${macro_lib}" STREQUAL "x_mSaveCanvases")
+        add_library(${macro_lib} SHARED ${macro_lib}.C utils/tdrstyle.C utils/CMS_lumi.C
             TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
             RDataFrameSelectors/RDFAnalysis.C)
     elseif("x_${macro_lib}" STREQUAL "x_mTrigEff")
@@ -42,7 +42,7 @@ foreach (macro_lib ${macro_libs})
             TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
             RDataFrameSelectors/RDFAnalysisTrig.C)
     else()
-        add_library(${macro_lib} SHARED ${macro_lib}.C utils/common.C utils/tdrstyle.C utils/CMS_lumi.C)
+        add_library(${macro_lib} SHARED ${macro_lib}.C utils/tdrstyle.C utils/CMS_lumi.C)
     endif()
     set_property(TARGET ${macro_lib} PROPERTY POSITION_INDEPENDENT_CODE ON)
     target_include_directories(${macro_lib} PUBLIC utils)
@@ -74,7 +74,7 @@ foreach (macro_lib ${macro_libs})
 endforeach()
 
 
-add_executable(macroRun macroRun.C utils/common.C) # RDataFrameSelectors/RDFAnalysis.C mSaveCanvases.C mCutflowTables.C mMainAnalysis.C mSROptimization.C mNminus1Plots.C mMakePlotsFromFile.C mSumGenWgts.C utils/common.C utils/CMS_lumi.C utils/tdrstyle.C TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx")
+add_executable(macroRun macroRun.C) # RDataFrameSelectors/RDFAnalysis.C mSaveCanvases.C mCutflowTables.C mMainAnalysis.C mSROptimization.C mNminus1Plots.C mMakePlotsFromFile.C mSumGenWgts.C utils/common.C utils/CMS_lumi.C utils/tdrstyle.C TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx")
 
 target_include_directories(macroRun PUBLIC utils)
 

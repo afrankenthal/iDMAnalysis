@@ -74,6 +74,7 @@ namespace common {
         TString description;
         TString inclusive;
 	TString efficiency;
+        TString special;
     } CutInfo;
 
     typedef struct SampleInfo {

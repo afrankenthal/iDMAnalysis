@@ -4,25 +4,37 @@
         "description": "No cuts"
     },
     {
-	"cut": "fired0==1",
-	"description": "reference trigger"
+        "cut": "MET_filters_fail_bits == 0",
+        "description": "MET filter bits pass"
     },
     {
-	"cut": "(recoJetPt > 120) && (abs(recoJetEta)<2.4)",
+        "cut": "reco_PF_HEM_flag == 0",
+        "description": "HEM veto"
+    },
+    {
+        "cut": "(7>>trig_fired)&1",
+        "description": "Reference trigger fired (IsoMu24)"
+    },
+    {
+	"cut": "(reco_PF_jet_pt[0] > 120) && (abs(reco_PF_jet_eta[0])<2.4)",
 	"description": "jet selection cuts"
     },
     {
-	"cut": "(pt[0] > 40) && (abs(eta[0])<2.4)",
+	"cut": "(reco_gm_pt[0] > 40) && (abs(reco_gm_eta[0])<2.4)",
 	"description": "mu selection cuts"
     },
     {
-	"cut": "abs(recoPFrecoilJetDeltaPhi_) > 1.57",
+	"cut": "abs(recoil_jet_phi_dphi) > 1.57",
 	"description": "delta phi selection cut",
+    },
+    {
+	"cut": "abs(fake_MET_fraction) < 0.5",
+	"description": "|pfMet-CaloMet|/recoil",
 	"efficiency": "denom"
     },
     {
-	"cut": "fired==1",
-	"description": "trigger fired",
+	"cut": "(3>>trig_fired)&=1",
+	"description": "Met no Mu trigger fired",
 	"efficiency": "num"
     } 
 ]

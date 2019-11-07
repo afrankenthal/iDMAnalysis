@@ -134,7 +134,12 @@ int main(int argc, char ** argv) {
                 efficiency = TString(item["efficiency"].get<std::string>());
             else
                 efficiency = TString("none");
-            cuts_info.push_back(CutInfo{cut, description, inclusive, efficiency});
+            std::string special;
+            if (item.find("special") != item.end())
+                special = TString(item["special"].get<std::string>());
+            else
+                special = TString("no");
+            cuts_info.push_back(CutInfo{cut, description, inclusive,efficiency, special});
         }
     }
 

@@ -18,7 +18,7 @@ namespace macro {
             out_dir = TString(cfg["outdir"].get<std::string>());
         // or just strip the filename's extension and use it as dir
         else 
-            out_dir = Form("plots/%s", in_filename.ReplaceAll(".root", "").Data());
+            out_dir = Form("../plots/%s", in_filename.ReplaceAll(".root", "").Data());
 
         fs::path dir(out_dir.Data());
         if (fs::exists(dir)) {
