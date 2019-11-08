@@ -282,15 +282,16 @@ namespace macro {
                 data_ratio->Sumw2();
 		bool first = true;
 		for( auto MC_hist : MC_hists){
-		TH1F* ratio_hist = (TH1F*)((TH1F*)MC_hist->GetPassedHistogram())->Clone();
+		TH1F* ratio_hist = (TH1F*)data_ratio->Clone();
+		TH1F* MC_ratio = (TH1F*)((TH1F*)MC_hist->GetPassedHistogram())->Clone();
 		
-		ratio_hist->Reset();
+		MC_ratio->Reset();
 		for (int i =0; i<nbins;i++){	
 		//cout <<"bin: "<<i<<" "<<MC_hist->GetEfficiency(i)<<endl;
-		ratio_hist->SetBinContent(i,MC_hist->GetEfficiency(i));///MC_hist->GetEfficiency(i));
+		MC_ratio->SetBinContent(i,MC_hist->GetEfficiency(i));///MC_hist->GetEfficiency(i));
 		}
-                ratio_hist->Sumw2();
-                ratio_hist->Divide(data_ratio);
+                MC_ratio->Sumw2();
+                ratio_hist->Divide(MC_ratio);
                 ratio_hist->ResetAttFill();
                 ratio_hist->SetMaximum(2.1);
                 ratio_hist->SetMinimum(-0.1);
@@ -298,12 +299,12 @@ namespace macro {
                 //ratio_hist->GetXaxis()->SetTitle(data_hist->GetXaxis()->GetTitle());
                 ratio_hist->GetXaxis()->SetTitleSize(0.12);
                 ratio_hist->GetXaxis()->SetLabelSize(0.11);
-                ratio_hist->GetYaxis()->SetTitle("MC/Data");
+                ratio_hist->GetYaxis()->SetTitle("Data/MC");
                 ratio_hist->GetYaxis()->SetTitleSize(0.12);
                 ratio_hist->GetYaxis()->SetLabelSize(0.11);
                 ratio_hist->GetYaxis()->SetNdivisions(5);
                 ratio_hist->GetYaxis()->SetTitleOffset(0.35);
-		ratio_hist->SetMarkerColor(common::group_plot_info[((TObjString*)(TString(ratio_hist->GetName()).Tokenize("_")->At(2)))->String()].color);
+		ratio_hist->SetMarkerColor(common::group_plot_info[((TObjString*)(TString(MC_hist->GetName()).Tokenize("_")->At(2)))->String()].color);
                 ratio_hist->Draw("EP SAME");
             	//gPad->Modified();
             	//c->Modified();
