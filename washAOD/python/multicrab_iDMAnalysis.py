@@ -227,6 +227,12 @@ def main():
         data_D = {
             'MET_Run2018D':'/MET/Run2018D-PromptReco-v2/AOD'
         }
+        single_data = {
+        'singleMu_RunA_Sep':'/SingleMuon/Run2018A-17Sep2018-v2/AOD',
+        'singleMu_RunB_Sep':'/SingleMuon/Run2018B-17Sep2018-v1/AOD',
+        'singleMu_RunC_Sep':'/SingleMuon/Run2018C-17Sep2018-v1/AOD',
+        'singleMu_RunD_Jan':'/SingleMuon/Run2018D-22Jan2019-v2/AOD',
+        }
 
         full_data_samples = merge_dicts(data_ABC, data_D)
 
@@ -246,6 +252,7 @@ def main():
         }
 
         if options.sampleType == 'data':
+            #samples = single_data
             samples = full_data_samples
         elif options.sampleType == 'MC':
             samples = full_MC_samples

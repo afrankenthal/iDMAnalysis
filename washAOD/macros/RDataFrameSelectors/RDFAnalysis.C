@@ -1,12 +1,13 @@
 #include "RDFAnalysis.h"
 #include <TH2.h>
 #include <TStyle.h>
+#include <math.h>
 
 void RDFAnalysis::SetCuts(std::vector<common::CutInfo> cuts_info) {
     cuts_info_ = cuts_info;
 }
 
-void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi) {
+void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi, TString region = "SR") {
     sample_info_ = sample_info;
     mode_ = sample_info_.mode;
     group_ = sample_info_.group;
@@ -179,7 +180,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    auto takeFirstMuonPhi = [&](std::vector<float> muons_phi) { return muons_phi.size() > 0 ? muons_phi[0] : -1; };
    auto takeSecondMuonPhi = [&](std::vector<float> muons_phi) { return muons_phi.size() > 1 ? muons_phi[1] : -1; };
    auto takeMETJetDphi = [&](std::vector<float> jets_phi, float MET_phi) { if (jets_phi.size() == 0) return -5.0f; float dphi = abs(jets_phi[0] - MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; return abs(dphi); };
-   auto findFakeMETCut = [&](float Met_pt, float MET_phi, float calomet_pt, float calomet_phi, float recoil) { sqrt((MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi)*MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi)) + (MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi)*MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi)))/recoil;};
+   auto findFakeMETCut = [&](float MET_pt, float MET_phi, float calomet_pt, float calomet_phi, float recoil) { return sqrt((MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi)*MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi)) + (MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi)*MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi)))/recoil;};
 
 
 
@@ -196,8 +197,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        Define("reco_sel_mu_eta1", takeSecondMuonEta, {"reco_sel_mu_eta"}).
        Define("reco_sel_mu_phi0", takeFirstMuonPhi, {"reco_sel_mu_phi"}).
        Define("reco_sel_mu_phi1", takeSecondMuonPhi, {"reco_sel_mu_phi"}).
-       Define("MET_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_MET_phi"});
-       Define("recoil_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_recoil_phi"});
+       Define("MET_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_MET_phi"}).
+       Define("recoil_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_recoil_phi"}).
        Define("fake_MET_fraction", findFakeMETCut, {"reco_PF_MET_pt", "reco_PF_MET_phi","reco_Calo_MET_pt","reco_Calo_MET_phi","reco_PF_recoil_pt"});
 
    if (mode_ == common::DATA) {

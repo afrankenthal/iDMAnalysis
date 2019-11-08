@@ -38,7 +38,8 @@ foreach (macro_lib ${macro_libs})
             TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
             RDataFrameSelectors/RDFAnalysis.C)
     elseif("x_${macro_lib}" STREQUAL "x_mTrigEff")
-        add_library(${macro_lib} SHARED ${macro_lib}.C utils/common.C utils/tdrstyle.C utils/CMS_lumi.C
+        #add_library(${macro_lib} SHARED ${macro_lib}.C utils/common.C utils/tdrstyle.C utils/CMS_lumi.C
+        add_library(${macro_lib} SHARED ${macro_lib}.C utils/tdrstyle.C utils/CMS_lumi.C
             TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
             RDataFrameSelectors/RDFAnalysisTrig.C)
     else()
