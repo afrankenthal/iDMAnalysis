@@ -180,7 +180,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    auto takeFirstMuonPhi = [&](std::vector<float> muons_phi) { return muons_phi.size() > 0 ? muons_phi[0] : -1; };
    auto takeSecondMuonPhi = [&](std::vector<float> muons_phi) { return muons_phi.size() > 1 ? muons_phi[1] : -1; };
    auto takeMETJetDphi = [&](std::vector<float> jets_phi, float MET_phi) { if (jets_phi.size() == 0) return -5.0f; float dphi = abs(jets_phi[0] - MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; return abs(dphi); };
-   auto findFakeMETCut = [&](float MET_pt, float MET_phi, float calomet_pt, float calomet_phi, float recoil) { return sqrt((MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi)*MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi)) + (MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi)*MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi)))/recoil;};
+   auto findFakeMETCut = [&](float MET_pt, float MET_phi, float calomet_pt, float calomet_phi, float recoil) { return sqrt( ((MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))*(MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))) + ((MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))*(MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))))/recoil;};
 
 
 
