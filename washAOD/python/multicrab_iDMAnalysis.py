@@ -54,6 +54,12 @@ def getOptions():
                       help = "Which kind of sample to process ('MC' (default), 'data' or 'custom')",
                       metavar = 'STYP')
 
+    parser.add_option('-y', '--year',
+                      dest = 'year',
+                      default = '2018',
+                      help = "Which year would you like to process ('2018' (default), '2017' or 'custom')",
+                      metavar = 'YEAR')
+
     (options, arguments) = parser.parse_args()
 
     if arguments:
@@ -236,6 +242,72 @@ def main():
 
         full_data_samples = merge_dicts(data_ABC, data_D)
 
+	#----- MC 2017 -----#
+	Diboson_2017 = {
+        'WZ': '/WZ_TuneCP5_13TeV-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+        'WW': '/WW_TuneCP5_13TeV-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+        'ZZ':'/ZZ_TuneCP5_13TeV-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM'
+        }
+
+        Triboson_2017 = {
+        'WWZ':'/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM',
+        'WZZ':'/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+        'ZZZ':'/ZZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM',
+        'WWW':'/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM'
+	}
+
+        DY_2017 = {
+                'DYJetsToLL_M-50toInf':'/DYJetsToLL_M-50_TuneCP5_13TeV-amcatnloFXFX-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11_ext1-v1/AODSIM'
+        }
+        WJets_2017 = {
+                'WJetsToLNu_HT-70To100':'/WJetsToLNu_HT-70To100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'WJetsToLNu_HT-100To200':'/WJetsToLNu_HT-100To200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM',
+                'WJetsToLNu_HT-200To400':'/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'WJetsToLNu_HT-400To600':'/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'WJetsToLNu_HT-600To800':'/WJetsToLNu_HT-600To800_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'WJetsToLNu_HT-800To1200':'/WJetsToLNu_HT-800To1200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'WJetsToLNu_HT-1200To2500':'/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'WJetsToLNu_HT-2500ToInf':'/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v3/AODSIM'
+        }
+
+        TTbar_2017 = {
+                'TTJets' : '/TTJets_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM'
+        }
+
+
+        SingleTop_2017 = {
+                'ST_s-channel':'/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'ST_t-channel_top':'/ST_t-channel_top_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspin-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'ST_t-channel_antitop':'/ST_t-channel_antitop_4f_inclusiveDecays_TuneCP5_13TeV-powhegV2-madspin-pythia8/RunIIFall17DRPremix-PU2017_new_pmx_94X_mc2017_realistic_v11-v2/AODSIM',
+                'tW_top':'/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'tW_anittop':'/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM'
+        }
+
+ 	QCD_2017 = {
+                'QCD_HT50To100'   :'/QCD_HT50to100_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'QCD_HT100To200'  :'/QCD_HT100to200_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM',
+                'QCD_HT200To300'  :'/QCD_HT200to300_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'QCD_HT300To500'  :'/QCD_HT300to500_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'QCD_HT500To700'  :'/QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM',
+                'QCD_HT700To1000' :'/QCD_HT700to1000_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                'QCD_HT1000To1500':'/QCD_HT1000to1500_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17DRPremix-PU2017_new_pmx_94X_mc2017_realistic_v11-v1/AODSIM',
+                'QCD_HT1500To2000':'/QCD_HT1500to2000_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM',
+                'QCD_HT2000ToInf' :'/QCD_HT2000toInf_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM'
+        }
+
+        full_MC_samples_2017 = merge_dicts(QCD_2017, TTbar_2017, SingleTop_2017, WJets_2017, DY_2017, Diboson_2017, Triboson_2017)
+	#------Data 2017----#
+	single_data_2017= {
+                'singleMu_RunB':'/SingleMuon/Run2017B-17Nov2017-v1/AOD',
+                'singleMu_RunC':'/SingleMuon/Run2017C-17Nov2017-v1/AOD',
+                'singleMu_RunD':'/SingleMuon/Run2017D-17Nov2017-v1/AOD',
+                'singleMu_RunE':'/SingleMuon/Run2017E-17Nov2017-v1/AOD',
+                'singleMu_RunF':'/SingleMuon/Run2017F-17Nov2017-v1/AOD',
+                'singleMu_RunG':'/SingleMuon/Run2017G-17Nov2017-v1/AOD',
+                'singleMu_RunH':'/SingleMuon/Run2017H-17Nov2017-v2/AOD'
+        }
+
+
         #------ Extra -----#
 
         trig_data = {
@@ -252,10 +324,16 @@ def main():
         }
 
         if options.sampleType == 'data':
-            #samples = single_data
-            samples = full_data_samples
+            if options.year == '2017':
+                samples = single_data_2017
+            else:
+                #samples = single_data
+                samples = full_data_samples
         elif options.sampleType == 'MC':
-            samples = full_MC_samples
+            if options.year =='2017':
+                samples = full_MC_samples_2017
+            else:
+                samples = full_MC_samples
         elif options.sampleType == 'custom':
             samples = merge_dicts(QCD) # -------> Pick your custom samples here!
             if (len(samples) == 0):

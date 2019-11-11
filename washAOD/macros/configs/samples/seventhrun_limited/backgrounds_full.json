@@ -66,7 +66,7 @@
         "group": "QCD",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 49475638.76457149,
+        "sum_gen_wgt": 54609163.26026664,
         "xsec": 367000
     },
     "QCD_HT500to700": {
@@ -96,7 +96,7 @@
         "group": "Top",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 74079708.05158311,
+        "sum_gen_wgt": 74731739.14922929,
         "xsec": 3.4
     },
     "ST_t-channel_antitop_5f": {
@@ -186,7 +186,7 @@
         "group": "WJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 5857218.219814025,
+        "sum_gen_wgt": 5908733.9058772605,
         "xsec": 59.18
     },
     "WJetsToLNu_HT-400To600_v2": {
@@ -196,7 +196,7 @@
         "group": "WJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 5857218.219814025,
+        "sum_gen_wgt": 5908733.9058772605,
         "xsec": 59.18
     },
     "WJetsToLNu_HT-600To800": {
