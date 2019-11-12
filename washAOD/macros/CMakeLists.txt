@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-set(macro_libs mSaveCanvases mCutflowTables mMainAnalysis mMake1DPlotsFromFile mMake1DEffPlotsFromFile mMake2DPlotsFromFile mNminus1Plots mSumGenWgts mTrigEff)
+set(macro_libs mSaveCanvases mCutflowTables mMainAnalysis mMake1DPlotsFromFile mMake1DEffPlotsFromFile mMake2DPlotsFromFile mNminus1Plots mSumGenWgts)
 
 project(macroRun VERSION 1.0
                  DESCRIPTION "macroRun"
@@ -37,11 +37,6 @@ foreach (macro_lib ${macro_libs})
         add_library(${macro_lib} SHARED ${macro_lib}.C utils/tdrstyle.C utils/CMS_lumi.C
             TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
             RDataFrameSelectors/RDFAnalysis.C)
-    elseif("x_${macro_lib}" STREQUAL "x_mTrigEff")
-        #add_library(${macro_lib} SHARED ${macro_lib}.C utils/common.C utils/tdrstyle.C utils/CMS_lumi.C
-        add_library(${macro_lib} SHARED ${macro_lib}.C utils/tdrstyle.C utils/CMS_lumi.C
-            TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
-            RDataFrameSelectors/RDFAnalysisTrig.C)
     else()
         add_library(${macro_lib} SHARED ${macro_lib}.C utils/tdrstyle.C utils/CMS_lumi.C)
     endif()

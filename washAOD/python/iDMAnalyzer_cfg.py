@@ -56,20 +56,26 @@ process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
+if options.year == 2016:
+    if options.data:
+         process.GlobalTag.globaltag = '80X_dataRun2_2016SeptRepro_v7'
+    else:
+        process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_TrancheIV_v8'
 if options.year == 2017:
-    process.GlobalTag.globaltag = '94X_mc2017_realistic_v15'
+    if options.data:
+        process.GlobalTag.globaltag = '94X_dataRun2_v11'
+    else:
+        process.GlobalTag.globaltag = '94X_mc2017_realistic_v17'
 if options.year == 2018:
     if options.data:
         if options.Run2018D:
-            process.GlobalTag.globaltag = '102X_dataRun2_Prompt_v14'
+            process.GlobalTag.globaltag = '102X_dataRun2_Prompt_v15'
         # else it's 2018 A, B, or C
         else: 
-            #process.GlobalTag.globaltag = '102X_dataRun2_Sep2018ABC_v2'
-            process.GlobalTag.globaltag = '102X_dataRun2_v11'
+            process.GlobalTag.globaltag = '102X_dataRun2_v12'
     # else it's MC
     else:
-        #process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v15'
-        process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v18'
+        process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v20'
 
 process.MessageLogger = cms.Service("MessageLogger",
         destinations   =  cms.untracked.vstring('messages', 'cerr'),

@@ -74,7 +74,7 @@ namespace common {
         TString cut;
         TString description;
         TString inclusive;
-	TString efficiency;
+        TString efficiency;
         TString special;
     } CutInfo;
 

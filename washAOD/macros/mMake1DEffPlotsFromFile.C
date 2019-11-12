@@ -3,8 +3,8 @@
 //TString lumi_13TeV = "59.74 fb^{-1} ";
 
 namespace macro {
-    void test(int a,bool newCanvas,TString type, TString hs_basename, TString hs_suffix,TEfficiency *hs, TCanvas *c){
-	cout << "test function " << a << hs_basename<<hs_suffix<<hs->GetName()<<endl;
+    void canvasDraw(bool newCanvas,TString type, TString hs_basename, TString hs_suffix,TEfficiency *hs, TCanvas *c){
+	cout << "formatting canvas and drawing histograms function " << hs_basename<<hs_suffix<<hs->GetName()<<endl;
 	if(newCanvas){
                 c->Range(0,0,1,1);
                 c->Divide(1,2);
@@ -133,28 +133,38 @@ namespace macro {
 	    	TH1F * MCTotal_num = (TH1F*)(((TH1F*)hsn->GetStack()->Last())->Clone());
 	    	TH1F * MCTotal_denom = (TH1F*)(((TH1F*)hsd->GetStack()->Last())->Clone());
 		TObjArray* name_tolks = TString(MCTotal_denom->GetName()).Tokenize("_");
-		MCTotal_denom->SetName((((TObjString*)(name_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(name_tolks->At(1)))->String())).Append(TString("_MCTotal")));
+		MCTotal_denom->SetName((((TObjString*)(name_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(name_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(3)))->String())).Append(TString("_MCTotal")));
+		//MCTotal_denom->SetName((((TObjString*)(name_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(name_tolks->At(1)))->String())).Append(TString("_MCTotal")));
 		cout<<"name "<<MCTotal_denom->GetName()<<endl;
+				for (int i =0; i<MCTotal_num->GetNbinsX();i++){	
+			 	if(MCTotal_num->GetBinContent(i)>MCTotal_denom->GetBinContent(i)){
+				cout <<"bin: "<<i<<" "<<MCTotal_num->GetBinContent(i)<<" "<<MCTotal_num->GetBinContent(i) <<endl;
+				cout<<"resetting bin content"<<endl;
+				MCTotal_denom->SetBinContent(i,MCTotal_num->GetBinContent(i));
+				}}
 		TEfficiency* mc_eff = new TEfficiency(*MCTotal_num,*MCTotal_denom);
 		mc_eff->SetLineColor(common::group_plot_info["MCTotal"].color);
 		mc_eff->SetMarkerColor(common::group_plot_info["MCTotal"].color);
 		mc_eff->SetFillColor(common::group_plot_info["MCTotal"].color);
-                canvases[TString("MCTotal")] = std::make_unique<TCanvas>(Form("canvas_%s", "MCTotal"));
-                auto * c = canvases["MCTotal"].get();
-	    	test(7,true,type,((TObjString*)(hs_name.Tokenize("_")->At(0)))->String(),TString("BKG"),mc_eff,c);	
+                canvases[MCTotal_denom->GetName()] = std::make_unique<TCanvas>(Form("canvas_%s", MCTotal_denom->GetName()));
+                auto * c = canvases[MCTotal_denom->GetName()].get();
+	    	//test(true,type,((TObjString*)(hs_name.Tokenize("_")->At(0)))->String(),TString("BKG"),mc_eff,c);	
+	    	canvasDraw(true,type,MCTotal_denom->GetName(),TString("BKG"),mc_eff,c);	
 		}
 	    TIter hsn_it((TList*)(((THStack*)hsn)->GetHists()));
 	    TH1F *hsnx;
 	    while((hsnx = (TH1F*)hsn_it())){
 	    	TString n1 = TString(hsnx->GetName());	
-	    	TString n1x0 = ((TObjString*)(n1.Tokenize("_")->At(0)))->String();
-	    	TString n1x1 = ((TObjString*)(n1.Tokenize("_")->At(2)))->String();
+	    	TString n1x0 = ((TObjString*)(n1.Tokenize("_")->At(2)))->String();
+	    	//TString n1x1 = ((TObjString*)(n1.Tokenize("_")->At(2)))->String();
+	    	TString n1x1 = ((TObjString*)(n1.Tokenize("_")->At(5)))->String();
 	        TIter hsd_it((TList*)(((THStack*)hsd)->GetHists()));
 	        TH1F *hsdx;
 	    	while((hsdx = (TH1F*)hsd_it())){
 	    		TString n2 = TString(hsdx->GetName());	
-	   	 	TString n2x0 = ((TObjString*)(n2.Tokenize("_")->At(0)))->String();
-	    		TString n2x1 = ((TObjString*)(n2.Tokenize("_")->At(2)))->String();
+	   	 	TString n2x0 = ((TObjString*)(n2.Tokenize("_")->At(2)))->String();
+	    		//TString n2x1 = ((TObjString*)(n2.Tokenize("_")->At(2)))->String();
+	    		TString n2x1 = ((TObjString*)(n2.Tokenize("_")->At(5)))->String();
 	    		if (((n1x0.Contains(n2x0)) && (n1x1.Contains(n2x1)))) {
 	    			cout <<"stacking "<<n1x1<<n2x1 <<endl;
 				for (int i =0; i<hsnx->GetNbinsX();i++){	
@@ -199,10 +209,13 @@ namespace macro {
 //                gPad->SetFillStyle(0);
             }
             auto * c = canvases[hs_basename].get();
-	    test(7,newCanvas,type,n1x0,n1x1,(TEfficiency*)hs->Clone(),c);	
+	    canvasDraw(newCanvas,type,n1x0,n1x1,(TEfficiency*)hs->Clone(),c);	
 	if(type.Contains("DATA")){
-          auto * c1 = canvases["MCTotal"].get();
-	    test(7,newCanvas,type,n1x0,n1x1,(TEfficiency*)hs->Clone(),c1);	
+		TObjArray* dataname_tolks = TString(hs->GetName()).Tokenize("_");
+		TString MCTotal_dataname = TString((((TObjString*)(dataname_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(dataname_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(3)))->String())).Append(TString("_MCTotal")));
+		cout<<"dataname: "<<MCTotal_dataname<<endl;
+          auto * c1 = canvases[MCTotal_dataname].get();
+	    canvasDraw(newCanvas,type,n1x0,n1x1,(TEfficiency*)hs->Clone(),c1);	
 	}
 //            c->cd(1); // top pad, the plot one
 //            TString drawOption = "";
@@ -304,7 +317,8 @@ namespace macro {
                 ratio_hist->GetYaxis()->SetLabelSize(0.11);
                 ratio_hist->GetYaxis()->SetNdivisions(5);
                 ratio_hist->GetYaxis()->SetTitleOffset(0.35);
-		ratio_hist->SetMarkerColor(common::group_plot_info[((TObjString*)(TString(MC_hist->GetName()).Tokenize("_")->At(2)))->String()].color);
+		ratio_hist->SetMarkerColor(common::group_plot_info[((TObjString*)(TString(MC_hist->GetName()).Tokenize("_")->At(4)))->String()].color);
+		//ratio_hist->SetMarkerColor(common::group_plot_info[((TObjString*)(TString(MC_hist->GetName()).Tokenize("_")->At(2)))->String()].color);
                 ratio_hist->Draw("EP SAME");
             	//gPad->Modified();
             	//c->Modified();
@@ -346,7 +360,8 @@ namespace macro {
                 // TODO Handle 2D plots
                 if (TString(hs->GetName()).Contains("_vs_")) continue; // skip 2D plots for now
                 if(!TString(hs->GetName()).Contains("_")) continue;
-                TString group = ((TObjString*)(TString(hs->GetName()).Tokenize("_")->At(2)))->String();
+                TString group = ((TObjString*)(TString(hs->GetName()).Tokenize("_")->At(4)))->String();
+                //TString group = ((TObjString*)(TString(hs->GetName()).Tokenize("_")->At(2)))->String();
                 if (TString(hs->GetName()).Contains("Signal"))
                     legend->AddEntry(hs, "", "l");
                 else if (TString(hs->GetName()).Contains("data"))

@@ -8,6 +8,14 @@
         "description": "Reference trigger fired (IsoMu24)"
     },
     {
+        "cut": "MET_filters_fail_bits == 0",
+        "description": "MET filter bits pass"
+    },
+    {
+        "cut": "reco_PF_HEM_flag == 0",
+        "description": "HEM veto"
+    },
+    {
 	"cut": "(reco_PF_jet_pt0 > 120) && (abs(reco_PF_jet_eta0)<2.4)",
 	"description": "jet selection cuts"
     },
@@ -17,12 +25,16 @@
     },
     {
 	"cut": "abs(recoil_jet_phi_dphi) > 1.57",
-	"description": "delta phi selection cut",
-	"efficiency": "denom"
+	"description": "delta phi selection cut"
     },
     {
-	"cut": "(trig_fired&(1<<3)) == (1<<3)",
-	"description": "trigger fired",
+	"cut": "abs(fake_MET_fraction) < 0.5",
+	"description": "|pfMet-CaloMet|/recoil",
+	"efficiency" : "denom"
+    },
+    {
+	"cut": "(trig_fired&(1<<0)) == (1<<0)",
+	"description": "met trigger fired",
 	"efficiency": "num"
     } 
 ]

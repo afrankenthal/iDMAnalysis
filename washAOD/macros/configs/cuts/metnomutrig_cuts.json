@@ -4,16 +4,16 @@
         "description": "No cuts"
     },
     {
+        "cut": "(trig_fired &(1<<7))==(1<<7)",
+        "description": "Reference trigger fired (IsoMu24)"
+    },
+    {
         "cut": "MET_filters_fail_bits == 0",
         "description": "MET filter bits pass"
     },
     {
         "cut": "reco_PF_HEM_flag == 0",
         "description": "HEM veto"
-    },
-    {
-        "cut": "(trig_fired &(1<<7))==(1<<7)",
-        "description": "Reference trigger fired (IsoMu24)"
     },
     {
 	"cut": "(reco_PF_jet_pt0 > 120) && (abs(reco_PF_jet_eta0)<2.4)",
