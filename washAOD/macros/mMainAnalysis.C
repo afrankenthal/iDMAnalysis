@@ -39,7 +39,7 @@ namespace macro {
                     };
 
         TString out_filename = TString(cfg["outfilename"].get<std::string>());
-	TString region = TString(cfg["region"].get<std::string>());
+        TString region = TString(cfg["region"].get<std::string>());
 
         map<TString, map<common::MODE, map<int, vector<TH1*>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
         //map<TString, map<common::MODE, map<int, vector<ROOT::RDF::RResultPtr<TH1D>>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
@@ -214,8 +214,8 @@ namespace macro {
                     if (hstack->GetNhists() > 0)
                         hstack->Write();
 
-		    if (cuts_info[cut].efficiency !="none"){
-                    	THStack * hstack2;
+                    if (cuts_info[cut].efficiency !="none"){
+                        THStack * hstack2;
                         if (mode == common::BKG)
                              hstack2 = new THStack(Form("%s_%scut%d-BKG", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut), histos_info[plot_name]->title);
                         else if (mode == common::DATA)
@@ -227,10 +227,10 @@ namespace macro {
                     	//sort by "smallest integral first"
                      	std::sort(hist_vec.begin(), hist_vec.end(),
                         	[](TH1 *a, TH1 *b) { return a->Integral() < b->Integral(); });
-                  	for (auto hist : hist_vec)
-                        	hstack2->Add(hist);
+                        for (auto hist : hist_vec)
+                            hstack2->Add(hist);
                         if (hstack2->GetNhists() > 0)
-                        	hstack2->Write();
+                            hstack2->Write();
                     }
                 }
             }

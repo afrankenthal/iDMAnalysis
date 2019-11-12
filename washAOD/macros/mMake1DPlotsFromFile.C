@@ -35,7 +35,7 @@ namespace macro {
             if (TString(key->GetClassName()) != "THStack") continue;
             TString hs_name = TString(key->GetName());
             if (hs_name.Contains("_vs_")) continue; // mMake2DPlotsFromFile handles these
-	    if (hs_name.Contains("num") or hs_name.Contains("denom")) continue; // mMake1DEffPlotsFromFile handles these            
+            if (hs_name.Contains("num") or hs_name.Contains("denom")) continue; // mMake1DEffPlotsFromFile handles these            
             cout << "Processing " << hs_name << ", class " << key->GetClassName() << endl;
             THStack * hs = (THStack*)in_file->Get(hs_name);
             TString hs_basename = ((TObjString*)(hs_name.Tokenize("-")->At(0)))->String();
