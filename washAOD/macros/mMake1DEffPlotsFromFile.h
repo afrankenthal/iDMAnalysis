@@ -35,7 +35,7 @@ using std::cout, std::endl, std::map, std::vector;
 
 namespace macro {
 
-    extern "C" void canvasDraw(bool newCanvas,TString type,TString hs_basename, TString hs_suffix,TEfficiency *hs,TCanvas c);
+    extern "C" void canvasDraw(TString hs_basename, TString hs_suffix,TEfficiency *hs,TCanvas c, bool newCanvas, bool zoom);
     extern "C" bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg);
 
 }

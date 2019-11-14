@@ -50,9 +50,11 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     muonBadTrackFilterTag_("muonBadTrackFilter"),
     mJetCorrectorTag_(ps.getParameter<edm::InputTag>("corrLabel")),
     recoElectronTag_("gedGsfElectrons"),
-    recoElectronIDTag_("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V2-loose"),
+    //recoElectronIDTag_("egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V2-loose"),
+    recoElectronIDTag_(ps.getParameter<std::string>("electronPath")),
     recoPhotonTag_("gedPhotons"),
-    recoPhotonIDTag_("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V2-loose"),
+    recoPhotonIDTag_(ps.getParameter<std::string>("photonPath")),
+    //recoPhotonIDTag_("egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V2-loose"),
     
     bTagProbbToken_(consumes<reco::JetTagCollection>(bTagProbbTag_)),
     bTagProbbbToken_(consumes<reco::JetTagCollection>(bTagProbbbTag_)),
@@ -104,6 +106,8 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     desc.add<edm::InputTag>("trigResult", edm::InputTag("TriggerResults", "", "HLT"));
     desc.add<edm::InputTag>("trigEvent", edm::InputTag("hltTriggerSummaryAOD", "", "HLT"));
     desc.add<std::string>("trigPath", "Defaultshouldntbecalled");
+    desc.add<std::string>("photonPath", "Defaultshouldntbecalled");
+    desc.add<std::string>("electronPath", "Defaultshouldntbecalled");
     desc.add<edm::InputTag>("pileups", edm::InputTag("addPileupInfo"));
     desc.add<edm::InputTag>("genEvt", edm::InputTag("generator"));
     desc.add<std::string>("processName", "HLT");

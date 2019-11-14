@@ -137,8 +137,17 @@ dataFormat = DataFormat.AOD
 switchOnVIDElectronIdProducer(process, dataFormat)
 switchOnVIDPhotonIdProducer(process, dataFormat)
 # define which IDs we want to produce
-id_e_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff']
-id_ph_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff']
+if options.year == '2016': 
+	id_e_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff']
+	id_ph_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring16_V2p2_cff']
+	recoPhotonPath = 'egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-loose'
+	recoElectronPath= 'egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose'
+else:
+	id_e_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff']
+	id_ph_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff']
+	recoPhotonPath= 'egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V2-loose'
+	recoElectronPath= 'egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V2-loose'
+
 #add them to the VID producer
 for idmod in id_e_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
@@ -148,8 +157,8 @@ for idmod in id_ph_modules:
 
 ## Main iDM analyzer
 from iDMSkimmer.washAOD.iDMAnalyzer_cfi import iDMAnalyzer
-process.ntuples_gbm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
-process.ntuples_dgm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
+process.ntuples_gbm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'),photonPath =cms.string(recoPhotonPath), electronPath = cms.string(recoElectronPath), isData = cms.untracked.bool(options.data))
+process.ntuples_dgm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), photonPath = cms.string(recoPhotonPath), electronPath = cms.string(recoElectronPath), isData = cms.untracked.bool(options.data))
 
 if options.data:
     process.p = cms.Path(

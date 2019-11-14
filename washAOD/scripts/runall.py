@@ -2,7 +2,7 @@ import os, sys
 import subprocess
 
 
-test = False
+test = True
 if test:
 	mchis=['6p0']#['60p0']
 	dmchis=['2p0']#['20p0']
@@ -41,7 +41,8 @@ for mass in masslist:
 	#	odir = "/uscmst1b_scratch/lpc1/3DayLifetime/mireid/v3"
 		ofile= "{2}_{0}_ctau-{1}.root".format(mass,life,analyzer_name[analyzer])
 		if test:
-			cmdxx = "cmsRun ../python/{1} year=2018 inputFiles=/store/data/Run2018A/SingleMuon/AOD/17Sep2018-v2/90000/F8382E90-9BC4-4E4A-8EB2-952904BAE395.root outputFile=test_{0}".format(ofile,analyzer)#,mass,life)
+			cmdxx = "cmsRun ../python/{1} year=2018 inputFiles=/store/mc/RunIIAutumn18DRPremix/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/AODSIM/102X_upgrade2018_realistic_v15-v1/90000/E2ECFFD9-B0C9-E04A-99A4-31BB259AAD98.root outputFile=test_{0}".format(ofile,analyzer)#,mass,life)
+			#cmdxx = "cmsRun ../python/{1} year=2018 inputFiles=/store/data/Run2018A/SingleMuon/AOD/17Sep2018-v2/90000/F8382E90-9BC4-4E4A-8EB2-952904BAE395.root outputFile=test_{0}".format(ofile,analyzer)#,mass,life)
 			#cmdxx = "cmsRun ../python/{1} year=2018 inputFiles_load=../data/iDM/2018/signal/test.list outputFile=test_{0}".format(ofile,analyzer)#,mass,life)
 		
 			print(cmdxx)
