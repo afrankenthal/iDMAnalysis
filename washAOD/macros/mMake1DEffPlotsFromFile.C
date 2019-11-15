@@ -5,6 +5,7 @@
 namespace macro {
     void canvasDraw(TString hs_basename, TString hs_suffix,TEfficiency *hs, TCanvas *c,bool newCanvas, bool zoom){
 	cout << "formatting canvas and drawing histograms function " << hs_basename<<hs_suffix<<hs->GetName()<<endl;
+	TString x_title = TString(hs->GetPassedHistogram()->GetXaxis()->GetTitle());
 	if(newCanvas){
                 c->Range(0,0,1,1);
                 c->Divide(1,2);
@@ -33,7 +34,7 @@ namespace macro {
 		background->Reset();
 			
 		background->SetMaximum(1.1);
-		background->SetMinimum(0);
+		background->SetMinimum(0.1);
 		background->SetTitle("");
 		if(zoom){
 		cout<<"ZOOMING"<<endl;
@@ -41,8 +42,8 @@ namespace macro {
 		background->SetMinimum(0.92);
 		}
 		background->Draw();
-		TString title = hs_suffix.Append(";").Append(hs_basename).Append(";");
-                hs->SetTitle(title);
+		//TString title = hs_suffix.Append(";").Append(hs_basename).Append(";");
+                hs->SetTitle(hs_suffix.Append(";").Append(x_title));
                 hs->Draw(drawopt.Data());
             	gPad->Update();
 		
@@ -51,7 +52,8 @@ namespace macro {
                 background->GetYaxis()->SetLabelSize(0.05);
                 background->GetYaxis()->SetTitleSize(0.06);
                 background->GetYaxis()->SetTitleOffset(0.76);
-                background->GetXaxis()->SetTitle(hs_basename);
+                background->GetXaxis()->SetTitle(x_title);
+		cout <<"TITLE!!!!!!!!!!!! "<<x_title<<endl;
 		background->SetLabelSize(0.0);
             	gPad->Update();
                 const bool writeExtraText = true;
@@ -70,8 +72,8 @@ namespace macro {
 	}
         if (!newCanvas){
             	c->cd(1); // top pad, the plot one
-		TString title = hs_suffix.Append(";").Append(hs_basename).Append(";Efficiency");
-                hs->SetTitle(title);
+		//TString title = hs_suffix.Append(";").Append(hs_basename).Append(";Efficiency");
+                hs->SetTitle(hs_suffix.Append(";").Append(x_title));
             	hs->Draw("E P SAME");
             	gPad->Update();
 	}
@@ -148,6 +150,8 @@ namespace macro {
 		}
 		MCTotal_num->SetMinimum(0.8);
 		MCTotal_denom->SetMinimum(0.8);
+            	MCTotal_num->GetXaxis()->SetTitle(hsd->GetTitle());	
+            	MCTotal_denom->GetXaxis()->SetTitle(hsd->GetTitle());	
 		TEfficiency* mc_eff = new TEfficiency(*MCTotal_num,*MCTotal_denom);
 		mc_eff->SetLineColor(common::group_plot_info["MCTotal"].color);
 		mc_eff->SetMarkerColor(common::group_plot_info["MCTotal"].color);
@@ -181,7 +185,8 @@ namespace macro {
 						hsdx->SetBinContent(i,hsnx->GetBinContent(i));
 					}
 				}
-            			
+            		        hsdx->GetXaxis()->SetTitle(hsd->GetTitle());	
+            		        hsnx->GetXaxis()->SetTitle(hsd->GetTitle());	
 				TEfficiency* hs = new TEfficiency(*hsnx,*hsdx);
 				hs->SetLineColor(common::group_plot_info[n1x1].color);
 				hs->SetMarkerColor(common::group_plot_info[n1x1].color);
@@ -248,6 +253,7 @@ namespace macro {
 		for( auto MC_hist : MC_hists){
 		TH1F* ratio_hist = (TH1F*)data_ratio->Clone();
 		TH1F* MC_ratio = (TH1F*)((TH1F*)MC_hist->GetPassedHistogram())->Clone();	
+		ratio_hist->GetXaxis()->SetTitle(MC_hist->GetPassedHistogram()->GetXaxis()->GetTitle());
 		MC_ratio->Reset();
 		for (int i =0; i<nbins;i++){	
 		MC_ratio->SetBinContent(i,MC_hist->GetEfficiency(i));
@@ -261,7 +267,7 @@ namespace macro {
 		}
 		else{
                 ratio_hist->SetMaximum(2.1);
-                ratio_hist->SetMinimum(-0.1);
+                ratio_hist->SetMinimum(0.1);
 		}
                 
 		ratio_hist->SetTitle("");

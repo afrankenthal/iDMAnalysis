@@ -87,6 +87,7 @@ namespace macro {
             }
             if (newCanvas) {
                 hs->GetXaxis()->SetTitle(hs->GetTitle());
+		cout<<"True Title!!! "<< hs->GetTitle()<<endl;
                 hs->GetYaxis()->SetTitle("Events");
                 hs->GetXaxis()->SetTitleSize(0.00);
                 hs->GetHistogram()->GetYaxis()->SetLabelSize(0.05);
