@@ -7,7 +7,7 @@ void RDFAnalysis::SetCuts(std::vector<common::CutInfo> cuts_info) {
     cuts_info_ = cuts_info;
 }
 
-void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi, TString region = "SR") {
+void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi) {
     sample_info_ = sample_info;
     mode_ = sample_info_.mode;
     group_ = sample_info_.group;
