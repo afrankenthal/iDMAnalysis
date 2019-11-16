@@ -5,6 +5,8 @@
 *.pcm
 *.d
 *.swp
+*.png
+*.pdf
 messages.txt
 nohup.out
 washAOD/python/crab/*
@@ -12,3 +14,5 @@ washAOD/python/*.pyc
 bin/
 studies/
 build/
+washAOD/macros/bin
+washAOD/macros/build

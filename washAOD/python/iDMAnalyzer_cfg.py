@@ -56,20 +56,26 @@ process.load("Configuration.StandardSequences.GeometryRecoDB_cff")
 process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
+if options.year == 2016:
+    if options.data:
+         process.GlobalTag.globaltag = '80X_dataRun2_2016SeptRepro_v7'
+    else:
+        process.GlobalTag.globaltag = '80X_mcRun2_asymptotic_2016_TrancheIV_v8'
 if options.year == 2017:
-    process.GlobalTag.globaltag = '94X_mc2017_realistic_v15'
+    if options.data:
+        process.GlobalTag.globaltag = '94X_dataRun2_v11'
+    else:
+        process.GlobalTag.globaltag = '94X_mc2017_realistic_v17'
 if options.year == 2018:
     if options.data:
         if options.Run2018D:
-            process.GlobalTag.globaltag = '102X_dataRun2_Prompt_v14'
+            process.GlobalTag.globaltag = '102X_dataRun2_Prompt_v15'
         # else it's 2018 A, B, or C
         else: 
-            #process.GlobalTag.globaltag = '102X_dataRun2_Sep2018ABC_v2'
-            process.GlobalTag.globaltag = '102X_dataRun2_v11'
+            process.GlobalTag.globaltag = '102X_dataRun2_v12'
     # else it's MC
     else:
-        #process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v15'
-        process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v18'
+        process.GlobalTag.globaltag = '102X_upgrade2018_realistic_v20'
 
 process.MessageLogger = cms.Service("MessageLogger",
         destinations   =  cms.untracked.vstring('messages', 'cerr'),
@@ -131,8 +137,17 @@ dataFormat = DataFormat.AOD
 switchOnVIDElectronIdProducer(process, dataFormat)
 switchOnVIDPhotonIdProducer(process, dataFormat)
 # define which IDs we want to produce
-id_e_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff']
-id_ph_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff']
+if options.year == '2016': 
+	id_e_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Summer16_80X_V1_cff']
+	id_ph_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring16_V2p2_cff']
+	recoPhotonPath = 'egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-loose'
+	recoElectronPath= 'egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose'
+else:
+	id_e_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff']
+	id_ph_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff']
+	recoPhotonPath= 'egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V2-loose'
+	recoElectronPath= 'egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V2-loose'
+
 #add them to the VID producer
 for idmod in id_e_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDElectronSelection)
@@ -142,8 +157,8 @@ for idmod in id_ph_modules:
 
 ## Main iDM analyzer
 from iDMSkimmer.washAOD.iDMAnalyzer_cfi import iDMAnalyzer
-process.ntuples_gbm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
-process.ntuples_dgm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), isData = cms.untracked.bool(options.data))
+process.ntuples_gbm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'),photonPath =cms.string(recoPhotonPath), electronPath = cms.string(recoElectronPath), isData = cms.untracked.bool(options.data))
+process.ntuples_dgm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), photonPath = cms.string(recoPhotonPath), electronPath = cms.string(recoElectronPath), isData = cms.untracked.bool(options.data))
 
 if options.data:
     process.p = cms.Path(

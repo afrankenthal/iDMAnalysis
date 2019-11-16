@@ -93,8 +93,10 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag mJetCorrectorTag_;
         const edm::InputTag recoElectronTag_;
         const edm::InputTag recoElectronIDTag_;
+        //const std::string recoElectronIDTag_;
         const edm::InputTag recoPhotonTag_;
         const edm::InputTag recoPhotonIDTag_;
+        //const std::InputTag recoPhotonIDTag_;
 
         // Tokens
         const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbToken_;
@@ -157,6 +159,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<std::string> triggerPathsWithoutVersionNum_;
         std::vector<std::string> triggerPathsWithVersionNum_;
         std::string trigPath_;
+        std::string photonPath_;
+        std::string electronPath_;
         HLTConfigProvider hltConfig_;
 
         // Reco and gen TTrees

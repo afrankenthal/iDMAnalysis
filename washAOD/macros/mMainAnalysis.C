@@ -113,7 +113,7 @@ namespace macro {
             
             //currentSelector->SetHistos(histos_info);
 
-            currentSelector->SetParams(props, lumi, "SR"); // obsolete
+            currentSelector->SetParams(props, lumi); // obsolete
             dfAnalysis->SetParams(props, lumi);
             
             // Use RDataFrame instead
@@ -212,6 +212,25 @@ namespace macro {
                         hstack->Add(hist);
                     if (hstack->GetNhists() > 0)
                         hstack->Write();
+
+                    if (cuts_info[cut].efficiency !="none"){
+                        THStack * hstack2;
+                        if (mode == common::BKG)
+                             hstack2 = new THStack(Form("%s_%scut%d-BKG", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut), histos_info[plot_name]->title);
+                        else if (mode == common::DATA)
+                             hstack2 = new THStack(Form("%s_%scut%d-DATA", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut), histos_info[plot_name]->title);
+                        else if (mode == common::SIGNAL)
+                             hstack2 = new THStack(Form("%s_%scut%d-SIGNAL", plot_name.Data(),cuts_info[cut].efficiency, cut), histos_info[plot_name]->title);
+
+
+                    	//sort by "smallest integral first"
+                     	std::sort(hist_vec.begin(), hist_vec.end(),
+                        	[](TH1 *a, TH1 *b) { return a->Integral() < b->Integral(); });
+                        for (auto hist : hist_vec)
+                            hstack2->Add(hist);
+                        if (hstack2->GetNhists() > 0)
+                            hstack2->Write();
+                    }
                 }
             }
         }
