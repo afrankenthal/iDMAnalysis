@@ -59,7 +59,6 @@ public :
    Double_t lumi_;
    common::MODE mode_;
    TString group_;
-   TString region_;
 
    TH1F * sf_z_qcd, * sf_z_ewk;
    TH1F * sf_w_qcd, * sf_w_ewk;
