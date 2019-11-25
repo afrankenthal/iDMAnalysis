@@ -3,6 +3,7 @@
         "name": "mMainAnalysis",
         "config": {
             "region": "trigEff",
+            "year": 2017,
             "plots": [
                 {
                     "quantity": "reco_PF_MET_pt",

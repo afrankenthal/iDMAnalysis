@@ -7,7 +7,7 @@ void RDFAnalysis::SetCuts(std::vector<common::CutInfo> cuts_info) {
     cuts_info_ = cuts_info;
 }
 
-void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi, TString region = "SR") {
+void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi, TString region = "SR", int year = 2018) {
     sample_info_ = sample_info;
     mode_ = sample_info_.mode;
     group_ = sample_info_.group;
@@ -39,7 +39,13 @@ void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi, TStri
     kfactors->Close();
     
     // Set up pileup corrections
-    TFile * pileup = new TFile("../../data/puWeights_10x_56ifb.root");
+    TFile* pileup;
+    if(year == 2017)
+    	pileup = new TFile("../../data/puWeights_90x_41ifb.root");
+    else if(year==2016)
+    	pileup = new TFile("../../data/puWeights_80x_37ifb.root");
+    else
+    	pileup = new TFile("../../data/puWeights_10x_56ifb.root");
     TH1F * h_pu = (TH1F*)pileup->Get("puWeights");
     sf_pu = (TH1F*)h_pu->Clone();
     sf_pu->SetDirectory(0);

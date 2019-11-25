@@ -8,10 +8,6 @@
         "description": "Reference trigger fired (IsoMu24)"
     },
     {
-        "cut": "reco_PF_HEM_flag == 0",
-        "description": "HEM veto"
-    },
-    {
         "cut": "MET_filters_fail_bits == 0",
         "description": "MET filter bits pass"
     },

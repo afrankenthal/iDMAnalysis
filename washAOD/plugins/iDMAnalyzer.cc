@@ -24,8 +24,10 @@
 iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     isData(ps.getUntrackedParameter<bool>("isData", false)),
 
-    bTagProbbTag_(ps.getParameter<edm::InputTag>("bTagProbb")),
-    bTagProbbbTag_(ps.getParameter<edm::InputTag>("bTagProbbb")),
+    //bTagProbbTag_(ps.getParameter<edm::InputTag>("bTagProbb")),
+    //bTagProbbbTag_(ps.getParameter<edm::InputTag>("bTagProbbb")),
+    bTagProbbTag_(ps.getParameter<std::string>("bTagProbb")),
+    bTagProbbbTag_(ps.getParameter<std::string>("bTagProbbb")),
     muTrackTag1_(ps.getParameter<edm::InputTag>("muTrack1")),
     muTrackTag2_(ps.getParameter<edm::InputTag>("muTrack2")),
     genParticleTag_(ps.getParameter<edm::InputTag>("genParticle")),
@@ -93,8 +95,10 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
 {
     edm::ParameterSetDescription desc;
     desc.addUntracked<bool>("isData", 0);
-    desc.add<edm::InputTag>("bTagProbb", edm::InputTag("pfDeepCSVJetTags", "probb", "RECO"));
-    desc.add<edm::InputTag>("bTagProbbb", edm::InputTag("pfDeepCSVJetTags", "probbb", "RECO"));
+    //desc.add<edm::InputTag>("bTagProbb", edm::InputTag("pfDeepCSVJetTags", "probb", "RECO"));
+    //desc.add<edm::InputTag>("bTagProbbb", edm::InputTag("pfDeepCSVJetTags", "probbb", "RECO"));
+    desc.add<std::string>("bTagProbb", "Defaultshouldntbecalled"); 
+    desc.add<std::string>("bTagProbbb", "Defaultshouldntbecalled"); 
     desc.add<edm::InputTag>("muTrack1", edm::InputTag("displacedStandAloneMuons"));
     desc.add<edm::InputTag>("muTrack2", edm::InputTag("globalMuons"));
     desc.add<edm::InputTag>("genParticle", edm::InputTag("genParticles"));

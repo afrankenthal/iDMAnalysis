@@ -40,7 +40,7 @@ namespace macro {
 
         TString out_filename = TString(cfg["outfilename"].get<std::string>());
         TString region = TString(cfg["region"].get<std::string>());
-
+	int year = cfg["year"].get<int>();
         map<TString, map<common::MODE, map<int, vector<TH1*>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
         //map<TString, map<common::MODE, map<int, vector<ROOT::RDF::RResultPtr<TH1D>>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
         for (auto & [name, info] : histos_info) {
@@ -115,7 +115,7 @@ namespace macro {
             //currentSelector->SetHistos(histos_info);
 
             currentSelector->SetParams(props, lumi, region); // obsolete
-            dfAnalysis->SetParams(props, lumi, region);
+            dfAnalysis->SetParams(props, lumi, region,year);
             
             // Use RDataFrame instead
             //data_reco->Process(currentSelector);
