@@ -6,7 +6,6 @@ namespace macro {
     void canvasDraw(TString hs_basename, TString hs_suffix,TEfficiency *hs, TCanvas *c,bool newCanvas, bool zoom){
 	cout << "formatting canvas and drawing histograms function " << hs_basename<<hs_suffix<<hs->GetName()<<endl;
 	TString x_title = TString(hs->GetPassedHistogram()->GetXaxis()->GetTitle());
-	cout<<"xtitle: "<<x_title<<endl;
 	if(newCanvas){
                 c->Range(0,0,1,1);
                 c->Divide(1,2);
@@ -37,8 +36,8 @@ namespace macro {
 		background->SetMaximum(1.1);
 		background->SetMinimum(0.1);
 		background->SetTitle("");
+		//Set Y axis range for a zoomed in ploe
 		if(zoom){
-		cout<<"ZOOMING"<<endl;
 		background->SetMaximum(1.02);
 		background->SetMinimum(0.92);
 		}
@@ -47,14 +46,7 @@ namespace macro {
                 hs->Draw(drawopt.Data());
             	gPad->Update();
 		
-//		if(true){
-//		TF1* f1 = new TF1("f1","[2]+[3]*TMath::Erf((x-[0])/[1])",0,400);
-//		f1->SetParameters(25,36,0.5,0.5);
-//		f1->SetLineColor(hs->GetLineColor());
-//		hs->Fit(f1,"SAME R+");
-//
-//		}
-		
+		// Set Labels using the empty background TH1
                 background->GetYaxis()->SetTitle("Efficiency");
                 background->GetXaxis()->SetTitleSize(0.00);
                 background->GetYaxis()->SetLabelSize(0.05);
@@ -145,8 +137,6 @@ namespace macro {
 	    	TH1F * MCTotal_denom = (TH1F*)(((TH1F*)hsd->GetStack()->Last())->Clone());
 		TObjArray* name_tolks = TString(MCTotal_denom->GetName()).Tokenize("_");
 		MCTotal_denom->SetName((((TObjString*)(name_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(name_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(3)))->String())).Append("_MCTotal").Append(TString("_MCTotal")));
-		//MCTotal_denom->SetName((((TObjString*)(name_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(name_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(3)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(4)))->String())).Append(TString("_MCTotal")));
-		//MCTotal_denom->SetName(TString(MCTotal_denom->GetName()).Append(TString("_MCTotal")));
 		cout<<"name "<<MCTotal_denom->GetName()<<endl;
 		
 		for (int i =0; i<MCTotal_num->GetNbinsX();i++){	
@@ -170,15 +160,14 @@ namespace macro {
 		mc_eff->SetLineColor(common::group_plot_info["MCTotal"].color);
 		mc_eff->SetMarkerColor(common::group_plot_info["MCTotal"].color);
 		mc_eff->SetFillColor(common::group_plot_info["MCTotal"].color);
+		
 		if(fit){
 		TF1* f1 = new TF1("f1","[2]+[3]*TMath::Erf((x-[0])/[1])",0,400);
 		f1->SetParameters(25,36,0.5,0.5);
 		f1->SetLineColor(mc_eff->GetLineColor());
 		mc_eff->Fit(f1,"SAME R+");
-		//cout<<"PARAMETERS!! "<<f1->GetParameter(0)<<endl;
 		}
 
-                cout <<"TESTMC: "<<MCTotal_denom->GetName()<<endl; 
 		canvases[MCTotal_denom->GetName()] = std::make_unique<TCanvas>(Form("canvas_%s", MCTotal_denom->GetName()));
                 auto * c = canvases[MCTotal_denom->GetName()].get();
 	    	canvasDraw(MCTotal_denom->GetName(),TString("BKG"),mc_eff,c,true,false);	
@@ -244,10 +233,7 @@ namespace macro {
 	    canvasDraw(n1x0,n1x1,(TEfficiency*)hs->Clone(),cz,newCanvas,true);	
 	    if(type.Contains("DATA")){
 		TObjArray* dataname_tolks = TString(hs->GetName()).Tokenize("_");
-		//TString MCTotal_dataname = TString(hs->GetName()).Append(TString("_MCTotal"));
 		TString MCTotal_dataname = TString((((TObjString*)(dataname_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(dataname_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(3)))->String())).Append("_MCTotal").Append(TString("_MCTotal")));
-		//TString MCTotal_dataname = TString((((TObjString*)(dataname_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(dataname_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(3)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(4)))->String())).Append(TString("_MCTotal")));
-		cout<<"dataname: "<<MCTotal_dataname<<endl;
                
 		auto * c1 = canvases[MCTotal_dataname].get();
 	    	canvasDraw(n1x0,n1x1,(TEfficiency*)hs->Clone(),c1,newCanvas,false);	
@@ -260,8 +246,7 @@ namespace macro {
         for (auto & pair : canvases) {
             auto * c = pair.second.get();
             TPad * top_pad = (TPad*)c->GetPrimitive(Form("%s_1", c->GetName()));
-	    cout<<"primitives"<<endl;
-	    c->ls();
+	    //c->ls();
             TString canvas_name = TString(c->GetName()).ReplaceAll("canvas_", "");
 	    bool zoom = canvas_name.Contains("zoom")? true: false;
             TEfficiency * data_hist;
@@ -370,10 +355,6 @@ namespace macro {
 		const char* leg = common::group_plot_info[group].legend.Data();
 		std::string both1 = leg + paramsum;
 		const char* both =both1.c_str();
-		//cout<<"group "<<group.Data() <<endl;
-		//cout<<"NAME "<<leg <<endl;
-		//cout<<"PARAMS "<<param <<endl;
-//		cout<<"PARAMS "<<both <<endl;
                 if (TString(hs->GetName()).Contains("Signal"))
                     legend->AddEntry(hs, "", "l");
                 else if (TString(hs->GetName()).Contains("data")){

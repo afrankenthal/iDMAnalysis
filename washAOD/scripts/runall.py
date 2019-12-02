@@ -2,7 +2,7 @@ import os, sys
 import subprocess
 
 
-test = True
+test = False
 if test:
 	mchis=['6p0']#['60p0']
 	dmchis=['2p0']#['20p0']
@@ -12,14 +12,14 @@ if test:
 else:
 	lifelist = [1,10,100,1000]
 	#lifelist = [100]
-	#mchis=['52p5']
-	#dmchis=['5p0']
+	mchis=['52p5']
+	dmchis=['5p0']
 	#mchis=['5p25']
 	#dmchis=['0p5']
 	#mchis=['6p0']
 	#dmchis=['2p0']
-	mchis=['60p0']
-	dmchis=['20p0']
+	#mchis=['60p0']
+	#dmchis=['20p0']
 	#mchis=['6p0','60p0','5p25','52p5']
 	#dmchis=['2p0','20p0','0p5','5p0']
 	masslist = ["Mchi-%s_dMchi-%s"%(mchi,dmchi) for mchi,dmchi in zip(mchis,dmchis)]
@@ -34,7 +34,7 @@ makedir.wait()
 analyzer ='iDMAnalyzer_cfg.py'
 #analyzer='MuRecoEffi_cfg.py'
 analyzer_name = {'MetTrigSelfEffiForMuTrack_cfg.py': 'MetTrigStudy_signal_gen_v8',
-		'iDMAnalyzer_cfg.py': 'iDMAnalysis_seventhrun',
+		'iDMAnalyzer_cfg.py': 'iDMAnalysis_seventhrunv2',
 		'MuRecoEffi_cfg.py': 'MuRecoEffi'}
 for mass in masslist:
 	for life in lifelist:	

@@ -109,16 +109,16 @@ def main():
         #config.Data.splitting = 'LumiBased'
         #config.Data.unitsPerJob = 100
         if isData == True:
-            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/data_sixthrun'
+            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/data_seventhrun'%(options.year)
         else:
-            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_sixthrun'
+            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_seventhrun'%(options.year)
 
         config.Data.publication = False
-        #config.Data.ignoreLocality = True
+        config.Data.ignoreLocality = True
 
         #config.Site.ignoreGlobalBlacklist = True
-        #config.Site.whitelist = ['T2_RU_ITEP']
-        #config.Site.whitelist = ['T2_DE_*', 'T2_EE_*', 'T2_ES_*', 'T2_FR_*', 'T2_GR_*', 'T2_HU_*', 'T2_IT_*', 'T2_RU_*', 'T2_UK_*']
+        config.Site.whitelist = ['T2_RU_ITEP']
+        config.Site.whitelist += ['T2_DE_*', 'T2_EE_*', 'T2_ES_*', 'T2_FR_*', 'T2_GR_*', 'T2_HU_*', 'T2_IT_*', 'T2_RU_*', 'T2_UK_*']
         config.Site.blacklist = ['T2_TW_NCHC','T2_BE_IIHE']
         #config.Site.blac = ['T3_RU_FIAN', 'T3_US_MIT', 'T3_US_UCD',
         #'T3_CO_Uniandes', 'T3_US_NotreDame', 
@@ -226,7 +226,7 @@ def main():
         #------ data -----#
 
         data_ABC = {
-            'MET_Run2018A':'/MET/Run2018A-17Sep2018-v1/AOD',
+        #    'MET_Run2018A':'/MET/Run2018A-17Sep2018-v1/AOD',
             'MET_Run2018B':'/MET/Run2018B-17Sep2018-v1/AOD',
             'MET_Run2018C':'/MET/Run2018C-17Sep2018-v1/AOD'
         }
@@ -306,8 +306,15 @@ def main():
                 'singleMu_RunG':'/SingleMuon/Run2017G-17Nov2017-v1/AOD',
                 'singleMu_RunH':'/SingleMuon/Run2017H-17Nov2017-v2/AOD'
         }
+	Met_data_2017 = {
+		'MET_2017RunB':'/MET/Run2017B-17Nov2017-v1/AOD',
+		'MET_2017RunC':'/MET/Run2017C-17Nov2017-v1/AOD',
+		'MET_2017RunD':'/MET/Run2017D-17Nov2017-v1/AOD',
+		'MET_2017RunE':'/MET/Run2017E-17Nov2017-v1/AOD',
+		'MET_2017RunF':'/MET/Run2017F-17Nov2017-v1/AOD'
+	}
 
-
+        full_data_2017 = merge_dicts(Met_data_2017,single_data_2017)
         #------ Extra -----#
 
         trig_data = {
@@ -325,7 +332,8 @@ def main():
 
         if options.sampleType == 'data':
             if options.year == '2017':
-                samples = single_data_2017
+                #samples = single_data_2017
+                samples = full_data_2017
             else:
                 #samples = single_data
                 samples = full_data_samples
@@ -351,7 +359,7 @@ def main():
             config.JobType.pyCfgParams = ['data={}'.format(isData),'Run2018D={}'.format(isRun2018D)]
 
             config.Data.inputDataset = dataset
-            config.General.requestName = 'iDMAnalysis_' + sample 
+            config.General.requestName = 'iDMAnalysis_' + sample +'_v2'
             #config.Data.outputDatasetTag = sample
 
             #basedir = '/uscms/home/mreid/CRAB/signal_region_analysis/CMSSW_10_2_1/src/Firefighter/washAOD/data/iDM/2018/GenFilter/'

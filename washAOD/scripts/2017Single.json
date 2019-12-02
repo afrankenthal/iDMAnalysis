@@ -1,0 +1,122 @@
+{
+    "MET_2017RunB_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/MET/crab_iDMAnalysis_MET_2017RunB_v2/191127_190116/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "xsec": -1
+    },
+    "MET_2017RunC_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/MET/crab_iDMAnalysis_MET_2017RunC_v2/191126_154947/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "xsec": -1
+    },
+    "MET_2017RunD_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/MET/crab_iDMAnalysis_MET_2017RunD_v2/191126_154847/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "xsec": -1
+    },
+    "MET_2017RunE_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/MET/crab_iDMAnalysis_MET_2017RunE_v2/191126_154909/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "xsec": -1
+    },
+    "MET_2017RunF_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/MET/crab_iDMAnalysis_MET_2017RunF_v2/191126_154824/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "xsec": -1
+    },
+    "singleMu_RunB_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_RunB_v2/191126_155204/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "xsec": -1
+    },
+    "singleMu_RunC_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_RunC_v2/191126_155141/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "xsec": -1
+    },
+    "singleMu_RunD_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_RunD_v2/191126_155047/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "xsec": -1
+    },
+    "singleMu_RunE_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_RunE_v2/191126_155024/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "xsec": -1
+    },
+    "singleMu_RunF_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_RunF_v2/191126_155122/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "xsec": -1
+    },
+    "singleMu_RunG_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_RunG_v2/191126_155105/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "xsec": -1
+    },
+    "singleMu_RunH_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_RunH_v2/191126_155007/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "xsec": -1
+    }
+}

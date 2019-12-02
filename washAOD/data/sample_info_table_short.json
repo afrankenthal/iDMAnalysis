@@ -4,6 +4,11 @@
         "mode": "DATA",
         "xsec": -1
     },
+    "MET": {
+        "group": "data",
+        "mode": "DATA",
+        "xsec": -1
+    },
     "DYJetsToLL_M-5to50": {
         "group": "DY",
         "mode": "BKG",

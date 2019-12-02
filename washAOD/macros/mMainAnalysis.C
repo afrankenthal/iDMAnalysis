@@ -115,13 +115,8 @@ namespace macro {
             
             //currentSelector->SetHistos(histos_info);
 
-<<<<<<< HEAD
             currentSelector->SetParams(props, lumi, region); // obsolete
             dfAnalysis->SetParams(props, lumi, region,year);
-=======
-            currentSelector->SetParams(props, lumi); // obsolete
-            dfAnalysis->SetParams(props, lumi);
->>>>>>> bbe5b1296900cd665925c6424ebd908d4eceb16e
             
             // Use RDataFrame instead
             //data_reco->Process(currentSelector);
