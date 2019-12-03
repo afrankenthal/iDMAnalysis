@@ -1,6 +1,7 @@
 #include "RDFAnalysis.h"
 #include <TH2.h>
 #include <TStyle.h>
+#include <math.h>
 
 using std::vector;
 
@@ -183,6 +184,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    auto takeFirstMuonPhi = [&](vector<float> muons_phi) { return muons_phi.size() > 0 ? muons_phi[0] : -1; };
    auto takeSecondMuonPhi = [&](vector<float> muons_phi) { return muons_phi.size() > 1 ? muons_phi[1] : -1; };
    auto takeMETJetDphi = [&](vector<float> jets_phi, float MET_phi) { if (jets_phi.size() == 0) return -5.0f; float dphi = abs(jets_phi[0] - MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; return abs(dphi); };
+   auto findFakeMETCut = [&](float MET_pt, float MET_phi, float calomet_pt, float calomet_phi, float recoil) { return sqrt( ((MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))*(MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))) + ((MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))*(MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))))/recoil;};
    auto calcMT = [&](vector<float> muons_pt, vector<float> muons_phi, float MET_pt, float MET_phi) { if (!muons_pt.size()) return -9999.9f; float dphi = abs(MET_phi - muons_phi[0]); if (dphi > 3.141592) dphi -= 2 * 3.141592; float MT2 = 2.0 * muons_pt[0] * MET_pt * (1.0 - cos(dphi)); return sqrt(MT2); };
    auto takeGenMuVxy = [&](vector<float> gen_vxy, vector<int> gen_ID) { for (size_t i = 0; i < gen_vxy.size(); i++) if (abs(gen_ID[i]) == 13) return gen_vxy[i]; return -9999.99f; }; 
    auto takeGenDphiMETmu = [&](vector<float> gen_pt, vector<float> gen_phi, vector<int> gen_ID, float MET_phi) {
@@ -230,6 +232,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        Define("reco_sel_mu_phi0", takeFirstMuonPhi, {"reco_sel_mu_phi"}).
        Define("reco_sel_mu_phi1", takeSecondMuonPhi, {"reco_sel_mu_phi"}).
        Define("MET_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_MET_phi"}).
+       Define("recoil_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_recoil_phi"}).
+       Define("fake_MET_fraction", findFakeMETCut, {"reco_PF_MET_pt", "reco_PF_MET_phi","reco_Calo_MET_pt","reco_Calo_MET_phi","reco_PF_recoil_pt"});
        Define("reco_MT", calcMT, {"reco_dsa_pt", "reco_dsa_phi", "reco_PF_MET_pt", "reco_PF_MET_phi"}).
        Define("reco_METmu_dphi_v2", takeRecoDphiMETmu, {"reco_sel_mu_pt", "reco_sel_mu_phi", "reco_PF_MET_phi"}).
        Define("CaloPFMETRatio", takeCaloPFMETRatio, {"reco_PF_MET_pt", "reco_Calo_MET_pt"}).

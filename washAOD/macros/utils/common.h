@@ -30,6 +30,7 @@ namespace common {
 
     extern "C" { 
         static std::map<TString, GroupPlotInfo> group_plot_info{
+        {"MCTotal", GroupPlotInfo{"MC", kRed, SOLID, BKG}},
         {"DY", GroupPlotInfo{"Z(ll)+Jets", kOrange, SOLID, BKG}},
         {"QCD", GroupPlotInfo{"QCD", kRed, SOLID, BKG}},
         {"Multiboson", GroupPlotInfo{"Di-/Tri-boson", kGreen, SOLID, BKG}},
@@ -75,6 +76,7 @@ namespace common {
         TString cut;
         TString description;
         TString inclusive;
+        TString efficiency;
         TString special;
     } CutInfo;
 

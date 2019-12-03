@@ -20,13 +20,6 @@
 #include <THStack.h>
 #include <TLegend.h>
 
-//#include "mCutflowTables.h"
-//#include "mSumGenWgts.h"
-//#include "mSROptimization.h"
-//#include "mNminus1Plots.h"
-//#include "mMainAnalysis.h"
-//#include "mMakePlotsFromFile.h"
-//#include "mSaveCanvases.h"
 
 #include "utils/common.h"
 using namespace common;
@@ -61,7 +54,6 @@ int main(int argc, char ** argv) {
     }
 
     // Program options
-    //TString which_cutflow = TString(result["which"].as<std::string>());
     vector<TString> sample_config_filenames {};
     if (TString(result["background"].as<std::string>()) != "")
         sample_config_filenames.push_back(TString(result["background"].as<std::string>()));
@@ -73,16 +65,7 @@ int main(int argc, char ** argv) {
     TString cuts_filename = TString(result["cuts"].as<std::string>());
     TString out_filename = TString(result["outfile"].as<std::string>());
     TString in_filename = TString(result["infile"].as<std::string>());
-
-    // Map between macro name and actual function reference
-    //macro_map["mCutflowTables"] = &macro::mCutflowTables;
-    //macro_map["mSumGenWgts"] = &macro::mSumGenWgts;
-    //macro_map["mSROptimization"] = &macro::mSROptimization;
-    //macro_map["mNminus1Plots"] = &macro::mNminus1Plots;
-    //macro_map["mMainAnalysis"] = &macro::mMainAnalysis;
-    //macro_map["mMakePlotsFromFile"] = &macro::mMakePlotsFromFile;
-    //macro_map["mSaveCanvases"] = &macro::mSaveCanvases;
-    
+ 
     map<TString, SampleInfo> samples;
 
     for (auto config_filename : sample_config_filenames) { 
@@ -99,7 +82,6 @@ int main(int argc, char ** argv) {
             }
             samples[TString(sample)] = SampleInfo{
                 filelist,
-                //listFiles(cfg["dir"].get<std::string>().c_str()), // list of filenames
                 sample, // plot label
                 cfg["xsec"].get<float>(), // xsec
                 cfg["sum_gen_wgt"].get<float>(), // sum_gen_wgt
@@ -125,16 +107,21 @@ int main(int argc, char ** argv) {
             auto cut = TString(item["cut"].get<std::string>());
             auto description = TString(item["description"].get<std::string>());
             std::string inclusive;
+            std::string efficiency;
             if (item.find("inclusive") != item.end())
                 inclusive = TString(item["inclusive"].get<std::string>());
             else
                 inclusive = TString("yes");
+            if (item.find("efficiency") != item.end())
+                efficiency = TString(item["efficiency"].get<std::string>());
+            else
+                efficiency = TString("none");
             std::string special;
             if (item.find("special") != item.end())
                 special = TString(item["special"].get<std::string>());
             else
                 special = TString("no");
-            cuts_info.push_back(CutInfo{cut, description, inclusive, special});
+            cuts_info.push_back(CutInfo{cut, description, inclusive,efficiency, special});
         }
     }
 
@@ -156,7 +143,7 @@ int main(int argc, char ** argv) {
         if (macro == "mMainAnalysis" || macro == "mNminus1Analysis")
             cfg["outfilename"] = out_filename.Data();
 
-        if (macro == "mMake1DPlotsFromFile" || macro == "mMake2DPlotsFromFile")
+        if (macro == "mMake1DPlotsFromFile" || macro == "mMake1DEffPlotsFromFile" ||macro == "mMake2DPlotsFromFile")
             cfg["infilename"] = in_filename.Data();
 
         if (macro == "mSumGenWgts") {
@@ -165,7 +152,6 @@ int main(int argc, char ** argv) {
                 break;
             }
             cfg["sample_config_filename"] = sample_config_filenames[0].Data();
-            //cfg = json({{"sample_config_filename",sample_config_filenames[0].Data()}});
         }
 
         if (macro == "mSaveCanvases") {
@@ -190,7 +176,6 @@ int main(int argc, char ** argv) {
         process(samples, cuts_info, cfg);
         dlclose(handle);
 
-        //macro_map[macro](samples, cuts_info, cfg); // invoke macro with samples from above and cfg from json
     }
 
     cout << endl;
