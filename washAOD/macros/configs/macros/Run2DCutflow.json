@@ -1,0 +1,24 @@
+[
+    {
+        "name": "mMainAnalysis",
+        "config": {
+            "plots": [
+                {
+                    "name": "reco_METmu_dphi_vs_reco_vtx_vxy",
+                    "title": "|#Delta#Phi(MET, muons)| vs Muon pair vxy [cm]",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "float2D",
+                    "quantity": "reco_METmu_dphi",
+                    "nbinsX": 26,
+                    "lowX": 0,
+                    "highX": 3.2,
+                    "quantity2": "reco_vtx_vxy",
+                    "nbinsY": 50,
+                    "lowY": 0,
+                    "highY": 1000
+                }
+            ]
+        }
+    }
+]

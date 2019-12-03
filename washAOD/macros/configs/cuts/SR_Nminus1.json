@@ -1,7 +1,7 @@
 [
     {
         "cut": "1",
-        "description": "No cuts"
+        "description": "N-1"
     },
     {
         "cut": "MET_filters_fail_bits == 0",
@@ -20,16 +20,20 @@
         "description": "MET > 200 GeV"
     },
     {
+        "cut": "abs(reco_Calo_MET_pt - reco_PF_MET_pt)/reco_Calo_MET_pt < 1.0",
+        "description": "|CaloMET - PFMET|/CaloMET < 1"
+    },
+    {
         "cut": "reco_PF_jet_pt.size() > 0",
         "description": "nJets > 0 (pT > 30 GeV)"
     },
     {
-        "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (abs(reco_PF_jet_eta[i]) > 2.5) return false; return true;",
-        "description": "jets |#eta| < 2.5"
+        "cut": "if (reco_PF_n_highPt_jets == 0) return false; if (abs(reco_PF_jet_eta[0]) > 2.5) return false; return true;",
+        "description": "leading jet |#eta| < 2.5"
     },
     {
-        "cut": "reco_PF_jet_pt[0] > 200",
-        "description": "Leading jet pT > 200 GeV"
+        "cut": "reco_PF_jet_pt[0] > 120",
+        "description": "Leading jet pT > 120 GeV"
     },
     {
         "cut": "reco_n_good_electron == 0",
@@ -44,13 +48,17 @@
         "description": "good dSA muons >= 0"
     },
     {
-        "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) { double dphi = abs(reco_PF_jet_phi[i] - reco_PF_MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; if (abs(dphi) < 1.0) return false; } return true;",
-        "description": "|#Delta#Phi(MET, jets)| > 1"
+        "cut": "if (reco_PF_n_highPt_jets == 0) return false; double dphi = abs(reco_PF_jet_phi[0] - reco_PF_MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; if (abs(dphi) < 1.0) return false; return true;",
+        "description": "|#Delta#Phi(MET, leading jet)| > 1"
     },
     {
-        "cut": "reco_PF_n_highPt_jets >= 3",
-        "description": "nJets >= 3 (pT > 30 GeV)",
-        "special": "yes"
+        "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) { double dphi = abs(reco_PF_jet_phi[i] - reco_PF_MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; if (abs(dphi) < 0.5) return false; } return true;",
+        "description": "|#Delta#Phi(MET, all jets)| > 0.5"
+    },
+    {
+        "cut": "reco_PF_n_highPt_jets < 4",
+        "description": "nJets < 4 (pT > 30 GeV)",
+        "special": "no"
     },
     {
         "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (reco_PF_jet_BTag[i] > 0.4184) return false; return true;",
@@ -74,7 +82,7 @@
     },
     {
         "cut": "reco_dsa_trk_chi2[reco_dsa_idx0] < 10",
-        "description": "dSA muon 1: #chi^2 < 10"
+        "description": "dSA muon 1: #chi^{2} < 10"
     },
     {
         "cut": "reco_dsa_pt[reco_dsa_idx0] > 5",
@@ -94,7 +102,7 @@
     },
     {
         "cut": "reco_dsa_trk_chi2[reco_dsa_idx1] < 10",
-        "description": "dSA muon 2: #chi^2 < 10"
+        "description": "dSA muon 2: #chi^{2} < 10"
     },
     {
         "cut": "reco_dsa_pt[reco_dsa_idx1] > 5",
@@ -105,26 +113,15 @@
         "description": "dSA muon 2: |#eta| < 2.4"
     },
     {
+        "cut": "reco_vtx_reduced_chi2 < 15",
+        "description": "Vertex #chi^{2} < 15"
+    },
+    {
         "cut": "reco_vtx_dR < 0.9",
         "description": "dR(muons) < 0.9"
     },
     {
         "cut": "reco_sel_mu_charge[0]+reco_sel_mu_charge[1] == 0",
         "description": "muons: OSSF"
-    },
-    {
-        "cut": "reco_n_gbmdsa_match == 0",
-        "description": "0 GM-dSA matched",
-        "inclusive": "no"
-    },
-    {
-        "cut": "reco_n_gbmdsa_match == 1",
-        "description": "1 GM-dSA matched",
-        "inclusive": "no"
-    },
-    {
-        "cut": "reco_n_gbmdsa_match == 2",
-        "description": "2 GM-dSA matched",
-        "inclusive": "no"
     }
 ]
