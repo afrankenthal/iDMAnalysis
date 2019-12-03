@@ -106,7 +106,7 @@ int main(int argc, char ** argv) {
                 cfg["limit_num_files"].get<int>(), // limit_num_files
                 1, // weight
                 TString(cfg["group"].get<std::string>()), // sample group
-                mapMODE[TString(cfg["mode"].get<std::string>())], // mode: 0 = SIGNAL, 1 = BKG, 2 = DATA
+                mapMODE[TString(cfg["mode"].get<std::string>())], // mode: 0 = BKG, 1 = DATA, 2 = SIGNAL
                 (cfg.find("color") != cfg.end() ? cfg["color"].get<int>() : color++), // line color
                 (config_filename.Contains("signal") ? 1 : 1) // line style (bkg vs signal)
             };
@@ -153,7 +153,7 @@ int main(int argc, char ** argv) {
         auto macro = item["name"].get<std::string>();
         auto cfg = item["config"];
 
-        if (macro == "mMainAnalysis")
+        if (macro == "mMainAnalysis" || macro == "mNminus1Analysis")
             cfg["outfilename"] = out_filename.Data();
 
         if (macro == "mMake1DPlotsFromFile" || macro == "mMake2DPlotsFromFile")

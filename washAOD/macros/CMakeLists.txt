@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-set(macro_libs mCutflowTables mMainAnalysis mMake1DPlotsFromFile mMake2DPlotsFromFile mNminus1Plots mSaveCanvases mSumGenWgts)
+set(macro_libs mCutflowTables mMainAnalysis mMake1DPlotsFromFile mMake2DPlotsFromFile mNminus1Plots mNminus1Analysis mSaveCanvases mSumGenWgts)
 
 project(macroRun VERSION 1.0
                  DESCRIPTION "macroRun"
@@ -25,7 +25,7 @@ add_custom_command(
     )
 
 set_property(GLOBAL PROPERTY CXX_EXTENSIONS OFF)
-set_property(GLOBAL PROPERTY COMPILE_FAGS "-m64")
+set_property(GLOBAL PROPERTY COMPILE_FLAGS "-m64")
 set_property(GLOBAL PROPERTY LINK_FLAGS "-m64")
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
@@ -33,13 +33,13 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 find_library(MATH_LIBRARY m)
 
 foreach (macro_lib ${macro_libs})
-    if("x_${macro_lib}" STREQUAL "x_mMainAnalysis" OR "x_${macro_lib}" STREQUAL "x_mSaveCanvases")
-        add_library(${macro_lib} SHARED ${macro_lib}.C utils/tdrstyle.C utils/CMS_lumi.C
-            TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
-            RDataFrameSelectors/RDFAnalysis.C)
-    else()
-        add_library(${macro_lib} SHARED ${macro_lib}.C utils/tdrstyle.C utils/CMS_lumi.C)
-    endif()
+    #if("x_${macro_lib}" STREQUAL "x_mMainAnalysis" OR "x_${macro_lib}" STREQUAL "x_mSaveCanvases")
+    add_library(${macro_lib} SHARED ${macro_lib}.C utils/tdrstyle.C utils/CMS_lumi.C
+        TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
+        RDataFrameSelectors/RDFAnalysis.C RDataFrameSelectors/nMinus1Selector.C)
+    #else()
+    #    add_library(${macro_lib} SHARED ${macro_lib}.C utils/tdrstyle.C utils/CMS_lumi.C)
+    #endif()
     set_property(TARGET ${macro_lib} PROPERTY POSITION_INDEPENDENT_CODE ON)
     target_include_directories(${macro_lib} PUBLIC utils)
     if (MATH_LIBRARY)

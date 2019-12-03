@@ -38,7 +38,15 @@ namespace macro {
             TString canvas_subdir;
             int cut_num = -1;
             while (canvas_name.Tokenize(tok, from, "_cut")) {
-                if (tok.Contains("canvas"))
+                if (tok.Contains("canvas2D")) {
+                    if (canvas_name.Contains("DATA"))
+                        canvas_subdir = Form("%s_DATA", tok.Data());
+                    else if (canvas_name.Contains("BKG"))
+                        canvas_subdir = Form("%s_BKG", tok.Data());
+                    else if (canvas_name.Contains("SIGNAL"))
+                        canvas_subdir = Form("%s_SIGNAL", tok.Data());
+                }
+                else if (tok.Contains("canvas"))
                     canvas_subdir = tok;
                 else
                     cut_num = tok.Atoi();
