@@ -6,6 +6,12 @@ namespace macro {
 
     bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
         setTDRStyle();
+        
+        // for this macro cuts vector needs to be non-empty
+        if (cuts_info.size() == 0) {
+            cout << "Error! mMake1DPlotsFromFile requires specification of cuts. None found. Returning..." << endl;
+            return 0;
+        }
 
         // macro options
         TString in_filename = TString(cfg["infilename"].get<std::string>());
@@ -70,7 +76,7 @@ namespace macro {
             c->cd(1); // top pad, the plot one
             TString drawOption = "";
             if (hs_suffix == "SIGNAL")
-                drawOption += "HIST NOSTACK";
+                drawOption += "E HIST NOSTACK";
             else if (hs_suffix == "BKG")
                 drawOption += "HIST";
             else if (hs_suffix == "DATA")
@@ -128,20 +134,21 @@ namespace macro {
             TPad * top_pad = (TPad*)c->GetPrimitive(Form("%s_1", c->GetName()));
             TString canvas_name = TString(c->GetName()).ReplaceAll("canvas_", "");
             THStack * data_hist = (THStack*)top_pad->GetPrimitive(Form("%s-DATA", canvas_name.Data()));
-            THStack * MC_hist = (THStack*)top_pad->GetPrimitive(Form("%s-BKG", canvas_name.Data()));
-            if (data_hist && MC_hist) {
+            THStack * bkg_hist = (THStack*)top_pad->GetPrimitive(Form("%s-BKG", canvas_name.Data()));
+            THStack * signal_hist = (THStack*)top_pad->GetPrimitive(Form("%s-SIGNAL", canvas_name.Data()));
+            if (data_hist && bkg_hist) {
                 TH1F * ratio_hist = (TH1F*)(((TH1F*)data_hist->GetStack()->Last())->Clone());
-                ratio_hist->Sumw2();
+                //ratio_hist->Sumw2();
                 ratio_hist->SetDirectory(0);
-                TH1F * h2 = (TH1F*)(MC_hist->GetStack()->Last());
-                h2->Sumw2();
+                TH1F * h2 = (TH1F*)(bkg_hist->GetStack()->Last());
+                //h2->Sumw2();
                 ratio_hist->Divide(h2);
                 c->cd(2); // switch to bottom pad
                 ratio_hist->Draw("EP");
                 ratio_hist->SetMaximum(2.1);
                 ratio_hist->SetMinimum(-0.1);
                 ratio_hist->SetTitle("");
-                ratio_hist->GetXaxis()->SetTitle(MC_hist->GetHistogram()->GetXaxis()->GetTitle());
+                ratio_hist->GetXaxis()->SetTitle(bkg_hist->GetHistogram()->GetXaxis()->GetTitle());
                 ratio_hist->GetXaxis()->SetTitleSize(0.12);
                 ratio_hist->GetXaxis()->SetLabelSize(0.11);
                 ratio_hist->GetYaxis()->SetTitle("Data/MC");
@@ -170,6 +177,23 @@ namespace macro {
                 MC_error->SetFillColor(kGray+3);
                 MC_error->Draw("SAME E2");
             }
+            else if (bkg_hist || signal_hist) { // likely blinded SR (no data) just plot MC
+                c->cd(1);
+                //gPad->SetPad(0.01, 0.01, 0.99, 0.99);
+                gPad->SetBottomMargin(0.2);
+                if (bkg_hist) {
+                    bkg_hist->GetXaxis()->SetTitle(bkg_hist->GetHistogram()->GetXaxis()->GetTitle());
+                    bkg_hist->GetXaxis()->SetTitleSize(0.06);
+                    bkg_hist->GetXaxis()->SetLabelSize(0.055);
+                }
+                else {
+                    signal_hist->GetXaxis()->SetTitle(signal_hist->GetHistogram()->GetXaxis()->GetTitle());
+                    signal_hist->GetXaxis()->SetTitleSize(0.06);
+                    signal_hist->GetXaxis()->SetLabelSize(0.055);
+                }
+                gPad->Modified();
+                gPad->Update();
+            }
         }
         // Build legend for all canvases
         for (auto & pair : canvases) {
@@ -187,7 +211,7 @@ namespace macro {
                 TIter next2((TList*)(((THStack*)hs)->GetHists()));
                 TH1F * h;
                 while ((h = (TH1F*)next2())) {
-                    if (TString(hs->GetName()).Contains("SIG"))
+                    if (TString(hs->GetName()).Contains("SIGNAL"))
                         legend->AddEntry((TH1F*)h, "", "l");
                     else if (TString(hs->GetName()).Contains("BKG"))
                         legend->AddEntry((TH1F*)h, "", "f");
@@ -219,7 +243,7 @@ namespace macro {
             TObject * h;
             while ((h = next())) {
                 if (TString(h->ClassName()) != TString("THStack")) continue;
-                ((THStack*)h)->SetMaximum(10*maxima[pair.first]);
+                ((THStack*)h)->SetMaximum(30*maxima[pair.first]);
                 ((THStack*)h)->SetMinimum(0.01);
             }
             //c->RedrawAxis();

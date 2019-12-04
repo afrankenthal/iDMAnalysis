@@ -1,15 +1,14 @@
-#include "RDFAnalysis.h"
+#include "nMinus1Selector.h"
 #include <TH2.h>
 #include <TStyle.h>
-#include <math.h>
 
 using std::vector;
 
-void RDFAnalysis::SetCuts(vector<common::CutInfo> cuts_info) {
+void nMinus1Selector::SetCuts(vector<common::CutInfo> cuts_info) {
     cuts_info_ = cuts_info;
 }
 
-void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi, TString region = "SR", int year = 2018) {
+void nMinus1Selector::SetParams(common::SampleInfo sample_info, Double_t lumi) {
     sample_info_ = sample_info;
     mode_ = sample_info_.mode;
     group_ = sample_info_.group;
@@ -41,13 +40,7 @@ void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi, TStri
     kfactors->Close();
     
     // Set up pileup corrections
-    TFile* pileup;
-    if(year == 2017)
-    	pileup = new TFile("../../data/puWeights_90x_41ifb.root");
-    else if(year==2016)
-    	pileup = new TFile("../../data/puWeights_80x_37ifb.root");
-    else
-    	pileup = new TFile("../../data/puWeights_10x_56ifb.root");
+    TFile * pileup = new TFile("../../data/puWeights_10x_56ifb.root");
     TH1F * h_pu = (TH1F*)pileup->Get("puWeights");
     sf_pu = (TH1F*)h_pu->Clone();
     sf_pu->SetDirectory(0);
@@ -55,38 +48,12 @@ void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi, TStri
 
 }
 
-void RDFAnalysis::Begin() {
-   cutflow_.clear();
-   cutflow_.resize(30);
-
+void nMinus1Selector::Begin() {
    all_histos_1D_.clear();
    all_histos_2D_.clear();
-//   for (auto & [name, hist] : histos_info_) {
-//       if (std::find(hist->groups.begin(), hist->groups.end(), sample_info_.group) == hist->groups.end()) continue;
-//       for (auto cut : hist->cuts) {
-//           if (hist->nbinsY == -1) // 1D plot
-//               cutflowHistos_[name][cut] = new TH1F(Form("%s_cut%d_%s", name.Data(), cut, sample_info_.group.Data()), common::group_plot_info[sample_info_.group].legend, hist->nbinsX, hist->lowX, hist->highX);
-//           else // 2D plot
-//               cutflowHistos_[name][cut] = new TH2F(Form("%s_cut%d_%s", name.Data(), cut, sample_info_.group.Data()), common::group_plot_info[sample_info_.group].legend, hist->nbinsX, hist->lowX, hist->highX, hist->nbinsY, hist->lowY, hist->highY);
-//           cutflowHistos_[name][cut]->Sumw2();
-//           if (common::group_plot_info[sample_info_.group].mode == common::BKG) 
-//               cutflowHistos_[name][cut]->SetFillColor(common::group_plot_info[sample_info_.group].color);
-//           else if (common::group_plot_info[sample_info_.group].mode == common::DATA) {
-//               cutflowHistos_[name][cut]->SetMarkerColor(common::group_plot_info[sample_info_.group].color);
-//               cutflowHistos_[name][cut]->SetMarkerStyle(common::group_plot_info[sample_info_.group].style);
-//               cutflowHistos_[name][cut]->SetMarkerSize(0.9);
-//           }
-//           else if (common::group_plot_info[sample_info_.group].mode == common::SIGNAL) {
-//               cutflowHistos_[name][cut]->SetLineColor(common::group_plot_info[sample_info_.group].color);
-//               cutflowHistos_[name][cut]->SetLineStyle(common::group_plot_info[sample_info_.group].style);
-//               cutflowHistos_[name][cut]->SetLineWidth(2);
-//               cutflowHistos_[name][cut]->SetMarkerSize(0);
-//           }
-//       }
-//   }
 }
 
-Bool_t RDFAnalysis::Process(TChain * chain) {
+Bool_t nMinus1Selector::Process(TChain * chain) {
 
     if (sum_gen_wgt_ < 0.1 && mode_ != common::DATA) return kFALSE;
 
@@ -190,7 +157,6 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    auto takeFirstMuonPhi = [&](vector<float> muons_phi) { return muons_phi.size() > 0 ? muons_phi[0] : -1; };
    auto takeSecondMuonPhi = [&](vector<float> muons_phi) { return muons_phi.size() > 1 ? muons_phi[1] : -1; };
    auto takeMETJetDphi = [&](vector<float> jets_phi, float MET_phi) { if (jets_phi.size() == 0) return -5.0f; float dphi = abs(jets_phi[0] - MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; return abs(dphi); };
-   auto findFakeMETCut = [&](float MET_pt, float MET_phi, float calomet_pt, float calomet_phi, float recoil) { return sqrt( ((MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))*(MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))) + ((MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))*(MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))))/recoil;};
    auto calcMT = [&](vector<float> muons_pt, vector<float> muons_phi, float MET_pt, float MET_phi) { if (!muons_pt.size()) return -9999.9f; float dphi = abs(MET_phi - muons_phi[0]); if (dphi > 3.141592) dphi -= 2 * 3.141592; float MT2 = 2.0 * muons_pt[0] * MET_pt * (1.0 - cos(dphi)); return sqrt(MT2); };
    auto takeGenMuVxy = [&](vector<float> gen_vxy, vector<int> gen_ID) { for (size_t i = 0; i < gen_vxy.size(); i++) if (abs(gen_ID[i]) == 13) return gen_vxy[i]; return -9999.99f; }; 
    auto takeGenDphiMETmu = [&](vector<float> gen_pt, vector<float> gen_phi, vector<int> gen_ID, float MET_phi) {
@@ -238,8 +204,6 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        Define("reco_sel_mu_phi0", takeFirstMuonPhi, {"reco_sel_mu_phi"}).
        Define("reco_sel_mu_phi1", takeSecondMuonPhi, {"reco_sel_mu_phi"}).
        Define("MET_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_MET_phi"}).
-       Define("recoil_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_recoil_phi"}).
-       Define("fake_MET_fraction", findFakeMETCut, {"reco_PF_MET_pt", "reco_PF_MET_phi","reco_Calo_MET_pt","reco_Calo_MET_phi","reco_PF_recoil_pt"});
        Define("reco_MT", calcMT, {"reco_dsa_pt", "reco_dsa_phi", "reco_PF_MET_pt", "reco_PF_MET_phi"}).
        Define("reco_METmu_dphi_v2", takeRecoDphiMETmu, {"reco_sel_mu_pt", "reco_sel_mu_phi", "reco_PF_MET_phi"}).
        Define("CaloPFMETRatio", takeCaloPFMETRatio, {"reco_PF_MET_pt", "reco_Calo_MET_pt"}).
@@ -269,49 +233,52 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
    all_histos_1D_.clear();
    all_histos_2D_.clear();
-   cutflow_.clear();
-   auto df_filters = df_wgts.Filter(cuts_info_[0].cut.Data(), Form("Cut0"));
-   cutflow_.push_back(df_filters.Sum<double>("wgt"));
-   for (size_t cut = 1; cut < cuts_info_.size(); cut++) {
-       // Some cuts are not inclusive, so make copy to restore later in case
-       auto temp_df = df_filters;
 
-       df_filters = df_filters.Filter(cuts_info_[cut].cut.Data(), Form("Cut%d", cut));
-       cutflow_.push_back(df_filters.Sum<double>("wgt"));
-       // make all requested histograms for each cut
-       for (auto & [histo_name, histo_info] : histos_info_) {
-           // if current sample's group is not included in histo's list of groups continue
-           if (std::find(histo_info->groups.begin(), histo_info->groups.end(), group_) == histo_info->groups.end()) continue;
+   // For N-1 plots, apply all cuts except the one under study
+   // We are only interested in the final SR plots, not intermediate ones
+   // Each histo in macro config is one of the N-1 variables
+   for (auto & [histo_name, histo_info] : histos_info_) {
 
-           // split into 1D and 2D, and int and float cases
+       auto df_filters = df_wgts.Filter(cuts_info_[0].cut.Data(), Form("Cut0"));
+
+       for (size_t cut = 1; cut < cuts_info_.size(); cut++) {
+
+           auto temp_df = df_filters;
+
+           // If this cut is the one for this N-1 hist, don't apply it
+           if (histo_info->nMinus1CutDescription != cuts_info_[cut].description)
+               df_filters = df_filters.Filter(cuts_info_[cut].cut.Data(), Form("Cut%d", cut));
+
+           // if we are at last cut, make N-1 plot
+           if (cut == cuts_info_.size()-1) {
+
+               // if current sample's group is not included in histo's list of groups continue
+               if (std::find(histo_info->groups.begin(), histo_info->groups.end(), group_) == histo_info->groups.end()) continue;
+
+
+               // split into 1D and 2D, and int and float cases
            
-           if (histo_info->type == "float1D") {
-               // if this is first cut then initialize map
-               if (all_histos_1D_.find(histo_name) == all_histos_1D_.end())
-                   all_histos_1D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH1D>>();
-               all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+               if (histo_info->type == "float1D") {
+                   all_histos_1D_[histo_name] = df_filters.Histo1D<float,double>({Form("%s_%s", histo_name.Data(), group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+               }
+               else if (histo_info->type == "int1D") {
+                   all_histos_1D_[histo_name] = df_filters.Histo1D<int,double>({Form("%s_%s", histo_name.Data(), group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+               }
+               else if (histo_info->type == "float2D") {
+                   all_histos_2D_[histo_name] = df_filters.Histo2D<float,float,double>({Form("%s_%s", histo_name.Data(), group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+               }
+               else if (histo_info->type == "int2D") {
+                   all_histos_2D_[histo_name] = df_filters.Histo2D<int,int,double>({Form("%s_%s", histo_name.Data(), group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+               }
+               else
+                   std::cout << "Hist type not recognized!" << std::endl;
            }
-           else if (histo_info->type == "int1D") {
-               if (all_histos_1D_.find(histo_name) == all_histos_1D_.end())
-                   all_histos_1D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH1D>>();
-               all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
-           }
-           else if (histo_info->type == "float2D") {
-               if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())
-                   all_histos_2D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH2D>>();
-               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<float,float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
-           }
-           else if (histo_info->type == "int2D") {
-               if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())
-                   all_histos_2D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH2D>>();
-               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<int,int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
-           }
-           else
-               std::cout << "Hist type not recognized!" << std::endl;
+
        }
-       // restore df if it's one of the 3 SR definitions (or a otherwise non-inclusive cut)
-       if (cuts_info_[cut].inclusive == "no") //cut_strings[cut].Contains("reco_n_gbmdsa_match"))
-           df_filters = temp_df;
+
+       // force evaluation right now (maybe related to memory issue)
+       df_filters.Report()->Print();
+
    }
 
    if (mode_ != common::DATA) {
@@ -319,11 +286,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        std::cout << "RDF sum_gen_wgts: " << *df_sumgenwgts << std::endl;
    }
 
-   df_filters.Report()->Print();
-
    return kTRUE;
 }
 
-void RDFAnalysis::Terminate() {
+void nMinus1Selector::Terminate() {
    //delete sf_pu;
 }

@@ -38,9 +38,10 @@ namespace common {
         {"WJets", GroupPlotInfo{"W(l#nu)+Jets", kYellow, SOLID, BKG}},
         {"GJets", GroupPlotInfo{"#gamma+Jets", kCyan, SOLID, BKG}},
         {"Top", GroupPlotInfo{"Top", 6, SOLID, BKG}},
-        {"60p0_1", GroupPlotInfo{"(50,70) GeV, 100 mm", kBlack, SOLID, SIGNAL}},
-        {"5p25_100", GroupPlotInfo{"(5,5.5) GeV, 1 mm", kBlue, SOLID, SIGNAL}},
-        {"52p5_1000", GroupPlotInfo{"(50,55) GeV, 1000 mm", kOrange, SOLID, SIGNAL}},
+        {"sig_60p0_1", GroupPlotInfo{"(50,70) GeV, 1 mm", kBlack, SOLID, SIGNAL}},
+        {"sig_5p25_1000", GroupPlotInfo{"(5,5.5) GeV, 1000 mm", kBlue, SOLID, SIGNAL}},
+        {"sig_52p5_100", GroupPlotInfo{"(50,55) GeV, 100 mm", kOrange, SOLID, SIGNAL}},
+        {"sig_6p0_10", GroupPlotInfo{"(5,7) GeV, 10 mm", kMagenta, SOLID, SIGNAL}},
         {"data", GroupPlotInfo{"Data", kBlack, MARKER, DATA}}
         }; 
     }
@@ -56,6 +57,7 @@ namespace common {
         Int_t nbinsX;
         Double_t lowX;
         Double_t highX;
+        TString nMinus1CutDescription;
         // 2D plot params
         TString quantity2;
         Int_t nbinsY;

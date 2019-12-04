@@ -6,7 +6,7 @@ namespace macro {
 
         // for main analysis macro cuts vector needs to be non-empty
         if (cuts_info.size() == 0) {
-            cout << "Error! Main analysis requires specification of cuts. None found. Returning" << endl;
+            cout << "Error! Main analysis requires specification of cuts. None found. Returning..." << endl;
             return 0;
         }
 
@@ -32,6 +32,7 @@ namespace macro {
                     plot["lowX"].get<double>(),
                     plot["highX"].get<double>(),
                     // optional params --> 2D plot
+                    plot.value("nMinus1CutDescription", ""),
                     plot.value("quantity2", ""),
                     plot.value("nbinsY", -1), 
                     plot.value("lowY", -1.0),
@@ -55,6 +56,7 @@ namespace macro {
             }
         }
 
+        //Float_t lumi = 14.7 * 1000; // 1/pb
         Float_t lumi = 59.74 * 1000; // 1/pb
         //Float_t lumi = 29.41 * 1000; // 1/pb
 
@@ -243,7 +245,7 @@ namespace macro {
         out_filename.ReplaceAll(".root", "_cutflow.txt");
         std::ofstream cutflow_file(out_filename.Data());
 
-        cutflow_file << "Cut# & Description & Data & Bkg &";
+        cutflow_file << "Cut# & Description & Data & Bkg";
         for (auto const & [group, all_cut_numbers] : cutsGroupInclusive)
             if (group != TString("data"))
                 cutflow_file << " & " << group;
@@ -256,7 +258,7 @@ namespace macro {
 
             Double_t total_background = 0.0;
             for (auto const & [group, all_cut_numbers] : cutsGroupInclusive)
-                if (group != TString("data"))
+                if (group != TString("data") && (!group.Contains("sig_"))) // only sum bkgs
                     total_background += all_cut_numbers[cut];
 
             Double_t total_data = (cutsGroupInclusive.find("data") != cutsGroupInclusive.end()) ? 
@@ -298,7 +300,7 @@ namespace macro {
 
             Double_t total_background = 0.0;
             for (auto const & [group, all_cut_numbers] : cutsGroupInclusive)
-                if (group != TString("data"))
+                if (group != TString("data") && (!group.Contains("sig_"))) // only sum bkgs
                     total_background += all_cut_numbers[cut];
 
             Double_t total_data = (cutsGroupInclusive.find("data") != cutsGroupInclusive.end()) ? 

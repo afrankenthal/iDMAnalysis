@@ -81,15 +81,70 @@
                     "highX": 1000 
                 },
                 {
+                    "quantity": "reco_vtx_sigmavxy",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "float1D",
+                    "name": "reco_vtx_sigmavxy",
+                    "title": "Muon pair sigma vxy [cm]",
+                    "nbinsX": 50,
+                    "lowX": 0,
+                    "highX": 200 
+                },
+                {
+                    "quantity": "reco_vtx_significance",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "float1D",
+                    "name": "reco_vtx_significance",
+                    "title": "Muon pair vtx significance (vxy/sigma_vxy)",
+                    "nbinsX": 50,
+                    "lowX": 0,
+                    "highX": 50 
+                },
+                {
+                    "quantity": "reco_vtx_reduced_chi2",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "float1D",
+                    "name": "reco_vtx_reduced_chi2",
+                    "title": "Muon pair vtx #chi^{2}",
+                    "nbinsX": 50,
+                    "lowX": 0,
+                    "highX": 50
+                },
+                {
                     "quantity": "reco_PF_MET_pt",
                     "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
                     "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
                     "type": "float1D",
                     "name": "reco_PF_MET_pt",
-                    "title": "MET pT [GeV]",
+                    "title": "PF MET pT [GeV]",
                     "nbinsX": 50,
                     "lowX": 0,
                     "highX": 1300 
+                },
+                {
+                    "quantity": "reco_Calo_MET_pt",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "float1D",
+                    "name": "reco_Calo_MET_pt",
+                    "title": "Calo MET pT [GeV]",
+                    "nbinsX": 50,
+                    "lowX": 0,
+                    "highX": 1300 
+                },
+                {
+                    "quantity": "CaloPFMETRatio",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "float1D",
+                    "name": "CaloPFMETRatio",
+                    "title": "|CaloMET - PFMET|/CaloMET",
+                    "nbinsX": 26,
+                    "lowX": 0,
+                    "highX": 5
                 },
                 {
                     "quantity": "reco_PF_MET_phi",
@@ -101,6 +156,28 @@
                     "nbinsX": 26,
                     "lowX": -3.2,
                     "highX": 3.2 
+                },
+                {
+                    "quantity": "reco_dsa_idx0_sigpt_by_pt",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "float1D",
+                    "name": "reco_dsa_idx0_sigpt_by_pt",
+                    "title": "First dsa #sigma_{pT} / pT",
+                    "nbinsX": 50,
+                    "lowX": 0,
+                    "highX": 10
+                },
+                {
+                    "quantity": "reco_dsa_idx1_sigpt_by_pt",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "float1D",
+                    "name": "reco_dsa_idx1_sigpt_by_pt",
+                    "title": "Second dsa #sigma_{pT} / pT",
+                    "nbinsX": 50,
+                    "lowX": 0,
+                    "highX": 10
                 },
                 {
                     "quantity": "reco_sel_mu_pt0",
@@ -277,6 +354,17 @@
                     "nbinsX": 26,
                     "lowX": -3.2,
                     "highX": 3.2
+                },
+                {
+                    "quantity": "reco_Mmumu",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "float1D",
+                    "name": "reco_Mmumu",
+                    "title": "Di-muon invariant mass M_{#mu#mu} [GeV]",
+                    "nbinsX": 50,
+                    "lowX": 0,
+                    "highX": 100
                 }
             ]
         }

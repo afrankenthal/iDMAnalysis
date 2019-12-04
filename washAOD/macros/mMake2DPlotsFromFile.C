@@ -8,6 +8,12 @@ namespace macro {
     bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
         setTDRStyle();
 
+        // for this macro cuts vector needs to be non-empty
+        if (cuts_info.size() == 0) {
+            cout << "Error! mMake2DPlotsFromFile requires specification of cuts. None found. Returning..." << endl;
+            return 0;
+        }
+        
         // macro options
         TString in_filename = TString(cfg["infilename"].get<std::string>());
         if (in_filename == TString("")) {
@@ -87,7 +93,11 @@ namespace macro {
             TLatex cut_label;
             cut_label.SetNDC();
             cut_label.SetTextSize(0.04);
-            cut_label.DrawLatexNDC(0.25, 0.90, common::cut_descriptions[cut].c_str());
+
+            if (cuts_info[cut].special == TString("yes"))
+                cut_label.SetTextColor(kRed);
+
+            cut_label.DrawLatexNDC(0.25, 0.90, cuts_info[cut].description.Data()); //common::cut_descriptions[cut].c_str());
             //hs->GetStack()->Last()->Draw("E");
             //canvases.push_back(std::move(c));
         }

@@ -24,11 +24,25 @@ function process_one_sample {
     time=`grep "Task name:" "$dir/crab.log" -m1 | cut -f 5 -d ":" | cut -c 2-`
 
     fulldir="$base/$dataset/$crabtask/$time/0000"
+    numdir="$base/$dataset/$crabtask/$time"
+    check1=`eos root://cmseos.fnal.gov ls $numdir`  
+    check=($check1)
+    if [ ${#check[@]} -eq 1 ]
+    then
+        json="\"$samplename\": { \"dir\": [ \"root://cmseos.fnal.gov/$fulldir\" ], \"group\": \"\", \"mode\": \"\", \"limit_num_files\": -1, \"sum_gen_wgt\": 0.0, \"xsec\": -1},"
+    elif [ ${#check[@]} -eq 2 ]
+    then
+    echo "0001 exists"
+    fulldir1="$base/$dataset/$crabtask/$time/0001"
+    	json="\"$samplename\": { \"dir\": [ \"root://cmseos.fnal.gov/$fulldir\", \"root://cmseos.fnal.gov/$fulldir1\" ], \"group\": \"\", \"mode\": \"\", \"limit_num_files\": -1, \"sum_gen_wgt\": 0.0, \"xsec\": -1},"
+    else
+    echo "0002 exists"
+    fulldir1="$base/$dataset/$crabtask/$time/0001"
+    fulldir2="$base/$dataset/$crabtask/$time/0002"
+    	json="\"$samplename\": { \"dir\": [ \"root://cmseos.fnal.gov/$fulldir\", \"root://cmseos.fnal.gov/$fulldir1\", \"root://cmseos.fnal.gov/$fulldir2\" ], \"group\": \"\", \"mode\": \"\", \"limit_num_files\": -1, \"sum_gen_wgt\": 0.0, \"xsec\": -1},"
 
-    # create sample json file
-    json="\"$samplename\": { \"dir\": [ \"root://cmseos.fnal.gov/$fulldir\" ], \"group\": \"\", \"mode\": \"\", \"limit_num_files\": -1, \"sum_gen_wgt\": 0.0, \"xsec\": -1},"
-
-    #echo $json >> sample_test.json
+    fi
+#    #echo $json >> sample_test.json
     totaljson="$totaljson $json"
 }
 

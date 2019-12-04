@@ -1,0 +1,9 @@
+[
+    {
+        "name": "mSumGenWgts",
+        "config": {
+            "limit_num_files": -1,
+            "output_file": "sumgenwgts_full.json"
+        }
+    }
+]

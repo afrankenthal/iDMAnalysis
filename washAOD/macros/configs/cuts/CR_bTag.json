@@ -32,11 +32,11 @@
         "description": "Leading jet pT > 200 GeV"
     },
     {
-        "cut": "is_electron == 0",
+        "cut": "reco_n_good_electron == 0",
         "description": "Electron veto"
     },
     {
-        "cut": "is_photon == 0",
+        "cut": "reco_n_good_photon == 0",
         "description": "Photon veto"
     },
     {

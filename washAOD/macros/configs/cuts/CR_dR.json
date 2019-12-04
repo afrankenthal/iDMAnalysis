@@ -20,40 +20,16 @@
         "description": "MET > 200 GeV"
     },
     {
-        "cut": "reco_PF_jet_pt.size() > 0",
-        "description": "nJets > 0 (pT > 30 GeV)"
-    },
-    {
-        "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (abs(reco_PF_jet_eta[i]) > 2.5) return false; return true;",
-        "description": "jets |#eta| < 2.5"
-    },
-    {
-        "cut": "reco_PF_jet_pt[0] > 200",
-        "description": "Leading jet pT > 200 GeV"
-    },
-    {
-        "cut": "is_electron == 0",
+        "cut": "reco_n_good_electron == 0",
         "description": "Electron veto"
     },
     {
-        "cut": "is_photon == 0",
+        "cut": "reco_n_good_photon == 0",
         "description": "Photon veto"
     },
     {
         "cut": "reco_n_good_dsa >= 0",
         "description": "good dSA muons >= 0"
-    },
-    {
-        "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) { double dphi = abs(reco_PF_jet_phi[i] - reco_PF_MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; if (abs(dphi) < 1.0) return false; } return true;",
-        "description": "|#Delta#Phi(MET, jets)| > 1"
-    },
-    {
-        "cut": "reco_PF_n_highPt_jets < 3",
-        "description": "nJets < 3 (pT > 30 GeV)"
-    },
-    {
-        "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (reco_PF_jet_BTag[i] > 0.4184) return false; return true;",
-        "description": "0 b-tagged jets"
     },
     {
         "cut": "reco_n_good_dsa >= 1",
@@ -111,6 +87,30 @@
     {
         "cut": "reco_sel_mu_charge[0]+reco_sel_mu_charge[1] == 0",
         "description": "muons: OSSF"
+    },
+    {
+        "cut": "reco_PF_jet_pt.size() > 0",
+        "description": "nJets > 0 (pT > 30 GeV)"
+    },
+    {
+        "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (abs(reco_PF_jet_eta[i]) > 2.5) return false; return true;",
+        "description": "jets |#eta| < 2.5"
+    },
+    {
+        "cut": "reco_PF_jet_pt[0] > 200",
+        "description": "Leading jet pT > 200 GeV"
+    },
+    {
+        "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) { double dphi = abs(reco_PF_jet_phi[i] - reco_PF_MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; if (abs(dphi) < 1.0) return false; } return true;",
+        "description": "|#Delta#Phi(MET, jets)| > 1"
+    },
+    {
+        "cut": "reco_PF_n_highPt_jets < 3",
+        "description": "nJets < 3 (pT > 30 GeV)"
+    },
+    {
+        "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (reco_PF_jet_BTag[i] > 0.4184) return false; return true;",
+        "description": "0 b-tagged jets"
     },
     {
         "cut": "reco_n_gbmdsa_match == 0",

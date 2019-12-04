@@ -1,0 +1,20 @@
+[
+    {
+        "name": "mMainAnalysis",
+        "config": {
+            "plots": [
+                {
+                    "quantity": "reco_MT",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "5p25_100", "60p0_1", "52p5_1000", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "float1D",
+                    "name": "reco_MT",
+                    "title": "MT [GeV]",
+                    "nbinsX": 100,
+                    "lowX": 0,
+                    "highX": 2500
+                }
+            ]
+        }
+    }
+]

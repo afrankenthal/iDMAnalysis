@@ -51,7 +51,8 @@
     },
     "QCD_HT200To300_v2": {
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/QCD_HT200to300_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_QCD_HT200To300_v2/191126_155640/0000"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/QCD_HT200to300_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_QCD_HT200To300_v2/191126_155640/0000",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/QCD_HT200to300_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_QCD_HT200To300_v2/191126_155640/0001"
         ],
         "group": "QCD",
         "mode": "BKG",
