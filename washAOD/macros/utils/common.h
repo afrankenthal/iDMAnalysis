@@ -87,6 +87,7 @@ namespace common {
         Float_t sum_gen_wgt;
         Int_t limit_num_files;
         Float_t weight;
+	int year;
         TString group;
         MODE mode;
         int color;

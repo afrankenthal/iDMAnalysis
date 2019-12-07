@@ -41,23 +41,35 @@ namespace macro {
 
         TString out_filename = TString(cfg["outfilename"].get<std::string>());
         TString region = TString(cfg["region"].get<std::string>());
-	int year = cfg["year"].get<int>();
+//	int year = cfg["year"].get<int>();
         
-	map<TString, map<common::MODE, map<int, vector<TH1*>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
+	map<TString,map<int, map<common::MODE, map<int, vector<TH1*>>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
         //map<TString, map<common::MODE, map<int, vector<ROOT::RDF::RResultPtr<TH1D>>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
         for (auto & [name, info] : histos_info) {
             for (auto cut : info->cuts) {
-                all_hstacks[name][common::BKG][cut] = vector<TH1*>();
-                all_hstacks[name][common::DATA][cut] = vector<TH1*>();
-                all_hstacks[name][common::SIGNAL][cut] = vector<TH1*>();
-                //all_hstacks[name][common::BKG][cut] = vector<ROOT::RDF::RResultPtr<TH1D>>();
-                //all_hstacks[name][common::DATA][cut] = vector<ROOT::RDF::RResultPtr<TH1D>>();
-                //all_hstacks[name][common::SIGNAL][cut] = vector<ROOT::RDF::RResultPtr<TH1D>>();
+                all_hstacks[name][2017][common::BKG][cut] = vector<TH1*>();
+                all_hstacks[name][2017][common::DATA][cut] = vector<TH1*>();
+                all_hstacks[name][2017][common::SIGNAL][cut] = vector<TH1*>();
+                all_hstacks[name][2018][common::BKG][cut] = vector<TH1*>();
+                all_hstacks[name][2018][common::DATA][cut] = vector<TH1*>();
+                all_hstacks[name][2018][common::SIGNAL][cut] = vector<TH1*>();
+                //all_hstacks[name][common::BKG][cut] = vector<TH1*>();
+                //all_hstacks[name][common::DATA][cut] = vector<TH1*>();
+               // all_hstacks[name][common::SIGNAL][cut] = vector<TH1*>();
             }
         }
 
-        //Float_t lumi = 14.7 * 1000; // 1/pb
-        Float_t lumi = 59.74 * 1000; // 1/pb
+//        //Float_t lumi = 14.7 * 1000; // 1/pb
+//        Float_t lumi;
+//        if (year == 2017){
+//		lumi = 41.53 * 1000; // 1/pb
+//	}
+//        if (year == 2016){
+//		lumi = 35.92 * 1000; // 1/pb
+//	}
+//	else {
+//        	lumi = 59.74 * 1000; // 1/pb
+//	}
         //Float_t lumi = 29.41 * 1000; // 1/pb
 
         // This way of loading the selector forces ACliC compilation, used with old rudimentary build system (compile_macro.sh in scripts)
@@ -92,6 +104,7 @@ namespace macro {
             //bool isData = (props.sum_gen_wgt < 0);
             bool isData = (props.mode == common::DATA);
             bool doSubsetOnly = (props.limit_num_files != -1);
+	    int year = props.year;
 
             cout << "Sample: " << sample << endl;
             if (props.sum_gen_wgt < 0.1 && !isData) continue; // don't have data yet for these samples, continue
@@ -117,8 +130,8 @@ namespace macro {
             
             //currentSelector->SetHistos(histos_info);
 
-            currentSelector->SetParams(props, lumi, region); // obsolete
-            dfAnalysis->SetParams(props, lumi, region,year);
+            //currentSelector->SetParams(props,/* lumi,*/ region); // obsolete
+            dfAnalysis->SetParams(props, /*lumi,*/ region/*,year*/);
             
             // Use RDataFrame instead
             //data_reco->Process(currentSelector);
@@ -145,7 +158,7 @@ namespace macro {
             for (auto & [histo_name, histos_by_cut] : all_sample_histos_2D) {
                 for (auto & [cut, histo] : histos_by_cut) {
                     bool kFound = false;
-                    for (TH1 * existing_histo : all_hstacks[histo_name][props.mode][cut]) {
+                    for (TH1 * existing_histo : all_hstacks[histo_name][props.year][props.mode][cut]) {
                         if (TString(existing_histo->GetName()) == TString(histo->GetName())) { // hist already exists in stack
                             histo->Sumw2();
                             existing_histo->Add(histo.GetPtr());
@@ -156,14 +169,14 @@ namespace macro {
                         TH1 * h_pointer = (TH1*)(histo.GetPtr())->Clone();
                         h_pointer->Sumw2();
                         h_pointer->SetDirectory(0);
-                        all_hstacks[histo_name][props.mode][cut].push_back(h_pointer);
+                        all_hstacks[histo_name][props.year][props.mode][cut].push_back(h_pointer);
                     }
                 }
             }
             for (auto & [histo_name, histos_by_cut] : all_sample_histos_1D) {
                 for (auto & [cut, histo] : histos_by_cut) {
                     bool kFound = false;
-                    for (TH1 * existing_histo : all_hstacks[histo_name][props.mode][cut]) {
+                    for (TH1 * existing_histo : all_hstacks[histo_name][props.year][props.mode][cut]) {
                         if (TString(existing_histo->GetName()) == TString(histo->GetName())) { // hist already exists in stack
                             histo->Sumw2();
                             existing_histo->Add(histo.GetPtr());
@@ -188,7 +201,7 @@ namespace macro {
                             h_pointer->SetLineWidth(2);
                             h_pointer->SetMarkerSize(0);
                         }
-                        all_hstacks[histo_name][props.mode][cut].push_back(h_pointer);
+                        all_hstacks[histo_name][props.year][props.mode][cut].push_back(h_pointer);
                     }
                 }
             }
@@ -196,17 +209,22 @@ namespace macro {
 
         // Save histograms into THStack objects
 
+	bool mult_year = false;
+	int cur_year=0;
         TFile * outfile = new TFile(out_filename, "RECREATE");
-        for (auto & [plot_name, modes] : all_hstacks) {
+        //for (auto & [plot_name, modes] : all_hstacks) {
+        for (auto & [plot_name, years] : all_hstacks) {
+        for (auto & [year, modes] : years) {
+		int newyear = year;
             for (auto & [mode, cuts] : modes) {
                 for (auto & [cut, hist_vec] : cuts) {
                     THStack * hstack;
                     if (mode == common::BKG)
-                        hstack = new THStack(Form("%s_cut%d-BKG", plot_name.Data(), cut), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%d-BKG-yr%d", plot_name.Data(), cut, year), histos_info[plot_name]->title);
                     else if (mode == common::DATA)
-                        hstack = new THStack(Form("%s_cut%d-DATA", plot_name.Data(), cut), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%d-DATA-yr%d", plot_name.Data(), cut, year), histos_info[plot_name]->title);
                     else if (mode == common::SIGNAL)
-                        hstack = new THStack(Form("%s_cut%d-SIGNAL", plot_name.Data(), cut), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%d-SIGNAL-yr%d", plot_name.Data(), cut, year), histos_info[plot_name]->title);
                     //sort by "smallest integral first"
                     std::sort(hist_vec.begin(), hist_vec.end(),
                            [](TH1 *a, TH1 *b) { return a->Integral() < b->Integral(); });
@@ -214,17 +232,22 @@ namespace macro {
                      //       [](auto & a, auto & b) { return a->Integral() < b->Integral(); });
                     for (auto hist : hist_vec)
                         hstack->Add(hist);
-                    if (hstack->GetNhists() > 0)
+                    if (hstack->GetNhists() > 0){
                         hstack->Write();
+			if (cur_year ==0){
+				cur_year=newyear;
+			}
+			else{ if(cur_year != newyear){mult_year=true;}}
+		    }
 
-                    if (cuts_info[cut].efficiency !="none"){
+                    if (!cuts_info[cut].efficiency.Contains("none")){
                         THStack * hstack2;
                         if (mode == common::BKG)
-                             hstack2 = new THStack(Form("%s_%scut%d-BKG", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut), histos_info[plot_name]->title);
+                             hstack2 = new THStack(Form("%s_%scut%d-BKG-yr%d", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut, year), histos_info[plot_name]->title);
                         else if (mode == common::DATA)
-                             hstack2 = new THStack(Form("%s_%scut%d-DATA", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut), histos_info[plot_name]->title);
+                             hstack2 = new THStack(Form("%s_%scut%d-DATA-yr%d", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut, year), histos_info[plot_name]->title);
                         else if (mode == common::SIGNAL)
-                             hstack2 = new THStack(Form("%s_%scut%d-SIGNAL", plot_name.Data(),cuts_info[cut].efficiency, cut), histos_info[plot_name]->title);
+                             hstack2 = new THStack(Form("%s_%scut%d-SIGNAL-yr%d", plot_name.Data(),cuts_info[cut].efficiency, cut, year), histos_info[plot_name]->title);
 
 
                     	//sort by "smallest integral first"
@@ -232,12 +255,50 @@ namespace macro {
                         	[](TH1 *a, TH1 *b) { return a->Integral() < b->Integral(); });
                         for (auto hist : hist_vec)
                             hstack2->Add(hist);
-                        if (hstack2->GetNhists() > 0)
+                        if (hstack2->GetNhists() > 0){
                             hstack2->Write();
+			    if (cur_year ==0){
+				cur_year=newyear;
+			    }
+			else{ if(cur_year != newyear){mult_year=true;}}
+			}
                     }
                 }
             }
+	}
         }
+	if(mult_year){
+        for (auto & [plot_name, years] : all_hstacks) {
+        for (auto & [year, modes] : years) {
+		int yearsum = 1718;
+		if (year == 2018) {continue;} //avoid double counting
+            for (auto & [mode, cuts] : modes) {
+                for (auto & [cut, hist_vecx] : cuts) {
+                    THStack * hstack;
+                    if (mode == common::BKG)
+                        hstack = new THStack(Form("%s_cut%d-BKG-yr%d", plot_name.Data(), cut, yearsum), histos_info[plot_name]->title);
+                    else if (mode == common::DATA)
+                        hstack = new THStack(Form("%s_cut%d-DATA-yr%d", plot_name.Data(), cut, yearsum), histos_info[plot_name]->title);
+                    else if (mode == common::SIGNAL)
+                        hstack = new THStack(Form("%s_cut%d-SIGNAL-yr%d", plot_name.Data(), cut, yearsum), histos_info[plot_name]->title);
+                    //sort by "smallest integral first"
+                    vector<TH1*> hist_vec = hist_vecx;
+                    vector<TH1*> hist_vec1 = all_hstacks[plot_name][2017][mode][cut];
+		    hist_vec.insert(hist_vec.end(),hist_vec1.begin(),hist_vec1.end());
+                    std::sort(hist_vec.begin(), hist_vec.end(),
+                           [](TH1 *a, TH1 *b) { return a->Integral() < b->Integral(); });
+                    //std::sort(hist_vec.begin(), hist_vec.end(),
+                     //       [](auto & a, auto & b) { return a->Integral() < b->Integral(); });
+                    for (auto hist : hist_vec)
+                        hstack->Add(hist);
+                    if (hstack->GetNhists() > 0){
+                        hstack->Write();
+		    }
+		}
+		}
+	}
+	}
+	}
         outfile->Close();
 
         // Print Latex cutflow table to file

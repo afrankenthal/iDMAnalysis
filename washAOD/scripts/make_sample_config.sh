@@ -27,19 +27,35 @@ function process_one_sample {
     numdir="$base/$dataset/$crabtask/$time"
     check1=`eos root://cmseos.fnal.gov ls $numdir`  
     check=($check1)
+
+    # find year
+    if [[ ${base} == *"2017"* ]]
+    then
+       echo "year = 2017"
+	year=2017
+    elif [[ ${base} == *"2016"* ]]
+    then
+       echo "year = 2016"
+	year=2016
+    else
+       echo "year = 2018"
+	year=2018
+    fi
+
+
     if [ ${#check[@]} -eq 1 ]
     then
-        json="\"$samplename\": { \"dir\": [ \"root://cmseos.fnal.gov/$fulldir\" ], \"group\": \"\", \"mode\": \"\", \"limit_num_files\": -1, \"sum_gen_wgt\": 0.0, \"xsec\": -1},"
+        json="\"$samplename\": { \"dir\": [ \"root://cmseos.fnal.gov/$fulldir\" ], \"group\": \"\", \"mode\": \"\", \"limit_num_files\": -1, \"sum_gen_wgt\": 0.0, \"year\":$year, \"xsec\": -1},"
     elif [ ${#check[@]} -eq 2 ]
     then
     echo "0001 exists"
     fulldir1="$base/$dataset/$crabtask/$time/0001"
-    	json="\"$samplename\": { \"dir\": [ \"root://cmseos.fnal.gov/$fulldir\", \"root://cmseos.fnal.gov/$fulldir1\" ], \"group\": \"\", \"mode\": \"\", \"limit_num_files\": -1, \"sum_gen_wgt\": 0.0, \"xsec\": -1},"
+    	json="\"$samplename\": { \"dir\": [ \"root://cmseos.fnal.gov/$fulldir\", \"root://cmseos.fnal.gov/$fulldir1\" ], \"group\": \"\", \"mode\": \"\", \"limit_num_files\": -1, \"sum_gen_wgt\": 0.0, \"year\":$year, \"xsec\": -1},"
     else
     echo "0002 exists"
     fulldir1="$base/$dataset/$crabtask/$time/0001"
     fulldir2="$base/$dataset/$crabtask/$time/0002"
-    	json="\"$samplename\": { \"dir\": [ \"root://cmseos.fnal.gov/$fulldir\", \"root://cmseos.fnal.gov/$fulldir1\", \"root://cmseos.fnal.gov/$fulldir2\" ], \"group\": \"\", \"mode\": \"\", \"limit_num_files\": -1, \"sum_gen_wgt\": 0.0, \"xsec\": -1},"
+    	json="\"$samplename\": { \"dir\": [ \"root://cmseos.fnal.gov/$fulldir\", \"root://cmseos.fnal.gov/$fulldir1\", \"root://cmseos.fnal.gov/$fulldir2\" ], \"group\": \"\", \"mode\": \"\", \"limit_num_files\": -1, \"sum_gen_wgt\": 0.0, \"year\":$year, \"xsec\": -1},"
 
     fi
 #    #echo $json >> sample_test.json

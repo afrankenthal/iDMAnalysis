@@ -9,14 +9,28 @@ void RDFAnalysis::SetCuts(vector<common::CutInfo> cuts_info) {
     cuts_info_ = cuts_info;
 }
 
-void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi, TString region = "SR", int year = 2018) {
+void RDFAnalysis::SetParams(common::SampleInfo sample_info,/* Double_t lumi,*/ TString region = "SR"/*, int year = 2018*/) {
     sample_info_ = sample_info;
     mode_ = sample_info_.mode;
     group_ = sample_info_.group;
     sum_gen_wgt_ = sample_info_.sum_gen_wgt;
     xsec_ = sample_info_.xsec;
-    lumi_ = lumi;
-    std::cout << "sum_gen_wgt: " << sum_gen_wgt_ << ", xsec: " << xsec_ << " [pb], lumi: " << lumi_ << " [1/pb] " << std::endl;
+    year_ = sample_info_.year;
+    //lumi_ = lumi;
+    TFile* pileup;
+    if (year_ == 2017){
+    	pileup = new TFile("../../data/puWeights_90x_41ifb.root");
+	lumi_ = 41.53 *1000;
+	}
+    else if(year_ ==2016){
+    	pileup = new TFile("../../data/puWeights_80x_37ifb.root");
+	lumi_ = 35.92 *1000;
+	}
+    else{
+    	pileup = new TFile("../../data/puWeights_10x_56ifb.root");
+	lumi_ = 59.74 *1000;
+    }
+	std::cout <<"year: "<< year_ << ", sum_gen_wgt: " << sum_gen_wgt_ << ", xsec: " << xsec_ << " [pb], lumi: " << lumi_ << " [1/pb] " << std::endl;
 
     // Set up QCD and EWK corrections
     TFile * kfactors = new TFile("../../data/kfactors.root");
@@ -41,13 +55,6 @@ void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi, TStri
     kfactors->Close();
     
     // Set up pileup corrections
-    TFile* pileup;
-    if(year == 2017)
-    	pileup = new TFile("../../data/puWeights_90x_41ifb.root");
-    else if(year==2016)
-    	pileup = new TFile("../../data/puWeights_80x_37ifb.root");
-    else
-    	pileup = new TFile("../../data/puWeights_10x_56ifb.root");
     TH1F * h_pu = (TH1F*)pileup->Get("puWeights");
     sf_pu = (TH1F*)h_pu->Clone();
     sf_pu->SetDirectory(0);
@@ -173,6 +180,13 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        return Zwgt * Wwgt * PUwgt * genwgt * xsec_ * lumi_ / sum_gen_wgt_;
        //return genwgt * xsec_ * lumi_ / sum_gen_wgt_;
    };
+   auto calcHemVeto = [&](bool hem_veto) { 
+	if (year_ == 2018) {
+		if (hem_veto ==0){return false;}
+		else {return true;}
+	}
+	else {return true;}
+   };
 
    // Need these to not segfault in case collection is empty
    // Also, RDataFrame.Histo1D() doesn't accept indexed vectors, so need to rename
@@ -223,6 +237,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    auto takeCaloPFMETRatio = [&](float reco_PF_MET_pt, float reco_Calo_MET_pt) { return abs(reco_Calo_MET_pt - reco_PF_MET_pt)/reco_Calo_MET_pt; };
    auto takeVtxSignificance = [&](float reco_vtx_vxy, float reco_vtx_sigmavxy) { return reco_vtx_vxy/reco_vtx_sigmavxy; };
    auto takeSigmaPtbyPt = [&](vector<float> reco_pt, vector<float> reco_sigpt, int index) { if (index > -1 && index < reco_pt.size()) return reco_sigpt[index]/reco_pt[index]; return -9999.9f; };
+       //std::cout<< "hem_veto " << calcHemVeto("reco_PF_HEM_flag") << "year: " << year_ <<std::endl;
 
    auto df_wgts = df.
        Define("reco_PF_jet_pt0", takeFirstJetPt, {"reco_PF_jet_pt"}).
@@ -239,7 +254,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        Define("reco_sel_mu_phi1", takeSecondMuonPhi, {"reco_sel_mu_phi"}).
        Define("MET_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_MET_phi"}).
        Define("recoil_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_recoil_phi"}).
-       Define("fake_MET_fraction", findFakeMETCut, {"reco_PF_MET_pt", "reco_PF_MET_phi","reco_Calo_MET_pt","reco_Calo_MET_phi","reco_PF_recoil_pt"});
+       Define("fake_MET_fraction", findFakeMETCut, {"reco_PF_MET_pt", "reco_PF_MET_phi","reco_Calo_MET_pt","reco_Calo_MET_phi","reco_PF_recoil_pt"}).
+       Define("hem_veto", calcHemVeto ,{"reco_PF_HEM_flag"}).
        Define("reco_MT", calcMT, {"reco_dsa_pt", "reco_dsa_phi", "reco_PF_MET_pt", "reco_PF_MET_phi"}).
        Define("reco_METmu_dphi_v2", takeRecoDphiMETmu, {"reco_sel_mu_pt", "reco_sel_mu_phi", "reco_PF_MET_phi"}).
        Define("CaloPFMETRatio", takeCaloPFMETRatio, {"reco_PF_MET_pt", "reco_Calo_MET_pt"}).
@@ -289,12 +305,12 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                // if this is first cut then initialize map
                if (all_histos_1D_.find(histo_name) == all_histos_1D_.end())
                    all_histos_1D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH1D>>();
-               all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+               all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
            }
            else if (histo_info->type == "int1D") {
                if (all_histos_1D_.find(histo_name) == all_histos_1D_.end())
                    all_histos_1D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH1D>>();
-               all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+               all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(),year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
            }
            else if (histo_info->type == "float2D") {
                if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())

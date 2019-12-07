@@ -3,12 +3,11 @@
         "name": "mMainAnalysis",
         "config": {
             "region": "trigEff",
-            "year": 2017,
             "plots": [
                 {
                     "quantity": "reco_PF_MET_pt",
                     "groups": [ "DY", "Multiboson", "QCD", "Top", "WJets", "data"],
-		    "cuts": [0,1,2,3,4,5,6,7,8],
+		    "cuts": [0,1,2,3,4,5,6,7],
                     "type": "float1D",
                     "name": "reco_PF_MET_pt",
                     "title": "MET pT [GeV]",
@@ -19,7 +18,7 @@
                 {
                     "quantity": "reco_PF_recoil_pt",
                     "groups": [ "DY", "Multiboson", "QCD", "Top", "WJets", "data"],
-		    "cuts": [0,1,2,3,4,5,6,7,8],
+		    "cuts": [0,1,2,3,4,5,6,7],
                     "type": "float1D",
                     "name": "reco_PF_recoil_pt",
                     "title": "Recoil pT [GeV]",

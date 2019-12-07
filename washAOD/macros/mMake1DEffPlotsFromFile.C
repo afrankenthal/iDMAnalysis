@@ -2,8 +2,10 @@
 #include <string.h>
 //TString lumi_13TeV = "59.74 fb^{-1} ";
 
+
+int gyear;
 namespace macro {
-    void canvasDraw(TString hs_basename, TString hs_suffix,TEfficiency *hs, TCanvas *c,bool newCanvas, bool zoom){
+    void canvasDraw(TString hs_basename, TString hs_suffix,TEfficiency *hs, TCanvas *c,bool newCanvas, bool zoom, int year){
 	cout << "formatting canvas and drawing histograms function " << hs_basename<<hs_suffix<<hs->GetName()<<endl;
 	TString x_title = TString(hs->GetPassedHistogram()->GetXaxis()->GetTitle());
 	if(newCanvas){
@@ -56,7 +58,7 @@ namespace macro {
 		background->SetLabelSize(0.0);
             	gPad->Update();
                 const bool writeExtraText = true;
-                CMS_lumi((TPad*)gPad, 4, 0);
+                CMS_lumi((TPad*)gPad, 4, 0,year);
                 // Make cut description label
                 int cut1;
                 int cut2;
@@ -78,7 +80,8 @@ namespace macro {
     }
     bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
         setTDRStyle();
-	bool fit = true;
+	//year = cfg["year"].get<int>();
+	bool fit = false;
         // macro options
         TString in_filename = TString(cfg["infilename"].get<std::string>());
         if (in_filename == TString("")) {
@@ -121,12 +124,17 @@ namespace macro {
             hsd = (THStack*)in_file->Get(hs_name);
 		continue_denom = true;
 		}
-	    if (!(continue_num && continue_denom)) {cout<<"passing" <<endl; continue;}
+	    if (!(continue_num && continue_denom)) {/*cout<<"passing" <<endl; */continue;}
 	    
 	    cout<<"continuing"<<endl;
 	    continue_num = false;
 	    continue_denom = false;
 	    TString type;
+	    int year;
+	    if (hs_name.Contains("17")) { year=2017;}
+	    if (hs_name.Contains("18")) { year=2018;}
+	    if (hs_name.Contains("16")) { year=2016;}
+	    cout << "year: " << year<<endl;
 	    if (hs_name.Contains("SIGNAL"))
 	        type = TString("SIGNAL");
 	    else if (hs_name.Contains("DATA"))
@@ -170,10 +178,10 @@ namespace macro {
 
 		canvases[MCTotal_denom->GetName()] = std::make_unique<TCanvas>(Form("canvas_%s", MCTotal_denom->GetName()));
                 auto * c = canvases[MCTotal_denom->GetName()].get();
-	    	canvasDraw(MCTotal_denom->GetName(),TString("BKG"),mc_eff,c,true,false);	
+	    	canvasDraw(MCTotal_denom->GetName(),TString("BKG"),mc_eff,c,true,false,year);	
                 canvases[TString(MCTotal_denom->GetName()).Append("_zoom")] = std::make_unique<TCanvas>(Form("canvas_%s_zoom", MCTotal_denom->GetName()));
                 auto * cz = canvases[TString(MCTotal_denom->GetName()).Append("_zoom")].get();
-	    	canvasDraw(MCTotal_denom->GetName(),TString("BKG"),mc_eff,cz,true,true);	
+	    	canvasDraw(MCTotal_denom->GetName(),TString("BKG"),mc_eff,cz,true,true,year);	
 	    }
 	    TIter hsn_it((TList*)(((THStack*)hsn)->GetHists()));
 	    TH1F *hsnx;
@@ -228,17 +236,17 @@ namespace macro {
                 auto * cz = canvases[TString(hs_basename).Append("_zoom")].get();
             }
             auto * c = canvases[hs_basename].get();
-	    canvasDraw(n1x0,n1x1,(TEfficiency*)hs->Clone(),c,newCanvas,false);	
+	    canvasDraw(n1x0,n1x1,(TEfficiency*)hs->Clone(),c,newCanvas,false,year);	
             auto * cz = canvases[TString(hs_basename).Append("_zoom")].get();
-	    canvasDraw(n1x0,n1x1,(TEfficiency*)hs->Clone(),cz,newCanvas,true);	
+	    canvasDraw(n1x0,n1x1,(TEfficiency*)hs->Clone(),cz,newCanvas,true,year);	
 	    if(type.Contains("DATA")){
 		TObjArray* dataname_tolks = TString(hs->GetName()).Tokenize("_");
 		TString MCTotal_dataname = TString((((TObjString*)(dataname_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(dataname_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(3)))->String())).Append("_MCTotal").Append(TString("_MCTotal")));
                
 		auto * c1 = canvases[MCTotal_dataname].get();
-	    	canvasDraw(n1x0,n1x1,(TEfficiency*)hs->Clone(),c1,newCanvas,false);	
+	    	canvasDraw(n1x0,n1x1,(TEfficiency*)hs->Clone(),c1,newCanvas,false,year);	
           	auto * cz1 = canvases[TString(MCTotal_dataname).Append("_zoom")].get();
-	    	canvasDraw(n1x0,n1x1,(TEfficiency*)hs->Clone(),cz1,newCanvas,true);	
+	    	canvasDraw(n1x0,n1x1,(TEfficiency*)hs->Clone(),cz1,newCanvas,true,year);	
 	     }
        }}}} 
         

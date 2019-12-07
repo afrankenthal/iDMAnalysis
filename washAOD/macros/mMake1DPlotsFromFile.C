@@ -35,6 +35,42 @@ namespace macro {
             out_file = new TFile(out_filename, "RECREATE");
         }
         
+//	bool mult_year= false;
+//	int cur_year=0;
+//        for (auto && keyAsObj : *in_file->GetListOfKeys()){
+//            auto key = (TKey*)keyAsObj;
+//            if (TString(key->GetClassName()) != "THStack") continue;
+//            TString hs_name = TString(key->GetName());
+//            if (hs_name.Contains("_vs_")) continue; // mMake2DPlotsFromFile handles these
+//            if (hs_name.Contains("num") or hs_name.Contains("denom")) continue; // mMake1DEffPlotsFromFile handles these            
+//            TString yearname = ((TObjString*)(hs_name.Tokenize("-")->At(2)))->String();
+//	    int newyear;
+//	    if (yearname.Contains("18")) { newyear = 2018;}
+//	    else if (yearname.Contains("17")) { newyear = 2017;}
+//	    else{ newyear = 2016;}
+//	    
+//	    if (cur_year==0){
+//		cur_year= newyear;
+//	    }
+//	    else{
+//		if (cur_year != newyear){mult_year=true;}
+//	    }
+//	 std::cout<<"multyear: "<< mult_year << std::endl;
+//	}
+//	if(mult_year){
+//	for (auto && keyAsObj : *in_file->GetListOfKeys()){
+//            auto key = (TKey*)keyAsObj;
+//            if (TString(key->GetClassName()) != "THStack") continue;
+//            TString hs_name = TString(key->GetName());
+//            if (hs_name.Contains("_vs_")) continue; // mMake2DPlotsFromFile handles these
+//            if (hs_name.Contains("num") or hs_name.Contains("denom")) continue; // mMake1DEffPlotsFromFile handles these            
+//            TString yearname = ((TObjString*)(hs_name.Tokenize("-")->At(2)))->String();
+//	    if (yearname.Contains("17") {continue;} //don't double count
+//
+//
+//	}
+//	}
+	
         map<TString, std::unique_ptr<TCanvas>> canvases;
         for (auto && keyAsObj : *in_file->GetListOfKeys()){
             auto key = (TKey*)keyAsObj;
@@ -46,6 +82,13 @@ namespace macro {
             THStack * hs = (THStack*)in_file->Get(hs_name);
             TString hs_basename = ((TObjString*)(hs_name.Tokenize("-")->At(0)))->String();
             TString hs_suffix = ((TObjString*)(hs_name.Tokenize("-")->At(1)))->String();
+            TString yearname = ((TObjString*)(hs_name.Tokenize("-")->At(2)))->String();
+	    int year;
+	    if (yearname.Contains("1718")) { year = 1718;}
+	    else if (yearname.Contains("2018")) { year = 2018;}
+	    else if (yearname.Contains("2017")) { year = 2017;}
+	    else{ year = 2016;}
+	    hs_basename.Append(yearname);
             bool newCanvas = false;
             if (canvases.find(hs_basename) == canvases.end()) {
                 newCanvas = true;
@@ -104,7 +147,7 @@ namespace macro {
                 //lumi_13TeV = "29.41 fb^{-1} ";
                 //CMS_lumi(c, 4);
                 //c->SetLogy();
-                CMS_lumi((TPad*)gPad, 4, 0);
+                CMS_lumi((TPad*)gPad, 4, 0, year);
                 gPad->SetLogy();
                 // Make cut description label
                 int cut;

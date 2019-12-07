@@ -122,12 +122,12 @@
     "ST_t-channel_antitop_5f_TuneCP5_13TeV-powheg-pythia8": {
         "group": "Top",
         "mode": "BKG",
-        "xsec": -1
+        "xsec": 26.2
     },
     "ST_t-channel_top_5f_TuneCP5_13TeV-powheg-pythia8": {
         "group": "Top",
         "mode": "BKG",
-        "xsec": -1
+        "xsec": 44.1
     },
     "ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8": {
         "group": "Top",
