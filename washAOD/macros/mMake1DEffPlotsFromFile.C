@@ -131,9 +131,10 @@ namespace macro {
 	    continue_denom = false;
 	    TString type;
 	    int year;
-	    if (hs_name.Contains("17")) { year=2017;}
-	    if (hs_name.Contains("18")) { year=2018;}
-	    if (hs_name.Contains("16")) { year=2016;}
+	    if (hs_name.Contains("1718")) { continue;}
+	    if (hs_name.Contains("2017")) { year=2017;}
+	    if (hs_name.Contains("2018")) { year=2018;}
+	    if (hs_name.Contains("2016")) { year=2016;}
 	    cout << "year: " << year<<endl;
 	    if (hs_name.Contains("SIGNAL"))
 	        type = TString("SIGNAL");
