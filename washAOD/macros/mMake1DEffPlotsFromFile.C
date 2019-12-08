@@ -81,7 +81,7 @@ namespace macro {
     bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
         setTDRStyle();
 	//year = cfg["year"].get<int>();
-	bool fit = false;
+	bool fit = true;
         // macro options
         TString in_filename = TString(cfg["infilename"].get<std::string>());
         if (in_filename == TString("")) {
@@ -131,10 +131,11 @@ namespace macro {
 	    continue_denom = false;
 	    TString type;
 	    int year;
+	    TString yearname;
 	    if (hs_name.Contains("1718")) { continue;}
-	    if (hs_name.Contains("2017")) { year=2017;}
-	    if (hs_name.Contains("2018")) { year=2018;}
-	    if (hs_name.Contains("2016")) { year=2016;}
+	    if (hs_name.Contains("2017")) { year=2017;yearname="_2017";}
+	    if (hs_name.Contains("2018")) { year=2018;yearname="_2018";}
+	    if (hs_name.Contains("2016")) { year=2016;yearname="_2016";}
 	    cout << "year: " << year<<endl;
 	    if (hs_name.Contains("SIGNAL"))
 	        type = TString("SIGNAL");
@@ -145,7 +146,8 @@ namespace macro {
 	    	TH1F * MCTotal_num = (TH1F*)(((TH1F*)hsn->GetStack()->Last())->Clone());
 	    	TH1F * MCTotal_denom = (TH1F*)(((TH1F*)hsd->GetStack()->Last())->Clone());
 		TObjArray* name_tolks = TString(MCTotal_denom->GetName()).Tokenize("_");
-		MCTotal_denom->SetName((((TObjString*)(name_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(name_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(3)))->String())).Append("_MCTotal").Append(TString("_MCTotal")));
+		MCTotal_denom->SetName((((TObjString*)(name_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(name_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(3)))->String())).Append(yearname).Append(TString("_MCTotal")));
+		//MCTotal_denom->SetName((((TObjString*)(name_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(name_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(3)))->String())).Append("_MCTotal").Append(TString("_MCTotal")));
 		cout<<"name "<<MCTotal_denom->GetName()<<endl;
 		
 		for (int i =0; i<MCTotal_num->GetNbinsX();i++){	
@@ -177,10 +179,10 @@ namespace macro {
 		mc_eff->Fit(f1,"SAME R+");
 		}
 
-		canvases[MCTotal_denom->GetName()] = std::make_unique<TCanvas>(Form("canvas_%s", MCTotal_denom->GetName()));
+		canvases[MCTotal_denom->GetName()] = std::make_unique<TCanvas>(Form("canvas_%s_%s", MCTotal_denom->GetName(),yearname.Data()));
                 auto * c = canvases[MCTotal_denom->GetName()].get();
 	    	canvasDraw(MCTotal_denom->GetName(),TString("BKG"),mc_eff,c,true,false,year);	
-                canvases[TString(MCTotal_denom->GetName()).Append("_zoom")] = std::make_unique<TCanvas>(Form("canvas_%s_zoom", MCTotal_denom->GetName()));
+                canvases[TString(MCTotal_denom->GetName()).Append("_zoom")] = std::make_unique<TCanvas>(Form("canvas_%s_%s_zoom", MCTotal_denom->GetName(),yearname.Data()));
                 auto * cz = canvases[TString(MCTotal_denom->GetName()).Append("_zoom")].get();
 	    	canvasDraw(MCTotal_denom->GetName(),TString("BKG"),mc_eff,cz,true,true,year);	
 	    }
@@ -231,9 +233,9 @@ namespace macro {
             bool newCanvas = false;
             if (canvases.find(hs_basename) == canvases.end()) {
                 newCanvas = true;
-                canvases[hs_basename] = std::make_unique<TCanvas>(Form("canvas_%s", hs_basename.Data()));
+                canvases[hs_basename] = std::make_unique<TCanvas>(Form("canvas_%s_%s", hs_basename.Data(),yearname.Data()));
                 auto * c = canvases[hs_basename].get();
-                canvases[TString(hs_basename).Append("_zoom")] = std::make_unique<TCanvas>(Form("canvas_%s_zoom", hs_basename.Data()));
+                canvases[TString(hs_basename).Append("_zoom")] = std::make_unique<TCanvas>(Form("canvas_%s_%s_zoom", hs_basename.Data(),yearname.Data()));
                 auto * cz = canvases[TString(hs_basename).Append("_zoom")].get();
             }
             auto * c = canvases[hs_basename].get();
@@ -242,7 +244,8 @@ namespace macro {
 	    canvasDraw(n1x0,n1x1,(TEfficiency*)hs->Clone(),cz,newCanvas,true,year);	
 	    if(type.Contains("DATA")){
 		TObjArray* dataname_tolks = TString(hs->GetName()).Tokenize("_");
-		TString MCTotal_dataname = TString((((TObjString*)(dataname_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(dataname_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(3)))->String())).Append("_MCTotal").Append(TString("_MCTotal")));
+		//TString MCTotal_dataname = TString((((TObjString*)(dataname_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(dataname_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(3)))->String())).Append("_MCTotal").Append(TString("_MCTotal")));
+		TString MCTotal_dataname = TString((((TObjString*)(dataname_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(dataname_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(dataname_tolks->At(3)))->String())).Append(yearname).Append(TString("_MCTotal")));
                
 		auto * c1 = canvases[MCTotal_dataname].get();
 	    	canvasDraw(n1x0,n1x1,(TEfficiency*)hs->Clone(),c1,newCanvas,false,year);	

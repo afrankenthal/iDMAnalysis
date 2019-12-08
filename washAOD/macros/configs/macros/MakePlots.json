@@ -1,6 +1,6 @@
 [
     {
-        "name": "mMake1DPlotsFromFile",
+        "name": "mMake1DEffPlotsFromFile",
         "config": {
             "infilename": "test.root"
         }
