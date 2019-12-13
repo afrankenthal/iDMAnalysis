@@ -14,7 +14,7 @@
 #include <TH1F.h>
 #include <TH2F.h>
 #include <THStack.h>
-#include <TSelector.h>
+//#include <TSelector.h>
 #include <TString.h>
 #include <TSystemDirectory.h>
 #include <TSystemFile.h>
@@ -27,7 +27,7 @@ using json = nlohmann::json;
 #include "utils/tdrstyle.h"
 
 #include "RDataFrameSelectors/RDFAnalysis.h"
-#include "TSelectors/mainAnalysisSelector.h"
+//#include "TSelectors/mainAnalysisSelector.h"
 
 using std::cout, std::endl, std::map, std::vector;
 

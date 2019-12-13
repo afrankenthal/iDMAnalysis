@@ -229,6 +229,7 @@ namespace macro {
 			
 	     
 	    TString hs_basename = n1x0;
+	    hs_basename.Append(yearname);
             TString hs_suffix = n1x1; 
             bool newCanvas = false;
             if (canvases.find(hs_basename) == canvases.end()) {

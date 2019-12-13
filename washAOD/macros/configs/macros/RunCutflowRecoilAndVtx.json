@@ -2,6 +2,7 @@
     {
         "name": "mMainAnalysis",
         "config": {
+	    "region": "none",
             "plots": [
                 {
                     "quantity": "reco_MT",

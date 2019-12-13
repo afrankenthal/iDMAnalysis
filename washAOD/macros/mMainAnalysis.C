@@ -77,15 +77,15 @@ namespace macro {
         //mainAnalysisSelector * dataSelector = (mainAnalysisSelector*)TSelector::GetSelector("TSelectors/mainAnalysisSelector.C+");
 
         // This way just uses the new CMake build system which already compiles the selector (see CMakeLists.txt)
-        mainAnalysisSelector * MCSelector = new mainAnalysisSelector();
-        mainAnalysisSelector * dataSelector = new mainAnalysisSelector();
-
-        MCSelector->SetMode(common::SIGNAL);
-        dataSelector->SetMode(common::DATA);
-
-        MCSelector->SetHistos(histos_info);
-        dataSelector->SetHistos(histos_info);
-
+//        mainAnalysisSelector * MCSelector = new mainAnalysisSelector();
+//        mainAnalysisSelector * dataSelector = new mainAnalysisSelector();
+//
+//        MCSelector->SetMode(common::SIGNAL);
+//        dataSelector->SetMode(common::DATA);
+//
+//        MCSelector->SetHistos(histos_info);
+//        dataSelector->SetHistos(histos_info);
+//
         RDFAnalysis * dfAnalysis = new RDFAnalysis();
         dfAnalysis->SetHistos(histos_info);
         dfAnalysis->SetCuts(cuts_info);
@@ -118,16 +118,16 @@ namespace macro {
                 data_gen->Add(filename.Data());
             }
 
-            mainAnalysisSelector * currentSelector;
+            //mainAnalysisSelector * currentSelector;
 
-            if (!isData) {
-                data_reco->AddFriend(data_gen);
-                currentSelector = MCSelector;
-            }
-            else  {
-                currentSelector = dataSelector;
-            }
-            
+            //if (!isData) {
+            //    data_reco->AddFriend(data_gen);
+            //    currentSelector = MCSelector;
+            //}
+            //else  {
+            //    currentSelector = dataSelector;
+            //}
+            //
             //currentSelector->SetHistos(histos_info);
 
             //currentSelector->SetParams(props,/* lumi,*/ region); // obsolete
@@ -220,11 +220,11 @@ namespace macro {
                 for (auto & [cut, hist_vec] : cuts) {
                     THStack * hstack;
                     if (mode == common::BKG)
-                        hstack = new THStack(Form("%s_cut%d-BKG-yr%d", plot_name.Data(), cut, year), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%d-BKG-%d", plot_name.Data(), cut, year), histos_info[plot_name]->title);
                     else if (mode == common::DATA)
-                        hstack = new THStack(Form("%s_cut%d-DATA-yr%d", plot_name.Data(), cut, year), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%d-DATA-%d", plot_name.Data(), cut, year), histos_info[plot_name]->title);
                     else if (mode == common::SIGNAL)
-                        hstack = new THStack(Form("%s_cut%d-SIGNAL-yr%d", plot_name.Data(), cut, year), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%d-SIGNAL-%d", plot_name.Data(), cut, year), histos_info[plot_name]->title);
                     //sort by "smallest integral first"
                     std::sort(hist_vec.begin(), hist_vec.end(),
                            [](TH1 *a, TH1 *b) { return a->Integral() < b->Integral(); });
@@ -243,11 +243,11 @@ namespace macro {
                     if (!cuts_info[cut].efficiency.Contains("none")){
                         THStack * hstack2;
                         if (mode == common::BKG)
-                             hstack2 = new THStack(Form("%s_%scut%d-BKG-yr%d", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut, year), histos_info[plot_name]->title);
+                             hstack2 = new THStack(Form("%s_%scut%d-BKG-%d", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut, year), histos_info[plot_name]->title);
                         else if (mode == common::DATA)
-                             hstack2 = new THStack(Form("%s_%scut%d-DATA-yr%d", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut, year), histos_info[plot_name]->title);
+                             hstack2 = new THStack(Form("%s_%scut%d-DATA-%d", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut, year), histos_info[plot_name]->title);
                         else if (mode == common::SIGNAL)
-                             hstack2 = new THStack(Form("%s_%scut%d-SIGNAL-yr%d", plot_name.Data(),cuts_info[cut].efficiency, cut, year), histos_info[plot_name]->title);
+                             hstack2 = new THStack(Form("%s_%scut%d-SIGNAL-%d", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut, year), histos_info[plot_name]->title);
 
 
                     	//sort by "smallest integral first"
@@ -276,24 +276,29 @@ namespace macro {
                 for (auto & [cut, hist_vecx] : cuts) {
                     THStack * hstack;
                     if (mode == common::BKG)
-                        hstack = new THStack(Form("%s_cut%d-BKG-yr%d", plot_name.Data(), cut, yearsum), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%d-BKG-%d", plot_name.Data(), cut, yearsum), histos_info[plot_name]->title);
                     else if (mode == common::DATA)
-                        hstack = new THStack(Form("%s_cut%d-DATA-yr%d", plot_name.Data(), cut, yearsum), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%d-DATA-%d", plot_name.Data(), cut, yearsum), histos_info[plot_name]->title);
                     else if (mode == common::SIGNAL)
-                        hstack = new THStack(Form("%s_cut%d-SIGNAL-yr%d", plot_name.Data(), cut, yearsum), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%d-SIGNAL-%d", plot_name.Data(), cut, yearsum), histos_info[plot_name]->title);
                     //sort by "smallest integral first"
                     vector<TH1*> hist_vec = hist_vecx;
                     vector<TH1*> hist_vec1 = all_hstacks[plot_name][2017][mode][cut];
 		    for (auto hist1 : hist_vec){
 			TString name1;
+		//	TString mode1;
 			TString name2 = hist1->GetName();
-			name1 = (((TObjString*)(name2.Tokenize("y")->At(0)))->String());
+			name1 = (((TObjString*)(name2.Tokenize("-")->At(0)))->String());
+		//	mode1 = (((TObjString*)(name2.Tokenize("-")->At(1)))->String());
 			TList *thislist = new TList;
 		    for (auto hist2 : hist_vec1){
 			TString name1x;
+		//	TString mode1x;
 			TString name2x = hist2->GetName();
-			name1x = (((TObjString*)(name2x.Tokenize("y")->At(0)))->String());
-			if (name1.EqualTo(name1x)) {
+			name1x = (((TObjString*)(name2x.Tokenize("-")->At(0)))->String());
+		//	mode1x = (((TObjString*)(name2x.Tokenize("-")->At(1)))->String());
+			if (name1.EqualTo(name1x)){
+			//if ((name1.EqualTo(name1x)) && (mode1.EqualTo(mode1x))) {
 			thislist->Add(hist2);
 			//std::cout<< "names: "<< name1.Data() << "namesx: "<< name1x.Data()<<std::endl;	
 			}

@@ -88,6 +88,7 @@ namespace macro {
 	    else if (yearname.Contains("2018")) { year = 2018;}
 	    else if (yearname.Contains("2017")) { year = 2017;}
 	    else{ year = 2016;}
+	    hs_basename.Append(TString("-"));
 	    hs_basename.Append(yearname);
             bool newCanvas = false;
             if (canvases.find(hs_basename) == canvases.end()) {
@@ -153,12 +154,14 @@ namespace macro {
                 int cut;
                 TString tok;
                 Ssiz_t from = 0;
-                while (hs_basename.Tokenize(tok, from, "_")) 
+                cout << "basename: "<< hs_basename << endl;
+		while (hs_basename.Tokenize(tok, from, "_")) 
                   if (tok.Contains("cut")) 
                       cut = (((TObjString*)(tok.Tokenize("t")->At(1)))->String()).Atoi();
                 TLatex cut_label;
                 cut_label.SetNDC();
 
+                cout << "cut: "<< cut << endl;
                 cut_label.SetTextSize(0.05);
 
                 if (cuts_info[cut].special == TString("yes"))
@@ -174,11 +177,16 @@ namespace macro {
             auto * c = pair.second.get();
             //c->cd(1); // second subpad, the ratio one
             //TPad * top_pad = (TPad*)c->GetPad(1);
+            //std::cout<<"ratio"<<std::endl;
+            //c->ls();
             TPad * top_pad = (TPad*)c->GetPrimitive(Form("%s_1", c->GetName()));
             TString canvas_name = TString(c->GetName()).ReplaceAll("canvas_", "");
-            THStack * data_hist = (THStack*)top_pad->GetPrimitive(Form("%s-DATA", canvas_name.Data()));
-            THStack * bkg_hist = (THStack*)top_pad->GetPrimitive(Form("%s-BKG", canvas_name.Data()));
-            THStack * signal_hist = (THStack*)top_pad->GetPrimitive(Form("%s-SIGNAL", canvas_name.Data()));
+            TString canvas_basename = ((TObjString*)(canvas_name.Tokenize("-")->At(0)))->String();
+            TString canvas_year = ((TObjString*)(canvas_name.Tokenize("-")->At(1)))->String();
+	    
+            THStack * data_hist = (THStack*)top_pad->GetPrimitive(Form("%s-DATA-%s", canvas_basename.Data(),canvas_year.Data()));
+            THStack * bkg_hist = (THStack*)top_pad->GetPrimitive(Form("%s-BKG-%s", canvas_basename.Data(),canvas_year.Data()));
+            THStack * signal_hist = (THStack*)top_pad->GetPrimitive(Form("%s-SIGNAL-%s", canvas_basename.Data(),canvas_year.Data()));
             if (data_hist && bkg_hist) {
                 TH1F * ratio_hist = (TH1F*)(((TH1F*)data_hist->GetStack()->Last())->Clone());
                 //ratio_hist->Sumw2();

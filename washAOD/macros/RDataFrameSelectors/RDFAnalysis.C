@@ -182,8 +182,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    };
    auto calcHemVeto = [&](bool hem_veto) { 
 	if (year_ == 2018) {
-		if (hem_veto ==0){return false;}
-		else {return true;}
+		if (hem_veto ==0){return true;}
+		else {return false;}
 	}
 	else {return true;}
    };
@@ -315,12 +315,12 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
            else if (histo_info->type == "float2D") {
                if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())
                    all_histos_2D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH2D>>();
-               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<float,float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<float,float,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
            }
            else if (histo_info->type == "int2D") {
                if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())
                    all_histos_2D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH2D>>();
-               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<int,int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<int,int,double>({Form("%s_cut%d_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
            }
            else
                std::cout << "Hist type not recognized!" << std::endl;
