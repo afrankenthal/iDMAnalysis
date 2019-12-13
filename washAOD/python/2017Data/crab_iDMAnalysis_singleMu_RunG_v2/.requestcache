@@ -131,7 +131,7 @@ sg28
 g15
 ((ltRp58
 sg55
-S'iDMAnalysis_MET_2017RunB_v2'
+S'iDMAnalysis_singleMu_RunG_v2'
 p59
 sg31
 Nsg54
@@ -193,7 +193,7 @@ NtRp75
 (dp76
 S'inputDataset'
 p77
-S'/MET/Run2017B-17Nov2017-v1/AOD'
+S'/SingleMuon/Run2017G-17Nov2017-v1/AOD'
 p78
 sg12
 I00
@@ -283,7 +283,7 @@ S'prod'
 p107
 sS'RequestName'
 p108
-V191210_161013:mireid_crab_iDMAnalysis_MET_2017RunB_v2
+V191210_161126:mireid_crab_iDMAnalysis_singleMu_RunG_v2
 p109
 sS'voRole'
 p110
