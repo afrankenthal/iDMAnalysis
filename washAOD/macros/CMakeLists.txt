@@ -16,13 +16,13 @@ find_package(ROOT 6.18 CONFIG REQUIRED)
 #ROOT_GENERATE_DICTIONARY("${CMAKE_CURRENT_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict" "${CMAKE_CURRENT_SOURCE_DIR}/TSelectors/mainAnalysisSelector.h" MODULE mainAnalysisSelector LINKDEF "${CMAKE_CURRENT_SOURCE_DIR}/TSelectors/Linkdef.h")
 
 # manual mode
-#add_custom_command(
-#    OUTPUT "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
-#    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/TSelectors
-#    COMMAND rootcling -f mainAnalysisSelectorDict.cxx
-#                         mainAnalysisSelector.h
-#                         Linkdef.h
-#    )
+add_custom_command(
+    OUTPUT "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/TSelectors
+    COMMAND rootcling -f mainAnalysisSelectorDict.cxx
+                         mainAnalysisSelector.h
+                         Linkdef.h
+    )
 
 set_property(GLOBAL PROPERTY CXX_EXTENSIONS OFF)
 set_property(GLOBAL PROPERTY COMPILE_FLAGS "-m64")
@@ -35,6 +35,7 @@ find_library(MATH_LIBRARY m)
 foreach (macro_lib ${macro_libs})
     #if("x_${macro_lib}" STREQUAL "x_mMainAnalysis" OR "x_${macro_lib}" STREQUAL "x_mSaveCanvases")
     add_library(${macro_lib} SHARED ${macro_lib}.C utils/tdrstyle.C utils/CMS_lumi.C
+        TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
         RDataFrameSelectors/RDFAnalysis.C RDataFrameSelectors/nMinus1Selector.C)
     #else()
     #    add_library(${macro_lib} SHARED ${macro_lib}.C utils/tdrstyle.C utils/CMS_lumi.C)
@@ -103,21 +104,21 @@ target_link_libraries(macroRun PUBLIC
 
 # Install step
 
-## Copy ROOT dictionaries to final bin location, needed during runtime
-#add_custom_command(TARGET macroRun POST_BUILD
-#                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#                   "${CMAKE_CURRENT_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
-#                   $<TARGET_FILE_DIR:macroRun>
-#                   )
-#add_custom_command(TARGET macroRun POST_BUILD
-#                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#                   "${CMAKE_CURRENT_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict_rdict.pcm"
-#                   $<TARGET_FILE_DIR:macroRun>
-#                   )
+# Copy ROOT dictionaries to final bin location, needed during runtime
+add_custom_command(TARGET macroRun POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                   "${CMAKE_CURRENT_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
+                   $<TARGET_FILE_DIR:macroRun>
+                   )
+add_custom_command(TARGET macroRun POST_BUILD
+                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
+                   "${CMAKE_CURRENT_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict_rdict.pcm"
+                   $<TARGET_FILE_DIR:macroRun>
+                   )
 
 install (TARGETS macroRun DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 foreach (macro_lib ${macro_libs})
     install (TARGETS ${macro_lib} DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 endforeach()
-#install (FILES $<TARGET_FILE_DIR:macroRun>/mainAnalysisSelectorDict.cxx DESTINATION "${CMAKE_SOURCE_DIR}/bin")
-#install (FILES $<TARGET_FILE_DIR:macroRun>/mainAnalysisSelectorDict_rdict.pcm DESTINATION "${CMAKE_SOURCE_DIR}/bin")
+install (FILES $<TARGET_FILE_DIR:macroRun>/mainAnalysisSelectorDict.cxx DESTINATION "${CMAKE_SOURCE_DIR}/bin")
+install (FILES $<TARGET_FILE_DIR:macroRun>/mainAnalysisSelectorDict_rdict.pcm DESTINATION "${CMAKE_SOURCE_DIR}/bin")

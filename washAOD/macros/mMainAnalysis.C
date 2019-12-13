@@ -77,15 +77,15 @@ namespace macro {
         //mainAnalysisSelector * dataSelector = (mainAnalysisSelector*)TSelector::GetSelector("TSelectors/mainAnalysisSelector.C+");
 
         // This way just uses the new CMake build system which already compiles the selector (see CMakeLists.txt)
-//        mainAnalysisSelector * MCSelector = new mainAnalysisSelector();
-//        mainAnalysisSelector * dataSelector = new mainAnalysisSelector();
-//
-//        MCSelector->SetMode(common::SIGNAL);
-//        dataSelector->SetMode(common::DATA);
-//
-//        MCSelector->SetHistos(histos_info);
-//        dataSelector->SetHistos(histos_info);
-//
+        mainAnalysisSelector * MCSelector = new mainAnalysisSelector();
+        mainAnalysisSelector * dataSelector = new mainAnalysisSelector();
+
+        MCSelector->SetMode(common::SIGNAL);
+        dataSelector->SetMode(common::DATA);
+
+        MCSelector->SetHistos(histos_info);
+        dataSelector->SetHistos(histos_info);
+
         RDFAnalysis * dfAnalysis = new RDFAnalysis();
         dfAnalysis->SetHistos(histos_info);
         dfAnalysis->SetCuts(cuts_info);
@@ -118,17 +118,17 @@ namespace macro {
                 data_gen->Add(filename.Data());
             }
 
-            //mainAnalysisSelector * currentSelector;
+            mainAnalysisSelector * currentSelector;
 
-            //if (!isData) {
-            //    data_reco->AddFriend(data_gen);
-            //    currentSelector = MCSelector;
-            //}
-            //else  {
-            //    currentSelector = dataSelector;
-            //}
-            //
-            //currentSelector->SetHistos(histos_info);
+            if (!isData) {
+                data_reco->AddFriend(data_gen);
+                currentSelector = MCSelector;
+            }
+            else  {
+                currentSelector = dataSelector;
+            }
+            
+            currentSelector->SetHistos(histos_info);
 
             //currentSelector->SetParams(props,/* lumi,*/ region); // obsolete
             dfAnalysis->SetParams(props, /*lumi,*/ region/*,year*/);
