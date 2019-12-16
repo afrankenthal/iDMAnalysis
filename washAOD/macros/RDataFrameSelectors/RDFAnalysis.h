@@ -58,6 +58,7 @@ public :
    Double_t xsec_;
    Double_t lumi_;
    int year_;
+   float trig_wgt;
    common::MODE mode_;
    TString group_;
 

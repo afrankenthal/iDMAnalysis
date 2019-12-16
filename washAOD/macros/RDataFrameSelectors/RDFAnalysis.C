@@ -21,14 +21,17 @@ void RDFAnalysis::SetParams(common::SampleInfo sample_info,/* Double_t lumi,*/ T
     if (year_ == 2017){
     	pileup = new TFile("../../data/puWeights_90x_41ifb.root");
 	lumi_ = 41.53 *1000;
+	trig_wgt = 1.0; // change later
 	}
     else if(year_ ==2016){
     	pileup = new TFile("../../data/puWeights_80x_37ifb.root");
 	lumi_ = 35.92 *1000;
+	trig_wgt = 1.0; // change later
 	}
     else{
     	pileup = new TFile("../../data/puWeights_10x_56ifb.root");
 	lumi_ = 59.74 *1000;
+	trig_wgt = 1.0; // change later
     }
 	std::cout <<"year: "<< year_ << ", sum_gen_wgt: " << sum_gen_wgt_ << ", xsec: " << xsec_ << " [pb], lumi: " << lumi_ << " [1/pb] " << std::endl;
 
@@ -176,6 +179,10 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    auto calcPUsf = [&](int pileup) { 
        return (float)sf_pu->GetBinContent(sf_pu->FindBin((double)pileup)); 
    };
+   auto calcTrigWgt = [&]() {
+       return trig_wgt;
+       //return genwgt * xsec_ * lumi_ / sum_gen_wgt_;
+   };
    auto calcTotalWgt = [&](float Zwgt, float Wwgt, float Twgt, float PUwgt, float genwgt) {
        return Zwgt * Wwgt * PUwgt * genwgt * xsec_ * lumi_ / sum_gen_wgt_;
        //return genwgt * xsec_ * lumi_ / sum_gen_wgt_;
@@ -265,7 +272,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
 
    if (mode_ == common::DATA) {
-       df_wgts = df_wgts.Define("wgt", "1.0");
+       df_wgts = df_wgts.Define("wgt", calcTrigWgt);
    }
    else {
        df_wgts = df_wgts.
