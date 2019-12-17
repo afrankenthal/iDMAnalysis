@@ -9,6 +9,7 @@
 *.pdf
 messages.txt
 nohup.out
+washAOD/python/201*
 washAOD/python/crab/*
 washAOD/python/*.pyc
 bin/

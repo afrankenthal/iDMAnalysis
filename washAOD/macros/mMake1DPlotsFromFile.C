@@ -34,43 +34,7 @@ namespace macro {
             in_file = new TFile(in_filename);
             out_file = new TFile(out_filename, "RECREATE");
         }
-        
-//	bool mult_year= false;
-//	int cur_year=0;
-//        for (auto && keyAsObj : *in_file->GetListOfKeys()){
-//            auto key = (TKey*)keyAsObj;
-//            if (TString(key->GetClassName()) != "THStack") continue;
-//            TString hs_name = TString(key->GetName());
-//            if (hs_name.Contains("_vs_")) continue; // mMake2DPlotsFromFile handles these
-//            if (hs_name.Contains("num") or hs_name.Contains("denom")) continue; // mMake1DEffPlotsFromFile handles these            
-//            TString yearname = ((TObjString*)(hs_name.Tokenize("-")->At(2)))->String();
-//	    int newyear;
-//	    if (yearname.Contains("18")) { newyear = 2018;}
-//	    else if (yearname.Contains("17")) { newyear = 2017;}
-//	    else{ newyear = 2016;}
-//	    
-//	    if (cur_year==0){
-//		cur_year= newyear;
-//	    }
-//	    else{
-//		if (cur_year != newyear){mult_year=true;}
-//	    }
-//	 std::cout<<"multyear: "<< mult_year << std::endl;
-//	}
-//	if(mult_year){
-//	for (auto && keyAsObj : *in_file->GetListOfKeys()){
-//            auto key = (TKey*)keyAsObj;
-//            if (TString(key->GetClassName()) != "THStack") continue;
-//            TString hs_name = TString(key->GetName());
-//            if (hs_name.Contains("_vs_")) continue; // mMake2DPlotsFromFile handles these
-//            if (hs_name.Contains("num") or hs_name.Contains("denom")) continue; // mMake1DEffPlotsFromFile handles these            
-//            TString yearname = ((TObjString*)(hs_name.Tokenize("-")->At(2)))->String();
-//	    if (yearname.Contains("17") {continue;} //don't double count
-//
-//
-//	}
-//	}
-	
+        	
         map<TString, std::unique_ptr<TCanvas>> canvases;
         for (auto && keyAsObj : *in_file->GetListOfKeys()){
             auto key = (TKey*)keyAsObj;

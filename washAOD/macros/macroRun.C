@@ -87,7 +87,7 @@ int main(int argc, char ** argv) {
                 cfg["sum_gen_wgt"].get<float>(), // sum_gen_wgt
                 cfg["limit_num_files"].get<int>(), // limit_num_files
                 1, // weight
-                cfg["year"].get<float>(), // year 
+                cfg["year"].get<int>(), // year 
                 TString(cfg["group"].get<std::string>()), // sample group
                 mapMODE[TString(cfg["mode"].get<std::string>())], // mode: 0 = BKG, 1 = DATA, 2 = SIGNAL
                 (cfg.find("color") != cfg.end() ? cfg["color"].get<int>() : color++), // line color
