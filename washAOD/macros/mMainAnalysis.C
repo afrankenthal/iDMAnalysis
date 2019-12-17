@@ -31,7 +31,8 @@ namespace macro {
                     plot["nbinsX"].get<int>(),
                     plot["lowX"].get<double>(),
                     plot["highX"].get<double>(),
-                    // optional params --> 2D plot
+                    // optional params
+                    ((plot.find("binEdgesX") != plot.end()) ? plot["binEdgesX"].get<std::vector<double>>() : std::vector<double>(1,-1)),
                     plot.value("nMinus1CutDescription", ""),
                     plot.value("quantity2", ""),
                     plot.value("nbinsY", -1), 
@@ -115,7 +116,7 @@ namespace macro {
             
             //currentSelector->SetHistos(histos_info);
 
-            currentSelector->SetParams(props, lumi); // obsolete
+            currentSelector->SetParams(props, lumi, "SR"); // obsolete
             dfAnalysis->SetParams(props, lumi);
             
             // Use RDataFrame instead

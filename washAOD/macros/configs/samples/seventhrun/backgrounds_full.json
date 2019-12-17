@@ -107,7 +107,7 @@
         "limit_num_files": -1,
         "mode": "BKG",
         "sum_gen_wgt": 326073539.17177856,
-        "xsec": -1
+        "xsec": 26.2
     },
     "ST_t-channel_top_5f": {
         "dir": [
@@ -117,7 +117,7 @@
         "limit_num_files": -1,
         "mode": "BKG",
         "sum_gen_wgt": 825518457.9832101,
-        "xsec": -1
+        "xsec": 44.1
     },
     "ST_tW_antitop": {
         "dir": [
