@@ -139,6 +139,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 13663661.491556168,
+	"year" : 2018,
         "xsec": 35.6
     },
     "ST_tW_top": {

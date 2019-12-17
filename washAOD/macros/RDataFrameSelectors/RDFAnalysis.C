@@ -9,14 +9,13 @@ void RDFAnalysis::SetCuts(vector<common::CutInfo> cuts_info) {
     cuts_info_ = cuts_info;
 }
 
-void RDFAnalysis::SetParams(common::SampleInfo sample_info,/* Double_t lumi,*/ TString region = "SR"/*, int year = 2018*/) {
+void RDFAnalysis::SetParams(common::SampleInfo sample_info) {
     sample_info_ = sample_info;
     mode_ = sample_info_.mode;
     group_ = sample_info_.group;
     sum_gen_wgt_ = sample_info_.sum_gen_wgt;
     xsec_ = sample_info_.xsec;
     year_ = sample_info_.year;
-    //lumi_ = lumi;
     TFile* pileup;
     if (year_ == 2017){
     	pileup = new TFile("../../data/puWeights_90x_41ifb.root");
@@ -71,29 +70,6 @@ void RDFAnalysis::Begin() {
 
    all_histos_1D_.clear();
    all_histos_2D_.clear();
-//   for (auto & [name, hist] : histos_info_) {
-//       if (std::find(hist->groups.begin(), hist->groups.end(), sample_info_.group) == hist->groups.end()) continue;
-//       for (auto cut : hist->cuts) {
-//           if (hist->nbinsY == -1) // 1D plot
-//               cutflowHistos_[name][cut] = new TH1F(Form("%s_cut%d_%s", name.Data(), cut, sample_info_.group.Data()), common::group_plot_info[sample_info_.group].legend, hist->nbinsX, hist->lowX, hist->highX);
-//           else // 2D plot
-//               cutflowHistos_[name][cut] = new TH2F(Form("%s_cut%d_%s", name.Data(), cut, sample_info_.group.Data()), common::group_plot_info[sample_info_.group].legend, hist->nbinsX, hist->lowX, hist->highX, hist->nbinsY, hist->lowY, hist->highY);
-//           cutflowHistos_[name][cut]->Sumw2();
-//           if (common::group_plot_info[sample_info_.group].mode == common::BKG) 
-//               cutflowHistos_[name][cut]->SetFillColor(common::group_plot_info[sample_info_.group].color);
-//           else if (common::group_plot_info[sample_info_.group].mode == common::DATA) {
-//               cutflowHistos_[name][cut]->SetMarkerColor(common::group_plot_info[sample_info_.group].color);
-//               cutflowHistos_[name][cut]->SetMarkerStyle(common::group_plot_info[sample_info_.group].style);
-//               cutflowHistos_[name][cut]->SetMarkerSize(0.9);
-//           }
-//           else if (common::group_plot_info[sample_info_.group].mode == common::SIGNAL) {
-//               cutflowHistos_[name][cut]->SetLineColor(common::group_plot_info[sample_info_.group].color);
-//               cutflowHistos_[name][cut]->SetLineStyle(common::group_plot_info[sample_info_.group].style);
-//               cutflowHistos_[name][cut]->SetLineWidth(2);
-//               cutflowHistos_[name][cut]->SetMarkerSize(0);
-//           }
-//       }
-//   }
 }
 
 Bool_t RDFAnalysis::Process(TChain * chain) {
@@ -105,7 +81,6 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     chain_ = chain;
 
     ROOT::EnableImplicitMT();
-    //chain->SetCacheSize(0);
     ROOT::RDataFrame df(*chain_);
 
     // First, define all the relevant weights
@@ -166,7 +141,6 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                     sf_top *= exp(0.0615 - 0.0005 * 800);
                 else
                     sf_top *= exp(0.0615 - 0.0005 * 0);
-                //sf_top *= gen_pt[i];
                 n_top++;
             }
         }
@@ -181,7 +155,6 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    };
    auto calcTotalWgt = [&](float Zwgt, float Wwgt, float Twgt, float PUwgt, float genwgt) {
        return trig_wgt* Zwgt * Wwgt * PUwgt * genwgt * xsec_ * lumi_ / sum_gen_wgt_;
-       //return genwgt * xsec_ * lumi_ / sum_gen_wgt_;
    };
    auto calcHemVeto = [&](bool hem_veto) { 
 	if (year_ == 2018) {
@@ -240,7 +213,6 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    auto takeCaloPFMETRatio = [&](float reco_PF_MET_pt, float reco_Calo_MET_pt) { return abs(reco_Calo_MET_pt - reco_PF_MET_pt)/reco_Calo_MET_pt; };
    auto takeVtxSignificance = [&](float reco_vtx_vxy, float reco_vtx_sigmavxy) { return reco_vtx_vxy/reco_vtx_sigmavxy; };
    auto takeSigmaPtbyPt = [&](vector<float> reco_pt, vector<float> reco_sigpt, int index) { if (index > -1 && index < reco_pt.size()) return reco_sigpt[index]/reco_pt[index]; return -9999.9f; };
-       //std::cout<< "hem_veto " << calcHemVeto("reco_PF_HEM_flag") << "year: " << year_ <<std::endl;
 
    auto df_wgts = df.
        Define("reco_PF_jet_pt0", takeFirstJetPt, {"reco_PF_jet_pt"}).

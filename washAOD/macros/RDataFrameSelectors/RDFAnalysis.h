@@ -33,7 +33,7 @@ public :
    void    Terminate();
 
    //void doFills(int cut, double weight);
-   void SetParams(common::SampleInfo sample_info,/* Double_t lumi,*/ TString region/*, int year*/);
+   void SetParams(common::SampleInfo sample_info);
    void SetCuts(std::vector<common::CutInfo> cuts_info);
    void SetHistos(std::map<TString, common::THInfo*> histos_info) { histos_info_ = histos_info; }
    //std::vector<double> GetCutflow() { return cutflow_; }

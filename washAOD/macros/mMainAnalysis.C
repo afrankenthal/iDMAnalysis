@@ -41,7 +41,7 @@ namespace macro {
                     };
 
         TString out_filename = TString(cfg["outfilename"].get<std::string>());
-        TString region = TString(cfg["region"].get<std::string>());
+       // TString region = TString(cfg["region"].get<std::string>());
 //	int year = cfg["year"].get<int>();
         
 	map<TString,map<int, map<common::MODE, map<int, vector<TH1*>>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
@@ -132,7 +132,7 @@ namespace macro {
             currentSelector->SetHistos(histos_info);
 
             //currentSelector->SetParams(props,/* lumi,*/ region); // obsolete
-            dfAnalysis->SetParams(props, /*lumi,*/ region/*,year*/);
+            dfAnalysis->SetParams(props);
             
             // Use RDataFrame instead
             //data_reco->Process(currentSelector);
@@ -287,33 +287,21 @@ namespace macro {
                     vector<TH1*> hist_vec1 = all_hstacks[plot_name][2017][mode][cut];
 		    for (auto hist1 : hist_vec){
 			TString name1;
-		//	TString mode1;
 			TString name2 = hist1->GetName();
 			name1 = (((TObjString*)(name2.Tokenize("-")->At(0)))->String());
-		//	mode1 = (((TObjString*)(name2.Tokenize("-")->At(1)))->String());
 			TList *thislist = new TList;
 		    for (auto hist2 : hist_vec1){
 			TString name1x;
-		//	TString mode1x;
 			TString name2x = hist2->GetName();
 			name1x = (((TObjString*)(name2x.Tokenize("-")->At(0)))->String());
-		//	mode1x = (((TObjString*)(name2x.Tokenize("-")->At(1)))->String());
 			if (name1.EqualTo(name1x)){
-			//if ((name1.EqualTo(name1x)) && (mode1.EqualTo(mode1x))) {
 			thislist->Add(hist2);
-			//std::cout<< "names: "<< name1.Data() << "namesx: "<< name1x.Data()<<std::endl;	
 			}
-			//name2.Tokenize(name1, 0, "_yr")
-			//std::cout<< "name1: "<<name1.Data() <<std::endl;
-			//std::cout<< "name2: "<<name2.Data() <<std::endl;
 			}
 			hist1->Merge(thislist);
 		    }
-		    //hist_vec.insert(hist_vec.end(),hist_vec1.begin(),hist_vec1.end());
                     std::sort(hist_vec.begin(), hist_vec.end(),
                            [](TH1 *a, TH1 *b) { return a->Integral() < b->Integral(); });
-                    //std::sort(hist_vec.begin(), hist_vec.end(),
-                     //       [](auto & a, auto & b) { return a->Integral() < b->Integral(); });
                     for (auto hist : hist_vec)
                         hstack->Add(hist);
                     if (hstack->GetNhists() > 0){

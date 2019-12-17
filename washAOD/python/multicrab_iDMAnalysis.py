@@ -454,7 +454,7 @@ def main():
             config.JobType.pyCfgParams = ['data={}'.format(isData),'Run2018D={}'.format(isRun2018D)]
 
             config.Data.inputDataset = dataset
-            config.General.requestName = 'iDMAnalysis_' + sample +'_v2'
+            config.General.requestName = 'iDMAnalysis_' + sample +'_v3'
             #config.Data.outputDatasetTag = sample
 
             #basedir = '/uscms/home/mreid/CRAB/signal_region_analysis/CMSSW_10_2_1/src/Firefighter/washAOD/data/iDM/2018/GenFilter/'

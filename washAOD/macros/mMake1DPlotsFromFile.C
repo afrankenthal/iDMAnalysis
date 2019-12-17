@@ -118,14 +118,12 @@ namespace macro {
                 int cut;
                 TString tok;
                 Ssiz_t from = 0;
-                cout << "basename: "<< hs_basename << endl;
 		while (hs_basename.Tokenize(tok, from, "_")) 
                   if (tok.Contains("cut")) 
                       cut = (((TObjString*)(tok.Tokenize("t")->At(1)))->String()).Atoi();
                 TLatex cut_label;
                 cut_label.SetNDC();
 
-                cout << "cut: "<< cut << endl;
                 cut_label.SetTextSize(0.05);
 
                 if (cuts_info[cut].special == TString("yes"))

@@ -5,7 +5,7 @@
 
 namespace macro {
     void canvasDraw(TString hs_basename, TString hs_suffix,TEfficiency *hs, TCanvas *c,bool newCanvas, bool zoom, int year){
-	cout << "formatting canvas and drawing histograms function " << hs_basename<<hs_suffix<<hs->GetName()<<endl;
+//	cout << "formatting canvas and drawing histograms function " << hs_basename<<hs_suffix<<hs->GetName()<<endl;
 	TString x_title = TString(hs->GetPassedHistogram()->GetXaxis()->GetTitle());
 	if(newCanvas){
                 c->Range(0,0,1,1);
@@ -114,18 +114,18 @@ namespace macro {
             TString hs_name = TString(key->GetName());
             if (hs_name.Contains("_vs_")) continue; // mMake2DPlotsFromFile handles these
             if (hs_name.Contains("num")){
-            cout << "Processing num " << hs_name << ", class " << key->GetClassName() << endl;
+            //cout << "Processing num " << hs_name << ", class " << key->GetClassName() << endl;
             hsn = (THStack*)in_file->Get(hs_name);
 		continue_num = true;
 	    }
             if (hs_name.Contains("denom")){ 
-            cout << "Processing denom " << hs_name << ", class " << key->GetClassName() << endl;
+            //cout << "Processing denom " << hs_name << ", class " << key->GetClassName() << endl;
             hsd = (THStack*)in_file->Get(hs_name);
 		continue_denom = true;
 		}
 	    if (!(continue_num && continue_denom)) {/*cout<<"passing" <<endl; */continue;}
 	    
-	    cout<<"continuing"<<endl;
+	    //cout<<"continuing"<<endl;
 	    continue_num = false;
 	    continue_denom = false;
 	    TString type;
@@ -135,7 +135,7 @@ namespace macro {
 	    if (hs_name.Contains("2017")) { year=2017;yearname="_2017";}
 	    if (hs_name.Contains("2018")) { year=2018;yearname="_2018";}
 	    if (hs_name.Contains("2016")) { year=2016;yearname="_2016";}
-	    cout << "year: " << year<<endl;
+	   // cout << "year: " << year<<endl;
 	    if (hs_name.Contains("SIGNAL"))
 	        type = TString("SIGNAL");
 	    else if (hs_name.Contains("DATA"))
@@ -147,7 +147,7 @@ namespace macro {
 		TObjArray* name_tolks = TString(MCTotal_denom->GetName()).Tokenize("_");
 		MCTotal_denom->SetName((((TObjString*)(name_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(name_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(3)))->String())).Append(yearname).Append(TString("_MCTotal")));
 		//MCTotal_denom->SetName((((TObjString*)(name_tolks->At(0)))->String()).Append("_").Append((((TObjString*)(name_tolks->At(1)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(2)))->String())).Append("_").Append((((TObjString*)(name_tolks->At(3)))->String())).Append("_MCTotal").Append(TString("_MCTotal")));
-		cout<<"name "<<MCTotal_denom->GetName()<<endl;
+		//cout<<"name "<<MCTotal_denom->GetName()<<endl;
 		
 		for (int i =0; i<MCTotal_num->GetNbinsX();i++){	
 		//	if(MCTotal_denom->GetBinContent(i)<0){
@@ -157,8 +157,8 @@ namespace macro {
 		//		MCTotal_num->SetBinContent(i,abs(MCTotal_num->GetBinContent(i)));	
 		//	}
 			if(MCTotal_num->GetBinContent(i)>MCTotal_denom->GetBinContent(i)){
-				cout <<"bin: "<<i<<" "<<MCTotal_num->GetBinContent(i)<<" "<<MCTotal_num->GetBinContent(i) <<endl;
-				cout<<"resetting bin content"<<endl;
+			//	cout <<"bin: "<<i<<" "<<MCTotal_num->GetBinContent(i)<<" "<<MCTotal_num->GetBinContent(i) <<endl;
+				//cout<<"resetting bin content"<<endl;
 				MCTotal_denom->SetBinContent(i,MCTotal_num->GetBinContent(i));
 			}
 		}
@@ -198,7 +198,7 @@ namespace macro {
 	   	 	TString n2x0 = ((TObjString*)(n2.Tokenize("_")->At(2)))->String();
 	    		TString n2x1 = ((TObjString*)(n2.Tokenize("_")->At(5)))->String();
 	    		if (((n1x0.Contains(n2x0)) && (n1x1.Contains(n2x1)))) {
-	    			cout <<"stacking "<<n1x1<<n2x1 <<endl;
+	    			//cout <<"stacking "<<n1x1<<n2x1 <<endl;
 				for (int i =0; i<hsnx->GetNbinsX();i++){	
 				//	if(hsdx->GetBinContent(i)<0){
 				//		hsdx->SetBinContent(i,abs(hsdx->GetBinContent(i)));
@@ -207,8 +207,8 @@ namespace macro {
 				//		hsnx->SetBinContent(i,abs(hsnx->GetBinContent(i)));	
 				//	}
 			 		if(hsnx->GetBinContent(i)>hsdx->GetBinContent(i)){
-						cout <<"bin: "<<i<<" "<<hsnx->GetBinContent(i)<<" "<<hsdx->GetBinContent(i) <<endl;
-						cout<<"resetting bin content"<<endl;
+				//		cout <<"bin: "<<i<<" "<<hsnx->GetBinContent(i)<<" "<<hsdx->GetBinContent(i) <<endl;
+				//		cout<<"resetting bin content"<<endl;
 						hsdx->SetBinContent(i,hsnx->GetBinContent(i));
 					}
 				}
@@ -312,7 +312,6 @@ namespace macro {
                 ratio_hist->GetYaxis()->SetLabelSize(0.11);
                 ratio_hist->GetYaxis()->SetNdivisions(5);
                 ratio_hist->GetYaxis()->SetTitleOffset(0.35);
-		cout <<"TEST "<<MC_hist->GetName()<<endl;
 		ratio_hist->SetMarkerColor(common::group_plot_info[((TObjString*)(TString(MC_hist->GetName()).Tokenize("_")->At(5)))->String()].color);
                 ratio_hist->Draw("EP SAME");
                 
@@ -349,11 +348,9 @@ namespace macro {
             TObject * hs;
             while ((hs = next())) {
                 if (TString(hs->ClassName()) != TString("TEfficiency")) continue;
-		cout<<hs->GetName()<<endl;
                 // TODO Handle 2D plots
                 if (TString(hs->GetName()).Contains("_vs_")) continue; // skip 2D plots for now
                 if(!TString(hs->GetName()).Contains("_")) continue;
-		cout<<hs->GetName()<<endl;
                 TString group = ((TObjString*)(TString(hs->GetName()).Tokenize("_")->At(5)))->String();
 		float param = ((TF1*)(((TEfficiency*)hs)->GetListOfFunctions()->At(0)))->GetParameter(2) + ((TF1*)(((TEfficiency*)hs)->GetListOfFunctions()->At(0)))->GetParameter(3);
 		float paramerr = ((

@@ -352,8 +352,8 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
         if (matchedPaths.size() == 0) {
             //LogError("TriggerError") << "Could not find matched full trigger path with -> " << trigPathNoVersion;
             //return false;
+            triggerPathsWithVersionNum_.push_back("None");
             trigExist_.push_back(false);
-//		continue;
         }
 	else{
             trigExist_.push_back(true);
