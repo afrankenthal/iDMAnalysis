@@ -28,6 +28,7 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     //bTagProbbbTag_(ps.getParameter<edm::InputTag>("bTagProbbb")),
     bTagProbbTag_(ps.getParameter<std::string>("bTagProbb")),
     bTagProbbbTag_(ps.getParameter<std::string>("bTagProbbb")),
+    bTagCombineTag_(ps.getParameter<std::string>("bTagCombine")),
     muTrackTag1_(ps.getParameter<edm::InputTag>("muTrack1")),
     muTrackTag2_(ps.getParameter<edm::InputTag>("muTrack2")),
     genParticleTag_(ps.getParameter<edm::InputTag>("genParticle")),
@@ -60,6 +61,7 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     
     bTagProbbToken_(consumes<reco::JetTagCollection>(bTagProbbTag_)),
     bTagProbbbToken_(consumes<reco::JetTagCollection>(bTagProbbbTag_)),
+    bTagCombineToken_(consumes<reco::JetTagCollection>(bTagCombineTag_)),
     muTrackToken1_(consumes<reco::TrackCollection>(muTrackTag1_)),
     muTrackToken2_(consumes<reco::TrackCollection>(muTrackTag2_)),
     genParticleToken_(consumes<reco::GenParticleCollection>(genParticleTag_)),
@@ -99,6 +101,7 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     //desc.add<edm::InputTag>("bTagProbbb", edm::InputTag("pfDeepCSVJetTags", "probbb", "RECO"));
     desc.add<std::string>("bTagProbb", "Defaultshouldntbecalled"); 
     desc.add<std::string>("bTagProbbb", "Defaultshouldntbecalled"); 
+    desc.add<std::string>("bTagCombine", "Defaultshouldntbecalled"); 
     desc.add<edm::InputTag>("muTrack1", edm::InputTag("displacedStandAloneMuons"));
     desc.add<edm::InputTag>("muTrack2", edm::InputTag("globalMuons"));
     desc.add<edm::InputTag>("genParticle", edm::InputTag("genParticles"));
@@ -274,16 +277,28 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
     using namespace edm;
 
     char error_msg[] = "iDMAnalyzer::GetCollections: Error in getting product %s from Event!";
-        
+    bTagCombineBool = false; 
     iEvent.getByToken(bTagProbbToken_, bTagProbbHandle_);
     if (!bTagProbbHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagProbb");
-        return false;
+       // LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagProbb. Switching to Combine");
+    	bTagCombineBool = true; 
+    	iEvent.getByToken(bTagCombineToken_, bTagCombineHandle_);
+    	if (!bTagCombineHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagCombine");
+	return false;
+	}
+    //    return false;
     }
     iEvent.getByToken(bTagProbbbToken_, bTagProbbbHandle_);
     if (!bTagProbbbHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagProbbb");
-        return false;
+        //LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagProbbb. Switching to Combine");
+    	bTagCombineBool = true; 
+    	iEvent.getByToken(bTagCombineToken_, bTagCombineHandle_);
+    	if (!bTagCombineHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagCombine");
+	return false;
+	}
+        //return false;
     }
     iEvent.getByToken(muTrackToken1_, muTrackHandle1_);
     if (!muTrackHandle1_.isValid()) {
@@ -328,20 +343,29 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
     triggerPathsWithoutVersionNum_.push_back("HLT_PFMETNoMu130_PFMHTNoMu130_IDTight");
     triggerPathsWithoutVersionNum_.push_back("HLT_PFMETNoMu140_PFMHTNoMu140_IDTight");
     triggerPathsWithoutVersionNum_.push_back("HLT_PFMET120_PFMHT120_IDTight_PFHT60");
-    triggerPathsWithoutVersionNum_.push_back("HLT_IsoMu24");
+    triggerPathsWithoutVersionNum_.push_back("HLT_IsoMu27");
     const std::vector<std::string>& pathNames = hltConfig_.triggerNames();
     triggerPathsWithVersionNum_.clear();
+    trigExist_.clear();
     for (auto trigPathNoVersion : triggerPathsWithoutVersionNum_) {
         auto matchedPaths(hltConfig_.restoreVersion(pathNames, trigPathNoVersion));
         if (matchedPaths.size() == 0) {
-            LogError("TriggerError") << "Could not find matched full trigger path with -> " << trigPathNoVersion;
-            return false;
+            //LogError("TriggerError") << "Could not find matched full trigger path with -> " << trigPathNoVersion;
+            //return false;
+            trigExist_.push_back(false);
+//		continue;
         }
+	else{
+            trigExist_.push_back(true);
         triggerPathsWithVersionNum_.push_back(matchedPaths[0]);
         if (hltConfig_.triggerIndex(matchedPaths[0]) >= hltConfig_.size()) {
             LogError("TriggerError") << "Cannot find trigger path -> " << matchedPaths[0];
             return false;
         }
+	//else{
+
+	//}
+	}
     }
 
     //const std::vector<std::string> matchedPaths(hltConfig_.restoreVersion(pathNames, trigPathNoVer_));
@@ -621,8 +645,13 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     // Assign each trigger result to a different bit
     fired_ = 0;
     for (size_t i = 0; i < triggerPathsWithVersionNum_.size(); i++) {
+	if(trigExist_.at(i)){
         std::string trigPath = triggerPathsWithVersionNum_[i];
         fired_ |= (trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath)) << i);
+	}
+	else{
+	fired_ |= (0 <<i);
+	}
     }
 
     //fired_ = trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath_));
@@ -793,11 +822,14 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     
     // Get 10 top leading jets info, sorted by corrected pT
     // Only pick jets that have passed loose ID and cross-cleaning
-    const reco::JetTagCollection & bTagsProbb = *(bTagProbbHandle_.product());
-    const reco::JetTagCollection & bTagsProbbb = *(bTagProbbbHandle_.product());
+    //const reco::JetTagCollection & bTagsProbb;
+    //const reco::JetTagCollection & bTagsProbbb;
+    //const reco::JetTagCollection & bTagCombine;
     recoPFNJet_ = recoJetHandle_->size(); 
     recoPFNPassIDJet_ = 0;
     recoPFNHighPtJet_ = 0;
+    if (bTagCombineBool){
+    const reco::JetTagCollection & bTagCombine = *(bTagCombineHandle_.product());
     //for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
     for (size_t i = 0; i < jetCorrections.size(); ++i) {
         size_t index = jetCorrections[i].second;
@@ -819,10 +851,12 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
        		recoPFJetPhi_.push_back(jet_i->phi());
             // TODO: figure out how BtagProbb(b) collections actually behave
             // FIXME this might be problematic with the jet corrections, keep in mind
-            if (bTagsProbb.size() > i && bTagsProbbb.size() > i)
-                recoPFJetBTag_.push_back(bTagsProbb[index].second+bTagsProbbb[index].second);
-            else
+		if(bTagCombine.size() > i){
+		recoPFJetBTag_.push_back(bTagCombine[index].second);
+		}
+		else{
                 recoPFJetBTag_.push_back(-9999);
+		}
             recoPFJetCHEF_.push_back(jet_i->chargedHadronEnergyFraction());
        		recoPFJetNHEF_.push_back(jet_i->neutralHadronEnergyFraction());
        		recoPFJetCEEF_.push_back(jet_i->chargedEmEnergyFraction());
@@ -831,6 +865,93 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             recoPFJetChargedMultiplicity_.push_back(jet_i->chargedMultiplicity());
         }
     }
+    }
+    else{
+    const reco::JetTagCollection & bTagsProbb = *(bTagProbbHandle_.product());
+    const reco::JetTagCollection & bTagsProbbb = *(bTagProbbbHandle_.product());
+    //for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+    for (size_t i = 0; i < jetCorrections.size(); ++i) {
+        size_t index = jetCorrections[i].second;
+
+        // Exclude jets that didn't pass ID above
+        if (!jetIDResults[index]) continue;
+        recoPFNPassIDJet_++;
+
+        // Use original set of quantities except for pt, which is JEC-corrected
+        reco::PFJetRef jet_i(recoJetHandle_, index);
+        //if (jet_i->pt() > 30) {
+        if (jetCorrections[i].first > 30) {
+            recoPFNHighPtJet_++;
+        }
+        if (recoPFJetPt_.size() < 10 && jetCorrections[i].first > 30) {
+            //recoPFJetPt_.push_back(jet_i->pt());
+            recoPFJetPt_.push_back(jetCorrections[i].first);
+       		recoPFJetEta_.push_back(jet_i->eta());
+       		recoPFJetPhi_.push_back(jet_i->phi());
+            // TODO: figure out how BtagProbb(b) collections actually behave
+            // FIXME this might be problematic with the jet corrections, keep in mind
+            	if (bTagsProbb.size() > i && bTagsProbbb.size() > i){
+                recoPFJetBTag_.push_back(bTagsProbb[index].second+bTagsProbbb[index].second);
+            	}
+		else{
+                recoPFJetBTag_.push_back(-9999);
+		}
+	    
+            recoPFJetCHEF_.push_back(jet_i->chargedHadronEnergyFraction());
+       		recoPFJetNHEF_.push_back(jet_i->neutralHadronEnergyFraction());
+       		recoPFJetCEEF_.push_back(jet_i->chargedEmEnergyFraction());
+       		recoPFJetNEEF_.push_back(jet_i->neutralEmEnergyFraction());
+            recoPFJetNumDaughters_.push_back(jet_i->numberOfDaughters());
+            recoPFJetChargedMultiplicity_.push_back(jet_i->chargedMultiplicity());
+        }
+    }
+    }
+   
+    //for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
+//    for (size_t i = 0; i < jetCorrections.size(); ++i) {
+//        size_t index = jetCorrections[i].second;
+//
+//        // Exclude jets that didn't pass ID above
+//        if (!jetIDResults[index]) continue;
+//        recoPFNPassIDJet_++;
+//
+//        // Use original set of quantities except for pt, which is JEC-corrected
+//        reco::PFJetRef jet_i(recoJetHandle_, index);
+//        //if (jet_i->pt() > 30) {
+//        if (jetCorrections[i].first > 30) {
+//            recoPFNHighPtJet_++;
+//        }
+//        if (recoPFJetPt_.size() < 10 && jetCorrections[i].first > 30) {
+//            //recoPFJetPt_.push_back(jet_i->pt());
+//            recoPFJetPt_.push_back(jetCorrections[i].first);
+//       		recoPFJetEta_.push_back(jet_i->eta());
+//       		recoPFJetPhi_.push_back(jet_i->phi());
+//            // TODO: figure out how BtagProbb(b) collections actually behave
+//            // FIXME this might be problematic with the jet corrections, keep in mind
+//	if(bTagCombineBool){
+//		if(bTagCombine.size() > i){
+//		recoPFJetBTag_.push_back(bTagCombine[index].second);
+//		}
+//		else{
+//                recoPFJetBTag_.push_back(-9999);
+//		}
+//	}
+//	else{
+//            	if (bTagsProbb.size() > i && bTagsProbbb.size() > i){
+//                recoPFJetBTag_.push_back(bTagsProbb[index].second+bTagsProbbb[index].second);
+//            	}
+//		else{
+//                recoPFJetBTag_.push_back(-9999);
+//		}
+//	    }
+//            recoPFJetCHEF_.push_back(jet_i->chargedHadronEnergyFraction());
+//       		recoPFJetNHEF_.push_back(jet_i->neutralHadronEnergyFraction());
+//       		recoPFJetCEEF_.push_back(jet_i->chargedEmEnergyFraction());
+//       		recoPFJetNEEF_.push_back(jet_i->neutralEmEnergyFraction());
+//            recoPFJetNumDaughters_.push_back(jet_i->numberOfDaughters());
+//            recoPFJetChargedMultiplicity_.push_back(jet_i->chargedMultiplicity());
+//        }
+//    }
 
 
     // Calculate angle between MET and leading jet

@@ -179,12 +179,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    auto calcPUsf = [&](int pileup) { 
        return (float)sf_pu->GetBinContent(sf_pu->FindBin((double)pileup)); 
    };
-   auto calcTrigWgt = [&]() {
-       return trig_wgt;
-       //return genwgt * xsec_ * lumi_ / sum_gen_wgt_;
-   };
    auto calcTotalWgt = [&](float Zwgt, float Wwgt, float Twgt, float PUwgt, float genwgt) {
-       return Zwgt * Wwgt * PUwgt * genwgt * xsec_ * lumi_ / sum_gen_wgt_;
+       return trig_wgt* Zwgt * Wwgt * PUwgt * genwgt * xsec_ * lumi_ / sum_gen_wgt_;
        //return genwgt * xsec_ * lumi_ / sum_gen_wgt_;
    };
    auto calcHemVeto = [&](bool hem_veto) { 
@@ -272,7 +268,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
 
    if (mode_ == common::DATA) {
-       df_wgts = df_wgts.Define("wgt", calcTrigWgt);
+       df_wgts = df_wgts.Define("wgt", "1.0");
    }
    else {
        df_wgts = df_wgts.

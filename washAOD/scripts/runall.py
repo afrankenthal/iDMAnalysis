@@ -2,7 +2,7 @@ import os, sys
 import subprocess
 
 
-test = False
+test = True
 if test:
 	mchis=['6p0']#['60p0']
 	dmchis=['2p0']#['20p0']
@@ -42,8 +42,9 @@ for mass in masslist:
 		ofile= "{2}_{0}_ctau-{1}.root".format(mass,life,analyzer_name[analyzer])
 		if test:
 			#cmdxx = "cmsRun ../python/{1} year=2018 inputFiles=/store/mc/RunIIAutumn18DRPremix/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/AODSIM/102X_upgrade2018_realistic_v15-v1/90000/E2ECFFD9-B0C9-E04A-99A4-31BB259AAD98.root outputFile=test_2018".format(ofile,analyzer)#,mass,life)
-			cmdxx = "cmsRun ../python/{1} year=2017 inputFiles=/store/mc/RunIIFall17DRPremix/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/AODSIM/PU2017_94X_mc2017_realistic_v11-v1/10001/F2C81300-F655-E811-9967-002590FD5A4C.root outputFile=test_2017".format(ofile,analyzer)#,mass,life)
-			#cmdxx = "cmsRun ../python/{1} year=2016 inputFiles=/store/mc/RunIISummer16DR80Premix/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/AODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/80000/F8834A87-D4BD-E611-AB32-0025905A6104.root outputFile=test_2016".format(ofile,analyzer)#,mass,life)
+			#cmdxx = "cmsRun ../python/{1} year=2018 inputFiles=/store/mc/RunIIAutumn18DRPremix/ZZ_TuneCP5_13TeV-pythia8/AODSIM/102X_upgrade2018_realistic_v15-v2/80000/FD02DD57-1A67-A049-872F-6627567DA620.root outputFile=test_2018".format(ofile,analyzer)#,mass,life)
+			#cmdxx = "cmsRun ../python/{1} year=2017 inputFiles=/store/mc/RunIIFall17DRPremix/WW_TuneCP5_13TeV-pythia8/AODSIM/PU2017_94X_mc2017_realistic_v11-v1/1110000/F216796B-8BD3-E811-816F-008CFA197AEC.root outputFile=test_2017".format(ofile,analyzer)#,mass,life)
+			cmdxx = "cmsRun ../python/{1} year=2016 inputFiles=/store/mc/RunIISummer16DR80Premix/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/AODSIM/PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/80000/BAAB4424-B6C9-E611-A731-901B0E5427B6.root outputFile=test_2016".format(ofile,analyzer)#,mass,life)
 			#cmdxx = "cmsRun ../python/{1} year=2018 inputFiles=/store/data/Run2018A/SingleMuon/AOD/17Sep2018-v2/90000/F8382E90-9BC4-4E4A-8EB2-952904BAE395.root outputFile=test_{0}".format(ofile,analyzer)#,mass,life)
 			#cmdxx = "cmsRun ../python/{1} year=2018 inputFiles_load=../data/iDM/2018/signal/test.list outputFile=test_{0}".format(ofile,analyzer)#,mass,life)
 		
