@@ -3,7 +3,6 @@
 //TString lumi_13TeV = "59.74 fb^{-1} ";
 
 
-int gyear;
 namespace macro {
     void canvasDraw(TString hs_basename, TString hs_suffix,TEfficiency *hs, TCanvas *c,bool newCanvas, bool zoom, int year){
 	cout << "formatting canvas and drawing histograms function " << hs_basename<<hs_suffix<<hs->GetName()<<endl;
