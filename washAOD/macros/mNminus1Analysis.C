@@ -29,6 +29,7 @@ namespace macro {
                     plot["lowX"].get<double>(),
                     plot["highX"].get<double>(),
                     // optional params --> 2D plot
+                    ((plot.find("binEdgesX") != plot.end()) ? plot["binEdgesX"].get<std::vector<double>>() : std::vector<double>(1,-1)),
                     plot.value("nMinus1CutDescription", ""),
                     plot.value("quantity2", ""),
                     plot.value("nbinsY", -1), 

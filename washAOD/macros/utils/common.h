@@ -57,6 +57,7 @@ namespace common {
         Int_t nbinsX;
         Double_t lowX;
         Double_t highX;
+        std::vector<double> binEdgesX;
         TString nMinus1CutDescription;
         // 2D plot params
         TString quantity2;

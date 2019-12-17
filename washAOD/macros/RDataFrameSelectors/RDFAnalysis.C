@@ -308,12 +308,26 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                // if this is first cut then initialize map
                if (all_histos_1D_.find(histo_name) == all_histos_1D_.end())
                    all_histos_1D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH1D>>();
-               all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+               if (histo_info->binEdgesX[0] != -1) { // bin edges provided
+                   double bin_edges[histo_info->binEdgesX.size()];
+                   std::copy(histo_info->binEdgesX.begin(), histo_info->binEdgesX.end(), bin_edges);
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
+               }
+               else { // just number of bins and low and high X
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+               }
            }
            else if (histo_info->type == "int1D") {
                if (all_histos_1D_.find(histo_name) == all_histos_1D_.end())
                    all_histos_1D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH1D>>();
-               all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(),year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+               if (histo_info->binEdgesX[0] != -1) { // bin edges provided
+                   double bin_edges[histo_info->binEdgesX.size()];
+                   std::copy(histo_info->binEdgesX.begin(), histo_info->binEdgesX.end(), bin_edges);
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(),year_), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
+               }
+               else { // just number of bins and low and high X
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s_yr%s", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+               }
            }
            else if (histo_info->type == "float2D") {
                if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())

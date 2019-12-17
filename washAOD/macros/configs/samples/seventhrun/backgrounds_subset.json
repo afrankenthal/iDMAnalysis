@@ -118,7 +118,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 26259072.081425115,
 	"year": 2018,
-        "xsec": 44.1
+        "xsec": 26.2 
     },
     "ST_t-channel_top_5f": {
         "dir": [
@@ -129,9 +129,19 @@
         "mode": "BKG",
         "sum_gen_wgt": 11083131.755867004,
 	"year": 2018,
-        "xsec": 22.6
+        "xsec": 44.1
     },
-    "ST_tW_top_v2": {
+    "ST_tW_antitop": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_seventhrun/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/crab_iDMAnalysis_tW_antitop/191103_082055/0000"
+        ],
+        "group": "Top",
+        "limit_num_files": 1,
+        "mode": "BKG",
+        "sum_gen_wgt": 13663661.491556168,
+        "xsec": 35.6
+    },
+    "ST_tW_top": {
         "dir": [
             "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_seventhrun/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/crab_iDMAnalysis_ST_tW_top_v2/191106_030755/0000"
         ],
@@ -162,7 +172,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 103329.1637211442,
 	"year": 2018,
-        "xsec": 1627.45
+        "xsec": 1343
     },
     "WJetsToLNu_HT-1200To2500": {
         "dir": [
@@ -173,7 +183,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 54882.05125428166,
 	"year": 2018,
-        "xsec": 1.61
+        "xsec": 1.329
     },
     "WJetsToLNu_HT-200To400": {
         "dir": [
@@ -184,7 +194,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 321345.3069728659,
 	"year": 2018,
-        "xsec": 435.24
+        "xsec": 359.6
     },
     "WJetsToLNu_HT-2500ToInf": {
         "dir": [
@@ -195,7 +205,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 52554.66742726534,
 	"year": 2018,
-        "xsec": 0.0389
+        "xsec": 0.03216
     },
     "WJetsToLNu_HT-400To600": {
         "dir": [
@@ -206,18 +216,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 25923.01290923357,
 	"year": 2018,
-        "xsec": 59.18
-    },
-    "WJetsToLNu_HT-400To600_v2": {
-        "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_seventhrun/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_WJetsToLNu_HT-400To600_v2/191106_030849/0000"
-        ],
-        "group": "WJets",
-        "limit_num_files": 1,
-        "mode": "BKG",
-        "sum_gen_wgt": 25923.01290923357,
-	"year": 2018,
-        "xsec": 59.18
+        "xsec": 48.85
     },
     "WJetsToLNu_HT-600To800": {
         "dir": [
@@ -228,7 +227,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 71448.08631508937,
 	"year": 2018,
-        "xsec": 14.58
+        "xsec": 12.05
     },
     "WJetsToLNu_HT-800To1200": {
         "dir": [
@@ -239,7 +238,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 65652.91929508219,
 	"year": 2018,
-        "xsec": 6.66
+        "xsec": 5.501
     },
     "WW": {
         "dir": [
@@ -305,7 +304,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 71219.27090793848,
 	"year": 2018,
-        "xsec": 344.83
+        "xsec": 280.5
     },
     "ZJetsToNuNu_HT-1200To2500": {
         "dir": [
@@ -316,7 +315,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 13675.381604671478,
 	"year": 2018,
-        "xsec": 0.355
+        "xsec": 0.28833
     },
     "ZJetsToNuNu_HT-200To400": {
         "dir": [
@@ -327,7 +326,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 164829.87639587466,
 	"year": 2018,
-        "xsec": 95.53
+        "xsec": 77.7
     },
     "ZJetsToNuNu_HT-2500ToInf": {
         "dir": [
@@ -338,7 +337,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 184145.59925947542,
 	"year": 2018,
-        "xsec": 0.0085
+        "xsec": 0.006945
     },
     "ZJetsToNuNu_HT-400To600": {
         "dir": [
@@ -349,7 +348,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 52979.08003938943,
 	"year": 2018,
-        "xsec": 13.198
+        "xsec": 10.73
     },
     "ZJetsToNuNu_HT-600To800": {
         "dir": [
@@ -360,7 +359,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 266408.85794532346,
 	"year": 2018,
-        "xsec": 3.148
+        "xsec": 2.559
     },
     "ZJetsToNuNu_HT-800To1200": {
         "dir": [
@@ -371,7 +370,7 @@
         "mode": "BKG",
         "sum_gen_wgt": 7041.594644352794,
 	"year": 2018,
-        "xsec": 1.451
+        "xsec": 1.1796
     },
     "ZZ": {
         "dir": [
@@ -394,16 +393,5 @@
         "sum_gen_wgt": 2237.506608140571,
 	"year": 2018,
         "xsec": 0.01398
-    },
-    "tW_antitop": {
-        "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_seventhrun/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/crab_iDMAnalysis_tW_antitop/191103_082055/0000"
-        ],
-        "group": "Top",
-        "limit_num_files": 1,
-        "mode": "BKG",
-        "sum_gen_wgt": 13663661.491556168,
-	"year": 2018,
-        "xsec": 35.6
     }
 }
