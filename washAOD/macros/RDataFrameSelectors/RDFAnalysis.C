@@ -298,7 +298,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                    all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(),year_), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
                }
                else { // just number of bins and low and high X
-                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s_yr%s", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
                }
            }
            else if (histo_info->type == "float2D") {
@@ -309,7 +309,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
            else if (histo_info->type == "int2D") {
                if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())
                    all_histos_2D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH2D>>();
-               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<int,int,double>({Form("%s_cut%d_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<int,int,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
            }
            else
                std::cout << "Hist type not recognized!" << std::endl;
