@@ -163,6 +163,17 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 	}
 	else {return true;}
    };
+   auto calcBTagVeto = [&](int high_pt_jets, vector<float> jets_btag) {
+	float bTag_wp = 0.4184; //pfDeepCSVJetTags:probb+probbb medium working point for 2018 & 2017
+	if (year_ ==2016) { bTag_wp = 0.8484;} //pfCombinedInclusiveSecondaryVertexv2 medium working point for 2016
+ 	for (int i = 0; i < high_pt_jets; i++){
+		if (jets_btag[i] > bTag_wp){
+			 return false;
+		}
+	}
+	return true;
+
+   }; 
 
    // Need these to not segfault in case collection is empty
    // Also, RDataFrame.Histo1D() doesn't accept indexed vectors, so need to rename
@@ -231,6 +242,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        Define("recoil_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_recoil_phi"}).
        Define("fake_MET_fraction", findFakeMETCut, {"reco_PF_MET_pt", "reco_PF_MET_phi","reco_Calo_MET_pt","reco_Calo_MET_phi","reco_PF_recoil_pt"}).
        Define("hem_veto", calcHemVeto ,{"reco_PF_HEM_flag"}).
+       Define("bTag_veto", calcBTagVeto ,{"reco_PF_n_highPt_jets","reco_PF_jet_BTag"}).
        Define("reco_MT", calcMT, {"reco_dsa_pt", "reco_dsa_phi", "reco_PF_MET_pt", "reco_PF_MET_phi"}).
        Define("reco_METmu_dphi_v2", takeRecoDphiMETmu, {"reco_sel_mu_pt", "reco_sel_mu_phi", "reco_PF_MET_phi"}).
        Define("CaloPFMETRatio", takeCaloPFMETRatio, {"reco_PF_MET_pt", "reco_Calo_MET_pt"}).

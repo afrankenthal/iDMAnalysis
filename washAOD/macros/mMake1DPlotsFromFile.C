@@ -48,10 +48,14 @@ namespace macro {
             TString hs_suffix = ((TObjString*)(hs_name.Tokenize("-")->At(1)))->String();
             TString yearname = ((TObjString*)(hs_name.Tokenize("-")->At(2)))->String();
 	    int year;
-	    if (yearname.Contains("1718")) { year = 1718;}
-	    else if (yearname.Contains("2018")) { year = 2018;}
-	    else if (yearname.Contains("2017")) { year = 2017;}
-	    else{ year = 2016;}
+	    if (yearname.EqualTo("161718")) { year = 161718;}
+	    if (yearname.EqualTo("1718")) { year = 1718;}
+	    if (yearname.EqualTo("1618")) { year = 1618;}
+	    if (yearname.EqualTo("1617")) { year = 1617;}
+	    else if (yearname.EqualTo("2018")) { year = 2018;}
+	    else if (yearname.EqualTo("2017")) { year = 2017;}
+	    else if (yearname.EqualTo("2016")) { year = 2016;}
+	    else{ continue;}
 	    hs_basename.Append(TString("-"));
 	    hs_basename.Append(yearname);
             bool newCanvas = false;

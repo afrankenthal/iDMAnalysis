@@ -41,41 +41,23 @@ namespace macro {
                     };
 
         TString out_filename = TString(cfg["outfilename"].get<std::string>());
-       // TString region = TString(cfg["region"].get<std::string>());
-//	int year = cfg["year"].get<int>();
         
 	map<TString,map<int, map<common::MODE, map<int, vector<TH1*>>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
         //map<TString, map<common::MODE, map<int, vector<ROOT::RDF::RResultPtr<TH1D>>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
         for (auto & [name, info] : histos_info) {
             for (auto cut : info->cuts) {
+                all_hstacks[name][2016][common::BKG][cut] = vector<TH1*>();
+                all_hstacks[name][2016][common::DATA][cut] = vector<TH1*>();
+                all_hstacks[name][2016][common::SIGNAL][cut] = vector<TH1*>();
                 all_hstacks[name][2017][common::BKG][cut] = vector<TH1*>();
                 all_hstacks[name][2017][common::DATA][cut] = vector<TH1*>();
                 all_hstacks[name][2017][common::SIGNAL][cut] = vector<TH1*>();
                 all_hstacks[name][2018][common::BKG][cut] = vector<TH1*>();
                 all_hstacks[name][2018][common::DATA][cut] = vector<TH1*>();
                 all_hstacks[name][2018][common::SIGNAL][cut] = vector<TH1*>();
-                //all_hstacks[name][common::BKG][cut] = vector<TH1*>();
-                //all_hstacks[name][common::DATA][cut] = vector<TH1*>();
-               // all_hstacks[name][common::SIGNAL][cut] = vector<TH1*>();
             }
         }
 
-//        //Float_t lumi = 14.7 * 1000; // 1/pb
-//        Float_t lumi;
-//        if (year == 2017){
-//		lumi = 41.53 * 1000; // 1/pb
-//	}
-//        if (year == 2016){
-//		lumi = 35.92 * 1000; // 1/pb
-//	}
-//	else {
-//        	lumi = 59.74 * 1000; // 1/pb
-//	}
-        //Float_t lumi = 29.41 * 1000; // 1/pb
-
-        // This way of loading the selector forces ACliC compilation, used with old rudimentary build system (compile_macro.sh in scripts)
-        //mainAnalysisSelector * MCSelector = (mainAnalysisSelector*)TSelector::GetSelector("TSelectors/mainAnalysisSelector.C+");
-        //mainAnalysisSelector * dataSelector = (mainAnalysisSelector*)TSelector::GetSelector("TSelectors/mainAnalysisSelector.C+");
 
         // This way just uses the new CMake build system which already compiles the selector (see CMakeLists.txt)
         mainAnalysisSelector * MCSelector = new mainAnalysisSelector();
@@ -210,13 +192,16 @@ namespace macro {
 
         // Save histograms into THStack objects
 
-	bool mult_year = false;
-	int cur_year=0;
+	//bool mult_year = false;
+	//int cur_year=0;
+	bool year2018 = false;
+	bool year2017 = false;
+	bool year2016 = false;
         TFile * outfile = new TFile(out_filename, "RECREATE");
         //for (auto & [plot_name, modes] : all_hstacks) {
         for (auto & [plot_name, years] : all_hstacks) {
         for (auto & [year, modes] : years) {
-		int newyear = year;
+		//int newyear = year;
             for (auto & [mode, cuts] : modes) {
                 for (auto & [cut, hist_vec] : cuts) {
                     THStack * hstack;
@@ -235,10 +220,10 @@ namespace macro {
                         hstack->Add(hist);
                     if (hstack->GetNhists() > 0){
                         hstack->Write();
-			if (cur_year ==0){
-				cur_year=newyear;
-			}
-			else{ if(cur_year != newyear){mult_year=true;}}
+			if (year ==2018){year2018=true;}
+			else if (year ==2017){year2017=true;}
+			else if (year ==2016){year2016=true;}
+			//else{ if(cur_year != newyear){mult_year=true;}}
 		    }
 
                     if (!cuts_info[cut].efficiency.Contains("none")){
@@ -258,21 +243,37 @@ namespace macro {
                             hstack2->Add(hist);
                         if (hstack2->GetNhists() > 0){
                             hstack2->Write();
-			    if (cur_year ==0){
-				cur_year=newyear;
-			    }
-			else{ if(cur_year != newyear){mult_year=true;}}
+			    if (year ==2018){year2018=true;}
+			    else if (year ==2017){year2017=true;}
+			    else if (year ==2016){year2016=true;}
+			    //if (cur_year ==0){
+			//	cur_year=newyear;
+			  //  }
+			//else{ if(cur_year != newyear){mult_year=true;}}
 			}
                     }
                 }
             }
 	}
         }
-	if(mult_year){
+	//if(mult_year){
+	if((year2016 && year2017) || (year2016 && year2017) || (year2017 && year2018)){
         for (auto & [plot_name, years] : all_hstacks) {
         for (auto & [year, modes] : years) {
-		int yearsum = 1718;
-		if (year == 2018) {continue;} //avoid double counting
+		bool allyears = year2016 && (year2017 && year2018);
+		int yearsum;
+		int yearref;
+		int yearref2;
+		int yearref3;
+		if (allyears) { yearsum = 161718; yearref =2018; yearref2=2017; yearref3=2016;}
+		else{
+			if(year2018 && year2017){ yearsum = 1718; yearref=2018; yearref2=2017;}
+			if(year2018 && year2016){ yearsum = 1618; yearref=2018; yearref2=2016;}
+			if(year2016 && year2017){ yearsum = 1617; yearref=2017; yearref2=2016;}
+		}
+		//int yearsum = 1718;
+		if (year != yearref) {continue;} //avoid double counting only run over the reference year
+		std::cout<<"this year: "<<year<< "; refyear: "<< yearref <<"; refyear2: "<<yearref2<<std::endl;
             for (auto & [mode, cuts] : modes) {
                 for (auto & [cut, hist_vecx] : cuts) {
                     THStack * hstack;
@@ -284,7 +285,10 @@ namespace macro {
                         hstack = new THStack(Form("%s_cut%d-SIGNAL-%d", plot_name.Data(), cut, yearsum), histos_info[plot_name]->title);
                     //sort by "smallest integral first"
                     vector<TH1*> hist_vec = hist_vecx;
-                    vector<TH1*> hist_vec1 = all_hstacks[plot_name][2017][mode][cut];
+                    vector<TH1*> hist_vec1 = all_hstacks[plot_name][yearref2][mode][cut];
+                    vector<TH1*> hist_vec2;
+		    if(allyears){ hist_vec2 = all_hstacks[plot_name][yearref3][mode][cut];}
+                    //vector<TH1*> hist_vec1 = all_hstacks[plot_name][2017][mode][cut];
 		    for (auto hist1 : hist_vec){
 			TString name1;
 			TString name2 = hist1->GetName();
@@ -298,6 +302,16 @@ namespace macro {
 			thislist->Add(hist2);
 			}
 			}
+		    if(allyears){
+		    	for (auto hist3 : hist_vec2){
+				TString name1y;
+				TString name2y = hist3->GetName();
+				name1y = (((TObjString*)(name2y.Tokenize("-")->At(0)))->String());
+				if (name1.EqualTo(name1y)){
+				thislist->Add(hist3);
+				}
+			}
+		    }
 			hist1->Merge(thislist);
 		    }
                     std::sort(hist_vec.begin(), hist_vec.end(),

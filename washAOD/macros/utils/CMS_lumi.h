@@ -32,8 +32,11 @@ extern "C" {
 
     static TString lumi_13TeV2018 = "59.74 fb^{-1} ";
     static TString lumi_13TeV2017 = "41.53 fb^{-1} ";
-    static TString lumi_13TeV1718 = "101.27 fb^{-1} ";
     static TString lumi_13TeV2016 = "35.92 fb^{-1} ";
+    static TString lumi_13TeV1718 = "101.27 fb^{-1} ";
+    static TString lumi_13TeV1618 = "95.66 fb^{-1} ";
+    static TString lumi_13TeV1617 = "77.45 fb^{-1} ";
+    static TString lumi_13TeVall =  "137.19 fb^{-1} ";
 }
 //extern const TString lumi_8TeV;
 //extern const TString lumi_7TeV;

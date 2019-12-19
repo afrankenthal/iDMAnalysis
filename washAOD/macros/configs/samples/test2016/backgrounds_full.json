@@ -6,7 +6,7 @@
         "group": "DY",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 15998378505.908203,
         "xsec": 5340,
         "year": 2016
     },
@@ -17,7 +17,7 @@
         "group": "QCD",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 4845848.0,
         "xsec": 1064,
         "year": 2016
     },
@@ -28,7 +28,7 @@
         "group": "QCD",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 81719898.0,
         "xsec": 27500000,
         "year": 2016
     },
@@ -39,7 +39,7 @@
         "group": "QCD",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 3965333.0,
         "xsec": 121.5,
         "year": 2016
     },
@@ -50,7 +50,7 @@
         "group": "QCD",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 1987185.0,
         "xsec": 25.42,
         "year": 2016
     },
@@ -61,7 +61,7 @@
         "group": "QCD",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 18710524.0,
         "xsec": 1735000,
         "year": 2016
     },
@@ -72,7 +72,7 @@
         "group": "QCD",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 17023896.0,
         "xsec": 367000,
         "year": 2016
     },
@@ -83,7 +83,7 @@
         "group": "QCD",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 18915540.0,
         "xsec": 29370,
         "year": 2016
     },
@@ -94,7 +94,7 @@
         "group": "QCD",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 15616467.0,
         "xsec": 6524,
         "year": 2016
     },
@@ -105,7 +105,7 @@
         "group": "Top",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 3368390.6060757637,
         "xsec": 3.4,
         "year": 2016
     },
@@ -116,7 +116,7 @@
         "group": "Top",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 38526062.0,
         "xsec": 26.2,
         "year": 2016
     },
@@ -127,7 +127,7 @@
         "group": "Top",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 58578832.0,
         "xsec": 44.1,
         "year": 2016
     },
@@ -138,7 +138,7 @@
         "group": "Top",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 10102245.0,
         "xsec": 831.76,
         "year": 2016
     },
@@ -149,7 +149,7 @@
         "group": "WJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 9908175.0,
         "xsec": 1345,
         "year": 2016
     },
@@ -160,7 +160,7 @@
         "group": "WJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 243972.0,
         "xsec": 1.329,
         "year": 2016
     },
@@ -171,7 +171,7 @@
         "group": "WJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 19912623.0,
         "xsec": 359.7,
         "year": 2016
     },
@@ -182,7 +182,7 @@
         "group": "WJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 252496.0,
         "xsec": 0.03216,
         "year": 2016
     },
@@ -194,7 +194,7 @@
         "group": "WJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 896552.0,
         "xsec": 12.05,
         "year": 2016
     },
@@ -205,8 +205,19 @@
         "group": "WJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 1541763.0,
         "xsec": 5.501,
+        "year": 2016
+    },
+    "WWW_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_seventhrun/WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8/crab_iDMAnalysis_WWW_v3/191218_161527/0000"
+        ],
+        "group": "Multiboson",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 482.9354043453932,
+        "xsec": 0.2086,
         "year": 2016
     },
     "WWZ_v3": {
@@ -216,7 +227,7 @@
         "group": "Multiboson",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 41102.09530009329,
         "xsec": 0.1651,
         "year": 2016
     },
@@ -227,8 +238,19 @@
         "group": "Multiboson",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 993041.1810085773,
         "xsec": 118.7,
+        "year": 2016
+    },
+    "WZZ_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_seventhrun/WZZ_TuneCUETP8M1_13TeV-amcatnlo-pythia8/crab_iDMAnalysis_WZZ_v3/191217_193847/0000"
+        ],
+        "group": "Multiboson",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 12694.154866963625,
+        "xsec": 0.05565,
         "year": 2016
     },
     "WZ_v3": {
@@ -238,7 +260,7 @@
         "group": "Multiboson",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 999135.0,
         "xsec": 47.2,
         "year": 2016
     },
@@ -249,7 +271,7 @@
         "group": "ZJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 5242693.0,
         "xsec": 280.35,
         "year": 2016
     },
@@ -260,7 +282,7 @@
         "group": "ZJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 368949.0,
         "xsec": 0.28833,
         "year": 2016
     },
@@ -271,7 +293,7 @@
         "group": "ZJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 5262666.0,
         "xsec": 77.67,
         "year": 2016
     },
@@ -282,7 +304,7 @@
         "group": "ZJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 403699.0,
         "xsec": 0.006945,
         "year": 2016
     },
@@ -293,7 +315,7 @@
         "group": "ZJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 1019281.0,
         "xsec": 10.73,
         "year": 2016
     },
@@ -304,7 +326,7 @@
         "group": "ZJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 5760407.0,
         "xsec": 2.559,
         "year": 2016
     },
@@ -315,7 +337,7 @@
         "group": "ZJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 2167651.0,
         "xsec": 1.1796,
         "year": 2016
     },
@@ -326,7 +348,7 @@
         "group": "Multiboson",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 3494.2271716184914,
         "xsec": 0.01398,
         "year": 2016
     },
@@ -337,7 +359,7 @@
         "group": "Multiboson",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 989074.0,
         "xsec": 16.6,
         "year": 2016
     },
@@ -348,7 +370,7 @@
         "group": "Top",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 6925037.0,
         "xsec": 35.6,
         "year": 2016
     },
@@ -359,7 +381,7 @@
         "group": "Top",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 0.0,
+        "sum_gen_wgt": 6944544.0,
         "xsec": 35.6,
         "year": 2016
     }

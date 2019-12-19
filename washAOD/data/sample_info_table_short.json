@@ -129,17 +129,17 @@
         "mode": "BKG",
         "xsec": 0.03216
     },
-    "WW_TuneCP5_13TeV-pythia8": {
+    "WW_": {
         "group": "Multiboson",
         "mode": "BKG",
         "xsec": 118.7
     },
-    "WZ_TuneCP5_13TeV-pythia8": {
+    "WZ_": {
         "group": "Multiboson",
         "mode": "BKG",
         "xsec": 47.2
     },
-    "ZZ_TuneCP5_13TeV-pythia8": {
+    "ZZ_": {
         "group": "Multiboson",
         "mode": "BKG",
         "xsec": 16.6

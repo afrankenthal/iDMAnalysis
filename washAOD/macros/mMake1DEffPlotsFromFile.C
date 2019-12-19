@@ -131,11 +131,13 @@ namespace macro {
 	    TString type;
 	    int year;
 	    TString yearname;
-	    if (hs_name.Contains("1718")) { continue;}
-	    if (hs_name.Contains("2017")) { year=2017;yearname="_2017";}
-	    if (hs_name.Contains("2018")) { year=2018;yearname="_2018";}
-	    if (hs_name.Contains("2016")) { year=2016;yearname="_2016";}
-	   // cout << "year: " << year<<endl;
+	    //if (hs_name.Contains("1718")) { continue;}
+	    //cout << "name: " << hs_name.Data()<<endl;
+	    if      (hs_name.Contains("2017")) { year=2017;yearname="_2017";}
+	    else if (hs_name.Contains("2018")) { year=2018;yearname="_2018";}
+	    else if (hs_name.Contains("2016")) { year=2016;yearname="_2016";}
+	    else {continue;}
+	    //cout << "year: " << year<<endl;
 	    if (hs_name.Contains("SIGNAL"))
 	        type = TString("SIGNAL");
 	    else if (hs_name.Contains("DATA"))
