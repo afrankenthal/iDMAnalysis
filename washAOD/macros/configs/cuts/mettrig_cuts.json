@@ -34,7 +34,7 @@
     },
     {
 	"cut": "(trig_fired&(1<<0)) == (1<<0)",
-	"description": "trigger fired",
+	"description": "trigger fired (120Met)",
 	"efficiency": "num"
     } 
 ]

@@ -21,18 +21,17 @@ void RDFAnalysis::SetParams(common::SampleInfo sample_info) {
 	lumi_ = 41.53 *1000;
 	trig_wgt = .95; // change later
 	if(group_ == "ZJets"){
-	int testp = 0;
+	//int testp = 0;
 	float xsec2_ = xsec_*100;
 	//std::cout<<"xsec z: "<< xsec_z<<std::endl;
-	if (trunc(xsec2_) == 28035 ){pileup = new TFile("../../data/zjetpileup/zjetratio100.root"); testp=1;}
-	else if (trunc(xsec2_) == 7767){pileup = new TFile("../../data/zjetpileup/zjetratio200.root"); testp=2;}
-	else if (trunc(xsec2_) == -1){pileup = new TFile("../../data/zjetpileup/zjetratio400.root"); testp=3;}
-	else if (trunc(xsec2_) == 255){pileup = new TFile("../../data/zjetpileup/zjetratio600.root"); testp=4;}
-	else if (trunc(xsec2_) == 117){pileup = new TFile("../../data/zjetpileup/zjetratio800.root");testp=5;}
-	else if (trunc(xsec2_) == 28 ){pileup = new TFile("../../data/zjetpileup/zjetratio1200.root"); testp=6;}
-	else if (trunc(xsec2_) == 0){pileup = new TFile("../../data/zjetpileup/zjetratio2500.root"); testp=7;}
-	else {testp=8; pileup = new TFile("../../data/zjetpileup/zjetratio100.root");}
-	std::cout<<"new pileup: " <<testp <<std::endl;
+	if (trunc(xsec2_) == 28035 ){pileup = new TFile("../../data/zjetpileup/zjetratio100.root");}
+	else if (trunc(xsec2_) == 7767){pileup = new TFile("../../data/zjetpileup/zjetratio200.root");}
+	else if (trunc(xsec2_) == -1){pileup = new TFile("../../data/zjetpileup/zjetratio400.root");}
+	else if (trunc(xsec2_) == 255){pileup = new TFile("../../data/zjetpileup/zjetratio600.root");}
+	else if (trunc(xsec2_) == 117){pileup = new TFile("../../data/zjetpileup/zjetratio800.root");}
+	else if (trunc(xsec2_) == 28 ){pileup = new TFile("../../data/zjetpileup/zjetratio1200.root");}
+	else if (trunc(xsec2_) == 0){pileup = new TFile("../../data/zjetpileup/zjetratio2500.root");}
+	else {pileup = new TFile("../../data/zjetpileup/zjetratio100.root");}
 	}
 	else{
     	pileup = new TFile("../../data/puWeights_90x_41ifb.root");
