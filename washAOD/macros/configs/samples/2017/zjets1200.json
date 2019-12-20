@@ -1,0 +1,13 @@
+{
+    "ZJetsToNuNu_HT-1200To2500_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/ZJetsToNuNu_HT-1200To2500_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-1200To2500_v2/191217_160251/0000"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 358429.0,
+        "xsec": 0.28833,
+        "year": 2017
+    }
+}

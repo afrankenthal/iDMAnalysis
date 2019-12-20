@@ -18,9 +18,25 @@ void RDFAnalysis::SetParams(common::SampleInfo sample_info) {
     year_ = sample_info_.year;
     TFile* pileup;
     if (year_ == 2017){
-    	pileup = new TFile("../../data/puWeights_90x_41ifb.root");
 	lumi_ = 41.53 *1000;
-	trig_wgt = 1.0; // change later
+	trig_wgt = .95; // change later
+	if(group_ == "ZJets"){
+	int testp = 0;
+	float xsec2_ = xsec_*100;
+	//std::cout<<"xsec z: "<< xsec_z<<std::endl;
+	if (trunc(xsec2_) == 28035 ){pileup = new TFile("../../data/zjetpileup/zjetratio100.root"); testp=1;}
+	else if (trunc(xsec2_) == 7767){pileup = new TFile("../../data/zjetpileup/zjetratio200.root"); testp=2;}
+	else if (trunc(xsec2_) == -1){pileup = new TFile("../../data/zjetpileup/zjetratio400.root"); testp=3;}
+	else if (trunc(xsec2_) == 255){pileup = new TFile("../../data/zjetpileup/zjetratio600.root"); testp=4;}
+	else if (trunc(xsec2_) == 117){pileup = new TFile("../../data/zjetpileup/zjetratio800.root");testp=5;}
+	else if (trunc(xsec2_) == 28 ){pileup = new TFile("../../data/zjetpileup/zjetratio1200.root"); testp=6;}
+	else if (trunc(xsec2_) == 0){pileup = new TFile("../../data/zjetpileup/zjetratio2500.root"); testp=7;}
+	else {testp=8; pileup = new TFile("../../data/zjetpileup/zjetratio100.root");}
+	std::cout<<"new pileup: " <<testp <<std::endl;
+	}
+	else{
+    	pileup = new TFile("../../data/puWeights_90x_41ifb.root");
+	}
 	}
     else if(year_ ==2016){
     	pileup = new TFile("../../data/puWeights_80x_37ifb.root");
@@ -57,11 +73,18 @@ void RDFAnalysis::SetParams(common::SampleInfo sample_info) {
     kfactors->Close();
     
     // Set up pileup corrections
+    if ((year_==2017) && (group_ == "ZJets")){
+    TH1F * h_pu = (TH1F*)pileup->Get("PUwgt_cut1_data_yr2017");
+    sf_pu = (TH1F*)h_pu->Clone();
+    sf_pu->SetDirectory(0);
+    pileup->Close();
+	}
+    else{
     TH1F * h_pu = (TH1F*)pileup->Get("puWeights");
     sf_pu = (TH1F*)h_pu->Clone();
     sf_pu->SetDirectory(0);
     pileup->Close();
-
+	}
 }
 
 void RDFAnalysis::Begin() {
@@ -262,6 +285,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        Define("Wwgt", calcWsf, {"gen_ID", "gen_pt"}).
        Define("Twgt", calcTsf, {"gen_ID", "gen_pt"}).
        Define("PUwgt", calcPUsf, {"gen_pu_true"}).
+      // Define("wgt", "1.0"); //switch back later 
        Define("wgt", calcTotalWgt, {"Zwgt", "Wwgt", "Twgt", "PUwgt", "gen_wgt"});
    }
 

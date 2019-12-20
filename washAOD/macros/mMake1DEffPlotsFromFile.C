@@ -298,8 +298,8 @@ namespace macro {
                 ratio_hist->Divide(MC_ratio);
                 ratio_hist->ResetAttFill();
 		if (zoom){
-                ratio_hist->SetMaximum(1.02);
-                ratio_hist->SetMinimum(0.90);
+                ratio_hist->SetMaximum(1.01);
+                ratio_hist->SetMinimum(0.94);
 		}
 		else{
                 ratio_hist->SetMaximum(2.1);

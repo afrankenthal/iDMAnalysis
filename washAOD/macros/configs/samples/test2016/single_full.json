@@ -3,7 +3,12 @@
         "dir": [
             "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_2016RunB_v3/191217_201441/0000",
             "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_2016RunB_v3/191217_201441/0001",
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_2016RunB_v3/191217_201441/0002"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_2016RunB_v3/191217_201441/0002",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_2016RunB_v3/191217_201441/0003",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_2016RunB_v3/191217_201441/0004",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_2016RunB_v3/191217_201441/0005",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_2016RunB_v3/191217_201441/0006",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/SingleMuon/crab_iDMAnalysis_singleMu_2016RunB_v3/191217_201441/0007"
         ],
         "group": "data",
         "mode": "DATA",

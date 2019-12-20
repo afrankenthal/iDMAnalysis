@@ -61,7 +61,7 @@
         "special": "no"
     },
     {
-        "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) if (reco_PF_jet_BTag[i] > 0.4184) return false; return true;",
+        "cut": "bTag_veto",
         "description": "0 b-tagged jets"
     },
     {

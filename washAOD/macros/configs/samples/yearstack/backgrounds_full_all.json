@@ -715,6 +715,72 @@
 	"year": 2018,
         "xsec": 0.01398
     },
+    "ZJetsToNuNu_HT-100To200_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/ZJetsToNuNu_HT-100To200_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-100To200_v2/191217_160042/0000"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 22796328.0,
+        "xsec": 280.35,
+        "year": 2017
+    },
+    "ZJetsToNuNu_HT-1200To2500_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/ZJetsToNuNu_HT-1200To2500_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-1200To2500_v2/191217_160251/0000"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 358429.0,
+        "xsec": 0.28833,
+        "year": 2017
+    },
+    "ZJetsToNuNu_HT-200To400_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/ZJetsToNuNu_HT-200To400_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-200To400_v2/191217_160234/0000"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 19420745.0,
+        "xsec": 77.67,
+        "year": 2017
+    },
+    "ZJetsToNuNu_HT-2500ToInf_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-2500ToInf_v2/191217_160157/0000"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 6429.0,
+        "xsec": 0.006945,
+        "year": 2017
+    },
+    "ZJetsToNuNu_HT-600To800_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/ZJetsToNuNu_HT-600To800_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-600To800_v2/191217_160140/0000"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 5360066.0,
+        "xsec": 2.559,
+        "year": 2017
+    },
+    "ZJetsToNuNu_HT-800To1200_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-800To1200_v2/191217_160103/0000"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 1785108.0,
+        "xsec": 1.1796,
+        "year": 2017
+    },
     "DYJetsToLL_M-50toInf_v3": {
         "dir": [
             "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_seventhrun/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-amcatnloFXFX-pythia8_UpPS/crab_iDMAnalysis_DYJetsToLL_M-50toInf_v3/191217_193450/0000"
@@ -744,7 +810,7 @@
         "group": "QCD",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 81719898.0,
+        "sum_gen_wgt": 82108879.0,
         "xsec": 27500000,
         "year": 2016
     },
@@ -832,7 +898,7 @@
         "group": "Top",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 38526062.0,
+        "sum_gen_wgt": 38778853.0,
         "xsec": 26.2,
         "year": 2016
     },
@@ -843,7 +909,7 @@
         "group": "Top",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 58578832.0,
+        "sum_gen_wgt": 58629465.0,
         "xsec": 44.1,
         "year": 2016
     },
@@ -854,7 +920,7 @@
         "group": "Top",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 10102245.0,
+        "sum_gen_wgt": 10156286.0,
         "xsec": 831.76,
         "year": 2016
     },
@@ -865,7 +931,7 @@
         "group": "WJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 9908175.0,
+        "sum_gen_wgt": 9971498.0,
         "xsec": 1345,
         "year": 2016
     },
@@ -910,7 +976,7 @@
         "group": "WJets",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 896552.0,
+        "sum_gen_wgt": 922821.0,
         "xsec": 12.05,
         "year": 2016
     },
@@ -965,7 +1031,7 @@
         "group": "Multiboson",
         "limit_num_files": -1,
         "mode": "BKG",
-        "sum_gen_wgt": 12694.154866963625,
+        "sum_gen_wgt": 13716.168005555868,
         "xsec": 0.05565,
         "year": 2016
     },

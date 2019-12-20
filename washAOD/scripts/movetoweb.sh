@@ -7,11 +7,6 @@ do
   echo $d
   python $dir/scripts/make_html_listing.py $d
 done
-cp -r $dir/macros/plots/* /publicweb/m/mreid/iDM_AN_Plots/macrorun/
+cp -r $dir/macros/plots/* /publicweb/m/mreid/iDM_AN_Plots/trigstudy/
+#cp -r $dir/macros/plots/* /publicweb/m/mreid/iDM_AN_Plots/macrorun/
 
-#for d in $(find /publicweb/m/mreid/iDM_AN_Plots/macrorun/ -type d)
-#do
-#  #Do something, the directory is accessible with $d:
-#  echo $d
-#  python $dir/scripts/make_html_listing.py $d
-#done
