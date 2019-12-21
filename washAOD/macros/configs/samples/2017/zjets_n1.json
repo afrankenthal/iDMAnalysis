@@ -1,0 +1,57 @@
+{
+    "ZJetsToNuNu_HT-1200To2500_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/ZJetsToNuNu_HT-1200To2500_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-1200To2500_v2/191217_160251/0000"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 358429.0,
+        "xsec": 0.28833,
+        "year": 2017
+    },
+    "ZJetsToNuNu_HT-200To400_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/ZJetsToNuNu_HT-200To400_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-200To400_v2/191217_160234/0000"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 19420745.0,
+        "xsec": 77.67,
+        "year": 2017
+    },
+    "ZJetsToNuNu_HT-2500ToInf_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-2500ToInf_v2/191217_160157/0000"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 6429.0,
+        "xsec": 0.006945,
+        "year": 2017
+    },
+    "ZJetsToNuNu_HT-600To800_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/ZJetsToNuNu_HT-600To800_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-600To800_v2/191217_160140/0000"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 5360066.0,
+        "xsec": 2.559,
+        "year": 2017
+    },
+    "ZJetsToNuNu_HT-800To1200_v2": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_seventhrun/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-800To1200_v2/191217_160103/0000"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 1785108.0,
+        "xsec": 1.1796,
+        "year": 2017
+    }
+}

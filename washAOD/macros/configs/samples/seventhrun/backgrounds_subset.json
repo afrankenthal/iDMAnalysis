@@ -7,6 +7,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 77904.30840286613,
+	"year": 2018,
         "xsec": 5340
     },
     "QCD_HT1000to1500": {
@@ -17,6 +18,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 135175.2321495536,
+	"year": 2018,
         "xsec": 1064
     },
     "QCD_HT100to200": {
@@ -27,6 +29,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 66020.37010341883,
+	"year": 2018,
         "xsec": 27500000
     },
     "QCD_HT1500to2000": {
@@ -37,6 +40,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 116876.55895947534,
+	"year": 2018,
         "xsec": 121.5
     },
     "QCD_HT2000toInf": {
@@ -47,6 +51,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 217047.0166843409,
+	"year": 2018,
         "xsec": 25.42
     },
     "QCD_HT200to300": {
@@ -57,6 +62,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 100855.92604791322,
+	"year": 2018,
         "xsec": 1735000
     },
     "QCD_HT300to500": {
@@ -67,6 +73,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 27727.930502712727,
+	"year": 2018,
         "xsec": 367000
     },
     "QCD_HT500to700": {
@@ -77,6 +84,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 60932.00188559294,
+	"year": 2018,
         "xsec": 29370
     },
     "QCD_HT700to1000": {
@@ -87,6 +95,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 77736.88439031816,
+	"year": 2018,
         "xsec": 6524
     },
     "ST_s-channel": {
@@ -97,6 +106,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 67507.88261951692,
+	"year": 2018,
         "xsec": 3.4
     },
     "ST_t-channel_antitop_5f": {
@@ -107,6 +117,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 26259072.081425115,
+	"year": 2018,
         "xsec": 26.2 
     },
     "ST_t-channel_top_5f": {
@@ -117,6 +128,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 11083131.755867004,
+	"year": 2018,
         "xsec": 44.1
     },
     "ST_tW_antitop": {
@@ -127,6 +139,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 13663661.491556168,
+	"year" : 2018,
         "xsec": 35.6
     },
     "ST_tW_top": {
@@ -137,6 +150,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 976048.4321289063,
+	"year": 2018,
         "xsec": 35.6
     },
     "TTJets_NLO": {
@@ -147,6 +161,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 145838152.43565965,
+	"year": 2018,
         "xsec": 831.76
     },
     "WJetsToLNu_HT-100To200": {
@@ -157,6 +172,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 103329.1637211442,
+	"year": 2018,
         "xsec": 1343
     },
     "WJetsToLNu_HT-1200To2500": {
@@ -167,6 +183,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 54882.05125428166,
+	"year": 2018,
         "xsec": 1.329
     },
     "WJetsToLNu_HT-200To400": {
@@ -177,6 +194,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 321345.3069728659,
+	"year": 2018,
         "xsec": 359.6
     },
     "WJetsToLNu_HT-2500ToInf": {
@@ -187,6 +205,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 52554.66742726534,
+	"year": 2018,
         "xsec": 0.03216
     },
     "WJetsToLNu_HT-400To600": {
@@ -197,6 +216,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 25923.01290923357,
+	"year": 2018,
         "xsec": 48.85
     },
     "WJetsToLNu_HT-600To800": {
@@ -207,6 +227,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 71448.08631508937,
+	"year": 2018,
         "xsec": 12.05
     },
     "WJetsToLNu_HT-800To1200": {
@@ -217,6 +238,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 65652.91929508219,
+	"year": 2018,
         "xsec": 5.501
     },
     "WW": {
@@ -227,6 +249,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 269784.0645047843,
+	"year": 2018,
         "xsec": 118.7
     },
     "WWW": {
@@ -237,6 +260,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 41208.251825494364,
+	"year": 2018,
         "xsec": 0.2086
     },
     "WWZ": {
@@ -247,6 +271,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 2168.0397370308638,
+	"year": 2018,
         "xsec": 0.1651
     },
     "WZ": {
@@ -257,6 +282,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 239867.51966533263,
+	"year": 2018,
         "xsec": 47.2
     },
     "WZZ": {
@@ -267,6 +293,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 14233.144096955875,
+	"year": 2018,
         "xsec": 0.05565
     },
     "ZJetsToNuNu_HT-100To200": {
@@ -277,6 +304,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 71219.27090793848,
+	"year": 2018,
         "xsec": 280.5
     },
     "ZJetsToNuNu_HT-1200To2500": {
@@ -287,6 +315,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 13675.381604671478,
+	"year": 2018,
         "xsec": 0.28833
     },
     "ZJetsToNuNu_HT-200To400": {
@@ -297,6 +326,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 164829.87639587466,
+	"year": 2018,
         "xsec": 77.7
     },
     "ZJetsToNuNu_HT-2500ToInf": {
@@ -307,6 +337,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 184145.59925947542,
+	"year": 2018,
         "xsec": 0.006945
     },
     "ZJetsToNuNu_HT-400To600": {
@@ -317,6 +348,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 52979.08003938943,
+	"year": 2018,
         "xsec": 10.73
     },
     "ZJetsToNuNu_HT-600To800": {
@@ -327,6 +359,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 266408.85794532346,
+	"year": 2018,
         "xsec": 2.559
     },
     "ZJetsToNuNu_HT-800To1200": {
@@ -337,6 +370,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 7041.594644352794,
+	"year": 2018,
         "xsec": 1.1796
     },
     "ZZ": {
@@ -347,6 +381,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 433782.4176157094,
+	"year": 2018,
         "xsec": 16.6
     },
     "ZZZ": {
@@ -357,6 +392,7 @@
         "limit_num_files": 1,
         "mode": "BKG",
         "sum_gen_wgt": 2237.506608140571,
+	"year": 2018,
         "xsec": 0.01398
     }
 }

@@ -1,12 +1,18 @@
 [
     {
-        "name": "mMake1DPlotsFromFile",
+        "name": "mMake1DEffPlotsFromFile",
         "config": {
             "infilename": "test.root"
         }
     },
     {
-        "name": "mMake2DPlotsFromFile",
+        "name": "mMake1DPlotsFromFile",
+        "config": {
+            "infilename": "test.root"
+        }
+    },   
+    {  
+   	"name": "mMake2DPlotsFromFile",
         "config": {
             "infilename": "test.root"
         }

@@ -33,7 +33,7 @@ public :
    void    Terminate();
 
    //void doFills(int cut, double weight);
-   void SetParams(common::SampleInfo sample_info, Double_t lumi);
+   void SetParams(common::SampleInfo sample_info);
    void SetCuts(std::vector<common::CutInfo> cuts_info);
    void SetHistos(std::map<TString, common::THInfo*> histos_info) { histos_info_ = histos_info; }
    //std::vector<double> GetCutflow() { return cutflow_; }
@@ -57,6 +57,8 @@ public :
    Double_t sum_gen_wgt_;
    Double_t xsec_;
    Double_t lumi_;
+   int year_;
+   float trig_wgt;
    common::MODE mode_;
    TString group_;
 

@@ -9,14 +9,45 @@ void RDFAnalysis::SetCuts(vector<common::CutInfo> cuts_info) {
     cuts_info_ = cuts_info;
 }
 
-void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi) {
+void RDFAnalysis::SetParams(common::SampleInfo sample_info) {
     sample_info_ = sample_info;
     mode_ = sample_info_.mode;
     group_ = sample_info_.group;
     sum_gen_wgt_ = sample_info_.sum_gen_wgt;
     xsec_ = sample_info_.xsec;
-    lumi_ = lumi;
-    std::cout << "sum_gen_wgt: " << sum_gen_wgt_ << ", xsec: " << xsec_ << " [pb], lumi: " << lumi_ << " [1/pb] " << std::endl;
+    year_ = sample_info_.year;
+    TFile* pileup;
+    if (year_ == 2017){
+	lumi_ = 41.53 *1000;
+	trig_wgt = .95; // change later
+	if(group_ == "ZJets"){
+	//int testp = 0;
+	float xsec2_ = xsec_*100;
+	//std::cout<<"xsec z: "<< xsec_z<<std::endl;
+	if (trunc(xsec2_) == 28035 ){pileup = new TFile("../../data/zjetpileup/zjetratio100.root");}
+	else if (trunc(xsec2_) == 7767){pileup = new TFile("../../data/zjetpileup/zjetratio200.root");}
+	else if (trunc(xsec2_) == -1){pileup = new TFile("../../data/zjetpileup/zjetratio400.root");}
+	else if (trunc(xsec2_) == 255){pileup = new TFile("../../data/zjetpileup/zjetratio600.root");}
+	else if (trunc(xsec2_) == 117){pileup = new TFile("../../data/zjetpileup/zjetratio800.root");}
+	else if (trunc(xsec2_) == 28 ){pileup = new TFile("../../data/zjetpileup/zjetratio1200.root");}
+	else if (trunc(xsec2_) == 0){pileup = new TFile("../../data/zjetpileup/zjetratio2500.root");}
+	else {pileup = new TFile("../../data/zjetpileup/zjetratio100.root");}
+	}
+	else{
+    	pileup = new TFile("../../data/puWeights_90x_41ifb.root");
+	}
+	}
+    else if(year_ ==2016){
+    	pileup = new TFile("../../data/puWeights_80x_37ifb.root");
+	lumi_ = 35.92 *1000;
+	trig_wgt = 1.0; // change later
+	}
+    else{
+    	pileup = new TFile("../../data/puWeights_10x_56ifb.root");
+	lumi_ = 59.74 *1000;
+	trig_wgt = 1.0; // change later
+    }
+	std::cout <<"year: "<< year_ << ", sum_gen_wgt: " << sum_gen_wgt_ << ", xsec: " << xsec_ << " [pb], lumi: " << lumi_ << " [1/pb] " << std::endl;
 
     // Set up QCD and EWK corrections
     TFile * kfactors = new TFile("../../data/kfactors.root");
@@ -41,12 +72,18 @@ void RDFAnalysis::SetParams(common::SampleInfo sample_info, Double_t lumi) {
     kfactors->Close();
     
     // Set up pileup corrections
-    TFile * pileup = new TFile("../../data/puWeights_10x_56ifb.root");
+    if ((year_==2017) && (group_ == "ZJets")){
+    TH1F * h_pu = (TH1F*)pileup->Get("PUwgt_cut1_data_yr2017");
+    sf_pu = (TH1F*)h_pu->Clone();
+    sf_pu->SetDirectory(0);
+    pileup->Close();
+	}
+    else{
     TH1F * h_pu = (TH1F*)pileup->Get("puWeights");
     sf_pu = (TH1F*)h_pu->Clone();
     sf_pu->SetDirectory(0);
     pileup->Close();
-
+	}
 }
 
 void RDFAnalysis::Begin() {
@@ -55,29 +92,6 @@ void RDFAnalysis::Begin() {
 
    all_histos_1D_.clear();
    all_histos_2D_.clear();
-//   for (auto & [name, hist] : histos_info_) {
-//       if (std::find(hist->groups.begin(), hist->groups.end(), sample_info_.group) == hist->groups.end()) continue;
-//       for (auto cut : hist->cuts) {
-//           if (hist->nbinsY == -1) // 1D plot
-//               cutflowHistos_[name][cut] = new TH1F(Form("%s_cut%d_%s", name.Data(), cut, sample_info_.group.Data()), common::group_plot_info[sample_info_.group].legend, hist->nbinsX, hist->lowX, hist->highX);
-//           else // 2D plot
-//               cutflowHistos_[name][cut] = new TH2F(Form("%s_cut%d_%s", name.Data(), cut, sample_info_.group.Data()), common::group_plot_info[sample_info_.group].legend, hist->nbinsX, hist->lowX, hist->highX, hist->nbinsY, hist->lowY, hist->highY);
-//           cutflowHistos_[name][cut]->Sumw2();
-//           if (common::group_plot_info[sample_info_.group].mode == common::BKG) 
-//               cutflowHistos_[name][cut]->SetFillColor(common::group_plot_info[sample_info_.group].color);
-//           else if (common::group_plot_info[sample_info_.group].mode == common::DATA) {
-//               cutflowHistos_[name][cut]->SetMarkerColor(common::group_plot_info[sample_info_.group].color);
-//               cutflowHistos_[name][cut]->SetMarkerStyle(common::group_plot_info[sample_info_.group].style);
-//               cutflowHistos_[name][cut]->SetMarkerSize(0.9);
-//           }
-//           else if (common::group_plot_info[sample_info_.group].mode == common::SIGNAL) {
-//               cutflowHistos_[name][cut]->SetLineColor(common::group_plot_info[sample_info_.group].color);
-//               cutflowHistos_[name][cut]->SetLineStyle(common::group_plot_info[sample_info_.group].style);
-//               cutflowHistos_[name][cut]->SetLineWidth(2);
-//               cutflowHistos_[name][cut]->SetMarkerSize(0);
-//           }
-//       }
-//   }
 }
 
 Bool_t RDFAnalysis::Process(TChain * chain) {
@@ -89,7 +103,6 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     chain_ = chain;
 
     ROOT::EnableImplicitMT();
-    //chain->SetCacheSize(0);
     ROOT::RDataFrame df(*chain_);
 
     // First, define all the relevant weights
@@ -150,7 +163,6 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                     sf_top *= exp(0.0615 - 0.0005 * 800);
                 else
                     sf_top *= exp(0.0615 - 0.0005 * 0);
-                //sf_top *= gen_pt[i];
                 n_top++;
             }
         }
@@ -164,9 +176,26 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        return (float)sf_pu->GetBinContent(sf_pu->FindBin((double)pileup)); 
    };
    auto calcTotalWgt = [&](float Zwgt, float Wwgt, float Twgt, float PUwgt, float genwgt) {
-       return Zwgt * Wwgt * PUwgt * genwgt * xsec_ * lumi_ / sum_gen_wgt_;
-       //return genwgt * xsec_ * lumi_ / sum_gen_wgt_;
+       return trig_wgt* Zwgt * Wwgt * PUwgt * genwgt * xsec_ * lumi_ / sum_gen_wgt_;
    };
+   auto calcHemVeto = [&](bool hem_veto) { 
+	if (year_ == 2018) {
+		if (hem_veto ==0){return true;}
+		else {return false;}
+	}
+	else {return true;}
+   };
+   auto calcBTagVeto = [&](int high_pt_jets, vector<float> jets_btag) {
+	float bTag_wp = 0.4184; //pfDeepCSVJetTags:probb+probbb medium working point for 2018 & 2017
+	if (year_ ==2016) { bTag_wp = 0.8484;} //pfCombinedInclusiveSecondaryVertexv2 medium working point for 2016
+ 	for (int i = 0; i < high_pt_jets; i++){
+		if (jets_btag[i] > bTag_wp){
+			 return false;
+		}
+	}
+	return true;
+
+   }; 
 
    // Need these to not segfault in case collection is empty
    // Also, RDataFrame.Histo1D() doesn't accept indexed vectors, so need to rename
@@ -240,6 +269,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        Define("MET_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_MET_phi"}).
        Define("recoil_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_recoil_phi"}).
        Define("fake_MET_fraction", findFakeMETCut, {"reco_PF_MET_pt", "reco_PF_MET_phi","reco_Calo_MET_pt","reco_Calo_MET_phi","reco_PF_recoil_pt"}).
+       Define("hem_veto", calcHemVeto ,{"reco_PF_HEM_flag"}).
+       Define("bTag_veto", calcBTagVeto ,{"reco_PF_n_highPt_jets","reco_PF_jet_BTag"}).
        Define("reco_MT", calcMT, {"reco_dsa_pt", "reco_dsa_phi", "reco_PF_MET_pt", "reco_PF_MET_phi"}).
        Define("reco_METmu_dphi_v2", takeRecoDphiMETmu, {"reco_sel_mu_pt", "reco_sel_mu_phi", "reco_PF_MET_phi"}).
        Define("CaloPFMETRatio", takeCaloPFMETRatio, {"reco_PF_MET_pt", "reco_Calo_MET_pt"}).
@@ -259,6 +290,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        Define("Wwgt", calcWsf, {"gen_ID", "gen_pt"}).
        Define("Twgt", calcTsf, {"gen_ID", "gen_pt"}).
        Define("PUwgt", calcPUsf, {"gen_pu_true"}).
+      // Define("wgt", "1.0"); //switch back later 
        Define("wgt", calcTotalWgt, {"Zwgt", "Wwgt", "Twgt", "PUwgt", "gen_wgt"});
    }
 
@@ -292,10 +324,10 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                if (histo_info->binEdgesX[0] != -1) { // bin edges provided
                    double bin_edges[histo_info->binEdgesX.size()];
                    std::copy(histo_info->binEdgesX.begin(), histo_info->binEdgesX.end(), bin_edges);
-                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
                }
                else { // just number of bins and low and high X
-                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
                }
            }
            else if (histo_info->type == "int1D") {
@@ -304,21 +336,21 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                if (histo_info->binEdgesX[0] != -1) { // bin edges provided
                    double bin_edges[histo_info->binEdgesX.size()];
                    std::copy(histo_info->binEdgesX.begin(), histo_info->binEdgesX.end(), bin_edges);
-                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(),year_), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
                }
                else { // just number of bins and low and high X
-                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
                }
            }
            else if (histo_info->type == "float2D") {
                if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())
                    all_histos_2D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH2D>>();
-               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<float,float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<float,float,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
            }
            else if (histo_info->type == "int2D") {
                if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())
                    all_histos_2D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH2D>>();
-               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<int,int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<int,int,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
            }
            else
                std::cout << "Hist type not recognized!" << std::endl;

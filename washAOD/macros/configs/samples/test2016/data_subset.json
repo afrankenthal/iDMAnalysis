@@ -1,0 +1,57 @@
+{
+    "MET_2016RunB_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/MET/crab_iDMAnalysis_MET_2016RunB_v3/191217_201712/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": 1,
+        "sum_gen_wgt": 0.0,
+        "year": 2016,
+        "xsec": -1
+    },
+    "MET_2016RunC_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/MET/crab_iDMAnalysis_MET_2016RunC_v3/191217_201653/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": 1,
+        "sum_gen_wgt": 0.0,
+        "year": 2016,
+        "xsec": -1
+    },
+    "MET_2016RunF_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/MET/crab_iDMAnalysis_MET_2016RunF_v3/191217_201558/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": 1,
+        "sum_gen_wgt": 0.0,
+        "year": 2016,
+        "xsec": -1
+    },
+    "MET_2016RunG_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/MET/crab_iDMAnalysis_MET_2016RunG_v3/191217_201541/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": 1,
+        "sum_gen_wgt": 0.0,
+        "year": 2016,
+        "xsec": -1
+    },
+    "MET_2016RunH_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_seventhrun/MET/crab_iDMAnalysis_MET_2016RunH_v3/191217_201522/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": 1,
+        "sum_gen_wgt": 0.0,
+        "year": 2016,
+        "xsec": -1
+    }
+}
