@@ -183,6 +183,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    auto takeSecondMuonEta = [&](vector<float> muons_eta) { return muons_eta.size() > 1 ? muons_eta[1] : -1; };
    auto takeFirstMuonPhi = [&](vector<float> muons_phi) { return muons_phi.size() > 0 ? muons_phi[0] : -1; };
    auto takeSecondMuonPhi = [&](vector<float> muons_phi) { return muons_phi.size() > 1 ? muons_phi[1] : -1; };
+   auto takeFirstMuonDxy = [&](vector<float> muons_dxy) { return muons_dxy.size() > 0 ? muons_dxy[0] : -1; };
+   auto takeFirstMuonDz = [&](vector<float> muons_dz) { return muons_dz.size() > 0 ? muons_dz[0] : -1; };
+   auto takeDSATrkChi2 = [&](vector<float> muons_chi2) { return muons_chi2.size() > 0 ? muons_chi2[0] : -1; };
    auto takeMETJetDphi = [&](vector<float> jets_phi, float MET_phi) { if (jets_phi.size() == 0) return -5.0f; float dphi = abs(jets_phi[0] - MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; return abs(dphi); };
    auto findFakeMETCut = [&](float MET_pt, float MET_phi, float calomet_pt, float calomet_phi, float recoil) { return sqrt( ((MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))*(MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))) + ((MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))*(MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))))/recoil;};
    auto calcMT = [&](vector<float> muons_pt, vector<float> muons_phi, float MET_pt, float MET_phi) { if (!muons_pt.size()) return -9999.9f; float dphi = abs(MET_phi - muons_phi[0]); if (dphi > 3.141592) dphi -= 2 * 3.141592; float MT2 = 2.0 * muons_pt[0] * MET_pt * (1.0 - cos(dphi)); return sqrt(MT2); };
@@ -231,6 +234,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        Define("reco_sel_mu_eta1", takeSecondMuonEta, {"reco_sel_mu_eta"}).
        Define("reco_sel_mu_phi0", takeFirstMuonPhi, {"reco_sel_mu_phi"}).
        Define("reco_sel_mu_phi1", takeSecondMuonPhi, {"reco_sel_mu_phi"}).
+       Define("reco_sel_mu_dxy0", takeFirstMuonDxy, {"reco_sel_mu_dxy"}).
+       Define("reco_sel_mu_dz0", takeFirstMuonDz, {"reco_sel_mu_dz"}).
+       Define("reco_dsa0_trk_chi2", takeDSATrkChi2, {"reco_dsa_trk_chi2"}).
        Define("MET_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_MET_phi"}).
        Define("recoil_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_recoil_phi"}).
        Define("fake_MET_fraction", findFakeMETCut, {"reco_PF_MET_pt", "reco_PF_MET_phi","reco_Calo_MET_pt","reco_Calo_MET_phi","reco_PF_recoil_pt"}).
