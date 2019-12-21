@@ -68,6 +68,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         // Tags
         const edm::InputTag bTagProbbTag_;
         const edm::InputTag bTagProbbbTag_;
+        const edm::InputTag bTagCombineTag_;
         const edm::InputTag muTrackTag1_;
         const edm::InputTag muTrackTag2_;
         const edm::InputTag genParticleTag_;
@@ -101,6 +102,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         // Tokens
         const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbToken_;
         const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbbToken_;
+        const edm::EDGetTokenT<reco::JetTagCollection> bTagCombineToken_;
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken1_;
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken2_;
         const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
@@ -130,6 +132,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         // Handles
         edm::Handle<reco::JetTagCollection> bTagProbbHandle_;
         edm::Handle<reco::JetTagCollection> bTagProbbbHandle_;
+        edm::Handle<reco::JetTagCollection> bTagCombineHandle_;
         edm::Handle<reco::TrackCollection> muTrackHandle1_;
         edm::Handle<reco::TrackCollection> muTrackHandle2_;
         edm::Handle<reco::GenParticleCollection> genParticleHandle_;
@@ -324,7 +327,9 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoPFJetNEEF_;
         std::vector<float> recoPFJetNumDaughters_;
         std::vector<float> recoPFJetChargedMultiplicity_;
+        std::vector<bool> trigExist_;
         bool recoPFHEMFlag_;
+	bool bTagCombineBool;
 
         float recoPFMETJetDeltaPhi_;
 

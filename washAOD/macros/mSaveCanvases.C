@@ -37,6 +37,17 @@ namespace macro {
             Ssiz_t from = 0;
             TString canvas_subdir;
             int cut_num = -1;
+	    TString year;
+	    std::cout<<"name: "<< canvas_name<<std::endl;
+	    if      (canvas_name.Contains("161718")) {year = "_161718";}
+	    else if (canvas_name.Contains("1718")) {year = "_1718";}
+	    else if (canvas_name.Contains("1618")) {year = "_1618";}
+	    else if (canvas_name.Contains("1617")) {year = "_1617";}
+	    else if (canvas_name.Contains("2017")) {year = "_2017";}
+	    else if (canvas_name.Contains("2018")) {year = "_2018";}
+	    else if (canvas_name.Contains("2016")) {year = "_2016";}
+	    else{continue;}
+	    std::cout<<"year: "<< year.Data()<<std::endl;
             while (canvas_name.Tokenize(tok, from, "_cut")) {
                 if (tok.Contains("canvas2D")) {
                     if (canvas_name.Contains("DATA"))
@@ -51,6 +62,7 @@ namespace macro {
                 else
                     cut_num = tok.Atoi();
             }
+	    canvas_subdir.Append(year);
             fs::create_directories(Form("%s/%s", out_dir.Data(), canvas_subdir.Data()));
             TCanvas * c = (TCanvas*)in_file->Get(canvas_name);
             c->cd();

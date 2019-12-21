@@ -1,0 +1,202 @@
+{
+    "singleMu": {
+        "group": "data",
+        "mode": "DATA",
+        "xsec": -1
+    },
+    "MET": {
+        "group": "data",
+        "mode": "DATA",
+        "xsec": -1
+    },
+    "DYJetsToLL_M-5to50": {
+        "group": "DY",
+        "mode": "BKG",
+        "xsec": 66040
+    },
+    "DYJetsToLL_M-50": {
+        "group": "DY",
+        "mode": "BKG",
+        "xsec": 5340
+    },
+    "QCD_HT100to200": {
+        "group": "QCD",
+        "mode": "BKG",
+        "xsec": 27500000
+    },
+    "QCD_HT200to300": {
+        "group": "QCD",
+        "mode": "BKG",
+        "xsec": 1735000
+    },
+    "QCD_HT300to500": {
+        "group": "QCD",
+        "mode": "BKG",
+        "xsec": 367000
+    },
+    "QCD_HT500to700": {
+        "group": "QCD",
+        "mode": "BKG",
+        "xsec": 29370
+    },
+    "QCD_HT700to1000": {
+        "group": "QCD",
+        "mode": "BKG",
+        "xsec": 6524
+    },
+    "QCD_HT1000to1500": {
+        "group": "QCD",
+        "mode": "BKG",
+        "xsec": 1064
+    },
+    "QCD_HT1500to2000": {
+        "group": "QCD",
+        "mode": "BKG",
+        "xsec": 121.5
+    },
+    "QCD_HT2000toInf": {
+        "group": "QCD",
+        "mode": "BKG",
+        "xsec": 25.42
+    },
+    "ST_s-channel": {
+        "group": "Top",
+        "mode": "BKG",
+        "xsec": 3.4
+    },
+    "ST_t-channel_antitop": {
+        "group": "Top",
+        "mode": "BKG",
+        "xsec": 26.2
+    },
+    "ST_t-channel_top": {
+        "group": "Top",
+        "mode": "BKG",
+        "xsec": 44.1
+    },
+    "ST_tW_antitop_5f": {
+        "group": "Top",
+        "mode": "BKG",
+        "xsec": 35.6
+    },
+    "ST_tW_top_5f": {
+        "group": "Top",
+        "mode": "BKG",
+        "xsec": 35.6
+    },
+    "TTJets_": {
+        "group": "Top",
+        "mode": "BKG",
+        "xsec": 831.76
+    },
+    "WJetsToLNu_HT-70To100": {
+        "group": "WJets",
+        "mode": "BKG",
+        "xsec": 1288
+    },
+    "WJetsToLNu_HT-100To200": {
+        "group": "WJets",
+        "mode": "BKG",
+        "xsec": 1345
+    },
+    "WJetsToLNu_HT-200To400": {
+        "group": "WJets",
+        "mode": "BKG",
+        "xsec": 359.7
+    },
+    "WJetsToLNu_HT-400To600": {
+        "group": "WJets",
+        "mode": "BKG",
+        "xsec": 48.91
+    },
+    "WJetsToLNu_HT-600To800": {
+        "group": "WJets",
+        "mode": "BKG",
+        "xsec": 12.05
+    },
+    "WJetsToLNu_HT-800To1200": {
+        "group": "WJets",
+        "mode": "BKG",
+        "xsec": 5.501
+    },
+    "WJetsToLNu_HT-1200To2500": {
+        "group": "WJets",
+        "mode": "BKG",
+        "xsec": 1.329
+    },
+    "WJetsToLNu_HT-2500ToInf": {
+        "group": "WJets",
+        "mode": "BKG",
+        "xsec": 0.03216
+    },
+    "WW_": {
+        "group": "Multiboson",
+        "mode": "BKG",
+        "xsec": 118.7
+    },
+    "WZ_": {
+        "group": "Multiboson",
+        "mode": "BKG",
+        "xsec": 47.2
+    },
+    "ZZ_": {
+        "group": "Multiboson",
+        "mode": "BKG",
+        "xsec": 16.6
+    },
+    "WWW_": {
+        "group": "Multiboson",
+        "mode": "BKG",
+        "xsec": 0.2086
+    },
+    "WWZ": {
+        "group": "Multiboson",
+        "mode": "BKG",
+        "xsec": 0.1651
+    },
+    "WZZ": {
+        "group": "Multiboson",
+        "mode": "BKG",
+        "xsec": 0.05565
+    },
+    "ZZZ": {
+        "group": "Multiboson",
+        "mode": "BKG",
+        "xsec": 0.01398
+    },
+    "ZJetsToNuNu_HT-100To200_13TeV-madgraph": {
+        "group": "ZJets",
+        "mode": "BKG",
+        "xsec": 280.35
+    },
+    "ZJetsToNuNu_HT-200To400_13TeV-madgraph": {
+        "group": "ZJets",
+        "mode": "BKG",
+        "xsec": 77.67
+    },
+    "ZJetsToNuNu_HT-400To600_13TeV-madgraph": {
+        "group": "ZJets",
+        "mode": "BKG",
+        "xsec": 10.73
+    },
+    "ZJetsToNuNu_HT-600To800_13TeV-madgraph": {
+        "group": "ZJets",
+        "mode": "BKG",
+        "xsec": 2.559
+    },
+    "ZJetsToNuNu_HT-800To1200_13TeV-madgraph": {
+        "group": "ZJets",
+        "mode": "BKG",
+        "xsec": 1.1796
+    },
+    "ZJetsToNuNu_HT-1200To2500_13TeV-madgraph": {
+        "group": "ZJets",
+        "mode": "BKG",
+        "xsec": 0.28833
+    },
+    "ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph": {
+        "group": "ZJets",
+        "mode": "BKG",
+        "xsec": 0.006945
+    }
+}

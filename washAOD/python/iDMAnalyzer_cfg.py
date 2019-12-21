@@ -131,6 +131,7 @@ process.load("JetMETCorrections.Type1MET.correctionTermsPfMetType1Type2_cff")
 process.load("JetMETCorrections.Type1MET.correctionTermsPfMetMult_cff")
 process.load("JetMETCorrections.Type1MET.correctedMet_cff")
 
+#b tag?
 ## Electron and photon VID
 from PhysicsTools.SelectorUtils.tools.vid_id_tools import *
 dataFormat = DataFormat.AOD
@@ -142,11 +143,19 @@ if options.year == '2016':
 	id_ph_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Spring16_V2p2_cff']
 	recoPhotonPath = 'egmPhotonIDs:cutBasedPhotonID-Spring16-V2p2-loose'
 	recoElectronPath= 'egmGsfElectronIDs:cutBasedElectronID-Summer16-80X-V1-loose'
+	bTagProbb = "pfDeepCSVJetTags:probb"
+	bTagProbbb = "pfDeepCSVJetTags:probbb"
+	bTagCombined = "pfCombinedInclusiveSecondaryVertexV2BJetTags"
+	#bTagCombined = "CombinedSecondaryVertexv2"
 else:
 	id_e_modules = ['RecoEgamma.ElectronIdentification.Identification.cutBasedElectronID_Fall17_94X_V2_cff']
 	id_ph_modules = ['RecoEgamma.PhotonIdentification.Identification.cutBasedPhotonID_Fall17_94X_V2_cff']
 	recoPhotonPath= 'egmPhotonIDs:cutBasedPhotonID-Fall17-94X-V2-loose'
 	recoElectronPath= 'egmGsfElectronIDs:cutBasedElectronID-Fall17-94X-V2-loose'
+	bTagProbb = "pfDeepCSVJetTags:probb"
+	bTagProbbb = "pfDeepCSVJetTags:probbb"
+	#bTagCombined = "CombinedSecondaryVertexv2"
+	bTagCombined = "pfCombinedInclusiveSecondaryVertexV2BJetTags"
 
 #add them to the VID producer
 for idmod in id_e_modules:
@@ -157,8 +166,8 @@ for idmod in id_ph_modules:
 
 ## Main iDM analyzer
 from iDMSkimmer.washAOD.iDMAnalyzer_cfi import iDMAnalyzer
-process.ntuples_gbm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'),photonPath =cms.string(recoPhotonPath), electronPath = cms.string(recoElectronPath), isData = cms.untracked.bool(options.data))
-process.ntuples_dgm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), photonPath = cms.string(recoPhotonPath), electronPath = cms.string(recoElectronPath), isData = cms.untracked.bool(options.data))
+process.ntuples_gbm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('globalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'),photonPath =cms.string(recoPhotonPath), electronPath = cms.string(recoElectronPath), isData = cms.untracked.bool(options.data),bTagProbb=cms.string(bTagProbb),bTagProbbb=cms.string(bTagProbbb),bTagCombine=cms.string(bTagCombined))
+process.ntuples_dgm = iDMAnalyzer.clone(corrLabel = corrLabel, muTrack2 = cms.InputTag('displacedGlobalMuons'), trigPath = cms.string('HLT_PFMET120_PFMHT120_IDTight'), photonPath = cms.string(recoPhotonPath), electronPath = cms.string(recoElectronPath), isData = cms.untracked.bool(options.data), bTagProbb=cms.string(bTagProbb), bTagProbbb=cms.string(bTagProbbb), bTagCombine=cms.string(bTagCombined))
 
 if options.data:
     process.p = cms.Path(

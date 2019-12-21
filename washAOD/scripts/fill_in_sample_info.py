@@ -6,7 +6,7 @@ from pathlib import Path
 if __name__ == '__main__':
 
     sample_filename = Path(sys.argv[1])
-    sample_db_file = Path("../data/sample_info_table.json").open('r')
+    sample_db_file = Path("../data/sample_info_table_short.json").open('r')
     sample_db = json.load(sample_db_file)
 
     print(f'Processing sample file {sample_filename}')

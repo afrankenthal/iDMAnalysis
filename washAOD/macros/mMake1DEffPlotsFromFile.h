@@ -12,9 +12,11 @@
 #include <TDatime.h>
 #include <TFile.h>
 #include <TH1F.h>
+#include <TF1.h>
 #include <THStack.h>
 #include <TLegend.h>
 #include <TEfficiency.h>
+#include <TMath.h>
 #include <TGraphAsymmErrors.h>
 #include <TString.h>
 #include <TSystemDirectory.h>

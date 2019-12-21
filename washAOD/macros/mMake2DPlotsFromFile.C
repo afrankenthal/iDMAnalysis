@@ -78,7 +78,7 @@ namespace macro {
             //lumi_13TeV = "29.41 fb^{-1} ";
             //CMS_lumi(c, 4);
             //c->SetLogy();
-            CMS_lumi((TPad*)gPad, 4, 0);
+            CMS_lumi((TPad*)gPad, 4, 0, cfg["year"].get<int>());
             gPad->SetLogz();
             gPad->Modified();
             gPad->Update();

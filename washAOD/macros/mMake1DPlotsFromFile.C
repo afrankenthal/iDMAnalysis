@@ -34,7 +34,7 @@ namespace macro {
             in_file = new TFile(in_filename);
             out_file = new TFile(out_filename, "RECREATE");
         }
-        
+        	
         map<TString, std::unique_ptr<TCanvas>> canvases;
         for (auto && keyAsObj : *in_file->GetListOfKeys()){
             auto key = (TKey*)keyAsObj;
@@ -46,6 +46,18 @@ namespace macro {
             THStack * hs = (THStack*)in_file->Get(hs_name);
             TString hs_basename = ((TObjString*)(hs_name.Tokenize("-")->At(0)))->String();
             TString hs_suffix = ((TObjString*)(hs_name.Tokenize("-")->At(1)))->String();
+            TString yearname = ((TObjString*)(hs_name.Tokenize("-")->At(2)))->String();
+	    int year;
+	    if (yearname.EqualTo("161718")) { year = 161718;}
+	    if (yearname.EqualTo("1718")) { year = 1718;}
+	    if (yearname.EqualTo("1618")) { year = 1618;}
+	    if (yearname.EqualTo("1617")) { year = 1617;}
+	    else if (yearname.EqualTo("2018")) { year = 2018;}
+	    else if (yearname.EqualTo("2017")) { year = 2017;}
+	    else if (yearname.EqualTo("2016")) { year = 2016;}
+	    else{ continue;}
+	    hs_basename.Append(TString("-"));
+	    hs_basename.Append(yearname);
             bool newCanvas = false;
             if (canvases.find(hs_basename) == canvases.end()) {
                 newCanvas = true;
@@ -93,7 +105,6 @@ namespace macro {
             }
             if (newCanvas) {
                 hs->GetXaxis()->SetTitle(hs->GetTitle());
-		cout<<"True Title!!! "<< hs->GetTitle()<<endl;
                 hs->GetYaxis()->SetTitle("Events");
                 hs->GetXaxis()->SetTitleSize(0.00);
                 hs->GetHistogram()->GetYaxis()->SetLabelSize(0.05);
@@ -105,13 +116,13 @@ namespace macro {
                 //lumi_13TeV = "29.41 fb^{-1} ";
                 //CMS_lumi(c, 4);
                 //c->SetLogy();
-                CMS_lumi((TPad*)gPad, 4, 0);
+                CMS_lumi((TPad*)gPad, 4, 0, year);
                 gPad->SetLogy();
                 // Make cut description label
                 int cut;
                 TString tok;
                 Ssiz_t from = 0;
-                while (hs_basename.Tokenize(tok, from, "_")) 
+		while (hs_basename.Tokenize(tok, from, "_")) 
                   if (tok.Contains("cut")) 
                       cut = (((TObjString*)(tok.Tokenize("t")->At(1)))->String()).Atoi();
                 TLatex cut_label;
@@ -132,11 +143,16 @@ namespace macro {
             auto * c = pair.second.get();
             //c->cd(1); // second subpad, the ratio one
             //TPad * top_pad = (TPad*)c->GetPad(1);
+            //std::cout<<"ratio"<<std::endl;
+            //c->ls();
             TPad * top_pad = (TPad*)c->GetPrimitive(Form("%s_1", c->GetName()));
             TString canvas_name = TString(c->GetName()).ReplaceAll("canvas_", "");
-            THStack * data_hist = (THStack*)top_pad->GetPrimitive(Form("%s-DATA", canvas_name.Data()));
-            THStack * bkg_hist = (THStack*)top_pad->GetPrimitive(Form("%s-BKG", canvas_name.Data()));
-            THStack * signal_hist = (THStack*)top_pad->GetPrimitive(Form("%s-SIGNAL", canvas_name.Data()));
+            TString canvas_basename = ((TObjString*)(canvas_name.Tokenize("-")->At(0)))->String();
+            TString canvas_year = ((TObjString*)(canvas_name.Tokenize("-")->At(1)))->String();
+	    
+            THStack * data_hist = (THStack*)top_pad->GetPrimitive(Form("%s-DATA-%s", canvas_basename.Data(),canvas_year.Data()));
+            THStack * bkg_hist = (THStack*)top_pad->GetPrimitive(Form("%s-BKG-%s", canvas_basename.Data(),canvas_year.Data()));
+            THStack * signal_hist = (THStack*)top_pad->GetPrimitive(Form("%s-SIGNAL-%s", canvas_basename.Data(),canvas_year.Data()));
             if (data_hist && bkg_hist) {
                 TH1F * ratio_hist = (TH1F*)(((TH1F*)data_hist->GetStack()->Last())->Clone());
                 //ratio_hist->Sumw2();

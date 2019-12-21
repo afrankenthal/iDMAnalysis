@@ -7,6 +7,7 @@
         "mode": "DATA",
         "limit_num_files": -1,
         "sum_gen_wgt": 0.0,
+	"year": 2018,
         "xsec": -1
     },
     "MET_Run2018B": {
@@ -18,6 +19,7 @@
         "mode": "DATA",
         "limit_num_files": -1,
         "sum_gen_wgt": 0.0,
+	"year": 2018,
         "xsec": -1
     },
     "MET_Run2018C": {
@@ -28,6 +30,7 @@
         "mode": "DATA",
         "limit_num_files": -1,
         "sum_gen_wgt": 0.0,
+	"year": 2018,
         "xsec": -1
     },
     "MET_Run2018D": {
@@ -38,6 +41,7 @@
         "mode": "DATA",
         "limit_num_files": -1,
         "sum_gen_wgt": 0.0,
+	"year": 2018,
         "xsec": -1
     }
 }

@@ -8,33 +8,33 @@
         "description": "Reference trigger fired (IsoMu24)"
     },
     {
+        "cut": "hem_veto",
+        "description": "HEM veto"
+    },
+    {
         "cut": "MET_filters_fail_bits == 0",
         "description": "MET filter bits pass"
     },
     {
-        "cut": "reco_PF_HEM_flag == 0",
-        "description": "HEM veto"
-    },
-    {
 	"cut": "(reco_PF_jet_pt0 > 120) && (abs(reco_PF_jet_eta0)<2.4)",
-	"description": "jet selection cuts"
+	"description": "jet selection (pt>120, |#eta|<2.4)"
     },
     {
 	"cut": "(reco_sel_mu_pt0 > 40) && (abs(reco_sel_mu_eta0)<2.4)",
-	"description": "mu selection cuts"
+	"description": "mu selection (pt>40, |#eta|<2.4)"
     },
     {
 	"cut": "abs(recoil_jet_phi_dphi) > 1.57",
-	"description": "delta phi selection cut"
+	"description": "#Delta#phi(recoil,jet) > 1.57 "
     },
     {
 	"cut": "abs(fake_MET_fraction) < 0.5",
-	"description": "|pfMet-CaloMet|/recoil",
+	"description": "|pfMet-CaloMet|/recoil <0.5",
 	"efficiency": "denom"
     },
     {
 	"cut": "(trig_fired&(1<<3)) == (1<<3)",
-	"description": "trigger fired",
+	"description": "trigger fired (120MetNoMu)",
 	"efficiency": "num"
     } 
 ]
