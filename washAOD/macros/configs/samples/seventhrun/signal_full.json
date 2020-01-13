@@ -1,7 +1,7 @@
 {
     "Mchi-52p5_dMchi-5p0_ctau-100": {
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_seventhrunv2/Mchi-52p5_dMchi-5p0_ctau-100"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_seventhrun/Mchi-52p5_dMchi-5p0_ctau-100"
         ],
         "group": "sig_52p5_100",
         "limit_num_files": -1,
@@ -12,7 +12,7 @@
     },
     "Mchi-5p25_dMchi-0p5_ctau-1000": {
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_seventhrunv2/Mchi-5p25_dMchi-0p5_ctau-1000"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_seventhrun/Mchi-5p25_dMchi-0p5_ctau-1000"
         ],
         "group": "sig_5p25_1000",
         "limit_num_files": -1,
@@ -23,7 +23,7 @@
     },
     "Mchi-60p0_dMchi-20p0_ctau-1": {
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_seventhrunv2/Mchi-60p0_dMchi-20p0_ctau-1"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_seventhrun/Mchi-60p0_dMchi-20p0_ctau-1"
         ],
         "group": "sig_60p0_1",
         "limit_num_files": -1,
@@ -34,7 +34,7 @@
     },
     "Mchi-6p0_dMchi-2p0_ctau-10": {
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_seventhrunv2/Mchi-6p0_dMchi-2p0_ctau-10"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_seventhrun/Mchi-6p0_dMchi-2p0_ctau-10"
         ],
         "group": "sig_6p0_10",
         "limit_num_files": -1,
