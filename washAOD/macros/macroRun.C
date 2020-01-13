@@ -144,7 +144,7 @@ int main(int argc, char ** argv) {
         if (macro == "mMainAnalysis" || macro == "mNminus1Analysis")
             cfg["outfilename"] = out_filename.Data();
 
-        if (macro == "mMake1DPlotsFromFile" || macro == "mMake1DEffPlotsFromFile" ||macro == "mMake2DPlotsFromFile")
+        if (macro == "mCalcABCD" || macro == "mMake1DPlotsFromFile" || macro == "mMake1DEffPlotsFromFile" ||macro == "mMake2DPlotsFromFile")
             cfg["infilename"] = in_filename.Data();
 
         if (macro == "mSumGenWgts") {

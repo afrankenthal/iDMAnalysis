@@ -94,6 +94,8 @@ namespace macro {
 
             if (!hs_name.Contains("SIGNAL")) { // Only draw the sum of the stack for backgrounds in 2D
                 TH2D * hsum = (TH2D*)(hs->GetStack()->Last()->Clone());
+                cout << "hs_name: " << hs_name << endl;
+                hsum->SetName(hs_name);
                 canvases[hs_name] = makeCanvas(hsum, hs_name, hs_name, hs->GetTitle(), cuts_info, cut);
             }
             else { // for signal, want one canvas for each element of stack
