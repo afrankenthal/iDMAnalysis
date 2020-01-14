@@ -1,0 +1,9 @@
+[
+    {
+        "name": "mMergeYears",
+        "config": {
+            "infilename1": "plots_CR_bTag_seventhrun_fullData_2DHists.root",
+            "infilename2": "merged_stacks1.root"
+        }
+    }   
+]

@@ -1,6 +1,6 @@
 cmake_minimum_required(VERSION 3.1)
 
-set(macro_libs mCalcABCD mCutflowTables mMainAnalysis mMake1DPlotsFromFile mMake2DPlotsFromFile mNminus1Plots mNminus1Analysis mSaveCanvases mSumGenWgts mMake1DEffPlotsFromFile)
+set(macro_libs mCalcABCD mCutflowTables mMainAnalysis mMake1DPlotsFromFile mMake2DPlotsFromFile mMergeYears mNminus1Plots mNminus1Analysis mSaveCanvases mSumGenWgts mMake1DEffPlotsFromFile)
 
 project(macroRun VERSION 1.0
                  DESCRIPTION "macroRun"
