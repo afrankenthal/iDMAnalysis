@@ -7,7 +7,7 @@
         "limit_num_files": -1,
         "mode": "SIGNAL",
         "sum_gen_wgt": 156557.0,
-	"year": 2018,
+        "year": 2018,
         "xsec": 0.044
     },
     "Mchi-5p25_dMchi-0p5_ctau-1000": {
@@ -18,7 +18,7 @@
         "limit_num_files": -1,
         "mode": "SIGNAL",
         "sum_gen_wgt": 58130.0,
-	"year": 2018,
+        "year": 2018,
         "xsec": 0.14
     },
     "Mchi-60p0_dMchi-20p0_ctau-1": {
@@ -29,7 +29,7 @@
         "limit_num_files": -1,
         "mode": "SIGNAL",
         "sum_gen_wgt": 140102.0,
-	"year": 2018,
+        "year": 2018,
         "xsec": 0.044
     },
     "Mchi-6p0_dMchi-2p0_ctau-10": {
@@ -40,7 +40,7 @@
         "limit_num_files": -1,
         "mode": "SIGNAL",
         "sum_gen_wgt": 45260.0,
-	"year": 2018,
+        "year": 2018,
         "xsec": 0.14
     }
 }
