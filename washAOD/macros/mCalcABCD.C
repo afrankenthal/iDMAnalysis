@@ -31,9 +31,11 @@ namespace macro {
                     cout << h_name << endl;
                     TCanvas * c = (TCanvas*)in_file->Get(canvas_name);
                     TH2D * h = (TH2D*)c->FindObject(h_name);
-                    cout << "Integral: " << h->Integral() << endl;
+                    cout << "Integral with over+underflow: " << h->Integral(0, h->GetNbinsX()+1, 0, h->GetNbinsY()+1) << endl;
                     int lowXBin = h->GetXaxis()->FindBin(lowX), highXBin = h->GetXaxis()->FindBin(highX);
                     int lowYBin = h->GetYaxis()->FindBin(lowY), highYBin = h->GetYaxis()->FindBin(highY);
+                    cout << "Low X bin: " << lowXBin << ", high X bin: " << highXBin << endl;
+                    cout << "Low Y bin: " << lowYBin << ", high Y bin: " << highYBin << endl;
                     //if (lowXBin == 0) lowXBin = 1;
                     //if (lowYBin == 0) lowYBin = 1;
                     //if (highXBin == h->GetNbinsX()) highXBin--;
@@ -41,14 +43,20 @@ namespace macro {
                     // X = dPhi, Y = vtx
                     // C: low dPhi, high vtx; B: high dPhi, low vtx; A: low dPhi, low vtx; D: high dPhi, high vtx
                     float A = h->Integral(lowXBin, highXBin-1, lowYBin, highYBin-1);
-                    float B = h->Integral(highXBin, h->GetNbinsX(), lowYBin, highYBin-1);
-                    float C = h->Integral(lowXBin, highXBin-1, highYBin, h->GetNbinsY());
-                    float D = h->Integral(highXBin, h->GetNbinsX(), highYBin, h->GetNbinsY());
-                    cout << "A: " << A << endl;
-                    cout << "B: " << B << endl;
-                    cout << "C: " << C << endl;
-                    cout << "D: " << D << endl;
-                    cout << "A*D/B: " << A*D/B << ", C: " << C << endl;
+                    float B = h->Integral(highXBin, h->GetNbinsX()+1, lowYBin, highYBin-1);
+                    float C = h->Integral(lowXBin, highXBin-1, highYBin, h->GetNbinsY()+1);
+                    float D = h->Integral(highXBin, h->GetNbinsX()+1, highYBin, h->GetNbinsY()+1);
+                    float C_pred = A*D/B;
+                    float C_pred_syst_err = C_pred * sqrt(1/A + 1/B + 1/D);
+                    float C_pred_stat_err = sqrt(C_pred);
+                    cout << "A: " << A << " +/- " << sqrt(A) << endl;
+                    cout << "B: " << B << " +/- " << sqrt(B) << endl;
+                    cout << "C: " << C << " +/- " << sqrt(C) << endl;
+                    cout << "D: " << D << " +/- " << sqrt(D) << endl;
+                    cout << "A*D/B: " << C_pred << " +/- "
+                        <<  C_pred_stat_err << " (stat.) +/- " << C_pred_syst_err << " (syst.)" << endl;
+                    cout << "C: " << C << " +/- " << sqrt(C) << endl;
+                    cout << endl;
                 }
             }
         }
