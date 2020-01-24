@@ -11,43 +11,63 @@ void RDFAnalysis::SetCuts(vector<common::CutInfo> cuts_info) {
 
 void RDFAnalysis::SetParams(common::SampleInfo sample_info) {
     sample_info_ = sample_info;
+    name_ = sample_info_.label;
     mode_ = sample_info_.mode;
     group_ = sample_info_.group;
     sum_gen_wgt_ = sample_info_.sum_gen_wgt;
     xsec_ = sample_info_.xsec;
     year_ = sample_info_.year;
     TFile* pileup;
-    if (year_ == 2017){
-	lumi_ = 41.53 *1000;
-	trig_wgt = .95; // change later
-	if(group_ == "ZJets"){
-	//int testp = 0;
-	float xsec2_ = xsec_*100;
-	//std::cout<<"xsec z: "<< xsec_z<<std::endl;
-	if (trunc(xsec2_) == 28035 ){pileup = new TFile("../../data/zjetpileup/zjetratio100.root");}
-	else if (trunc(xsec2_) == 7767){pileup = new TFile("../../data/zjetpileup/zjetratio200.root");}
-	else if (trunc(xsec2_) == -1){pileup = new TFile("../../data/zjetpileup/zjetratio400.root");}
-	else if (trunc(xsec2_) == 255){pileup = new TFile("../../data/zjetpileup/zjetratio600.root");}
-	else if (trunc(xsec2_) == 117){pileup = new TFile("../../data/zjetpileup/zjetratio800.root");}
-	else if (trunc(xsec2_) == 28 ){pileup = new TFile("../../data/zjetpileup/zjetratio1200.root");}
-	else if (trunc(xsec2_) == 0){pileup = new TFile("../../data/zjetpileup/zjetratio2500.root");}
-	else {pileup = new TFile("../../data/zjetpileup/zjetratio100.root");}
-	}
-	else{
-    	pileup = new TFile("../../data/puWeights_90x_41ifb.root");
-	}
-	}
-    else if(year_ ==2016){
-    	pileup = new TFile("../../data/puWeights_80x_37ifb.root");
-	lumi_ = 35.92 *1000;
-	trig_wgt = 1.0; // change later
-	}
-    else{
-    	pileup = new TFile("../../data/puWeights_10x_56ifb.root");
-	lumi_ = 59.74 *1000;
-	trig_wgt = 1.0; // change later
+    if (year_ == 2017) {
+        lumi_ = 41.53 * 1000;
+        trig_wgt = .95; // TODO change later
+        if (group_ == "ZJets") {
+            //float xsec2_ = xsec_ * 100;
+            if (name_.Contains("HT-100To200"))
+                pileup = new TFile("../../data/zjetpileup/zjetratio100.root");
+            else if (name_.Contains("HT-200To400"))
+                pileup = new TFile("../../data/zjetpileup/zjetratio200.root");
+            else if (name_.Contains("HT-400To600"))
+                 pileup = new TFile("../../data/zjetpileup/zjetratio400.root");
+            else if (name_.Contains("HT-600To800"))
+                 pileup = new TFile("../../data/zjetpileup/zjetratio600.root");
+            else if (name_.Contains("HT-800To1200"))
+                 pileup = new TFile("../../data/zjetpileup/zjetratio800.root");
+            else if (name_.Contains("HT-1200To2500"))
+                 pileup = new TFile("../../data/zjetpileup/zjetratio1200.root");
+            else if (name_.Contains("HT-2500ToInf"))
+                pileup = new TFile("../../data/zjetpileup/zjetratio2500.root");
+            else {
+                std::cout << "WARNING! Sample is from ZJets group but no pileup file could be found. Using HT-100To200 by default." << std::endl;
+                pileup = new TFile("../../data/zjetpileup/zjetratio100.root");
+            }
+            //if (trunc(xsec2_) == 28035 ){pileup = new TFile("../../data/zjetpileup/zjetratio100.root");}
+            //else if (trunc(xsec2_) == 7767){pileup = new TFile("../../data/zjetpileup/zjetratio200.root");}
+            //else if (trunc(xsec2_) == -1){pileup = new TFile("../../data/zjetpileup/zjetratio400.root");}
+            //else if (trunc(xsec2_) == 255){pileup = new TFile("../../data/zjetpileup/zjetratio600.root");}
+            //else if (trunc(xsec2_) == 117){pileup = new TFile("../../data/zjetpileup/zjetratio800.root");}
+            //else if (trunc(xsec2_) == 28 ){pileup = new TFile("../../data/zjetpileup/zjetratio1200.root");}
+            //else if (trunc(xsec2_) == 0){pileup = new TFile("../../data/zjetpileup/zjetratio2500.root");}
+            //else {pileup = new TFile("../../data/zjetpileup/zjetratio100.root");}
+        }
+        else {
+            pileup = new TFile("../../data/puWeights_90x_41ifb.root");
+        }
     }
-	std::cout <<"year: "<< year_ << ", sum_gen_wgt: " << sum_gen_wgt_ << ", xsec: " << xsec_ << " [pb], lumi: " << lumi_ << " [1/pb] " << std::endl;
+    else if (year_ == 2016) {
+        pileup = new TFile("../../data/puWeights_80x_37ifb.root");
+        lumi_ = 35.92 * 1000;
+        trig_wgt = 1.0; // TODO change later
+    }
+    else if (year_ == 2018) {
+        pileup = new TFile("../../data/puWeights_10x_56ifb.root");
+        lumi_ = 59.74 * 1000;
+        trig_wgt = 1.0; // TODO change later
+    }
+    else {
+        std::cout << "ERROR! Year not one of 2016/2017/2018. Exiting..." << std::endl;
+    }
+	std::cout << "year: " << year_ << ", sum_gen_wgt: " << sum_gen_wgt_ << ", xsec: " << xsec_ << " [pb], lumi: " << lumi_ << " [1/pb] " << std::endl;
 
     // Set up QCD and EWK corrections
     TFile * kfactors = new TFile("../../data/kfactors.root");
@@ -72,18 +92,18 @@ void RDFAnalysis::SetParams(common::SampleInfo sample_info) {
     kfactors->Close();
     
     // Set up pileup corrections
-    if ((year_==2017) && (group_ == "ZJets")){
-    TH1F * h_pu = (TH1F*)pileup->Get("PUwgt_cut1_data_yr2017");
-    sf_pu = (TH1F*)h_pu->Clone();
-    sf_pu->SetDirectory(0);
-    pileup->Close();
-	}
-    else{
-    TH1F * h_pu = (TH1F*)pileup->Get("puWeights");
-    sf_pu = (TH1F*)h_pu->Clone();
-    sf_pu->SetDirectory(0);
-    pileup->Close();
-	}
+    if ((year_ == 2017) && (group_ == "ZJets")) {
+        TH1F * h_pu = (TH1F*)pileup->Get("PUwgt_cut1_data_yr2017");
+        sf_pu = (TH1F*)h_pu->Clone();
+        sf_pu->SetDirectory(0);
+        pileup->Close();
+    }
+    else {
+        TH1F * h_pu = (TH1F*)pileup->Get("puWeights");
+        sf_pu = (TH1F*)h_pu->Clone();
+        sf_pu->SetDirectory(0);
+        pileup->Close();
+    }
 }
 
 void RDFAnalysis::Begin() {
@@ -112,10 +132,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         if (gen_pt.size() != gen_ID.size())
             return 1.0f;
         float Zpt = -1.0f; 
-        for (int i = 0; i < gen_ID.size(); i++) { 
+        for (int i = 0; i < gen_ID.size(); i++)
             if (abs(gen_ID[i]) == 23) 
                 Zpt = gen_pt[i]; 
-        } 
         if (Zpt < 0)
             return 1.0f;
         int binNum = sf_z_qcd->FindBin(Zpt);
@@ -132,10 +151,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         if (gen_pt.size() != gen_ID.size())
             return 1.0f;
         float Wpt = -1.0f; 
-        for (int i = 0; i < gen_ID.size(); i++) { 
+        for (int i = 0; i < gen_ID.size(); i++)
             if (abs(gen_ID[i]) == 24) 
                 Wpt = gen_pt[i]; 
-        } 
         if (Wpt < 0.0)
             return 1.0f;
         int binNum = sf_w_qcd->FindBin(Wpt);
@@ -145,6 +163,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
             binNum = sf_w_qcd->GetNbinsX()-1;
         float sf = (float)sf_w_qcd->GetBinContent(binNum) * (float)sf_w_ewk->GetBinContent(binNum);
         // scale down WJets MC by 15% to match with data
+        // (currently not enabled, just multiply by 1)
         sf *= 1.0;
         return sf; 
     };
@@ -179,22 +198,16 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        return trig_wgt* Zwgt * Wwgt * PUwgt * genwgt * xsec_ * lumi_ / sum_gen_wgt_;
    };
    auto calcHemVeto = [&](bool hem_veto) { 
-	if (year_ == 2018) {
-		if (hem_veto ==0){return true;}
-		else {return false;}
-	}
-	else {return true;}
+       return (year_ == 2018 ? !hem_veto : true);
    };
    auto calcBTagVeto = [&](int high_pt_jets, vector<float> jets_btag) {
-	float bTag_wp = 0.4184; //pfDeepCSVJetTags:probb+probbb medium working point for 2018 & 2017
-	if (year_ ==2016) { bTag_wp = 0.8484;} //pfCombinedInclusiveSecondaryVertexv2 medium working point for 2016
- 	for (int i = 0; i < high_pt_jets; i++){
-		if (jets_btag[i] > bTag_wp){
-			 return false;
-		}
-	}
-	return true;
-
+       float bTag_wp = 0.4184; //pfDeepCSVJetTags:probb+probbb medium working point for 2018 & 2017
+       if (year_ == 2016)
+           bTag_wp = 0.8484; //pfCombinedInclusiveSecondaryVertexv2 medium working point for 2016
+       for (int i = 0; i < high_pt_jets; i++)
+           if (jets_btag[i] > bTag_wp)
+               return false;
+       return true;
    }; 
 
    // Need these to not segfault in case collection is empty
@@ -212,11 +225,14 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
    auto takeSecondMuonEta = [&](vector<float> muons_eta) { return muons_eta.size() > 1 ? muons_eta[1] : -1; };
    auto takeFirstMuonPhi = [&](vector<float> muons_phi) { return muons_phi.size() > 0 ? muons_phi[0] : -1; };
    auto takeSecondMuonPhi = [&](vector<float> muons_phi) { return muons_phi.size() > 1 ? muons_phi[1] : -1; };
-   auto takeFirstMuonDxy = [&](vector<float> muons_dxy) { return muons_dxy.size() > 0 ? muons_dxy[0] : -1; };
+   auto takeFirstMuonDxy = [&](vector<float> muons_dxy) { return muons_dxy.size() > 0 ? abs(muons_dxy[0]) : -1; };
    auto takeFirstMuonDz = [&](vector<float> muons_dz) { return muons_dz.size() > 0 ? muons_dz[0] : -1; };
-   auto takeDSATrkChi2 = [&](vector<float> muons_chi2) { return muons_chi2.size() > 0 ? muons_chi2[0] : -1; };
+   auto takeSecondMuonDxy = [&](vector<float> muons_dxy) { return muons_dxy.size() > 1 ? abs(muons_dxy[1]) : -1; };
+   auto takeSecondMuonDz = [&](vector<float> muons_dz) { return muons_dz.size() > 1 ? muons_dz[1] : -1; };
+   auto takeDSA0TrkChi2 = [&](vector<float> muons_chi2) { return muons_chi2.size() > 0 ? muons_chi2[0] : -1; };
+   auto takeDSA1TrkChi2 = [&](vector<float> muons_chi2) { return muons_chi2.size() > 1 ? muons_chi2[1] : -1; };
    auto takeMETJetDphi = [&](vector<float> jets_phi, float MET_phi) { if (jets_phi.size() == 0) return -5.0f; float dphi = abs(jets_phi[0] - MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; return abs(dphi); };
-   auto findFakeMETCut = [&](float MET_pt, float MET_phi, float calomet_pt, float calomet_phi, float recoil) { return sqrt( ((MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))*(MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))) + ((MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))*(MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))))/recoil;};
+   auto findFakeMETCut = [&](float MET_pt, float MET_phi, float calomet_pt, float calomet_phi, float recoil) { return sqrt( ((MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))*(MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))) + ((MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))*(MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))))/recoil; };
    auto calcMT = [&](vector<float> muons_pt, vector<float> muons_phi, float MET_pt, float MET_phi) { if (!muons_pt.size()) return -9999.9f; float dphi = abs(MET_phi - muons_phi[0]); if (dphi > 3.141592) dphi -= 2 * 3.141592; float MT2 = 2.0 * muons_pt[0] * MET_pt * (1.0 - cos(dphi)); return sqrt(MT2); };
    auto takeGenMuVxy = [&](vector<float> gen_vxy, vector<int> gen_ID) { for (size_t i = 0; i < gen_vxy.size(); i++) if (abs(gen_ID[i]) == 13) return gen_vxy[i]; return -9999.99f; }; 
    auto takeGenDphiMETmu = [&](vector<float> gen_pt, vector<float> gen_phi, vector<int> gen_ID, float MET_phi) {
@@ -265,7 +281,10 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        Define("reco_sel_mu_phi1", takeSecondMuonPhi, {"reco_sel_mu_phi"}).
        Define("reco_sel_mu_dxy0", takeFirstMuonDxy, {"reco_sel_mu_dxy"}).
        Define("reco_sel_mu_dz0", takeFirstMuonDz, {"reco_sel_mu_dz"}).
-       Define("reco_dsa0_trk_chi2", takeDSATrkChi2, {"reco_dsa_trk_chi2"}).
+       Define("reco_sel_mu_dxy1", takeSecondMuonDxy, {"reco_sel_mu_dxy"}).
+       Define("reco_sel_mu_dz1", takeSecondMuonDz, {"reco_sel_mu_dz"}).
+       Define("reco_dsa0_trk_chi2", takeDSA0TrkChi2, {"reco_dsa_trk_chi2"}).
+       Define("reco_dsa1_trk_chi2", takeDSA1TrkChi2, {"reco_dsa_trk_chi2"}).
        Define("MET_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_MET_phi"}).
        Define("recoil_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_recoil_phi"}).
        Define("fake_MET_fraction", findFakeMETCut, {"reco_PF_MET_pt", "reco_PF_MET_phi","reco_Calo_MET_pt","reco_Calo_MET_phi","reco_PF_recoil_pt"}).
@@ -290,7 +309,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
        Define("Wwgt", calcWsf, {"gen_ID", "gen_pt"}).
        Define("Twgt", calcTsf, {"gen_ID", "gen_pt"}).
        Define("PUwgt", calcPUsf, {"gen_pu_true"}).
-      // Define("wgt", "1.0"); //switch back later 
+       // Define("wgt", "1.0"); //switch back later 
        Define("wgt", calcTotalWgt, {"Zwgt", "Wwgt", "Twgt", "PUwgt", "gen_wgt"});
    }
 
@@ -324,10 +343,10 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                if (histo_info->binEdgesX[0] != -1) { // bin edges provided
                    double bin_edges[histo_info->binEdgesX.size()];
                    std::copy(histo_info->binEdgesX.begin(), histo_info->binEdgesX.end(), bin_edges);
-                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
                }
                else { // just number of bins and low and high X
-                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
                }
            }
            else if (histo_info->type == "int1D") {
@@ -336,21 +355,21 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                if (histo_info->binEdgesX[0] != -1) { // bin edges provided
                    double bin_edges[histo_info->binEdgesX.size()];
                    std::copy(histo_info->binEdgesX.begin(), histo_info->binEdgesX.end(), bin_edges);
-                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(),year_), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
                }
                else { // just number of bins and low and high X
-                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+                   all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
                }
            }
            else if (histo_info->type == "float2D") {
                if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())
                    all_histos_2D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH2D>>();
-               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<float,float,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<float,float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
            }
            else if (histo_info->type == "int2D") {
                if (all_histos_2D_.find(histo_name) == all_histos_2D_.end())
                    all_histos_2D_[histo_name] = std::map<int, ROOT::RDF::RResultPtr<TH2D>>();
-               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<int,int,double>({Form("%s_cut%d_%s_yr%d", histo_name.Data(), cut, group_.Data(), year_), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+               all_histos_2D_[histo_name][cut] = df_filters.Histo2D<int,int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
            }
            else
                std::cout << "Hist type not recognized!" << std::endl;

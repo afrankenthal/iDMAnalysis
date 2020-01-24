@@ -30,6 +30,15 @@ extern "C" {
 
     static const Double_t extraOverCmsTextSize = 0.76;
 
+    static std::map<TString, TString> lumi_13TeV = {
+        {"2018", "59.74 fb^{-1} "},
+        {"2017", "41.53 fb^{-1} "},
+        {"2016", "35.92 fb^{-1} "},
+        {"1718", "101.27 fb^{-1} "},
+        {"1618", "95.66 fb^{-1} "},
+        {"1617", "77.45 fb^{-1} "},
+        {"161718", "137.19 fb^{-1} "},
+    };
     static TString lumi_13TeV2018 = "59.74 fb^{-1} ";
     static TString lumi_13TeV2017 = "41.53 fb^{-1} ";
     static TString lumi_13TeV2016 = "35.92 fb^{-1} ";
@@ -44,6 +53,6 @@ extern "C" {
 
 //extern bool drawLogo      = false;
 
-void CMS_lumi( TPad* pad, int iPeriod=3, int iPosX=10, int year=2018 );
+void CMS_lumi(TPad* pad, int iPeriod=3, int iPosX=10, TString years="18");
 
 #endif // CMS_LUMI_HH

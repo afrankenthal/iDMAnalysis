@@ -1,3 +1,6 @@
+#ifndef MMERGEYEARS_HH
+#define MMERGEYEARS_HH
+
 #include <algorithm>
 #include <fstream>
 #include <iomanip>
@@ -34,3 +37,5 @@ namespace macro {
     extern "C" bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg);
 
 }
+
+#endif // MMERGEYEARS_HH

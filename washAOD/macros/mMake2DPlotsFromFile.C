@@ -1,11 +1,9 @@
 #include "mMake2DPlotsFromFile.h"
 #include <TH2D.h>
 
-//TString lumi_13TeV = "59.74 fb^{-1} ";
-
 namespace macro {
 
-    std::unique_ptr<TCanvas> makeCanvas(TH2D * hist, TString plot_name, TString sample_name, TString title, vector<CutInfo> cuts_info, int cut) {
+    std::unique_ptr<TCanvas> makeCanvas(TH2D * hist, TString plot_name, TString sample_name, TString title, vector<CutInfo> cuts_info, int cut, TString years) {
         auto canvas = std::make_unique<TCanvas>(Form("canvas2D_%s", plot_name.Data()));
         auto * c = canvas.get();
         c->cd();
@@ -21,7 +19,7 @@ namespace macro {
             hist->GetYaxis()->SetTitle(tok);
         hist->GetYaxis()->SetTitleOffset(1.3);
         const bool writeExtraText = true;
-        CMS_lumi((TPad*)gPad, 4, 0, 2018);
+        CMS_lumi((TPad*)gPad, 4, 0, years);
         gPad->SetLogz();
         gPad->Modified();
         gPad->Update();
@@ -52,6 +50,16 @@ namespace macro {
         }
         
         // macro options
+
+        TString years("");
+        if (cfg.find("years") != cfg.end())
+            years = TString(cfg["years"].get<std::string>());
+        else {
+            // TODO: extract years from filename itself
+            cout << "ERROR: Year(s) can only be specified as a macro config or in the command line currently (not via filename)! Exiting..." << endl;
+            return 0;
+        }
+
         TString in_filename = TString(cfg["infilename"].get<std::string>());
         if (in_filename == TString("")) {
             cout << "ERROR! No input filename. Exiting..." << endl;
@@ -96,7 +104,7 @@ namespace macro {
                 TH2D * hsum = (TH2D*)(hs->GetStack()->Last()->Clone());
                 cout << "hs_name: " << hs_name << endl;
                 hsum->SetName(hs_name);
-                canvases[hs_name] = makeCanvas(hsum, hs_name, hs_name, hs->GetTitle(), cuts_info, cut);
+                canvases[hs_name] = makeCanvas(hsum, hs_name, hs_name, hs->GetTitle(), cuts_info, cut, years);
             }
             else { // for signal, want one canvas for each element of stack
                 // iterate over hstack
@@ -105,7 +113,7 @@ namespace macro {
                 TObject * object = 0;
                 while ((object = next())) {
                     TH2D * hist = (TH2D*)object;
-                    canvases[hist->GetName()] = makeCanvas(hist, hist->GetName(), hist->GetName(), hs->GetTitle(), cuts_info, cut);
+                    canvases[hist->GetName()] = makeCanvas(hist, hist->GetName(), hist->GetName(), hs->GetTitle(), cuts_info, cut, years);
                 }
 
             }
