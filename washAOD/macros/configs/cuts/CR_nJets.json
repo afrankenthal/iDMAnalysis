@@ -133,6 +133,14 @@
         "description": "muons: OSSF"
     },
     {
+        "cut": "reco_sel_mu_dxy0 > 0.1", 
+        "description": "Selected muon 0 dxy > 1 mm"
+    },
+    {
+        "cut": "reco_sel_mu_dxy1 > 0.1", 
+        "description": "Selected muon 1 dxy > 1 mm"
+    },
+    {
         "cut": "reco_n_gbmdsa_match == 0",
         "description": "0 GM-dSA matched",
         "inclusive": "no"

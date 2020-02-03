@@ -129,6 +129,14 @@
         "description": "dR(muons) < 0.9"
     },
     {
+        "cut": "reco_sel_mu_dxy0 > 0.1", 
+        "description": "Selected muon 0 dxy > 1 mm"
+    },
+    {
+        "cut": "reco_sel_mu_dxy1 > 0.1", 
+        "description": "Selected muon 1 dxy > 1 mm"
+    },
+    {
         "cut": "reco_sel_mu_charge[0]+reco_sel_mu_charge[1] == 0",
         "description": "muons: OSSF"
     },
