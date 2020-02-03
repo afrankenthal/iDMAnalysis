@@ -140,6 +140,16 @@ Bool_t nMinus1Selector::Process(TChain * chain) {
        return Zwgt * Wwgt * PUwgt * genwgt * xsec_ * lumi_ / sum_gen_wgt_;
        //return genwgt * xsec_ * lumi_ / sum_gen_wgt_;
    };
+   auto calcHemVeto = [&](bool hem_veto) { 
+       return !hem_veto;
+   };
+   auto calcBTagVeto = [&](int high_pt_jets, vector<float> jets_btag) {
+       float bTag_wp = 0.4184; //pfDeepCSVJetTags:probb+probbb medium working point for 2018 & 2017
+       for (int i = 0; i < high_pt_jets; i++)
+           if (jets_btag[i] > bTag_wp)
+               return false;
+       return true;
+   }; 
 
    // Need these to not segfault in case collection is empty
    // Also, RDataFrame.Histo1D() doesn't accept indexed vectors, so need to rename
@@ -156,7 +166,14 @@ Bool_t nMinus1Selector::Process(TChain * chain) {
    auto takeSecondMuonEta = [&](vector<float> muons_eta) { return muons_eta.size() > 1 ? muons_eta[1] : -1; };
    auto takeFirstMuonPhi = [&](vector<float> muons_phi) { return muons_phi.size() > 0 ? muons_phi[0] : -1; };
    auto takeSecondMuonPhi = [&](vector<float> muons_phi) { return muons_phi.size() > 1 ? muons_phi[1] : -1; };
+   auto takeFirstMuonDxy = [&](vector<float> muons_dxy) { return muons_dxy.size() > 0 ? abs(muons_dxy[0]) : -1; };
+   auto takeFirstMuonDz = [&](vector<float> muons_dz) { return muons_dz.size() > 0 ? muons_dz[0] : -1; };
+   auto takeSecondMuonDxy = [&](vector<float> muons_dxy) { return muons_dxy.size() > 1 ? abs(muons_dxy[1]) : -1; };
+   auto takeSecondMuonDz = [&](vector<float> muons_dz) { return muons_dz.size() > 1 ? muons_dz[1] : -1; };
+   auto takeDSA0TrkChi2 = [&](vector<float> muons_chi2) { return muons_chi2.size() > 0 ? muons_chi2[0] : -1; };
+   auto takeDSA1TrkChi2 = [&](vector<float> muons_chi2) { return muons_chi2.size() > 1 ? muons_chi2[1] : -1; };
    auto takeMETJetDphi = [&](vector<float> jets_phi, float MET_phi) { if (jets_phi.size() == 0) return -5.0f; float dphi = abs(jets_phi[0] - MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; return abs(dphi); };
+   auto findFakeMETCut = [&](float MET_pt, float MET_phi, float calomet_pt, float calomet_phi, float recoil) { return sqrt( ((MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))*(MET_pt*cos(MET_phi)-calomet_pt*cos(calomet_phi))) + ((MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))*(MET_pt*sin(MET_phi)-calomet_pt*sin(calomet_phi))))/recoil; };
    auto calcMT = [&](vector<float> muons_pt, vector<float> muons_phi, float MET_pt, float MET_phi) { if (!muons_pt.size()) return -9999.9f; float dphi = abs(MET_phi - muons_phi[0]); if (dphi > 3.141592) dphi -= 2 * 3.141592; float MT2 = 2.0 * muons_pt[0] * MET_pt * (1.0 - cos(dphi)); return sqrt(MT2); };
    auto takeGenMuVxy = [&](vector<float> gen_vxy, vector<int> gen_ID) { for (size_t i = 0; i < gen_vxy.size(); i++) if (abs(gen_ID[i]) == 13) return gen_vxy[i]; return -9999.99f; }; 
    auto takeGenDphiMETmu = [&](vector<float> gen_pt, vector<float> gen_phi, vector<int> gen_ID, float MET_phi) {
@@ -203,14 +220,23 @@ Bool_t nMinus1Selector::Process(TChain * chain) {
        Define("reco_sel_mu_eta1", takeSecondMuonEta, {"reco_sel_mu_eta"}).
        Define("reco_sel_mu_phi0", takeFirstMuonPhi, {"reco_sel_mu_phi"}).
        Define("reco_sel_mu_phi1", takeSecondMuonPhi, {"reco_sel_mu_phi"}).
+       Define("reco_sel_mu_dxy0", takeFirstMuonDxy, {"reco_sel_mu_dxy"}).
+       Define("reco_sel_mu_dz0", takeFirstMuonDz, {"reco_sel_mu_dz"}).
+       Define("reco_sel_mu_dxy1", takeSecondMuonDxy, {"reco_sel_mu_dxy"}).
+       Define("reco_sel_mu_dz1", takeSecondMuonDz, {"reco_sel_mu_dz"}).
+       Define("reco_dsa0_trk_chi2", takeDSA0TrkChi2, {"reco_dsa_trk_chi2"}).
+       Define("reco_dsa1_trk_chi2", takeDSA1TrkChi2, {"reco_dsa_trk_chi2"}).
        Define("MET_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_MET_phi"}).
+       Define("recoil_jet_phi_dphi", takeMETJetDphi, {"reco_PF_jet_phi", "reco_PF_recoil_phi"}).
+       Define("fake_MET_fraction", findFakeMETCut, {"reco_PF_MET_pt", "reco_PF_MET_phi","reco_Calo_MET_pt","reco_Calo_MET_phi","reco_PF_recoil_pt"}).
+       Define("hem_veto", calcHemVeto ,{"reco_PF_HEM_flag"}).
+       Define("bTag_veto", calcBTagVeto ,{"reco_PF_n_highPt_jets","reco_PF_jet_BTag"}).
        Define("reco_MT", calcMT, {"reco_dsa_pt", "reco_dsa_phi", "reco_PF_MET_pt", "reco_PF_MET_phi"}).
        Define("reco_METmu_dphi_v2", takeRecoDphiMETmu, {"reco_sel_mu_pt", "reco_sel_mu_phi", "reco_PF_MET_phi"}).
        Define("CaloPFMETRatio", takeCaloPFMETRatio, {"reco_PF_MET_pt", "reco_Calo_MET_pt"}).
        Define("reco_vtx_significance", takeVtxSignificance, {"reco_vtx_vxy", "reco_vtx_sigmavxy"}).
        Define("reco_dsa_idx0_sigpt_by_pt", takeSigmaPtbyPt, {"reco_dsa_pt", "reco_dsa_pt_error", "reco_dsa_idx0"}).
        Define("reco_dsa_idx1_sigpt_by_pt", takeSigmaPtbyPt, {"reco_dsa_pt", "reco_dsa_pt_error", "reco_dsa_idx1"});
-
 
    if (mode_ == common::DATA) {
        df_wgts = df_wgts.Define("wgt", "1.0");
