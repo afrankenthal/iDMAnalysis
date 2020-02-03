@@ -1,0 +1,20 @@
+[
+    {
+        "name": "mMainAnalysis",
+        "config": {
+            "plots": [
+                {
+                    "quantity": "reco_PF_n_highPt_jets",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "int1D",
+                    "name": "reco_PF_n_highPt_jets",
+                    "title": "Number of jets with pT > 30 GeV",
+                    "nbinsX": 10,
+                    "lowX": 0,
+                    "highX": 10
+                }
+            ]
+        }
+    }
+]
