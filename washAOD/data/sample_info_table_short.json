@@ -62,17 +62,17 @@
     "ST_s-channel": {
         "group": "Top",
         "mode": "BKG",
-        "xsec": 3.4
+        "xsec": 10.11
     },
     "ST_t-channel_antitop": {
         "group": "Top",
         "mode": "BKG",
-        "xsec": 26.2
+        "xsec": 80.95
     },
     "ST_t-channel_top": {
         "group": "Top",
         "mode": "BKG",
-        "xsec": 44.1
+        "xsec": 136.02
     },
     "ST_tW_antitop_5f": {
         "group": "Top",
