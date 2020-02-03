@@ -107,7 +107,7 @@
         "limit_num_files": -1,
         "mode": "BKG",
         "sum_gen_wgt": 40832889.994699,
-        "xsec": 3.4,
+        "xsec": 10.11,
         "year": 2017
     },
     "ST_t-channel_antitop_v2": {
@@ -118,7 +118,7 @@
         "limit_num_files": -1,
         "mode": "BKG",
         "sum_gen_wgt": 3674011.0,
-        "xsec": 26.2,
+        "xsec": 80.95,
         "year": 2017
     },
     "ST_t-channel_top_v2": {
@@ -129,7 +129,7 @@
         "limit_num_files": -1,
         "mode": "BKG",
         "sum_gen_wgt": 5979029.0,
-        "xsec": 44.1,
+        "xsec": 136.02,
         "year": 2017
     },
     "TTJets_v2": {
