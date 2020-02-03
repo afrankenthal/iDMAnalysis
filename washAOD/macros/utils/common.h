@@ -28,20 +28,37 @@ namespace common {
         MODE mode; // 0 for fill (background), 1 for marker (data), 2 for line (signal)
     } GroupPlotInfo;
 
+    //extern "C" { 
+    //    static std::map<TString, GroupPlotInfo> group_plot_info{
+    //    {"MCTotal", GroupPlotInfo{"MC", kRed, SOLID, BKG}},
+    //    {"DY", GroupPlotInfo{"Z(ll)+Jets", kOrange, SOLID, BKG}},
+    //    {"QCD", GroupPlotInfo{"QCD", kRed, SOLID, BKG}},
+    //    {"Multiboson", GroupPlotInfo{"Di-/Tri-boson", kGreen, SOLID, BKG}},
+    //    {"ZJets", GroupPlotInfo{"Z(#nu#nu)+Jets", 4, SOLID, BKG}},
+    //    {"WJets", GroupPlotInfo{"W(l#nu)+Jets", kYellow, SOLID, BKG}},
+    //    {"GJets", GroupPlotInfo{"#gamma+Jets", kCyan, SOLID, BKG}},
+    //    {"Top", GroupPlotInfo{"Top", 6, SOLID, BKG}},
+    //    {"sig_60p0_1", GroupPlotInfo{"(50,70) GeV, 1 mm", kBlack, SOLID, SIGNAL}},
+    //    {"sig_5p25_1000", GroupPlotInfo{"(5,5.5) GeV, 1000 mm", kBlue, SOLID, SIGNAL}},
+    //    {"sig_52p5_100", GroupPlotInfo{"(50,55) GeV, 100 mm", kOrange, SOLID, SIGNAL}},
+    //    {"sig_6p0_10", GroupPlotInfo{"(5,7) GeV, 10 mm", kMagenta, SOLID, SIGNAL}},
+    //    {"data", GroupPlotInfo{"Data", kBlack, MARKER, DATA}}
+    //    }; 
+    //}
     extern "C" { 
         static std::map<TString, GroupPlotInfo> group_plot_info{
         {"MCTotal", GroupPlotInfo{"MC", kRed, SOLID, BKG}},
-        {"DY", GroupPlotInfo{"Z(ll)+Jets", kOrange, SOLID, BKG}},
-        {"QCD", GroupPlotInfo{"QCD", kRed, SOLID, BKG}},
-        {"Multiboson", GroupPlotInfo{"Di-/Tri-boson", kGreen, SOLID, BKG}},
-        {"ZJets", GroupPlotInfo{"Z(#nu#nu)+Jets", 4, SOLID, BKG}},
-        {"WJets", GroupPlotInfo{"W(l#nu)+Jets", kYellow, SOLID, BKG}},
+        {"DY", GroupPlotInfo{"Z(ll)+Jets", kOrange-3, SOLID, BKG}},
+        {"QCD", GroupPlotInfo{"QCD", kRed+1, SOLID, BKG}},
+        {"Multiboson", GroupPlotInfo{"Di-/Tri-boson", kTeal+4, SOLID, BKG}},
+        {"ZJets", GroupPlotInfo{"Z(#nu#nu)+Jets", kAzure+7, SOLID, BKG}},
+        {"WJets", GroupPlotInfo{"W(l#nu)+Jets", kGray+1, SOLID, BKG}},
         {"GJets", GroupPlotInfo{"#gamma+Jets", kCyan, SOLID, BKG}},
-        {"Top", GroupPlotInfo{"Top", 6, SOLID, BKG}},
+        {"Top", GroupPlotInfo{"Top", kViolet-2, SOLID, BKG}},
         {"sig_60p0_1", GroupPlotInfo{"(50,70) GeV, 1 mm", kBlack, SOLID, SIGNAL}},
-        {"sig_5p25_1000", GroupPlotInfo{"(5,5.5) GeV, 1000 mm", kBlue, SOLID, SIGNAL}},
-        {"sig_52p5_100", GroupPlotInfo{"(50,55) GeV, 100 mm", kOrange, SOLID, SIGNAL}},
-        {"sig_6p0_10", GroupPlotInfo{"(5,7) GeV, 10 mm", kMagenta, SOLID, SIGNAL}},
+        {"sig_5p25_1000", GroupPlotInfo{"(5,5.5) GeV, 1000 mm", kCyan, SOLID, SIGNAL}},
+        {"sig_52p5_100", GroupPlotInfo{"(50,55) GeV, 100 mm", kGreen-4, SOLID, SIGNAL}},
+        {"sig_6p0_10", GroupPlotInfo{"(5,7) GeV, 10 mm", kYellow-3, SOLID, SIGNAL}},
         {"data", GroupPlotInfo{"Data", kBlack, MARKER, DATA}}
         }; 
     }

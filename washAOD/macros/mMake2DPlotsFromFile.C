@@ -32,10 +32,11 @@ namespace macro {
             cut_label.SetTextColor(kRed);
         cut_label.DrawLatexNDC(0.25, 0.90, cuts_info[cut].description.Data());
 
+        /////// No legend on 2D plots
         // Make legend
-        TLegend * legend = new TLegend();
-        legend->AddEntry(hist, sample_name, "f");
-        legend->Draw();
+        //TLegend * legend = new TLegend();
+        //legend->AddEntry(hist, sample_name, "f");
+        //legend->Draw();
 
         return canvas;
     }

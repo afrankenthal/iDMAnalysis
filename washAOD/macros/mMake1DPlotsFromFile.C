@@ -58,6 +58,7 @@ namespace macro {
                 newCanvas = true;
                 canvases[hs_basename] = std::make_unique<TCanvas>(Form("canvas_%s", hs_basename.Data()));
                 auto * c = canvases[hs_basename].get();
+                c->SetMargin(0.1, 0.05, 0.1, 0.05);
                 c->Range(0,0,1,1);
                 c->Divide(1,2);
                 // top pad
@@ -138,7 +139,6 @@ namespace macro {
             auto * c = pair.second.get();
             //c->cd(1); // second subpad, the ratio one
             //TPad * top_pad = (TPad*)c->GetPad(1);
-            //std::cout<<"ratio"<<std::endl;
             //c->ls();
             TPad * top_pad = (TPad*)c->GetPrimitive(Form("%s_1", c->GetName()));
             TString canvas_name = TString(c->GetName()).ReplaceAll("canvas_", "");
@@ -209,7 +209,9 @@ namespace macro {
         for (auto & pair : canvases) {
             auto * c = pair.second.get();
             c->cd(1);
-            TLegend * legend = new TLegend(0.62, 0.45, 0.92, 0.85);
+            //TLegend * legend = new TLegend(0.62, 0.45, 0.92, 0.85);
+            TLegend * legend = new TLegend(0.35, 0.60, 0.88, 0.85);
+            legend->SetNColumns(2);
             legend->SetFillStyle(0);
             legend->SetTextSize(0.037);
             TIter next((TList*)gPad->GetListOfPrimitives());
@@ -253,7 +255,8 @@ namespace macro {
             TObject * h;
             while ((h = next())) {
                 if (TString(h->ClassName()) != TString("THStack")) continue;
-                ((THStack*)h)->SetMaximum(30*maxima[pair.first]);
+                //((THStack*)h)->SetMaximum(30*maxima[pair.first]);
+                ((THStack*)h)->SetMaximum(1000000*maxima[pair.first]);
                 ((THStack*)h)->SetMinimum(0.01);
             }
             //c->RedrawAxis();
