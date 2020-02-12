@@ -1,3 +1,21 @@
+//TString formatXTitle(TString name) {
+//    if (name == "CaloPFMETRatio_")
+//        return TString("Calo"
+//}
+
+TString formatName(TString name, TString f) {
+    TString forward = (f.Contains("f") ? "forward" : "backward");
+    if (name.Contains("52p5"))
+        return TString(Form("S/#sqrt{B}, %s, (50, 55) GeV, 100 mm", forward.Data()));
+    if (name.Contains("5p25"))
+        return TString(Form("S/#sqrt{B}, %s, (5, 5.5) GeV, 1000 mm", forward.Data()));
+    if (name.Contains("6p0"))
+        return TString(Form("S/#sqrt{B}, %s, (5, 7) GeV, 10 mm", forward.Data()));
+    if (name.Contains("60p0"))
+        return TString(Form("S/#sqrt{B}, %s, (50, 70) GeV, 1 mm", forward.Data()));
+    return TString("");
+}
+
 void scanSensitivity(TString filename) {
     if (filename == "") {
         std::cout << "No filename!" << endl;
@@ -19,6 +37,8 @@ void scanSensitivity(TString filename) {
 
         THStack * hs_sig = (THStack*)file->Get(name + TString("-SIGNAL"));
         THStack * hs_bkg = (THStack*)key->ReadObj();
+
+        TString title = hs_sig->GetTitle();
 
         TIter next2(hs_bkg->GetHists());
         cout << "BKG" << endl;
@@ -79,8 +99,8 @@ void scanSensitivity(TString filename) {
         for (int i = 1; i <= nbins; i++) {
             for (auto & [name, hc] : hcs_sig) {
                 if (i == 1) {
-                    ratios_forward[name] = new TH1F(Form("ratio_forward_%s", name.Data()), "", nbins, hc->GetBinCenter(1), hc->GetBinCenter(nbins));
-                    ratios_backward[name] = new TH1F(Form("ratio_backward_%s", name.Data()), "", nbins, hc->GetBinCenter(1), hc->GetBinCenter(nbins));
+                    ratios_forward[name] = new TH1F(Form("ratio_forward_%s", name.Data()), formatName(name,"f") , nbins, hc->GetBinCenter(1), hc->GetBinCenter(nbins));
+                    ratios_backward[name] = new TH1F(Form("ratio_backward_%s", name.Data()), formatName(name,"b"), nbins, hc->GetBinCenter(1), hc->GetBinCenter(nbins));
                 }
                 // check forward
                 ratios_forward[name]->SetBinContent(i, hc->GetBinContent(i)/sqrt(tot_bkg_forward[i]+0.0001));
@@ -126,8 +146,10 @@ void scanSensitivity(TString filename) {
             //hratio->Draw("SAME HIST");
         }
         hs->Draw("NOSTACK HIST");
-        //for (auto & [name, hratio] : ratios_backward)
-         //   hratio->Draw();
+        hs->SetTitle("");
+        hs->GetXaxis()->SetTitle(title);
+        hs->GetYaxis()->SetTitle("A. U.");
+        c->BuildLegend(0.5, 0.5, 0.88, 0.85);
 
     }
     //file->Write();

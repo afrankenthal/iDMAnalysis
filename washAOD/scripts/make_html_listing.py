@@ -3,6 +3,9 @@ import sys
 from pathlib import Path
 
 if __name__ == '__main__':
+    if len(sys.argv) != 2 or 'help' in sys.argv[1]:
+        print(f'Usage: {sys.argv[0]} path_to_plots')
+        sys.exit()
     plot_dir = Path(sys.argv[1])
     print(f'Processing directory {plot_dir}')
     #html_dir = Path(f'/publicweb/a/as2872/iDMPlots/{plot_dir}')

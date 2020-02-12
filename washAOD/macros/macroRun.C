@@ -42,6 +42,7 @@ int main(int argc, char ** argv) {
         ("d,data", "Data sample config file to use", cxxopts::value<std::string>()->default_value("")) //configs/data.json"))
         ("m,macro", "Macro config file to use", cxxopts::value<std::string>()->default_value("")) //configs/macros/nminus1.json"))
         ("c,cuts", "Cuts config file to use", cxxopts::value<std::string>()->default_value("")) //configs/cuts/CR_nJets.json"))
+        ("y,years", "Year(s) to process: 2016, 2017, 2018, 161718, 1618, 1718, 1617", cxxopts::value<std::string>()->default_value(""))
         ("o,outfile", "Output file or directory (depends on macro)", cxxopts::value<std::string>()->default_value(""))
         ("i,infile", "Input file", cxxopts::value<std::string>()->default_value(""))
         ("h,help", "Print help and exit.")
@@ -65,6 +66,7 @@ int main(int argc, char ** argv) {
     TString cuts_filename = TString(result["cuts"].as<std::string>());
     TString out_filename = TString(result["outfile"].as<std::string>());
     TString in_filename = TString(result["infile"].as<std::string>());
+    TString years = TString(result["years"].as<std::string>());
  
     map<TString, SampleInfo> samples;
 
@@ -141,10 +143,13 @@ int main(int argc, char ** argv) {
         auto macro = item["name"].get<std::string>();
         auto cfg = item["config"];
 
+        if (years != TString(""))
+            cfg["years"] = years;
+
         if (macro == "mMainAnalysis" || macro == "mNminus1Analysis")
             cfg["outfilename"] = out_filename.Data();
 
-        if (macro == "mMake1DPlotsFromFile" || macro == "mMake1DEffPlotsFromFile" ||macro == "mMake2DPlotsFromFile")
+        if (macro == "mCalcABCD" || macro == "mMake1DPlotsFromFile" || macro == "mMake1DEffPlotsFromFile" ||macro == "mMake2DPlotsFromFile")
             cfg["infilename"] = in_filename.Data();
 
         if (macro == "mSumGenWgts") {
@@ -160,6 +165,7 @@ int main(int argc, char ** argv) {
             cfg["infilename"] = in_filename.Data();
         }
 
+        // Load macro .so dynamically
         void * handle;
         bool (*process)(map<TString, SampleInfo>, vector<CutInfo>, json);
         if ( (handle = dlopen(Form("./lib%s.so", macro.c_str()), RTLD_NOW)) == NULL) {

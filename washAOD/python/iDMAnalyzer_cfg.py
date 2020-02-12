@@ -115,6 +115,10 @@ process.TFileService = cms.Service("TFileService",
         fileName = cms.string(options.outputFile),
         closeFileFast = cms.untracked.bool(True)
         )
+process.Timing = cms.Service("Timing",
+        summaryOnly = cms.untracked.bool(True),
+        useJobReport = cms.untracked.bool(True)
+        )
 
 process.load('iDMSkimmer.washAOD.myMETFilters_cff')
 process.load('JetMETCorrections.Configuration.JetCorrectors_cff')

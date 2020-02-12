@@ -1,0 +1,135 @@
+[
+    {
+        "cut": "1",
+        "description": "N-1"
+    },
+    {
+        "cut": "MET_filters_fail_bits == 0",
+        "description": "MET filter bits pass"
+    },
+    {
+        "cut": "hem_veto",
+        "description": "HEM veto"
+    },
+    {
+        "cut": "(trig_fired & (1<<3)) == (1<<3)",
+        "description": "Trigger fired (120 GeV METNoMu)"
+    },
+    {
+        "cut": "reco_PF_MET_pt > 200",
+        "description": "MET > 200 GeV"
+    },
+    {
+        "cut": "abs(reco_Calo_MET_pt - reco_PF_MET_pt)/reco_Calo_MET_pt < 1.0",
+        "description": "|CaloMET - PFMET|/CaloMET < 1"
+    },
+    {
+        "cut": "reco_PF_jet_pt.size() > 0",
+        "description": "nJets > 0 (pT > 30 GeV)"
+    },
+    {
+        "cut": "if (reco_PF_n_highPt_jets == 0) return false; if (abs(reco_PF_jet_eta[0]) > 2.5) return false; return true;",
+        "description": "leading jet |#eta| < 2.5"
+    },
+    {
+        "cut": "1",
+        "description": "N-1: Leading jet pT > 80 GeV"
+    },
+    {
+        "cut": "reco_n_good_electron == 0",
+        "description": "Electron veto"
+    },
+    {
+        "cut": "reco_n_good_photon == 0",
+        "description": "Photon veto"
+    },
+    {
+        "cut": "reco_n_good_dsa >= 0",
+        "description": "good dSA muons >= 0"
+    },
+    {
+        "cut": "if (reco_PF_n_highPt_jets == 0) return false; double dphi = abs(reco_PF_jet_phi[0] - reco_PF_MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; if (abs(dphi) < 1.5) return false; return true;",
+        "description": "|#Delta#Phi(MET, leading jet)| > 1.5"
+    },
+    {
+        "cut": "for (int i = 0; i < reco_PF_n_highPt_jets; i++) { double dphi = abs(reco_PF_jet_phi[i] - reco_PF_MET_phi); if (dphi > 3.141592) dphi -= 2 * 3.141592; if (abs(dphi) < 0.5) return false; } return true;",
+        "description": "|#Delta#Phi(MET, all jets)| > 0.5"
+    },
+    {
+        "cut": "reco_PF_n_highPt_jets < 4",
+        "description": "nJets < 4 (pT > 30 GeV)",
+        "special": "no"
+    },
+    {
+        "cut": "bTag_veto",
+        "description": "0 b-tagged jets"
+    },
+    {
+        "cut": "reco_n_good_dsa >= 1",
+        "description": "good dSA muons >= 1"
+    },
+    {
+        "cut": "reco_dsa_idx0 > -9999 && reco_dsa_idx1 > -9999",
+        "description": "good dSA muons >= 2"
+    },
+    {
+        "cut": "reco_dsa_trk_n_planes[reco_dsa_idx0] >= 2",
+        "description": "dSA muon 1: >= 2 stations"
+    },
+    {
+        "cut": "reco_dsa_trk_n_hits[reco_dsa_idx0] >= 12",
+        "description": "dSA muon 1: >= 12 hits"
+    },
+    {
+        "cut": "reco_dsa_trk_chi2[reco_dsa_idx0] < 10",
+        "description": "dSA muon 1: #chi^{2} < 10"
+    },
+    {
+        "cut": "reco_dsa_pt[reco_dsa_idx0] > 5",
+        "description": "dSA muon 1: pT > 5 GeV"
+    },
+    {
+        "cut": "abs(reco_dsa_eta[reco_dsa_idx0]) < 2.4",
+        "description": "dSA muon 1: |#eta| < 2.4"
+    },
+    {
+        "cut": "reco_dsa_idx0_sigpt_by_pt < 1",
+        "description": "dSA muon 1: #sigma_{pT}/pT < 1"
+    },
+    {
+        "cut": "reco_dsa_trk_n_planes[reco_dsa_idx1] >= 2",
+        "description": "dSA muon 2: >= 2 stations"
+    },
+    {
+        "cut": "reco_dsa_trk_n_hits[reco_dsa_idx1] >= 12",
+        "description": "dSA muon 2: >= 12 hits"
+    },
+    {
+        "cut": "reco_dsa_trk_chi2[reco_dsa_idx1] < 10",
+        "description": "dSA muon 2: #chi^{2} < 10"
+    },
+    {
+        "cut": "reco_dsa_pt[reco_dsa_idx1] > 5",
+        "description": "dSA muon 2: pT > 5 GeV"
+    },
+    {
+        "cut": "abs(reco_dsa_eta[reco_dsa_idx1]) < 2.4",
+        "description": "dSA muon 2: |#eta| < 2.4"
+    },
+    {
+        "cut": "reco_dsa_idx1_sigpt_by_pt < 1",
+        "description": "dSA muon 2: #sigma_{pT}/pT < 1"
+    },
+    {
+        "cut": "reco_vtx_reduced_chi2 < 4",
+        "description": "Vertex #chi^{2} < 4"
+    },
+    {
+        "cut": "reco_vtx_dR < 0.9",
+        "description": "dR(muons) < 0.9"
+    },
+    {
+        "cut": "reco_sel_mu_charge[0]+reco_sel_mu_charge[1] == 0",
+        "description": "muons: OSSF"
+    }
+]

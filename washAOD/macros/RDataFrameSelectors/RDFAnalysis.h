@@ -54,6 +54,7 @@ public :
    std::vector<common::CutInfo> cuts_info_;
 
    common::SampleInfo sample_info_;
+   TString name_;
    Double_t sum_gen_wgt_;
    Double_t xsec_;
    Double_t lumi_;

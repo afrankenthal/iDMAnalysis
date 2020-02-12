@@ -280,24 +280,24 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
     bTagCombineBool = false; 
     iEvent.getByToken(bTagProbbToken_, bTagProbbHandle_);
     if (!bTagProbbHandle_.isValid()) {
-       // LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagProbb. Switching to Combine");
-    	bTagCombineBool = true; 
-    	iEvent.getByToken(bTagCombineToken_, bTagCombineHandle_);
-    	if (!bTagCombineHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagCombine");
-	return false;
-	}
-    //    return false;
+        // LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagProbb. Switching to Combine");
+        bTagCombineBool = true; 
+        iEvent.getByToken(bTagCombineToken_, bTagCombineHandle_);
+        if (!bTagCombineHandle_.isValid()) {
+            LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagCombine");
+            return false;
+        }
+        //    return false;
     }
     iEvent.getByToken(bTagProbbbToken_, bTagProbbbHandle_);
     if (!bTagProbbbHandle_.isValid()) {
         //LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagProbbb. Switching to Combine");
-    	bTagCombineBool = true; 
-    	iEvent.getByToken(bTagCombineToken_, bTagCombineHandle_);
-    	if (!bTagCombineHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagCombine");
-	return false;
-	}
+        bTagCombineBool = true; 
+        iEvent.getByToken(bTagCombineToken_, bTagCombineHandle_);
+        if (!bTagCombineHandle_.isValid()) {
+            LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagCombine");
+            return false;
+        }
         //return false;
     }
     iEvent.getByToken(muTrackToken1_, muTrackHandle1_);
@@ -355,17 +355,14 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
             triggerPathsWithVersionNum_.push_back("None");
             trigExist_.push_back(false);
         }
-	else{
+        else {
             trigExist_.push_back(true);
-        triggerPathsWithVersionNum_.push_back(matchedPaths[0]);
-        if (hltConfig_.triggerIndex(matchedPaths[0]) >= hltConfig_.size()) {
-            LogError("TriggerError") << "Cannot find trigger path -> " << matchedPaths[0];
-            return false;
+            triggerPathsWithVersionNum_.push_back(matchedPaths[0]);
+            if (hltConfig_.triggerIndex(matchedPaths[0]) >= hltConfig_.size()) {
+                LogError("TriggerError") << "Cannot find trigger path -> " << matchedPaths[0];
+                return false;
+            }
         }
-	//else{
-
-	//}
-	}
     }
 
     //const std::vector<std::string> matchedPaths(hltConfig_.restoreVersion(pathNames, trigPathNoVer_));
@@ -645,13 +642,13 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     // Assign each trigger result to a different bit
     fired_ = 0;
     for (size_t i = 0; i < triggerPathsWithVersionNum_.size(); i++) {
-	if(trigExist_.at(i)){
-        std::string trigPath = triggerPathsWithVersionNum_[i];
-        fired_ |= (trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath)) << i);
-	}
-	else{
-	fired_ |= (0 <<i);
-	}
+        if (trigExist_.at(i)) {
+            std::string trigPath = triggerPathsWithVersionNum_[i];
+            fired_ |= (trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath)) << i);
+        }
+        else {
+            fired_ |= (0 <<i);
+        }
     }
 
     //fired_ = trigResultsHandle_->accept(hltConfig_.triggerIndex(trigPath_));
@@ -819,7 +816,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         return (a.first > b.first); 
     };
     sort(jetCorrections.begin(), jetCorrections.end(), reverseSort);
-    
+
     // Get 10 top leading jets info, sorted by corrected pT
     // Only pick jets that have passed loose ID and cross-cleaning
     //const reco::JetTagCollection & bTagsProbb;
@@ -828,131 +825,80 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoPFNJet_ = recoJetHandle_->size(); 
     recoPFNPassIDJet_ = 0;
     recoPFNHighPtJet_ = 0;
-    if (bTagCombineBool){
-    const reco::JetTagCollection & bTagCombine = *(bTagCombineHandle_.product());
-    //for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
-    for (size_t i = 0; i < jetCorrections.size(); ++i) {
-        size_t index = jetCorrections[i].second;
+    if (bTagCombineBool) { // 2016 bTag procedure
+        const reco::JetTagCollection & bTagCombine = *(bTagCombineHandle_.product());
+        for (size_t i = 0; i < jetCorrections.size(); ++i) {
+            size_t index = jetCorrections[i].second;
 
-        // Exclude jets that didn't pass ID above
-        if (!jetIDResults[index]) continue;
-        recoPFNPassIDJet_++;
+            // Exclude jets that didn't pass ID above
+            if (!jetIDResults[index]) continue;
+            recoPFNPassIDJet_++;
 
-        // Use original set of quantities except for pt, which is JEC-corrected
-        reco::PFJetRef jet_i(recoJetHandle_, index);
-        //if (jet_i->pt() > 30) {
-        if (jetCorrections[i].first > 30) {
-            recoPFNHighPtJet_++;
-        }
-        if (recoPFJetPt_.size() < 10 && jetCorrections[i].first > 30) {
-            //recoPFJetPt_.push_back(jet_i->pt());
-            recoPFJetPt_.push_back(jetCorrections[i].first);
-       		recoPFJetEta_.push_back(jet_i->eta());
-       		recoPFJetPhi_.push_back(jet_i->phi());
-            // TODO: figure out how BtagProbb(b) collections actually behave
-            // FIXME this might be problematic with the jet corrections, keep in mind
-		if(bTagCombine.size() > i){
-		recoPFJetBTag_.push_back(bTagCombine[index].second);
-		}
-		else{
-                recoPFJetBTag_.push_back(-9999);
-		}
-            recoPFJetCHEF_.push_back(jet_i->chargedHadronEnergyFraction());
-       		recoPFJetNHEF_.push_back(jet_i->neutralHadronEnergyFraction());
-       		recoPFJetCEEF_.push_back(jet_i->chargedEmEnergyFraction());
-       		recoPFJetNEEF_.push_back(jet_i->neutralEmEnergyFraction());
-            recoPFJetNumDaughters_.push_back(jet_i->numberOfDaughters());
-            recoPFJetChargedMultiplicity_.push_back(jet_i->chargedMultiplicity());
-        }
-    }
-    }
-    else{
-    const reco::JetTagCollection & bTagsProbb = *(bTagProbbHandle_.product());
-    const reco::JetTagCollection & bTagsProbbb = *(bTagProbbbHandle_.product());
-    //for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
-    for (size_t i = 0; i < jetCorrections.size(); ++i) {
-        size_t index = jetCorrections[i].second;
-
-        // Exclude jets that didn't pass ID above
-        if (!jetIDResults[index]) continue;
-        recoPFNPassIDJet_++;
-
-        // Use original set of quantities except for pt, which is JEC-corrected
-        reco::PFJetRef jet_i(recoJetHandle_, index);
-        //if (jet_i->pt() > 30) {
-        if (jetCorrections[i].first > 30) {
-            recoPFNHighPtJet_++;
-        }
-        if (recoPFJetPt_.size() < 10 && jetCorrections[i].first > 30) {
-            //recoPFJetPt_.push_back(jet_i->pt());
-            recoPFJetPt_.push_back(jetCorrections[i].first);
-       		recoPFJetEta_.push_back(jet_i->eta());
-       		recoPFJetPhi_.push_back(jet_i->phi());
-            // TODO: figure out how BtagProbb(b) collections actually behave
-            // FIXME this might be problematic with the jet corrections, keep in mind
-            	if (bTagsProbb.size() > i && bTagsProbbb.size() > i){
-                recoPFJetBTag_.push_back(bTagsProbb[index].second+bTagsProbbb[index].second);
-            	}
-		else{
-                recoPFJetBTag_.push_back(-9999);
-		}
-	    
-            recoPFJetCHEF_.push_back(jet_i->chargedHadronEnergyFraction());
-       		recoPFJetNHEF_.push_back(jet_i->neutralHadronEnergyFraction());
-       		recoPFJetCEEF_.push_back(jet_i->chargedEmEnergyFraction());
-       		recoPFJetNEEF_.push_back(jet_i->neutralEmEnergyFraction());
-            recoPFJetNumDaughters_.push_back(jet_i->numberOfDaughters());
-            recoPFJetChargedMultiplicity_.push_back(jet_i->chargedMultiplicity());
+            // Use original set of quantities except for pt, which is JEC-corrected
+            reco::PFJetRef jet_i(recoJetHandle_, index);
+            if (jetCorrections[i].first > 30) {
+                recoPFNHighPtJet_++;
+            }
+            if (recoPFJetPt_.size() < 10 && jetCorrections[i].first > 30) {
+                //recoPFJetPt_.push_back(jet_i->pt());
+                recoPFJetPt_.push_back(jetCorrections[i].first);
+                recoPFJetEta_.push_back(jet_i->eta());
+                recoPFJetPhi_.push_back(jet_i->phi());
+                // TODO: figure out how BtagProbb(b) collections actually behave
+                // FIXME this might be problematic with the jet corrections, keep in mind
+                if (bTagCombine.size() > i ) {
+                    recoPFJetBTag_.push_back(bTagCombine[index].second);
+                }
+                else {
+                    recoPFJetBTag_.push_back(-9999);
+                }
+                recoPFJetCHEF_.push_back(jet_i->chargedHadronEnergyFraction());
+                recoPFJetNHEF_.push_back(jet_i->neutralHadronEnergyFraction());
+                recoPFJetCEEF_.push_back(jet_i->chargedEmEnergyFraction());
+                recoPFJetNEEF_.push_back(jet_i->neutralEmEnergyFraction());
+                recoPFJetNumDaughters_.push_back(jet_i->numberOfDaughters());
+                recoPFJetChargedMultiplicity_.push_back(jet_i->chargedMultiplicity());
+            }
         }
     }
-    }
-   
-    //for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
-//    for (size_t i = 0; i < jetCorrections.size(); ++i) {
-//        size_t index = jetCorrections[i].second;
-//
-//        // Exclude jets that didn't pass ID above
-//        if (!jetIDResults[index]) continue;
-//        recoPFNPassIDJet_++;
-//
-//        // Use original set of quantities except for pt, which is JEC-corrected
-//        reco::PFJetRef jet_i(recoJetHandle_, index);
-//        //if (jet_i->pt() > 30) {
-//        if (jetCorrections[i].first > 30) {
-//            recoPFNHighPtJet_++;
-//        }
-//        if (recoPFJetPt_.size() < 10 && jetCorrections[i].first > 30) {
-//            //recoPFJetPt_.push_back(jet_i->pt());
-//            recoPFJetPt_.push_back(jetCorrections[i].first);
-//       		recoPFJetEta_.push_back(jet_i->eta());
-//       		recoPFJetPhi_.push_back(jet_i->phi());
-//            // TODO: figure out how BtagProbb(b) collections actually behave
-//            // FIXME this might be problematic with the jet corrections, keep in mind
-//	if(bTagCombineBool){
-//		if(bTagCombine.size() > i){
-//		recoPFJetBTag_.push_back(bTagCombine[index].second);
-//		}
-//		else{
-//                recoPFJetBTag_.push_back(-9999);
-//		}
-//	}
-//	else{
-//            	if (bTagsProbb.size() > i && bTagsProbbb.size() > i){
-//                recoPFJetBTag_.push_back(bTagsProbb[index].second+bTagsProbbb[index].second);
-//            	}
-//		else{
-//                recoPFJetBTag_.push_back(-9999);
-//		}
-//	    }
-//            recoPFJetCHEF_.push_back(jet_i->chargedHadronEnergyFraction());
-//       		recoPFJetNHEF_.push_back(jet_i->neutralHadronEnergyFraction());
-//       		recoPFJetCEEF_.push_back(jet_i->chargedEmEnergyFraction());
-//       		recoPFJetNEEF_.push_back(jet_i->neutralEmEnergyFraction());
-//            recoPFJetNumDaughters_.push_back(jet_i->numberOfDaughters());
-//            recoPFJetChargedMultiplicity_.push_back(jet_i->chargedMultiplicity());
-//        }
-//    }
+    else { // 2017/18 bTag procedure
+        const reco::JetTagCollection & bTagsProbb = *(bTagProbbHandle_.product());
+        const reco::JetTagCollection & bTagsProbbb = *(bTagProbbbHandle_.product());
+        for (size_t i = 0; i < jetCorrections.size(); ++i) {
+            size_t index = jetCorrections[i].second;
 
+            // Exclude jets that didn't pass ID above
+            if (!jetIDResults[index]) continue;
+            recoPFNPassIDJet_++;
+
+            // Use original set of quantities except for pt, which is JEC-corrected
+            reco::PFJetRef jet_i(recoJetHandle_, index);
+            if (jetCorrections[i].first > 30) {
+                recoPFNHighPtJet_++;
+            }
+            if (recoPFJetPt_.size() < 10 && jetCorrections[i].first > 30) {
+                //recoPFJetPt_.push_back(jet_i->pt());
+                recoPFJetPt_.push_back(jetCorrections[i].first);
+                recoPFJetEta_.push_back(jet_i->eta());
+                recoPFJetPhi_.push_back(jet_i->phi());
+                // TODO: figure out how BtagProbb(b) collections actually behave
+                // FIXME this might be problematic with the jet corrections, keep in mind
+                if (bTagsProbb.size() > i && bTagsProbbb.size() > i) {
+                    recoPFJetBTag_.push_back(bTagsProbb[index].second+bTagsProbbb[index].second);
+                }
+                else {
+                    recoPFJetBTag_.push_back(-9999);
+                }
+
+                recoPFJetCHEF_.push_back(jet_i->chargedHadronEnergyFraction());
+                recoPFJetNHEF_.push_back(jet_i->neutralHadronEnergyFraction());
+                recoPFJetCEEF_.push_back(jet_i->chargedEmEnergyFraction());
+                recoPFJetNEEF_.push_back(jet_i->neutralEmEnergyFraction());
+                recoPFJetNumDaughters_.push_back(jet_i->numberOfDaughters());
+                recoPFJetChargedMultiplicity_.push_back(jet_i->chargedMultiplicity());
+            }
+        }
+    }
 
     // Calculate angle between MET and leading jet
     recoPFMETJetDeltaPhi_ = -9999;

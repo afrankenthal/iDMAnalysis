@@ -10,7 +10,7 @@
                     "type": "float1D",
                     "name": "reco_METmu_dphi_v2",
                     "title": "|#Delta#Phi(MET, muons)|",
-                    "nbinsX": 26,
+                    "nbinsX": 16,
                     "lowX": 0,
                     "highX": 3.2
                 },
@@ -21,9 +21,9 @@
                     "type": "float1D",
                     "name": "reco_vtx_dR",
                     "title": "muon #DeltaR",
-                    "nbinsX": 26,
+                    "nbinsX": 32,
                     "lowX": 0,
-                    "highX": 6.5,
+                    "highX": 6.4,
                     "nMinus1CutDescription": "dR(muons) < 0.9"
                 },
                 {
@@ -33,10 +33,10 @@
                     "type": "float1D",
                     "name": "reco_vtx_reduced_chi2",
                     "title": "Muon pair vtx #chi^{2}",
-                    "nbinsX": 50,
+                    "nbinsX": 25,
                     "lowX": 0,
                     "highX": 50,
-                    "nMinus1CutDescription": "Vertex #chi^{2} < 15"
+                    "nMinus1CutDescription": "Vertex #chi^{2} < 4"
                 },
                 {
                     "quantity": "CaloPFMETRatio",
@@ -45,7 +45,7 @@
                     "type": "float1D",
                     "name": "CaloPFMETRatio",
                     "title": "|CaloMET - PFMET|/CaloMET",
-                    "nbinsX": 26,
+                    "nbinsX": 25,
                     "lowX": 0,
                     "highX": 5,
                     "nMinus1CutDescription": "|CaloMET - PFMET|/CaloMET < 1"
@@ -69,7 +69,7 @@
                     "type": "float1D",
                     "name": "MET_jet_phi_dphi",
                     "title": "|#Delta#Phi(MET, leading jet)|",
-                    "nbinsX": 26,
+                    "nbinsX": 16,
                     "lowX": 0,
                     "highX": 3.2,
                     "nMinus1CutDescription": "|#Delta#Phi(MET, all jets)| > 0.5"
@@ -81,10 +81,11 @@
                     "type": "float1D",
                     "name": "reco_PF_jet_pt0",
                     "title": "Leading jet pT [GeV]",
-                    "nbinsX": 50,
+                    "nbinsX": 16,
                     "lowX": 0,
                     "highX": 1500,
-                    "nMinus1CutDescription": "Leading jet pT > 120 GeV"
+                    "binEdgesX": [ 0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500, 600, 700, 800, 1000, 1500, 2000 ],
+                    "nMinus1CutDescription": "Leading jet pT > 80 GeV"
                 }
             ]
         }
