@@ -146,40 +146,56 @@ namespace macro {
             THStack * data_hist = (THStack*)top_pad->GetPrimitive(Form("%s-DATA", canvas_name.Data()));
             THStack * bkg_hist = (THStack*)top_pad->GetPrimitive(Form("%s-BKG", canvas_name.Data()));
             THStack * signal_hist = (THStack*)top_pad->GetPrimitive(Form("%s-SIGNAL", canvas_name.Data()));
+            TH1F * ratio_hist;
+            c->cd(2); // switch to bottom pad
             if (data_hist && bkg_hist) {
-                TH1F * ratio_hist = (TH1F*)(((TH1F*)data_hist->GetStack()->Last())->Clone());
-                //ratio_hist->Sumw2();
+                ratio_hist = (TH1F*)(((TH1F*)data_hist->GetStack()->Last())->Clone());
                 ratio_hist->SetDirectory(0);
                 TH1F * h2 = (TH1F*)(bkg_hist->GetStack()->Last());
-                //h2->Sumw2();
                 ratio_hist->Divide(h2);
-                c->cd(2); // switch to bottom pad
-                ratio_hist->Draw("EP");
-                ratio_hist->SetMaximum(2.1);
-                ratio_hist->SetMinimum(-0.1);
-                ratio_hist->SetTitle("");
                 ratio_hist->GetXaxis()->SetTitle(bkg_hist->GetHistogram()->GetXaxis()->GetTitle());
-                ratio_hist->GetXaxis()->SetTitleSize(0.12);
-                ratio_hist->GetXaxis()->SetLabelSize(0.11);
-                ratio_hist->GetYaxis()->SetTitle("Data/MC");
-                ratio_hist->GetYaxis()->SetTitleSize(0.12);
-                ratio_hist->GetYaxis()->SetLabelSize(0.11);
-                ratio_hist->GetYaxis()->SetNdivisions(5);
-                ratio_hist->GetYaxis()->SetTitleOffset(0.35);
+                ratio_hist->Draw("EP");
+            }
+            else if (bkg_hist) { // only background, no data --> ratio is 1
+                TH1F * h2 = (TH1F*)(bkg_hist->GetStack()->Last());
+                ratio_hist = (TH1F*)h2->Clone();
+                ratio_hist->SetDirectory(0);
+                ratio_hist->Divide(h2);
+                ratio_hist->GetXaxis()->SetTitle(bkg_hist->GetHistogram()->GetXaxis()->GetTitle());
+                ratio_hist->SetMarkerSize(0);
+                ratio_hist->SetFillStyle(3254);
+                ratio_hist->SetFillColor(kGray+3);
+                ratio_hist->Draw("E2");
+            }
+            else { // no background MC --> this will fail
+                std::cout << "ERROR! No background MC in 1D plot... Ratio hist will fail. Are you sure this is intended?" << std::endl;
+            }
+            ratio_hist->SetMaximum(2.1);
+            ratio_hist->SetMinimum(-0.1);
+            ratio_hist->SetTitle("");
+            ratio_hist->GetXaxis()->SetTitleSize(0.12);
+            ratio_hist->GetXaxis()->SetLabelSize(0.11);
+            ratio_hist->GetYaxis()->SetTitle("Data/MC");
+            ratio_hist->GetYaxis()->SetTitleSize(0.12);
+            ratio_hist->GetYaxis()->SetLabelSize(0.11);
+            ratio_hist->GetYaxis()->SetNdivisions(5);
+            ratio_hist->GetYaxis()->SetTitleOffset(0.35);
                 
-                // ratio line
-                TLine * ratio_line = new TLine();
-                ratio_line->SetLineColor(kRed);
-                ratio_line->SetLineWidth(2);
-                // set line params
-                ratio_line->SetX1(ratio_hist->GetXaxis()->GetXmin());
-                ratio_line->SetX2(ratio_hist->GetXaxis()->GetXmax());
-                ratio_line->SetY1(1.0);
-                ratio_line->SetY2(1.0);
-                ratio_line->Draw("SAME");
-                //ratio_hist->Draw("EP SAME");
+            // ratio line
+            TLine * ratio_line = new TLine();
+            ratio_line->SetLineColor(kRed);
+            ratio_line->SetLineWidth(2);
+            // set line params
+            ratio_line->SetX1(ratio_hist->GetXaxis()->GetXmin());
+            ratio_line->SetX2(ratio_hist->GetXaxis()->GetXmax());
+            ratio_line->SetY1(1.0);
+            ratio_line->SetY2(1.0);
+            ratio_line->Draw("SAME");
+            //ratio_hist->Draw("EP SAME");
 
-                // MC errors
+            // MC errors
+            if (bkg_hist) {
+                TH1F * h2 = (TH1F*)(bkg_hist->GetStack()->Last());
                 TH1F * MC_error = (TH1F*)h2->Clone();
                 MC_error->Divide(MC_error);
                 MC_error->SetMarkerSize(0);
@@ -187,23 +203,25 @@ namespace macro {
                 MC_error->SetFillColor(kGray+3);
                 MC_error->Draw("SAME E2");
             }
-            else if (bkg_hist || signal_hist) { // likely blinded SR (no data) just plot MC
-                c->cd(1);
-                //gPad->SetPad(0.01, 0.01, 0.99, 0.99);
-                gPad->SetBottomMargin(0.2);
-                if (bkg_hist) {
-                    bkg_hist->GetXaxis()->SetTitle(bkg_hist->GetHistogram()->GetXaxis()->GetTitle());
-                    bkg_hist->GetXaxis()->SetTitleSize(0.06);
-                    bkg_hist->GetXaxis()->SetLabelSize(0.055);
-                }
-                else {
-                    signal_hist->GetXaxis()->SetTitle(signal_hist->GetHistogram()->GetXaxis()->GetTitle());
-                    signal_hist->GetXaxis()->SetTitleSize(0.06);
-                    signal_hist->GetXaxis()->SetLabelSize(0.055);
-                }
-                gPad->Modified();
-                gPad->Update();
-            }
+            //else if (bkg_hist || signal_hist) { // likely blinded SR (no data) just plot MC
+            //    c->cd(1);
+            //    //gPad->SetPad(0.01, 0.01, 0.99, 0.99);
+            //    gPad->SetBottomMargin(0.2);
+            //    if (bkg_hist) {
+            //        bkg_hist->GetXaxis()->SetTitle(bkg_hist->GetHistogram()->GetXaxis()->GetTitle());
+            //        bkg_hist->GetXaxis()->SetTitleSize(0.06);
+            //        bkg_hist->GetXaxis()->SetLabelSize(0.055);
+            //    }
+            //    else {
+            //        signal_hist->GetXaxis()->SetTitle(signal_hist->GetHistogram()->GetXaxis()->GetTitle());
+            //        signal_hist->GetXaxis()->SetTitleSize(0.06);
+            //        signal_hist->GetXaxis()->SetLabelSize(0.055);
+            //    }
+            //    gPad->Modified();
+            //    gPad->Update();
+            //}
+            gPad->Modified();
+            gPad->Update();
         }
         // Build legend for all canvases
         for (auto & pair : canvases) {

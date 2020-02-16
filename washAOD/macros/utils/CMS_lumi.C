@@ -16,16 +16,6 @@ void CMS_lumi(TPad * pad, int iPeriod, int iPosX, TString years) {
         if (lumi_13TeV.find(years) != lumi_13TeV.end())
             lumiText.Prepend(lumi_13TeV[years]);
 
-    //if (writeLumiText) {
-	//if (year == 18) lumiText.Prepend(lumi_13TeV2018);
-	//if (year == 17) lumiText.Prepend(lumi_13TeV2017);
-	//if (year == 16) lumiText.Prepend(lumi_13TeV2016);
-	//if (year == 1718) lumiText.Prepend(lumi_13TeV1718);
-	//if (year == 1618) lumiText.Prepend(lumi_13TeV1618);
-	//if (year == 1617) lumiText.Prepend(lumi_13TeV1617);
-	//if (year == 161718) lumiText.Prepend(lumi_13TeVall);
-    //}
-
     // text sizes and text offsets with respect to the top frame
     // in unit of the top margin size
     const Double_t lumiTextSize     = 0.6;
