@@ -1,9 +1,7 @@
 {
-    "MET_2017RunB_v2": {
+    "MET_2017RunB": {
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/MET/crab_iDMAnalysis_MET_2017RunB_v2/191204_150654/0000",
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/MET/crab_iDMAnalysis_MET_2017RunB_v2/191204_150654/0001",
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/MET/crab_iDMAnalysis_MET_2017RunB_v2/191204_150654/0002"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_seventhrun/MET/crab_iDMAnalysis_MET_2017RunB/200128_032249/0000"
         ],
         "group": "data",
         "mode": "DATA",
