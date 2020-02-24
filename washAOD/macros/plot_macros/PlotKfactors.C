@@ -1,7 +1,7 @@
-void PlotKfactors() {
+void PlotKfactors(bool fSave=0) {
     TH1::AddDirectory(kFALSE);
 
-    TFile * file = TFile::Open("../data/kfactors.root");
+    TFile * file = TFile::Open("../../data/kfactors.root");
 
     auto * hZNLO = (TH1D*)file->Get("ZJets_012j_NLO/nominal");
     auto * hZEWK = (TH1D*)file->Get("EWKcorr/Z");
@@ -110,7 +110,9 @@ void PlotKfactors() {
     line2->SetLineStyle(kDashed);
     line2->Draw();
 
-    c->SaveAs("../images/Z_Weights.pdf");
-    c2->SaveAs("../images/W_Weights.pdf");
+    if (fSave) {
+        c->SaveAs("../../images/Z_Weights.pdf");
+        c2->SaveAs("../../images/W_Weights.pdf");
+    }
     file->Close();
 }
