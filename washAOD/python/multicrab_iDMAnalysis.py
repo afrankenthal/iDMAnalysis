@@ -189,7 +189,8 @@ def main():
 
                 total_Data = merge_dicts(Data_MET_2018_ABC, Data_MET_2018_D)
             else:
-                total_Data = data['Data_MET_' + year]
+                #total_Data = data['Data_MET_' + year]
+                total_Data = data['Data_SingleMu_' + year]
 
             if options.sampleType == 'data':
                 total = merge_dicts(total, total_Data)
@@ -215,7 +216,7 @@ def main():
             config.JobType.pyCfgParams = ['data={}'.format(isData),'Run2018D={}'.format(isRun2018D)]
 
             config.Data.inputDataset = dataset
-            config.General.requestName = 'iDMAnalysis_' + sample 
+            config.General.requestName = 'iDMAnalysis_' + sample +"_v2" 
             #config.Data.outputDatasetTag = sample
 
             # If we need to pull input files from a list file instead of CRAB:
