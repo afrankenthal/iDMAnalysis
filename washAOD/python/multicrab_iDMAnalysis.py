@@ -108,13 +108,22 @@ def main():
         #config.JobType.maxMemoryMB = 4000
         #config.JobType.numCores = 1
 
-        config.Data.splitting = 'Automatic'
-        #config.Data.splitting = 'LumiBased'
-        #config.Data.unitsPerJob = 100
-        if isData == True:
-            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/data_seventhrun' % year
+        if isData = True:
+            config.Data.splitting = 'LumiBased'
+            config.Data.unitsPerJob = 100
+            if year == '2018':
+                config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions18/13TeV/PromptReco/Cert_314472-325175_13TeV_PromptReco_Collisions18_JSON.txt'
+            elif year == '2017':
+                config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions17/13TeV/Final/Cert_294927-306462_13TeV_PromptReco_Collisions17_JSON.txt'
+            elif year == '2016':
+                config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/Final/Cert_271036-284044_13TeV_PromptReco_Collisions16_JSON.txt'
         else:
-            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_seventhrun' % year
+            config.Data.splitting = 'Automatic'
+
+        if isData == True:
+            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/data_eighthrun' % year
+        else:
+            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_eighthrun' % year
 
         config.Data.publication = False
         config.Data.ignoreLocality = True
