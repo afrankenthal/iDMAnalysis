@@ -375,17 +375,24 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
         return false;
     }
     triggerPathsWithoutVersionNum_.clear();
+    triggerPathsWithVersionNum_.clear();
     trigExist_.clear();
     const std::vector<std::string>& pathNames = hltConfig_.triggerNames();
-    triggerPathsWithoutVersionNum_.push_back("HLT_PFMET120_PFMHT120_IDTight");
-    triggerPathsWithoutVersionNum_.push_back("HLT_PFMET130_PFMHT130_IDTight");
-    triggerPathsWithoutVersionNum_.push_back("HLT_PFMET140_PFMHT140_IDTight");
-    triggerPathsWithoutVersionNum_.push_back("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight");
-    triggerPathsWithoutVersionNum_.push_back("HLT_PFMETNoMu130_PFMHTNoMu130_IDTight");
-    triggerPathsWithoutVersionNum_.push_back("HLT_PFMETNoMu140_PFMHTNoMu140_IDTight");
-    triggerPathsWithoutVersionNum_.push_back("HLT_PFMET120_PFMHT120_IDTight_PFHT60");
-    triggerPathsWithoutVersionNum_.push_back("HLT_IsoMu27");
-    triggerPathsWithoutVersionNum_.push_back("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60");
+
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET120_PFMHT120_IDTight");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET130_PFMHT130_IDTight");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET140_PFMHT140_IDTight");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu130_PFMHTNoMu130_IDTight");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu140_PFMHTNoMu140_IDTight");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET120_PFMHT120_IDTight_PFHT60");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_IsoMu27");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu100_PFMHTNoMu100_IDTight_v2");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DCA_PFMET50_PFMHT60_v10");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET50_PFMHT60_v10");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET70_PFMHT70_v10");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET90_PFMHT90_v10");
     const std::vector<std::string>& pathNames = hltConfig_.triggerNames();
     
 
