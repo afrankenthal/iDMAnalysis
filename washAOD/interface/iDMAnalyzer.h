@@ -6,20 +6,27 @@
 
 #include "FWCore/Framework/interface/Frameworkfwd.h"
 #include "FWCore/Framework/interface/one/EDAnalyzer.h"
+#include "FWCore/Framework/interface/ESHandle.h"
 #include "FWCore/Framework/interface/Event.h"
 #include "FWCore/ParameterSet/interface/ParameterSet.h"
 #include "FWCore/MessageLogger/interface/MessageLogger.h"
 #include "FWCore/ServiceRegistry/interface/Service.h"
 #include "CommonTools/UtilAlgos/interface/TFileService.h"
+#include "JetMETCorrections/JetCorrector/interface/JetCorrector.h"
+#include "JetMETCorrections/Objects/interface/JetCorrectionsRecord.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectorParameters.h"
+#include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
 #include "DataFormats/BTauReco/interface/JetTag.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticleFwd.h"
+#include "DataFormats/JetReco/interface/GenJet.h"
 #include "DataFormats/JetReco/interface/GenJetCollection.h"
 #include "DataFormats/JetReco/interface/PFJet.h"
 #include "DataFormats/JetReco/interface/PFJetCollection.h"
+#include "DataFormats/PatCandidates/interface/Jet.h"
 #include "DataFormats/METReco/interface/CaloMET.h"
 #include "DataFormats/METReco/interface/CaloMETCollection.h"
 #include "DataFormats/METReco/interface/GenMET.h"
@@ -32,7 +39,6 @@
 #include "DataFormats/HLTReco/interface/TriggerObject.h"
 #include "DataFormats/HLTReco/interface/TriggerEvent.h"
 #include "HLTrigger/HLTcore/interface/HLTConfigProvider.h"
-#include "JetMETCorrections/JetCorrector/interface/JetCorrector.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectron.h"
 #include "DataFormats/EgammaCandidates/interface/GsfElectronFwd.h"
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
@@ -43,6 +49,8 @@
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
 
 #include "TTree.h"
+
+#include <random>
 
 class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::SharedResources>
 {
@@ -62,6 +70,10 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         virtual void endJob() override;
 
         edm::Service<TFileService> fs;
+        std::mt19937 m_random_generator; 
+
+        edm::ESHandle<JetCorrectorParametersCollection> JetCorParCollHandle_;
+        JetCorrectionUncertainty * jecUnc;
 
         bool isData;
 
@@ -79,7 +91,6 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag recoJetTag_;
         const edm::InputTag trigResultsTag_;
         const edm::InputTag trigEventTag_;
-        const std::string trigPathNoVer_;
         const edm::InputTag pileupInfosTag_;
         const edm::InputTag genEvtInfoTag_;
         const std::string processName_;
@@ -94,10 +105,9 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag mJetCorrectorTag_;
         const edm::InputTag recoElectronTag_;
         const edm::InputTag recoElectronIDTag_;
-        //const std::string recoElectronIDTag_;
         const edm::InputTag recoPhotonTag_;
         const edm::InputTag recoPhotonIDTag_;
-        //const std::InputTag recoPhotonIDTag_;
+        const edm::InputTag rhoTag_;
 
         // Tokens
         const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbToken_;
@@ -128,6 +138,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::EDGetTokenT<edm::ValueMap<float>> recoElectronIDToken_;
         const edm::EDGetTokenT<reco::PhotonCollection> recoPhotonToken_;
         const edm::EDGetTokenT<edm::ValueMap<bool>> recoPhotonIDToken_;
+        const edm::EDGetTokenT<double> rhoToken_;
 
         // Handles
         edm::Handle<reco::JetTagCollection> bTagProbbHandle_;
@@ -158,12 +169,11 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         edm::Handle<edm::ValueMap<float>> recoElectronIDHandle_;
         edm::Handle<reco::PhotonCollection> recoPhotonHandle_;
         edm::Handle<edm::ValueMap<bool>> recoPhotonIDHandle_;
-        
+        edm::Handle<double> rhoHandle_;
+       
         std::vector<std::string> triggerPathsWithoutVersionNum_;
         std::vector<std::string> triggerPathsWithVersionNum_;
-        std::string trigPath_;
-        std::string photonPath_;
-        std::string electronPath_;
+        std::vector<bool> trigExist_;
         HLTConfigProvider hltConfig_;
 
         // Reco and gen TTrees
@@ -239,7 +249,9 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoDSAEta_;
         std::vector<float> recoDSAPhi_;
         std::vector<float> recoDSADxy_;
+        std::vector<float> recoDSADxyError_;
         std::vector<float> recoDSADz_;
+        std::vector<float> recoDSADzError_;
         std::vector<int> recoDSACharge_;
         std::vector<float> recoDSATrkChi2_;
         std::vector<float> recoDSATrkNumPlanes_;
@@ -257,7 +269,9 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoGMEta_;
         std::vector<float> recoGMPhi_;
         std::vector<float> recoGMDxy_;
+        std::vector<float> recoGMDxyError_;
         std::vector<float> recoGMDz_;
+        std::vector<float> recoGMDzError_;
         std::vector<int> recoGMCharge_;
         std::vector<float> recoGMTrkChi2_;
         std::vector<float> recoGMTrkNumPlanes_;
@@ -273,7 +287,9 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> selectedMuonsEta_;
         std::vector<float> selectedMuonsPhi_;
         std::vector<float> selectedMuonsDxy_;
+        std::vector<float> selectedMuonsDxyError_;
         std::vector<float> selectedMuonsDz_;
+        std::vector<float> selectedMuonsDzError_;
         std::vector<int> selectedMuonsCharge_;
         
         // Reco electron branches
@@ -302,16 +318,30 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         float recoVtxReducedChi2_;
         float recoVtxDr_;
 
+        float recoMmumu_;
+
         // MET reco branches
         float recoPFMETPt_;
         float recoPFMETPhi_;
+        float recoPFMETSmearingOnlyPt_;
+        float recoPFMETSmearingOnlyPhi_;
+        float recoPFMETCorrectedPt_;
+        float recoPFMETCorrectedPhi_;
+        float recoPFMETJESUpPt_;
+        float recoPFMETJESUpPhi_;
+        float recoPFMETJESDownPt_;
+        float recoPFMETJESDownPhi_;
+        float recoPFMETJERUpPt_;
+        float recoPFMETJERUpPhi_;
+        float recoPFMETJERDownPt_;
+        float recoPFMETJERDownPhi_;
         float recoPFMETMuonEtFraction_;
         float recoCaloMETPt_;
         float recoCaloMETPhi_;
         float recoPFRecoilPt_;
         float recoPFRecoilPhi_;
-        float recoMmumu_;
         float recoDeltaPhiMETMu_;
+        float recoDeltaPhiCorrectedMETMu_;
 
         // Jet reco branches
         int recoPFNJet_;
@@ -320,14 +350,28 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoPFJetPt_;
         std::vector<float> recoPFJetEta_;
         std::vector<float> recoPFJetPhi_;
-        std::vector<float> recoPFJetBTag_;
-        std::vector<float> recoPFJetCHEF_;
-        std::vector<float> recoPFJetNHEF_;
-        std::vector<float> recoPFJetCEEF_;
-        std::vector<float> recoPFJetNEEF_;
-        std::vector<float> recoPFJetNumDaughters_;
-        std::vector<float> recoPFJetChargedMultiplicity_;
-        std::vector<bool> trigExist_;
+        std::vector<float> recoPFJetCorrectedPt_;
+        std::vector<float> recoPFJetCorrectedEta_;
+        std::vector<float> recoPFJetCorrectedPhi_;
+        std::vector<float> recoPFJetCorrectedBTag_;
+        std::vector<float> recoPFJetCorrectedCHEF_;
+        std::vector<float> recoPFJetCorrectedNHEF_;
+        std::vector<float> recoPFJetCorrectedCEEF_;
+        std::vector<float> recoPFJetCorrectedNEEF_;
+        std::vector<float> recoPFJetCorrectedNumDaughters_;
+        std::vector<float> recoPFJetCorrectedChargedMultiplicity_;
+        std::vector<float> recoPFJetCorrectedJESUpPt_;
+        std::vector<float> recoPFJetCorrectedJESUpEta_;
+        std::vector<float> recoPFJetCorrectedJESUpPhi_;
+        std::vector<float> recoPFJetCorrectedJESDownPt_;
+        std::vector<float> recoPFJetCorrectedJESDownEta_;
+        std::vector<float> recoPFJetCorrectedJESDownPhi_;
+        std::vector<float> recoPFJetCorrectedJERUpPt_;
+        std::vector<float> recoPFJetCorrectedJERUpEta_;
+        std::vector<float> recoPFJetCorrectedJERUpPhi_;
+        std::vector<float> recoPFJetCorrectedJERDownPt_;
+        std::vector<float> recoPFJetCorrectedJERDownEta_;
+        std::vector<float> recoPFJetCorrectedJERDownPhi_;
         bool recoPFHEMFlag_;
 	bool bTagCombineBool;
 
