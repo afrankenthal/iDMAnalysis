@@ -108,7 +108,7 @@ def main():
         #config.JobType.maxMemoryMB = 4000
         #config.JobType.numCores = 1
 
-        if isData = True:
+        if isData == True:
             #config.Data.splitting = 'LumiBased'
             #config.Data.unitsPerJob = 100
             if year == '2018':
