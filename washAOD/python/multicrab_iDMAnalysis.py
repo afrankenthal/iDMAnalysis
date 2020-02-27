@@ -52,7 +52,7 @@ def getOptions():
     parser.add_option('-s', '--sampleType',
                       dest = 'sampleType',
                       default = 'custom',
-                      help = "Which kind of sample to process ('MC' (default), 'data' or 'custom')",
+                      help = "Which kind of sample to process ('MC' (default), 'data', 'trig' or 'custom')",
                       metavar = 'STYP')
 
     parser.add_option('-y', '--year',
@@ -198,15 +198,17 @@ def main():
 
                 total_Data = merge_dicts(Data_MET_2018_ABC, Data_MET_2018_D)
             else:
-                #total_Data = data['Data_MET_' + year]
-                total_Data = data['Data_SingleMu_' + year]
+                total_Data = data['Data_MET_' + year]
+            total_Trig = data['Data_SingleMu_' + year]
 
             if options.sampleType == 'data':
                 total = merge_dicts(total, total_Data)
+            elif options.sampleType == 'trig':
+                total = merge_dicts(total, total_Trig)
             elif options.sampleType == 'MC':
                 total = merge_dicts(total, total_MC)
             elif options.sampleType == 'all':
-                total = merge_dicts(total, total_MC, total_Data)
+                total = merge_dicts(total, total_MC, total_Data, total_Trig)
             elif options.sampleType == 'custom':
                 total = merge_dicts() # -------------------------------> put here the custom samples you want!!!
             else:
@@ -225,7 +227,7 @@ def main():
             config.JobType.pyCfgParams = ['data={}'.format(isData),'Run2018D={}'.format(isRun2018D)]
 
             config.Data.inputDataset = dataset
-            config.General.requestName = 'iDMAnalysis_' + sample +"_v2" 
+            config.General.requestName = 'iDMAnalysis_' + sample 
             #config.Data.outputDatasetTag = sample
 
             # If we need to pull input files from a list file instead of CRAB:
