@@ -386,7 +386,15 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
     triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu130_PFMHTNoMu130_IDTight");
     triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu140_PFMHTNoMu140_IDTight");
     triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET120_PFMHT120_IDTight_PFHT60");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60");
     triggerPathsWithoutVersionNum_.emplace_back("HLT_IsoMu27");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu100_PFMHTNoMu100_IDTight_v2");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DCA_PFMET50_PFMHT60_v10");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET50_PFMHT60_v10");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET70_PFMHT70_v10");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET90_PFMHT90_v10");
+    const std::vector<std::string>& pathNames = hltConfig_.triggerNames();
+    
 
     for (auto trigPathNoVersion : triggerPathsWithoutVersionNum_) {
         auto matchedPaths(hltConfig_.restoreVersion(pathNames, trigPathNoVersion));
