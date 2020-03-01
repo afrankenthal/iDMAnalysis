@@ -699,7 +699,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoDeltaPhiMETMu_ = -9999;
     MHTPt_ = -9999;
     recoNMatchedGBMvDSA_ = -1;
-    
+
     // get MET
     // assumes 0-th element of PFMET collection is largest pt (and only?) element
     // in other words, why is recoPFMETHandle_ even a vector?
@@ -827,7 +827,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         muGoodTracksIdx.push_back(i);
     }
     recoNGoodDSA_ = muGoodTracksIdx.size();
-    
+
     // Create separate collection for good quality global muons
     // TODO: this needs to change, GMs have tracker info as well
     // Cuts on muon chamber variables can be looser, while also
@@ -906,7 +906,6 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoPFRecoilPt_ = sqrt(recoil_px*recoil_px + recoil_py*recoil_py);
     recoPFRecoilPhi_ = atan2(recoil_py, recoil_px);
 
-
     // Apply Jet loose ID to jet collection, tag passes/fails on a side vector
     // Additionally mitigate HEM issue on chambers 15 and 16
     vector<bool> jetIDResults;
@@ -961,7 +960,6 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     // However, possible muons from J/Psi in jets --> how to mitigate?
     // Nevermind: event selection ensures jets not collimated with MET+muons
 
-
     // Apply JEC+JER to jets that pass ID
     // Need to re-order jets by pT after this
     // vector key: index that will be changed after re-ordering
@@ -970,11 +968,11 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     JME::JetResolution resolution = JME::JetResolution::get(iSetup, "AK4PFchs_pt");
     JME::JetResolutionScaleFactor resolution_sf = JME::JetResolutionScaleFactor::get(iSetup, "AK4PFchs");
 
-    vector<std::pair<reco::PFJet*, size_t>> correctedJets;
-    vector<std::pair<reco::PFJet*, size_t>> correctedJetsJESUp;
-    vector<std::pair<reco::PFJet*, size_t>> correctedJetsJESDown;
-    vector<std::pair<reco::PFJet*, size_t>> correctedJetsJERUp;
-    vector<std::pair<reco::PFJet*, size_t>> correctedJetsJERDown;
+    vector<std::pair<std::unique_ptr<reco::PFJet>, size_t>> correctedJets;
+    vector<std::pair<std::unique_ptr<reco::PFJet>, size_t>> correctedJetsJESUp;
+    vector<std::pair<std::unique_ptr<reco::PFJet>, size_t>> correctedJetsJESDown;
+    vector<std::pair<std::unique_ptr<reco::PFJet>, size_t>> correctedJetsJERUp;
+    vector<std::pair<std::unique_ptr<reco::PFJet>, size_t>> correctedJetsJERDown;
 
     // Initialize MET corrections due to JES/JER
     float corr_METpx = PFMETr->px(), corr_METpy = PFMETr->py();
@@ -986,13 +984,13 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
         reco::PFJetRef jet_i(recoJetHandle_, i);
         double jec = jetCorrectorHandle_->correction(*jet_i);
-        reco::PFJet * corr_jet_i = jet_i->clone();
-        reco::PFJet * corr_jet_i_jes_up = jet_i->clone();
-        reco::PFJet * corr_jet_i_jes_down = jet_i->clone();
-        reco::PFJet * corr_jet_i_jer_up = jet_i->clone();
-        reco::PFJet * corr_jet_i_jer_down = jet_i->clone();
+        std::unique_ptr<reco::PFJet> corr_jet_i(jet_i->clone());
+        std::unique_ptr<reco::PFJet> corr_jet_i_jes_up(jet_i->clone());
+        std::unique_ptr<reco::PFJet> corr_jet_i_jes_down(jet_i->clone());
+        std::unique_ptr<reco::PFJet> corr_jet_i_jer_up(jet_i->clone());
+        std::unique_ptr<reco::PFJet> corr_jet_i_jer_down(jet_i->clone());
         // For MET corrections due to jet smearing
-        reco::PFJet * corr_jet_i_jer_only = jet_i->clone();
+        std::unique_ptr<reco::PFJet> corr_jet_i_jer_only(jet_i->clone());
 
         corr_jet_i->scaleEnergy(jec);
         corr_jet_i_jer_up->scaleEnergy(jec);
@@ -1011,57 +1009,60 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         corr_jet_i_jes_up->scaleEnergy(jesUp);
         corr_jet_i_jes_down->scaleEnergy(jesDown);
 
-        
-        double jet_resolution = resolution.getResolution({{JME::Binning::JetPt, corr_jet_i->pt()}, {JME::Binning::JetEta, corr_jet_i->eta()}, {JME::Binning::Rho, *rhoHandle_}});
-        double jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetPt, corr_jet_i->pt()}, {JME::Binning::JetEta, corr_jet_i->eta()}, {JME::Binning::Rho, *rhoHandle_}}, Variation::NOMINAL);
-        double jer_sf_up = resolution_sf.getScaleFactor({{JME::Binning::JetPt, corr_jet_i->pt()}, {JME::Binning::JetEta, corr_jet_i->eta()}, {JME::Binning::Rho, *rhoHandle_}}, Variation::UP);
-        double jer_sf_down = resolution_sf.getScaleFactor({{JME::Binning::JetPt, corr_jet_i->pt()}, {JME::Binning::JetEta, corr_jet_i->eta()}, {JME::Binning::Rho, *rhoHandle_}}, Variation::DOWN);
-
-        // Try matching with gen jet
-        double min_dR = std::numeric_limits<double>::infinity();
-        const reco::GenJet* matched_genJet = nullptr;
-        for (const auto& genJet: *genJetHandle_) {
-            double dR = deltaR(genJet, *corr_jet_i);
-            if (dR > min_dR)
-                continue;
-            if (dR < 0.2) {
-                double dPt = std::abs(genJet.pt() - corr_jet_i->pt());
-                if (dPt > 3 * corr_jet_i->pt() * jet_resolution)
-                    continue;
-                min_dR = dR;
-                matched_genJet = &genJet;
-            }
-        }
+        // Only do jet smearing (JES) if not working on data!
         double smearFactor = 1., smearFactor_up = 1., smearFactor_down = 1.;
-        if (matched_genJet) {
-            double dPt = corr_jet_i->pt() - matched_genJet->pt();
-            smearFactor = 1 + (jer_sf - 1.) * dPt / corr_jet_i->pt();
-            smearFactor_up = 1 + (jer_sf_up - 1.) * dPt / corr_jet_i->pt();
-            smearFactor_down = 1 + (jer_sf_down - 1.) * dPt / corr_jet_i->pt();
-        }
-        else if (jer_sf > 1) { 
-            double sigma = jet_resolution * std::sqrt(jer_sf * jer_sf - 1);
-            std::normal_distribution<> d(0, sigma);
-            smearFactor = 1. + d(m_random_generator);
-        }
-        //else
-         //   std::cout << "ERROR! Impossible to smear this jet. jer_sf: " << jer_sf << std::endl;
-        if (jer_sf_up >= 1.0) {
-            double sigma_up = jet_resolution * std::sqrt(jer_sf_up * jer_sf_up - 1);
-            std::normal_distribution<> d_up(0, sigma_up);
-            smearFactor_up = 1. + d_up(m_random_generator);
-        }
-        if (jer_sf_down >= 1.0) {
-            double sigma_down = jet_resolution * std::sqrt(jer_sf_down * jer_sf_down - 1);
-            std::normal_distribution<> d_down(0, sigma_down);
-            smearFactor_down = 1. + d_down(m_random_generator);
-        }
+        if (!isData) {
+        
+            double jet_resolution = resolution.getResolution({{JME::Binning::JetPt, corr_jet_i->pt()}, {JME::Binning::JetEta, corr_jet_i->eta()}, {JME::Binning::Rho, *rhoHandle_}});
+            double jer_sf = resolution_sf.getScaleFactor({{JME::Binning::JetPt, corr_jet_i->pt()}, {JME::Binning::JetEta, corr_jet_i->eta()}, {JME::Binning::Rho, *rhoHandle_}}, Variation::NOMINAL);
+            double jer_sf_up = resolution_sf.getScaleFactor({{JME::Binning::JetPt, corr_jet_i->pt()}, {JME::Binning::JetEta, corr_jet_i->eta()}, {JME::Binning::Rho, *rhoHandle_}}, Variation::UP);
+            double jer_sf_down = resolution_sf.getScaleFactor({{JME::Binning::JetPt, corr_jet_i->pt()}, {JME::Binning::JetEta, corr_jet_i->eta()}, {JME::Binning::Rho, *rhoHandle_}}, Variation::DOWN);
 
-        if (corr_jet_i->energy() * smearFactor < 0.01) {
-            double newSmearFactor = 0.01 / corr_jet_i->energy();
-            //std::cout << "The smearing factor (" << smearFactor << ") is either negative or too small. Fixing it to " << newSmearFactor << " to avoid change of direction." << std::endl;
-            smearFactor = newSmearFactor;
-        }
+            // Try matching with gen jet
+            double min_dR = std::numeric_limits<double>::infinity();
+            const reco::GenJet* matched_genJet = nullptr;
+            for (const auto& genJet: *genJetHandle_) {
+                double dR = deltaR(genJet, *corr_jet_i);
+                if (dR > min_dR)
+                    continue;
+                if (dR < 0.2) {
+                    double dPt = std::abs(genJet.pt() - corr_jet_i->pt());
+                    if (dPt > 3 * corr_jet_i->pt() * jet_resolution)
+                        continue;
+                    min_dR = dR;
+                    matched_genJet = &genJet;
+                }
+            }
+            if (matched_genJet) {
+                double dPt = corr_jet_i->pt() - matched_genJet->pt();
+                smearFactor = 1 + (jer_sf - 1.) * dPt / corr_jet_i->pt();
+                smearFactor_up = 1 + (jer_sf_up - 1.) * dPt / corr_jet_i->pt();
+                smearFactor_down = 1 + (jer_sf_down - 1.) * dPt / corr_jet_i->pt();
+            }
+            else if (jer_sf > 1) { 
+                double sigma = jet_resolution * std::sqrt(jer_sf * jer_sf - 1);
+                std::normal_distribution<> d(0, sigma);
+                smearFactor = 1. + d(m_random_generator);
+            }
+            //else
+            //   std::cout << "ERROR! Impossible to smear this jet. jer_sf: " << jer_sf << std::endl;
+            if (jer_sf_up >= 1.0) {
+                double sigma_up = jet_resolution * std::sqrt(jer_sf_up * jer_sf_up - 1);
+                std::normal_distribution<> d_up(0, sigma_up);
+                smearFactor_up = 1. + d_up(m_random_generator);
+            }
+            if (jer_sf_down >= 1.0) {
+                double sigma_down = jet_resolution * std::sqrt(jer_sf_down * jer_sf_down - 1);
+                std::normal_distribution<> d_down(0, sigma_down);
+                smearFactor_down = 1. + d_down(m_random_generator);
+            }
+
+            if (corr_jet_i->energy() * smearFactor < 0.01) {
+                double newSmearFactor = 0.01 / corr_jet_i->energy();
+                //std::cout << "The smearing factor (" << smearFactor << ") is either negative or too small. Fixing it to " << newSmearFactor << " to avoid change of direction." << std::endl;
+                smearFactor = newSmearFactor;
+            }
+        } // end if checking for isData
 
         corr_jet_i->scaleEnergy(smearFactor);
         corr_jet_i_jes_up->scaleEnergy(smearFactor);
@@ -1086,11 +1087,11 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         corr_METpy_JERDown -= (corr_jet_i_jer_down->py() - corr_jet_i->py());
         corr_jet_i->scaleEnergy(smearFactor);
 
-        correctedJets.emplace_back(std::make_pair(corr_jet_i, i));
-        correctedJetsJESUp.emplace_back(std::make_pair(corr_jet_i_jes_up, i));
-        correctedJetsJESDown.emplace_back(std::make_pair(corr_jet_i_jes_down, i));
-        correctedJetsJERUp.emplace_back(std::make_pair(corr_jet_i_jer_up, i));
-        correctedJetsJERDown.emplace_back(std::make_pair(corr_jet_i_jer_down, i));
+        correctedJets.push_back(std::make_pair(std::move(corr_jet_i), i));
+        correctedJetsJESUp.push_back(std::make_pair(std::move(corr_jet_i_jes_up), i));
+        correctedJetsJESDown.push_back(std::make_pair(std::move(corr_jet_i_jes_down), i));
+        correctedJetsJERUp.push_back(std::make_pair(std::move(corr_jet_i_jer_up), i));
+        correctedJetsJERDown.push_back(std::make_pair(std::move(corr_jet_i_jer_down), i));
     }
 
     // Before sorting the jet collections by pT, calculate MET corrections for each as well
@@ -1108,7 +1109,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoPFMETJERDownPhi_ = atan2(corr_METpy_JERDown, corr_METpx_JERDown);
 
 
-    auto reverseSortJets = [](const std::pair<reco::PFJet*, size_t> &a, const std::pair<reco::PFJet*, size_t> &b) {
+    auto reverseSortJets = [](const std::pair<std::unique_ptr<reco::PFJet>, size_t> &a, const std::pair<std::unique_ptr<reco::PFJet>, size_t> &b) {
         return (a.first->pt() > b.first->pt());
     };
     sort(correctedJets.begin(), correctedJets.end(), reverseSortJets);
@@ -1125,57 +1126,57 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     
     for (size_t i = 0; i < correctedJets.size(); i++) {
         size_t index = correctedJets[i].second;
-        reco::PFJet * jet_i = correctedJets[i].first;
+        reco::PFJet & jet_i = *(correctedJets[i].first);
 
         // Exclude jets that didn't pass ID above (ID checked against uncorrected jets)
         if (!jetIDResults[index]) continue;
         recoPFNPassIDJet_++;
 
         // Use JES+JER-corrected quantities
-        if (jet_i->pt() > 30) 
+        if (jet_i.pt() > 30) 
             recoPFNHighPtJet_++;
 
-        if (recoPFJetCorrectedPt_.size() < 10 && jet_i->pt() > 30) {
-            recoPFJetCorrectedPt_.push_back(jet_i->pt());
-            recoPFJetCorrectedEta_.push_back(jet_i->eta());
-            recoPFJetCorrectedPhi_.push_back(jet_i->phi());
+        if (recoPFJetCorrectedPt_.size() < 10 && jet_i.pt() > 30) {
+            recoPFJetCorrectedPt_.push_back(jet_i.pt());
+            recoPFJetCorrectedEta_.push_back(jet_i.eta());
+            recoPFJetCorrectedPhi_.push_back(jet_i.phi());
             // TODO: figure out how BtagProbb(b) collections actually behave
             // FIXME this might be problematic with the jet corrections, keep in mind
             if (bTagProbbHandle_->size() > i && bTagProbbbHandle_->size() > i)
                 recoPFJetCorrectedBTag_.push_back((*bTagProbbHandle_)[index].second + (*bTagProbbbHandle_)[index].second);
             else 
                 recoPFJetCorrectedBTag_.push_back(-9999);
-            recoPFJetCorrectedCHEF_.push_back(jet_i->chargedHadronEnergyFraction());
-            recoPFJetCorrectedNHEF_.push_back(jet_i->neutralHadronEnergyFraction());
-            recoPFJetCorrectedCEEF_.push_back(jet_i->chargedEmEnergyFraction());
-            recoPFJetCorrectedNEEF_.push_back(jet_i->neutralEmEnergyFraction());
-            recoPFJetCorrectedNumDaughters_.push_back(jet_i->numberOfDaughters());
-            recoPFJetCorrectedChargedMultiplicity_.push_back(jet_i->chargedMultiplicity());
+            recoPFJetCorrectedCHEF_.push_back(jet_i.chargedHadronEnergyFraction());
+            recoPFJetCorrectedNHEF_.push_back(jet_i.neutralHadronEnergyFraction());
+            recoPFJetCorrectedCEEF_.push_back(jet_i.chargedEmEnergyFraction());
+            recoPFJetCorrectedNEEF_.push_back(jet_i.neutralEmEnergyFraction());
+            recoPFJetCorrectedNumDaughters_.push_back(jet_i.numberOfDaughters());
+            recoPFJetCorrectedChargedMultiplicity_.push_back(jet_i.chargedMultiplicity());
         }
         // Add pt, eta, phi information for syst. uncert. collections
-        jet_i = correctedJetsJESUp[i].first;
-        if (recoPFJetCorrectedJESUpPt_.size() < 10 && jet_i->pt() > 30) {
-            recoPFJetCorrectedJESUpPt_.push_back(jet_i->pt());
-            recoPFJetCorrectedJESUpEta_.push_back(jet_i->eta());
-            recoPFJetCorrectedJESUpPhi_.push_back(jet_i->phi());
+        jet_i = *(correctedJetsJESUp[i].first);
+        if (recoPFJetCorrectedJESUpPt_.size() < 10 && jet_i.pt() > 30) {
+            recoPFJetCorrectedJESUpPt_.push_back(jet_i.pt());
+            recoPFJetCorrectedJESUpEta_.push_back(jet_i.eta());
+            recoPFJetCorrectedJESUpPhi_.push_back(jet_i.phi());
         }
-        jet_i = correctedJetsJESDown[i].first;
-        if (recoPFJetCorrectedJESDownPt_.size() < 10 && jet_i->pt() > 30) {
-            recoPFJetCorrectedJESDownPt_.push_back(jet_i->pt());
-            recoPFJetCorrectedJESDownEta_.push_back(jet_i->eta());
-            recoPFJetCorrectedJESDownPhi_.push_back(jet_i->phi());
+        jet_i = *(correctedJetsJESDown[i].first);
+        if (recoPFJetCorrectedJESDownPt_.size() < 10 && jet_i.pt() > 30) {
+            recoPFJetCorrectedJESDownPt_.push_back(jet_i.pt());
+            recoPFJetCorrectedJESDownEta_.push_back(jet_i.eta());
+            recoPFJetCorrectedJESDownPhi_.push_back(jet_i.phi());
         }
-        jet_i = correctedJetsJERUp[i].first;
-        if (recoPFJetCorrectedJERUpPt_.size() < 10 && jet_i->pt() > 30) {
-            recoPFJetCorrectedJERUpPt_.push_back(jet_i->pt());
-            recoPFJetCorrectedJERUpEta_.push_back(jet_i->eta());
-            recoPFJetCorrectedJERUpPhi_.push_back(jet_i->phi());
+        jet_i = *(correctedJetsJERUp[i].first);
+        if (recoPFJetCorrectedJERUpPt_.size() < 10 && jet_i.pt() > 30) {
+            recoPFJetCorrectedJERUpPt_.push_back(jet_i.pt());
+            recoPFJetCorrectedJERUpEta_.push_back(jet_i.eta());
+            recoPFJetCorrectedJERUpPhi_.push_back(jet_i.phi());
         }
-        jet_i = correctedJetsJERDown[i].first;
-        if (recoPFJetCorrectedJERDownPt_.size() < 10 && jet_i->pt() > 30) {
-            recoPFJetCorrectedJERDownPt_.push_back(jet_i->pt());
-            recoPFJetCorrectedJERDownEta_.push_back(jet_i->eta());
-            recoPFJetCorrectedJERDownPhi_.push_back(jet_i->phi());
+        jet_i = *(correctedJetsJERDown[i].first);
+        if (recoPFJetCorrectedJERDownPt_.size() < 10 && jet_i.pt() > 30) {
+            recoPFJetCorrectedJERDownPt_.push_back(jet_i.pt());
+            recoPFJetCorrectedJERDownEta_.push_back(jet_i.eta());
+            recoPFJetCorrectedJERDownPhi_.push_back(jet_i.phi());
         }
         // Also add uncorrected jet info for completeness
         reco::PFJetRef jet_ii(recoJetHandle_, i);
@@ -1349,7 +1350,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             selectedMuonsCharge_.push_back(dsa2_j->charge());
         }
     }
-    
+
     bool muon1replaced = false, muon2replaced = false;
 
     // Re-fit vertex if one or more dsa muons got replaced
@@ -1440,7 +1441,6 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoPFMETJERDownPt_ = std::sqrt(corr_METpx_JERDown*corr_METpx_JERDown + corr_METpy_JERDown*corr_METpy_JERDown);
     recoPFMETJERDownPhi_ = atan2(corr_METpy_JERDown, corr_METpx_JERDown);
 
-    
     // Calculate delta phi between MET and selected muons
     if (fFoundValidVertex) {
         double avgMuPhi = atan2( (1/2)*(sin(muon1->phi()) + sin(muon2->phi())), (1/2)*(cos(muon1->phi()) + cos(muon2->phi())) );
@@ -1668,6 +1668,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
         genT->Fill();
     }
+
 
     /******* BEGINNING OF CUTS ******/
     // Pre-compute some cuts, store in bits

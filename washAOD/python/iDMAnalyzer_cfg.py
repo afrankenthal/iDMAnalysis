@@ -175,7 +175,7 @@ for idmod in id_ph_modules:
 ## Build muon candidate from dSA
 process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi")
 process.load("TrackingTools.TrackAssociator.DetIdAssociatorESProducer_cff")
-from muonFromdSA_cff import * 
+from iDMSkimmer.washAOD.muonsFromdSA_cff import * 
 process.muonsFromdSA = muonsFromdSA.clone()
 ## Now build extra muon timing variables
 from RecoMuon.MuonIdentification.muonTiming_cfi import *

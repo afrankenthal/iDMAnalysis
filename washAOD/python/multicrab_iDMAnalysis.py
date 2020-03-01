@@ -6,6 +6,7 @@ import os
 import sys
 from optparse import OptionParser
 import json
+import copy
 
 from CRABAPI.RawCommand import crabCommand
 from CRABClient.ClientExceptions import ClientException
@@ -186,19 +187,8 @@ def main():
                 total_MC[key + '_' + year] = val
                 del total_MC[key]
 
-            total_Data = {}
-            if year == '2018':
-                Data_MET_2018_ABC = data["Data_MET_2018"].copy()
-                del Data_MET_2018_ABC["MET_Run2018D"]
+            total_Data = data['Data_MET_' + year]
 
-                Data_MET_2018_D = data["Data_MET_2018"].copy()
-                del Data_MET_2018_D["MET_Run2018A"]
-                del Data_MET_2018_D["MET_Run2018B"]
-                del Data_MET_2018_D["MET_Run2018C"]
-
-                total_Data = merge_dicts(Data_MET_2018_ABC, Data_MET_2018_D)
-            else:
-                total_Data = data['Data_MET_' + year]
             total_Trig = data['Data_SingleMu_' + year]
 
             if options.sampleType == 'data':
