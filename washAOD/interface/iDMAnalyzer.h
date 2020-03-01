@@ -18,6 +18,10 @@
 #include "CondFormats/JetMETObjects/interface/JetCorrectionUncertainty.h"
 
 #include "DataFormats/BTauReco/interface/JetTag.h"
+#include "DataFormats/MuonReco/interface/Muon.h"
+#include "DataFormats/MuonReco/interface/MuonFwd.h"
+#include "DataFormats/MuonReco/interface/MuonTimeExtra.h"
+#include "DataFormats/MuonReco/interface/MuonTimeExtraMap.h"
 #include "DataFormats/TrackReco/interface/Track.h"
 #include "DataFormats/TrackReco/interface/TrackFwd.h"
 #include "DataFormats/HepMCCandidate/interface/GenParticle.h"
@@ -81,6 +85,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag bTagProbbTag_;
         const edm::InputTag bTagProbbbTag_;
         const edm::InputTag bTagCombineTag_;
+        const edm::InputTag dsaRecoMuTag_;
+        const edm::InputTag dsaRecoMuTimingTag_;
         const edm::InputTag muTrackTag1_;
         const edm::InputTag muTrackTag2_;
         const edm::InputTag genParticleTag_;
@@ -113,6 +119,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbToken_;
         const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbbToken_;
         const edm::EDGetTokenT<reco::JetTagCollection> bTagCombineToken_;
+        const edm::EDGetTokenT<reco::MuonCollection> dsaRecoMuToken_;
+        const edm::EDGetTokenT<reco::MuonTimeExtraMap> dsaRecoMuTimingToken_;
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken1_;
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken2_;
         const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
@@ -144,6 +152,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         edm::Handle<reco::JetTagCollection> bTagProbbHandle_;
         edm::Handle<reco::JetTagCollection> bTagProbbbHandle_;
         edm::Handle<reco::JetTagCollection> bTagCombineHandle_;
+        edm::Handle<reco::MuonCollection> dsaRecoMuHandle_;
+        edm::Handle<reco::MuonTimeExtraMap> dsaRecoMuTimingHandle_;
         edm::Handle<reco::TrackCollection> muTrackHandle1_;
         edm::Handle<reco::TrackCollection> muTrackHandle2_;
         edm::Handle<reco::GenParticleCollection> genParticleHandle_;
@@ -247,7 +257,9 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoDSAPt_;
         std::vector<float> recoDSAPtError_;
         std::vector<float> recoDSAEta_;
+        std::vector<float> recoDSAEtaError_;
         std::vector<float> recoDSAPhi_;
+        std::vector<float> recoDSAPhiError_;
         std::vector<float> recoDSADxy_;
         std::vector<float> recoDSADxyError_;
         std::vector<float> recoDSADz_;
@@ -258,6 +270,15 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoDSATrkNumHits_;
         std::vector<float> recoDSATrkNumDTHits_;
         std::vector<float> recoDSATrkNumCSCHits_;
+        std::vector<float> recoDSAInvBeta_;
+        std::vector<float> recoDSAInvBetaErr_;
+        std::vector<float> recoDSAFreeInvBeta_;
+        std::vector<float> recoDSAFreeInvBetaErr_;
+        std::vector<float> recoDSAtimeAtIpInOut_;
+        std::vector<float> recoDSAtimeAtIpInOutErr_;
+        std::vector<float> recoDSAtimeAtIpOutIn_;
+        std::vector<float> recoDSAtimeAtIpOutInErr_;
+        std::vector<float> recoDSAtimingNdof_;
         int recoDSAIdx0_;
         int recoDSAIdx1_;
         
@@ -267,7 +288,9 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoGMPt_;
         std::vector<float> recoGMPtError_;
         std::vector<float> recoGMEta_;
+        std::vector<float> recoGMEtaError_;
         std::vector<float> recoGMPhi_;
+        std::vector<float> recoGMPhiError_;
         std::vector<float> recoGMDxy_;
         std::vector<float> recoGMDxyError_;
         std::vector<float> recoGMDz_;
@@ -284,8 +307,11 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         int recoNMatchedGBMvDSA_;
         float recoGBMDSADr_;
         std::vector<float> selectedMuonsPt_;
+        std::vector<float> selectedMuonsPtError_;
         std::vector<float> selectedMuonsEta_;
+        std::vector<float> selectedMuonsEtaError_;
         std::vector<float> selectedMuonsPhi_;
+        std::vector<float> selectedMuonsPhiError_;
         std::vector<float> selectedMuonsDxy_;
         std::vector<float> selectedMuonsDxyError_;
         std::vector<float> selectedMuonsDz_;

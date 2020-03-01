@@ -172,6 +172,14 @@ for idmod in id_e_modules:
 for idmod in id_ph_modules:
     setupAllVIDIdsInModule(process,idmod,setupVIDPhotonSelection)
 
+## Build muon candidate from dSA
+process.load("TrackPropagation.SteppingHelixPropagator.SteppingHelixPropagatorAny_cfi")
+process.load("TrackingTools.TrackAssociator.DetIdAssociatorESProducer_cff")
+from muonFromdSA_cff import * 
+process.muonsFromdSA = muonsFromdSA.clone()
+## Now build extra muon timing variables
+from RecoMuon.MuonIdentification.muonTiming_cfi import *
+process.muontimingFromdSA = muontiming.clone(MuonCollection = cms.InputTag("muonsFromdSA"))
 
 ## Main iDM analyzer
 from iDMSkimmer.washAOD.iDMAnalyzer_cfi import iDMAnalyzer
@@ -198,13 +206,16 @@ process.ntuples_gbm = iDMAnalyzer.clone(
 #)
 
 process.commonSequence = cms.Sequence(
-    process.egmGsfElectronIDSequence 
+    process.muonsFromdSA
+    + process.muontimingFromdSA
+    + process.egmGsfElectronIDSequence 
     + process.egmPhotonIDSequence
     + process.correctionTermsPfMetType1Type2
     + process.correctionTermsPfMetType0RecoTrack
     + process.correctionTermsPfMetMult
     + process.pfMetT0rtT1Txy
     + process.ntuples_gbm
+    #+ process.ntuples_dgm
     )
 
 if options.data:
@@ -214,14 +225,12 @@ if options.data:
             + process.btagging
             + process.ak4PFCHSL1FastL2L3ResidualCorrectorChain
             + process.commonSequence
-            #+ process.ntuples_dgm
         )
     else:
         process.p = cms.Path(
             process.metFilters
             + process.ak4PFCHSL1FastL2L3ResidualCorrectorChain
             + process.commonSequence
-            #+ process.ntuples_dgm
         )
 else:
     if options.year == 2016:
@@ -230,12 +239,10 @@ else:
             + process.btagging
             + process.ak4PFCHSL1FastL2L3CorrectorChain
             + process.commonSequence
-            #+ process.ntuples_dgm
         )
     else:
         process.p = cms.Path(
             process.metFilters
             + process.ak4PFCHSL1FastL2L3CorrectorChain
             + process.commonSequence
-            #+ process.ntuples_dgm
         )
