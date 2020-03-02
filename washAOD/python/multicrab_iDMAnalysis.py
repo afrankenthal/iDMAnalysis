@@ -7,6 +7,7 @@ import sys
 from optparse import OptionParser
 import json
 import copy
+from multiprocessing import Process
 
 from CRABAPI.RawCommand import crabCommand
 from CRABClient.ClientExceptions import ClientException
@@ -214,7 +215,9 @@ def main():
             isRun2018D = False
             if sample == 'MET_Run2018D':
                 isRun2018D = True
-            config.JobType.pyCfgParams = ['data={}'.format(isData),'Run2018D={}'.format(isRun2018D)]
+
+            config.JobType.pyCfgParams = ['data={}'.format(isData),'Run2018D={}'.format(isRun2018D), 'numThreads={}'.format(1)]
+            config.JobType.numCores = 1
 
             config.Data.inputDataset = dataset
             config.General.requestName = 'iDMAnalysis_' + sample 
@@ -227,6 +230,9 @@ def main():
             try:
                 print "Submitting for input dataset %s with options %s" % (sample, options.crabCmdOpts)
                 crabCommand(options.crabCmd, config = config, *options.crabCmdOpts.split())
+                #p = Process(target=crabCommand, args=(options.crabCmd, config, options.crabCmdOpts.split(),))
+                #p.start()
+                #p.join()
             except HTTPException as hte:
                 print "Submission for input dataset %s failed: %s" % (sample, hte.headers)
             except ClientException as cle:

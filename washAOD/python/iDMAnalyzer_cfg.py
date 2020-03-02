@@ -26,6 +26,11 @@ options.register('Run2018D',
         VarParsing.VarParsing.multiplicity.singleton,
         VarParsing.VarParsing.varType.bool,
         "Is this sample Run2018D (different GT), yes (1) or no (0)")
+options.register('numThreads',
+        8,
+        VarParsing.VarParsing.multiplicity.singleton,
+        VarParsing.VarParsing.varType.int,
+        "Number of threads (for CRAB vs non-CRAB execution)")
 
 options.parseArguments()
 
@@ -99,7 +104,7 @@ process.MessageLogger = cms.Service("MessageLogger",
     )
 process.options = cms.untracked.PSet(
     wantSummary = cms.untracked.bool(True),
-    #numberOfThreads = cms.untracked.uint32(8)
+    numberOfThreads = cms.untracked.uint32(options.numThreads)
     )
 process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(options.maxEvents)
