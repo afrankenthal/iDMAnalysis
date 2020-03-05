@@ -1,0 +1,90 @@
+{
+    "QCD_HT1000To1500_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_seventhrun/QCD_HT1000to1500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_QCD_HT1000To1500_v3/191217_194139/0000"
+        ],
+        "group": "QCD",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 4845848.0,
+        "xsec": 1064,
+        "year": 2016
+    },
+    "QCD_HT100To200_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_seventhrun/QCD_HT100to200_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_QCD_HT100To200_v3/191217_193413/0000"
+        ],
+        "group": "QCD",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 82108879.0,
+        "xsec": 27500000,
+        "year": 2016
+    },
+    "QCD_HT1500To2000_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_seventhrun/QCD_HT1500to2000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_QCD_HT1500To2000_v3/191217_194330/0000"
+        ],
+        "group": "QCD",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 3965333.0,
+        "xsec": 121.5,
+        "year": 2016
+    },
+    "QCD_HT2000ToInf_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_seventhrun/QCD_HT2000toInf_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_QCD_HT2000ToInf_v3/191217_193737/0000"
+        ],
+        "group": "QCD",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 1987185.0,
+        "xsec": 25.42,
+        "year": 2016
+    },
+    "QCD_HT200To300_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_seventhrun/QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_QCD_HT200To300_v3/191217_193829/0000"
+        ],
+        "group": "QCD",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 18710524.0,
+        "xsec": 1735000,
+        "year": 2016
+    },
+    "QCD_HT300To500_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_seventhrun/QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_QCD_HT300To500_v3/191217_194424/0000"
+        ],
+        "group": "QCD",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 17023896.0,
+        "xsec": 367000,
+        "year": 2016
+    },
+    "QCD_HT500To700_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_seventhrun/QCD_HT500to700_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_QCD_HT500To700_v3/191217_193355/0000"
+        ],
+        "group": "QCD",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 18915540.0,
+        "xsec": 29370,
+        "year": 2016
+    },
+    "QCD_HT700To1000_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_seventhrun/QCD_HT700to1000_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_QCD_HT700To1000_v3/191217_194017/0000"
+        ],
+        "group": "QCD",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 15616467.0,
+        "xsec": 6524,
+        "year": 2016
+    }
+}
