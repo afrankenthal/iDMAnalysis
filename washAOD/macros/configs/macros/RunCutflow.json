@@ -67,10 +67,9 @@
                     "type": "float1D",
                     "name": "reco_vtx_vxy",
                     "title": "Muon pair vxy [cm]",
-                    "nbinsX": 14,
+                    "nbinsX": 50,
                     "lowX": 0,
-                    "highX": 1000,
-                    "binEdgesX": [ 0, 25, 50, 75, 100, 150, 200, 250, 300, 350, 400, 500, 600, 700, 800 ]
+                    "highX": 500
                 },
                 {
                     "quantity": "reco_vtx_sigmavxy",
@@ -79,10 +78,9 @@
                     "type": "float1D",
                     "name": "reco_vtx_sigmavxy",
                     "title": "Muon pair sigma vxy [cm]",
-                    "nbinsX": 9,
+                    "nbinsX": 20,
                     "lowX": 0,
-                    "highX": 200,
-                    "binEdgesX": [ 0, 10, 20, 30, 40, 50, 75, 100, 150, 200 ]
+                    "highX": 200
                 },
                 {
                     "quantity": "reco_vtx_significance",
@@ -93,8 +91,7 @@
                     "title": "Muon pair vtx significance (vxy/sigma_vxy)",
                     "nbinsX": 30,
                     "lowX": 0,
-                    "highX": 200,
-                    "binEdgesX": [ 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50, 55, 60, 65, 70, 75, 80, 85, 90, 95, 100, 110, 120, 130, 140, 150, 160, 170, 180, 190, 200 ] 
+                    "highX": 300
                 },
                 {
                     "quantity": "reco_vtx_reduced_chi2",
@@ -364,10 +361,9 @@
                     "type": "float1D",
                     "name": "reco_Mmumu",
                     "title": "Di-muon invariant mass M_{#mu#mu} [GeV]",
-                    "nbinsX": 18,
+                    "nbinsX": 20,
                     "lowX": 0,
-                    "highX": 100,
-                    "binEdgesX": [ 0, 2, 4, 6, 8, 10, 15, 20, 25, 30, 35, 40, 45, 50, 60, 70, 80, 90, 100 ]
+                    "highX": 100
                 }
             ]
         }

@@ -40,13 +40,43 @@
                     "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
                     "type": "float2D",
                     "quantity": "reco_METmu_dphi_v2",
-                    "nbinsX": 0.0,
+                    "nbinsX": 32,
                     "lowX": 0,
                     "highX": 3.2,
                     "quantity2": "reco_vtx_significance",
-                    "nbinsY": 30,
+                    "nbinsY": 20,
+                    "lowY": 0,
+                    "highY": 200 
+                },
+                {
+                    "name": "reco_METmu_dphi_zoom_vs_reco_vtx_significance_zoom",
+                    "title": "|#Delta#Phi(MET, muons)| vs Muon pair vertex significance",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "float2D",
+                    "quantity": "reco_METmu_dphi_v2",
+                    "nbinsX": 30,
+                    "lowX": 0,
+                    "highX": 1.0,
+                    "quantity2": "reco_vtx_significance",
+                    "nbinsY": 20,
                     "lowY": 0,
                     "highY": 20 
+                },
+                {
+                    "name": "reco_METmu_dphi_zoom_vs_reco_vtx_significance_zoomzoom",
+                    "title": "|#Delta#Phi(MET, muons)| vs Muon pair vertex significance",
+                    "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+                    "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+                    "type": "float2D",
+                    "quantity": "reco_METmu_dphi_v2",
+                    "nbinsX": 30,
+                    "lowX": 0,
+                    "highX": 1.0,
+                    "quantity2": "reco_vtx_significance",
+                    "nbinsY": 20,
+                    "lowY": 0,
+                    "highY": 10 
                 }
             ]
         }
