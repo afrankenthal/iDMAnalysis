@@ -1,0 +1,20 @@
+[
+    {
+        "name": "mMainAnalysis",
+        "config": {
+            "plots": [
+                {
+                    "quantity": "gen_pu_true",
+                    "groups": [ "QCD", "data" ],
+                    "cuts": [0, 1],
+                    "type": "int1D",
+                    "name": "gen_pu_true",
+                    "title": "True pileup",
+                    "nbinsX": 100,
+                    "lowX": 0,
+                    "highX": 100
+                }
+            ]
+        }
+    }
+]
