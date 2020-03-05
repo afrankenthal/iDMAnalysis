@@ -56,9 +56,21 @@ namespace common {
         {"GJets", GroupPlotInfo{"#gamma+Jets", kCyan, SOLID, BKG}},
         {"Top", GroupPlotInfo{"Top", kViolet-2, SOLID, BKG}},
         {"sig_60p0_1", GroupPlotInfo{"(50,70) GeV, 1 mm", kBlack, SOLID, SIGNAL}},
+        {"sig_60p0_10", GroupPlotInfo{"(50,70) GeV, 10 mm", kBlack, SOLID, SIGNAL}},
+        {"sig_60p0_100", GroupPlotInfo{"(50,70) GeV, 100 mm", kBlack, SOLID, SIGNAL}},
+        {"sig_60p0_1000", GroupPlotInfo{"(50,70) GeV, 1000 mm", kBlack, SOLID, SIGNAL}},
+        {"sig_5p25_1", GroupPlotInfo{"(5,5.5) GeV, 1 mm", kCyan, SOLID, SIGNAL}},
+        {"sig_5p25_10", GroupPlotInfo{"(5,5.5) GeV, 10 mm", kCyan, SOLID, SIGNAL}},
+        {"sig_5p25_100", GroupPlotInfo{"(5,5.5) GeV, 100 mm", kCyan, SOLID, SIGNAL}},
         {"sig_5p25_1000", GroupPlotInfo{"(5,5.5) GeV, 1000 mm", kCyan, SOLID, SIGNAL}},
+        {"sig_52p5_1", GroupPlotInfo{"(50,55) GeV, 1 mm", kGreen-4, SOLID, SIGNAL}},
+        {"sig_52p5_10", GroupPlotInfo{"(50,55) GeV, 10 mm", kGreen-4, SOLID, SIGNAL}},
         {"sig_52p5_100", GroupPlotInfo{"(50,55) GeV, 100 mm", kGreen-4, SOLID, SIGNAL}},
+        {"sig_52p5_1000", GroupPlotInfo{"(50,55) GeV, 1000 mm", kGreen-4, SOLID, SIGNAL}},
+        {"sig_6p0_1", GroupPlotInfo{"(5,7) GeV, 1 mm", kYellow-3, SOLID, SIGNAL}},
         {"sig_6p0_10", GroupPlotInfo{"(5,7) GeV, 10 mm", kYellow-3, SOLID, SIGNAL}},
+        {"sig_6p0_100", GroupPlotInfo{"(5,7) GeV, 100 mm", kYellow-3, SOLID, SIGNAL}},
+        {"sig_6p0_1000", GroupPlotInfo{"(5,7) GeV, 1000 mm", kYellow-3, SOLID, SIGNAL}},
         {"data", GroupPlotInfo{"Data", kBlack, MARKER, DATA}}
         }; 
     }
