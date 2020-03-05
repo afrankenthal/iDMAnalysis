@@ -1,0 +1,46 @@
+{
+    "Mchi-6p0_dMchi-2p0_ctau-1": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_seventhrun/Mchi-6p0_dMchi-2p0_ctau-1"
+        ],
+        "group": "sig_6p0_1",
+        "limit_num_files": -1,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 45297.0,
+        "xsec": 0.14,
+        "year": 2018
+    },
+    "Mchi-6p0_dMchi-2p0_ctau-10": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_seventhrun/Mchi-6p0_dMchi-2p0_ctau-10"
+        ],
+        "group": "sig_6p0_10",
+        "limit_num_files": -1,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 45260.0,
+        "xsec": 0.14,
+        "year": 2018
+    },
+    "Mchi-6p0_dMchi-2p0_ctau-100": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_seventhrun/Mchi-6p0_dMchi-2p0_ctau-100"
+        ],
+        "group": "sig_6p0_100",
+        "limit_num_files": -1,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 45121.0,
+        "xsec": 0.14,
+        "year": 2018
+    },
+    "Mchi-6p0_dMchi-2p0_ctau-1000": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_seventhrun/Mchi-6p0_dMchi-2p0_ctau-1000"
+        ],
+        "group": "sig_6p0_1000",
+        "limit_num_files": -1,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 45185.0,
+        "xsec": 0.14,
+        "year": 2018
+    }
+}
