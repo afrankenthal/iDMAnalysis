@@ -1370,12 +1370,12 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         if (fFoundValidVertex)
             muon1 = muTracks1[dSAIdx[0]];
         else
-            muon1 = muTracks1[0];
+            muon1 = muTracks1[muGoodTracksIdx[0]];
         if (recoNGoodDSA_ >= 2) {
             if (fFoundValidVertex)
                 muon2 = muTracks1[dSAIdx[1]];
             else
-                muon2 = muTracks1[1];
+                muon2 = muTracks1[muGoodTracksIdx[1]];
         }
     }
 
