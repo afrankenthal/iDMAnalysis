@@ -1,8 +1,3 @@
-//TString formatXTitle(TString name) {
-//    if (name == "CaloPFMETRatio_")
-//        return TString("Calo"
-//}
-
 TString formatName(TString name, TString f) {
     TString forward = (f.Contains("f") ? "forward" : "backward");
     if (name.Contains("52p5"))
@@ -17,6 +12,9 @@ TString formatName(TString name, TString f) {
 }
 
 void scanSensitivity(TString filename) {
+    gROOT->LoadMacro("tdrstyle.C");
+    gROOT->ProcessLine("setTDRStyle();");
+
     if (filename == "") {
         std::cout << "No filename!" << endl;
         return;
@@ -99,8 +97,8 @@ void scanSensitivity(TString filename) {
         for (int i = 1; i <= nbins; i++) {
             for (auto & [name, hc] : hcs_sig) {
                 if (i == 1) {
-                    ratios_forward[name] = new TH1F(Form("ratio_forward_%s", name.Data()), formatName(name,"f") , nbins, hc->GetBinCenter(1), hc->GetBinCenter(nbins));
-                    ratios_backward[name] = new TH1F(Form("ratio_backward_%s", name.Data()), formatName(name,"b"), nbins, hc->GetBinCenter(1), hc->GetBinCenter(nbins));
+                    ratios_forward[name] = new TH1F(Form("ratio_forward_%s", name.Data()), formatName(name,"f") , nbins, hc->GetBinLowEdge(1), hc->GetBinLowEdge(nbins+1));
+                    ratios_backward[name] = new TH1F(Form("ratio_backward_%s", name.Data()), formatName(name,"b"), nbins, hc->GetBinLowEdge(1), hc->GetBinLowEdge(nbins+1));
                 }
                 // check forward
                 ratios_forward[name]->SetBinContent(i, hc->GetBinContent(i)/sqrt(tot_bkg_forward[i]+0.0001));
@@ -124,32 +122,42 @@ void scanSensitivity(TString filename) {
             cout << ", corresponds to bin center " << hc->GetBinCenter(best_bin_backward[name]) << endl;
         }
 
-        TCanvas * c = new TCanvas();
         int color = 1;
-        THStack * hs = new THStack(name, name);
+        THStack * hs_forward = new THStack(Form("%s_forward", name.Data()), Form("%s_forward", name.Data()));
         for (auto & [name, hratio] : ratios_forward) {
             hratio->SetDirectory(0);
             hratio->SetLineColor(color++);
             hratio->SetLineWidth(2);
             hratio->Scale(1/(hratio->Integral()));
-            hs->Add(hratio);
+            hs_forward->Add(hratio);
             //hratio->Draw("SAME HIST");
         }
         color = 1;
+        THStack * hs_backward = new THStack(Form("%s_backward", name.Data()), Form("%s_backward", name.Data()));
         for (auto & [name, hratio] : ratios_backward) {
             hratio->SetDirectory(0);
             hratio->SetLineColor(color++);
             hratio->SetLineWidth(2);
             hratio->SetLineStyle(2);
             hratio->Scale(1/(hratio->Integral()));
-            hs->Add(hratio);
+            hs_backward->Add(hratio);
             //hratio->Draw("SAME HIST");
         }
-        hs->Draw("NOSTACK HIST");
-        hs->SetTitle("");
-        hs->GetXaxis()->SetTitle(title);
-        hs->GetYaxis()->SetTitle("A. U.");
-        c->BuildLegend(0.5, 0.5, 0.88, 0.85);
+        
+        TCanvas * c = new TCanvas();
+        hs_forward->Draw("NOSTACK HIST");
+        hs_forward->SetTitle("");
+        hs_forward->GetXaxis()->SetTitle(title);
+        hs_forward->GetYaxis()->SetTitle("A. U.");
+        c->BuildLegend(0.4, 0.3, 0.4, 0.3);
+
+        TCanvas * c2 = new TCanvas();
+        hs_backward->Draw("NOSTACK HIST");
+        hs_backward->SetTitle("");
+        hs_backward->GetXaxis()->SetTitle(title);
+        hs_backward->GetYaxis()->SetTitle("A. U.");
+        c2->BuildLegend(0.4, 0.3, 0.4, 0.3);
+        //c2->BuildLegend();//0.5, 0.5, 0.88, 0.85);
 
     }
     //file->Write();
