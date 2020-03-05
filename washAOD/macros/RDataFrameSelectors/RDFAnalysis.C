@@ -51,16 +51,19 @@ void RDFAnalysis::SetParams(common::SampleInfo sample_info) {
             //else {pileup = new TFile("../../data/zjetpileup/zjetratio100.root");}
         }
         else {
-            pileup = new TFile("../../data/puWeights_90x_41ifb.root");
+            //pileup = new TFile("../../data/puWeights_90x_41ifb.root");
+            pileup = new TFile("../../data/pileup/PUWeights_2017.root");
         }
     }
     else if (year_ == 2016) {
-        pileup = new TFile("../../data/puWeights_80x_37ifb.root");
+        //pileup = new TFile("../../data/puWeights_80x_37ifb.root");
+        pileup = new TFile("../../data/pileup/PUWeights_2016.root");
         lumi_ = 35.92 * 1000;
         trig_wgt = 1.0; // TODO change later
     }
     else if (year_ == 2018) {
-        pileup = new TFile("../../data/puWeights_10x_56ifb.root");
+        //pileup = new TFile("../../data/puWeights_10x_56ifb.root");
+        pileup = new TFile("../../data/pileup/PUWeights_2018.root");
         lumi_ = 59.74 * 1000;
         trig_wgt = 1.0; // TODO change later
     }
@@ -127,7 +130,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     // First, define all the relevant weights
     auto calcZsf = [&](vector<int> gen_ID, vector<float> gen_pt) { 
-        if (group_ != "ZJets")
+        if (group_ != "ZJets" && group_ != "DY")
             return 1.0f;
         if (gen_pt.size() != gen_ID.size())
             return 1.0f;
