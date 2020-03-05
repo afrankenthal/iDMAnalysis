@@ -125,8 +125,20 @@
         "description": "Vertex #chi^{2} < 4"
     },
     {
+        "cut": "reco_MT < 200",
+        "description": "MT < 200 GeV"
+    },
+    {
+        "cut": "reco_Mmumu < 30",
+        "description": "M_{#mu#mu} < 30 GeV"
+    },
+    {
         "cut": "reco_vtx_dR < 0.9",
         "description": "dR(muons) < 0.9"
+    },
+    {
+        "cut": "reco_sel_mu_charge[0]+reco_sel_mu_charge[1] == 0",
+        "description": "muons: OSSF"
     },
     {
         "cut": "reco_sel_mu_dxy0 > 0.1", 
@@ -135,10 +147,6 @@
     {
         "cut": "reco_sel_mu_dxy1 > 0.1", 
         "description": "Selected muon 1 dxy > 1 mm"
-    },
-    {
-        "cut": "reco_sel_mu_charge[0]+reco_sel_mu_charge[1] == 0",
-        "description": "muons: OSSF"
     },
     {
         "cut": "reco_n_gbmdsa_match == 0",

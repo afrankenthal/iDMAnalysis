@@ -125,6 +125,14 @@
         "description": "Vertex #chi^{2} < 4"	
     },
     {
+        "cut": "reco_MT < 200",
+        "description": "MT < 200 GeV"
+    },
+    {
+        "cut": "reco_Mmumu < 30",
+        "description": "M_{#mu#mu} < 30 GeV"
+    },
+    {
         "cut": "reco_vtx_dR < 0.9",
         "description": "dR(muons) < 0.9"
     },
