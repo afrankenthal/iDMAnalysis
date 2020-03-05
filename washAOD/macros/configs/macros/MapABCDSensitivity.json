@@ -1,0 +1,11 @@
+[
+    {
+        "name": "mMapABCDSensitivity",
+        "config": {
+            "infilename_signal": "plots_SR_seventhrun_noData_2DHists_ABCDSensitivitySignifRange_signal_5p25_2018.root",
+            "infilename_VR": "plots_CR_nJets_seventhrun_fullData_2DHists_ABCDSensitivitySignifRange_161718.root",
+            "infilename_template": "ABCD_template_nJets.root",
+            "infilename_SR": "plots_SR_seventhrun_YESData_2DHists_ABCDSensitivitySignifRange_161718.root"
+        }
+    }
+]

@@ -4,9 +4,9 @@
         "config": {
             "infilename": "",
             "lowX": 0,
-            "highX": 0.2,
-            "lowY": 4,
-            "highY": 20
+            "highX": 0.1,
+            "lowY": 0,
+            "highY": 120
         }
     }
 ]

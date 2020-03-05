@@ -74,7 +74,6 @@ namespace macro {
                     hBkg->Reset();
 
                     // loop over all possible boundaries
-
                     for (int xBound = 1; xBound <= h->GetNbinsX()+1; xBound++) {
                         for (int yBound = 1; yBound <= h->GetNbinsY()+1; yBound++) {
                             float A = h->Integral(0, xBound-1, 0, yBound-1);
@@ -84,13 +83,12 @@ namespace macro {
                             hBkg->SetBinContent(xBound, yBound, sqrt(C));
                         }
                     }
-
                     hBkgVec.push_back(hBkg);
                 }
             }
         }
 
-        TFile * file_out = new TFile("test.root", "RECREATE");
+        TFile * file_out = new TFile("scan.root", "RECREATE");
         for (auto h : hSignalVec) {
             h->Write();
         }

@@ -1,0 +1,9 @@
+[
+    {
+        "name": "mMapABCDNormalization",
+        "config": {
+            "infilename1": "plots_CR_nJets_seventhrun_fullData_2DHists_Significance_161718.root",
+            "infilename2": "plots_CR_bTag_seventhrun_fullData_2DHists_Significance_161718.root"
+        }
+    }
+]
