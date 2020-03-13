@@ -123,9 +123,9 @@ def main():
         config.Data.splitting = 'Automatic'
 
         if isData == True:
-            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/data_eighthrun' % year
+            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/data_ninthrun' % year
         else:
-            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_eighthrun' % year
+            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_ninthrun' % year
 
         config.Data.publication = False
         config.Data.ignoreLocality = True

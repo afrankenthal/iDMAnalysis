@@ -84,7 +84,6 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         // Tags
         const edm::InputTag bTagProbbTag_;
         const edm::InputTag bTagProbbbTag_;
-        const edm::InputTag bTagCombineTag_;
         const edm::InputTag dsaRecoMuTag_;
         const edm::InputTag dsaRecoMuTimingTag_;
         const edm::InputTag muTrackTag1_;
@@ -99,7 +98,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag trigEventTag_;
         const edm::InputTag pileupInfosTag_;
         const edm::InputTag genEvtInfoTag_;
-        const std::string processName_;
+        const std::string triggerProcessName_;
         const edm::InputTag HBHENoiseFilterResultProducerTag_;
         const edm::InputTag HBHEIsoNoiseFilterResultProducerTag_;
         const edm::InputTag primaryVertexFilterTag_;
@@ -118,7 +117,6 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         // Tokens
         const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbToken_;
         const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbbToken_;
-        const edm::EDGetTokenT<reco::JetTagCollection> bTagCombineToken_;
         const edm::EDGetTokenT<reco::MuonCollection> dsaRecoMuToken_;
         const edm::EDGetTokenT<reco::MuonTimeExtraMap> dsaRecoMuTimingToken_;
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken1_;
@@ -151,7 +149,6 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         // Handles
         edm::Handle<reco::JetTagCollection> bTagProbbHandle_;
         edm::Handle<reco::JetTagCollection> bTagProbbbHandle_;
-        edm::Handle<reco::JetTagCollection> bTagCombineHandle_;
         edm::Handle<reco::MuonCollection> dsaRecoMuHandle_;
         edm::Handle<reco::MuonTimeExtraMap> dsaRecoMuTimingHandle_;
         edm::Handle<reco::TrackCollection> muTrackHandle1_;
@@ -220,33 +217,11 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> genVz_;
         std::vector<float> genMass_;
         
-        // Gen muon
-        //std::vector<float> genPt_;
-        //std::vector<float> genEta_;
-        //std::vector<float> genPhi_;
-        //std::vector<float> genEn_;
-        //std::vector<float> genVxy_;
-        //std::vector<float> genVz_;
-        //std::vector<float> genDr_;
-        //// Chi1 DM
-        //std::vector<float> genChi1Pt_;
-        //std::vector<float> genChi1Eta_;
-        //std::vector<float> genChi1Phi_;
-        //std::vector<float> genChi1En_;
-        //std::vector<float> genChi1Vxy_;
-        //std::vector<float> genChi1Vz_;
-        //// Chi2 DM
-        //std::vector<float> genChi2Pt_;
-        //std::vector<float> genChi2Eta_;
-        //std::vector<float> genChi2Phi_;
-        //std::vector<float> genChi2En_;
-        //std::vector<float> genChi2Vxy_;
-        //std::vector<float> genChi2Vz_;
-        
         // Gen jet
         std::vector<float> genJetPt_;
         std::vector<float> genJetEta_;
         std::vector<float> genJetPhi_;
+        
         // Gen MET
         float genLeadMETPt_;
         float genLeadMETPhi_;
@@ -305,6 +280,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         // Selected muon branches
         int nSelectedMuons_;
         int recoNMatchedGBMvDSA_;
+        std::vector<float> recoGMdSAdR_;
+        std::vector<int> recoGMdSAmatch_;
         float recoGBMDSADr_;
         std::vector<float> selectedMuonsPt_;
         std::vector<float> selectedMuonsPtError_;
@@ -343,6 +320,21 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         float recoVtxSigmaVxy_;
         float recoVtxReducedChi2_;
         float recoVtxDr_;
+        std::vector<float> dsadsa_recoVtxVxy_;
+        std::vector<float> dsadsa_recoVtxVz_;
+        std::vector<float> dsadsa_recoVtxSigmaVxy_;
+        std::vector<float> dsadsa_recoVtxReducedChi2_;
+        std::vector<float> dsadsa_recoVtxDr_;
+        std::vector<float> gmgm_recoVtxVxy_;
+        std::vector<float> gmgm_recoVtxVz_;
+        std::vector<float> gmgm_recoVtxSigmaVxy_;
+        std::vector<float> gmgm_recoVtxReducedChi2_;
+        std::vector<float> gmgm_recoVtxDr_;
+        std::vector<float> dsagm_recoVtxVxy_;
+        std::vector<float> dsagm_recoVtxVz_;
+        std::vector<float> dsagm_recoVtxSigmaVxy_;
+        std::vector<float> dsagm_recoVtxReducedChi2_;
+        std::vector<float> dsagm_recoVtxDr_;
 
         float recoMmumu_;
 
@@ -399,14 +391,12 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoPFJetCorrectedJERDownEta_;
         std::vector<float> recoPFJetCorrectedJERDownPhi_;
         bool recoPFHEMFlag_;
-	bool bTagCombineBool;
-
-        float recoPFMETJetDeltaPhi_;
 
         // MHT reco branch
         float MHTPt_;
 
         // as long as fewer than 32 cuts don't need to specify number
+        // DEPRECATED
         uint32_t cuts_;
         inline void setCutBit(int bit) { cuts_ |= (1 << bit); }
         inline void clearCutBit(int bit) { cuts_ &= ~(1 << bit); }
