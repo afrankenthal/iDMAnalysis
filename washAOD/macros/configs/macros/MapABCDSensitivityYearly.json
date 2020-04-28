@@ -1,0 +1,21 @@
+[
+    {
+        "name": "mMapABCDSensitivityYearly",
+        "config": {
+            "infilename_signal_2016": "PlotsIncompleteData_April13_alphaD_0p1/plots_SR_tenthrun_noData_2DHists_SignifRange_signal_2016.root",
+            "infilename_VR_2016": "PlotsIncompleteData_April13_alphaD_0p1/plots_CR_nJets_tenthrun_incompleteData_2DHists_SignifRangeTestSigmaCorrect_2016.root",
+            "infilename_SR_2016": "PlotsIncompleteData_April13_alphaD_0p1/plots_SR_tenthrun_YESincompleteData_2DHists_SignifRangeTestSigmaCorrect_2016.root",
+            "infilename_signal_2017": "PlotsIncompleteData_April13_alphaD_0p1/plots_SR_tenthrun_noData_2DHists_SignifRange_signal_2017.root",
+            "infilename_VR_2017": "PlotsIncompleteData_April13_alphaD_0p1/plots_CR_nJets_tenthrun_incompleteData_2DHists_SignifRangeTestSigmaCorrect_2017.root",
+            "infilename_SR_2017": "PlotsIncompleteData_April13_alphaD_0p1/plots_SR_tenthrun_YESincompleteData_2DHists_SignifRangeTestSigmaCorrect_2017.root",
+            "infilename_signal_2018": "PlotsIncompleteData_April13_alphaD_0p1/plots_SR_tenthrun_noData_2DHists_SignifRange_signal_2018.root",
+            "infilename_VR_2018": "PlotsIncompleteData_April13_alphaD_0p1/plots_CR_nJets_tenthrun_incompleteData_2DHists_SignifRangeTestSigmaCorrect_2018.root",
+            "infilename_SR_2018": "PlotsIncompleteData_April13_alphaD_0p1/plots_SR_tenthrun_YESincompleteData_2DHists_SignifRangeTestSigmaCorrect_2018.root",
+            "infilename_signal_161718": "PlotsIncompleteData_April13_alphaD_0p1/plots_SR_tenthrun_noData_2DHists_SignifRange_signal_161718.root",
+            "infilename_VR_161718": "PlotsIncompleteData_April13_alphaD_0p1/plots_CR_nJets_tenthrun_incompleteData_2DHists_SignifRangeTestSigmaCorrect_161718.root",
+            "infilename_SR_161718": "PlotsIncompleteData_April13_alphaD_0p1/plots_SR_tenthrun_YESincompleteData_2DHists_SignifRangeTestSigmaCorrect_161718.root",
+            "infilename_template": "PlotsIncompleteData_April13_alphaD_0p1/ABCD_template_nJets.root",
+            "cuts_to_keep": ["25", "27", "28", "29", "30"]
+        }
+    }
+]
