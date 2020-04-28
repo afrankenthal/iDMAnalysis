@@ -94,5 +94,11 @@
         "singleMu_Run2018B": "/SingleMuon/Run2018B-17Sep2018-v1/AOD",
         "singleMu_Run2018C": "/SingleMuon/Run2018C-17Sep2018-v1/AOD",
         "singleMu_Run2018D": "/SingleMuon/Run2018D-22Jan2019-v2/AOD"
+    },
+    "Data_NoBPTX_2018": {
+        "NoBPTX_2018A": "/NoBPTX/Run2018A-PromptReco-v3/AOD",
+        "NoBPTX_2018B": "/NoBPTX/Run2018B-PromptReco-v1/AOD",
+        "NoBPTX_2018C": "/NoBPTX/Run2018C-PromptReco-v3/AOD",
+        "NoBPTX_2018D": "/NoBPTX/Run2018D-PromptReco-v2/AOD"
     }
 }
