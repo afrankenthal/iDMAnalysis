@@ -8,66 +8,82 @@
 #ifndef RDFAnalysis_h
 #define RDFAnalysis_h
 
-#include <TROOT.h>
-#include <TChain.h>
-#include <TFile.h>
-#include <TSystemFile.h>
-#include <TSystemDirectory.h>
-#include <ROOT/RDataFrame.hxx>
-#include <ROOT/RDF/InterfaceUtils.hxx>
-
-// Headers needed by this particular selector
-#include <vector>
 #include <map>
+#include <vector>
+
+#include <TH1D.h>
+#include <TH2D.h>
+#include <ROOT/RDF/InterfaceUtils.hxx>
+#include <ROOT/RDataFrame.hxx>
+template<typename T>
+using RDFSumReturnType_t = ROOT::RDF::RDFDetail::SumReturnType_t<T>;
+//typedef ROOT::RDF::RDFDetail::SumReturnType_t<double> RDFSumReturnType_t;
+template<typename T>
+using RDFResultPtrSumType = ROOT::RDF::RResultPtr<RDFSumReturnType_t<T>>;
+using RDFResultPtrSumType_d = RDFResultPtrSumType<double>;
+//typedef ROOT::RDF::RResultPtr<RDFSumReturnType_t> RDFResultPtrSumType;
+template<typename T>
+using RDFResultPtr = ROOT::RDF::RResultPtr<T>;
+using RDFResultPtr1D = RDFResultPtr<TH1D>;
+using RDFResultPtr2D = RDFResultPtr<TH2D>;
+//typedef ROOT::RDF::RResultPtr<TH1D> RDFResultPtr1D;
+//typedef ROOT::RDF::RResultPtr<TH2D> RDFResultPtr2D;
+#include <TChain.h>
+#include <TH1F.h>
 
 #include "../utils/common.h"
+#include "../utils/json.hpp"
+using json = nlohmann::json;
 
 
 class RDFAnalysis {
 public :
-   //RDFAnalysis() : cutflow_(30, 0.0) { }
    RDFAnalysis() { }
    ~RDFAnalysis() { }
+
    void    Begin();
    Bool_t  Process(TChain * chain);
    void    Terminate();
 
-   //void doFills(int cut, double weight);
-   void SetParams(common::SampleInfo sample_info);
-   void SetCuts(std::vector<common::CutInfo> cuts_info);
-   void SetHistos(std::map<TString, common::THInfo*> histos_info) { histos_info_ = histos_info; }
-   //std::vector<double> GetCutflow() { return cutflow_; }
-   std::vector<ROOT::RDF::RResultPtr<ROOT::RDF::RDFDetail::SumReturnType_t<double>>> GetCutflow() { return cutflow_; }
-   //std::map<TString, std::map<int, TH1*>> GetHistograms() { return all_histos_; }
-   std::map<TString, std::map<int, ROOT::RDF::RResultPtr<TH1D>>> GetHistograms1D() { return all_histos_1D_; }
-   std::map<TString, std::map<int, ROOT::RDF::RResultPtr<TH2D>>> GetHistograms2D() { return all_histos_2D_; }
+   void SetMacroConfig(json macro_info);
+   void SetHistoConfig(std::map<TString, common::THInfo*> histos_info);
+   void SetCutConfig(std::vector<common::CutInfo> cuts_info);
+   void SetSampleConfig(common::SampleInfo sample_info);
+
+   std::vector<RDFResultPtrSumType_d> GetCutflow() { return cutflow_; }
+   std::map<TString, std::map<int, RDFResultPtr1D>> GetHistograms1D() { return all_histos_1D_; }
+   std::map<TString, std::map<int, RDFResultPtr2D>> GetHistograms2D() { return all_histos_2D_; }
 
    TChain * chain_;
 
-   //std::vector<double> cutflow_;
+   std::map<TString, std::map<int, RDFResultPtr1D>> all_histos_1D_;
+   std::map<TString, std::map<int, RDFResultPtr2D>> all_histos_2D_;
+   std::vector<RDFResultPtrSumType_d> cutflow_;
+
+   json macro_info_;
    std::map<TString, common::THInfo*> histos_info_;
-   //std::map<TString, std::map<int, TH1*>> cutflowHistos_;
-   std::map<TString, std::map<int, ROOT::RDF::RResultPtr<TH1D>>> all_histos_1D_;
-   std::map<TString, std::map<int, ROOT::RDF::RResultPtr<TH2D>>> all_histos_2D_;
-   std::vector<ROOT::RDF::RResultPtr<ROOT::RDF::RDFDetail::SumReturnType_t<double>>> cutflow_;
-
    std::vector<common::CutInfo> cuts_info_;
-
    common::SampleInfo sample_info_;
+
    TString name_;
    Double_t sum_gen_wgt_;
    Double_t xsec_;
    Double_t lumi_;
+   Double_t custom_lumi_;
    int year_;
-   float trig_wgt;
+   //float trig_wgt;
+   TH1F * trig_hist_2016;
+   TH1F * trig_hist_2017;
+   TH1F * trig_hist_2018;
+   TH1F * trig_sf;
    common::MODE mode_;
    TString group_;
 
    TH1F * sf_z_qcd, * sf_z_ewk;
    TH1F * sf_w_qcd, * sf_w_ewk;
    TH1F * sf_pu;
-
+   TH1F * pileup_2016, * pileup_2017, * pileup_2018;
+   std::map<TString, TH1F*> pileup_ZJets_2017;
 };
 
 #endif
-
