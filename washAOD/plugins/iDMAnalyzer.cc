@@ -16,6 +16,7 @@
 #include "RecoVertex/VertexPrimitives/interface/TransientVertex.h"
 #include "RecoVertex/KalmanVertexFit/interface/KalmanVertexFitter.h"
 #include "DataFormats/VertexReco/interface/Vertex.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
 #include "DataFormats/TrackReco/interface/HitPattern.h"
 
 #include <cmath>
@@ -46,6 +47,7 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     HBHENoiseFilterResultProducerTag_("HBHENoiseFilterResultProducer","HBHENoiseFilterResult"),
     HBHEIsoNoiseFilterResultProducerTag_("HBHENoiseFilterResultProducer","HBHEIsoNoiseFilterResult"),
     primaryVertexFilterTag_("myPrimaryVertexFilter"),
+    primaryVertexTag_(ps.getParameter<edm::InputTag>("primaryVertex")),
     globalSuperTightHalo2016FilterTag_("globalSuperTightHalo2016Filter"),
     EcalDeadCellTriggerPrimitiveFilterTag_("EcalDeadCellTriggerPrimitiveFilter"),
     ecalBadCalibFilterTag_("ecalBadCalibFilter"),
@@ -77,6 +79,7 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     HBHENoiseFilterResultProducerToken_(consumes<bool>(HBHENoiseFilterResultProducerTag_)),
     HBHEIsoNoiseFilterResultProducerToken_(consumes<bool>(HBHEIsoNoiseFilterResultProducerTag_)),
     primaryVertexFilterToken_(consumes<int>(primaryVertexFilterTag_)),
+    primaryVertexToken_(consumes<reco::VertexCollection>(primaryVertexTag_)),
     globalSuperTightHalo2016FilterToken_(consumes<bool>(globalSuperTightHalo2016FilterTag_)),
     EcalDeadCellTriggerPrimitiveFilterToken_(consumes<bool>(EcalDeadCellTriggerPrimitiveFilterTag_)),
     ecalBadCalibFilterToken_(consumes<bool>(ecalBadCalibFilterTag_)),
@@ -105,6 +108,7 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     desc.add<edm::InputTag>("dsaRecoMuTiming", edm::InputTag("muontimingFromdSA","combined"));
     desc.add<edm::InputTag>("muTrack1", edm::InputTag("displacedStandAloneMuons"));
     desc.add<edm::InputTag>("muTrack2", edm::InputTag("globalMuons"));
+    desc.add<edm::InputTag>("primaryVertex", edm::InputTag("offlinePrimaryVertices"));
     desc.add<edm::InputTag>("genParticle", edm::InputTag("genParticles"));
     desc.add<edm::InputTag>("genJet", edm::InputTag("ak4GenJets"));
     desc.add<edm::InputTag>("genMET", edm::InputTag("genMetTrue"));
@@ -197,6 +201,9 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_Mmumu",  &recoMmumu_);
     recoT->Branch("reco_METmu_dphi", &recoDeltaPhiMETMu_);
     recoT->Branch("reco_corr_METmu_dphi", &recoDeltaPhiCorrectedMETMu_);
+    recoT->Branch("reco_pv_vx", &pvx_);
+    recoT->Branch("reco_pv_vy", &pvy_);
+    recoT->Branch("reco_pv_vz", &pvz_);
     recoT->Branch("reco_vtx_dsadsa_vxy", &dsadsa_recoVtxVxy_);
     recoT->Branch("reco_vtx_dsadsa_vz",  &dsadsa_recoVtxVz_);
     recoT->Branch("reco_vtx_dsadsa_sigmavxy", &dsadsa_recoVtxSigmaVxy_);
@@ -365,6 +372,11 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "muTrack2");
         return false;
     }
+    iEvent.getByToken(primaryVertexToken_, primaryVertexHandle_);
+    if (!primaryVertexHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "primaryVertex");
+        return false;
+    }
     iEvent.getByToken(recoPFMETToken_, recoPFMETHandle_);
     if (!recoPFMETHandle_.isValid()) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "PFMET");
@@ -402,12 +414,14 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
     triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu140_PFMHTNoMu140_IDTight");
     triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET120_PFMHT120_IDTight_PFHT60");
     triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_IsoMu27");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu100_PFMHTNoMu100_IDTight");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DCA_PFMET50_PFMHT60");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET50_PFMHT60");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET70_PFMHT70");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET90_PFMHT90");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_IsoMu27"); // For MET trigger eff. studies in data
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu100_PFMHTNoMu100_IDTight"); // Alternative triggers
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DCA_PFMET50_PFMHT60"); // Alternative triggers
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET50_PFMHT60");  // Alternative triggers
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET70_PFMHT70");  // Alternative triggers
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET90_PFMHT90");  // Alternative triggers
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_L2Mu10_NoVertex_NoBPTX");    // For dSA eff. studies in data
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_L2Mu10_NoVertex_NoBPTX3BX"); // For dSA eff. studies in data
     
     const std::vector<std::string>& pathNames = hltConfig_.triggerNames();
     for (auto trigPathNoVersion : triggerPathsWithoutVersionNum_) {
@@ -545,6 +559,12 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     lumiSec_ = iEvent.luminosityBlock();
     runNum_ = iEvent.id().run();
     npv_ = *primaryVertexFilterHandle_;
+
+    // Primary vertex
+    reco::Vertex pv = *primaryVertexHandle_->begin();
+    pvx_ = pv.x();
+    pvy_ = pv.y();
+    pvz_ = pv.z();
 
     // MET filters
     METFiltersFailBits_ = 0;
@@ -859,9 +879,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         recoDSAEtaError_.push_back(mu_i->etaError());
         recoDSAPhi_.push_back(mu_i->phi());
         recoDSAPhiError_.push_back(mu_i->phiError());
-        recoDSADxy_.push_back(mu_i->dxy());
+        recoDSADxy_.push_back(mu_i->dxy(pv.position()));
         recoDSADxyError_.push_back(mu_i->dxyError());
-        recoDSADz_.push_back(mu_i->dz());
+        recoDSADz_.push_back(mu_i->dz(pv.position()));
         recoDSADzError_.push_back(mu_i->dzError());
         recoDSACharge_.push_back(mu_i->charge());
         recoDSATrkChi2_.push_back(mu_i->normalizedChi2());
@@ -895,9 +915,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         recoGMEtaError_.push_back(mu_i->etaError());
         recoGMPhi_.push_back(mu_i->phi());
         recoGMPhiError_.push_back(mu_i->phiError());
-        recoGMDxy_.push_back(mu_i->dxy());
+        recoGMDxy_.push_back(mu_i->dxy(pv.position()));
         recoGMDxyError_.push_back(mu_i->dxyError());
-        recoGMDz_.push_back(mu_i->dz());
+        recoGMDz_.push_back(mu_i->dz(pv.position()));
         recoGMDzError_.push_back(mu_i->dzError());
         recoGMCharge_.push_back(mu_i->charge());
         recoGMTrkChi2_.push_back(mu_i->normalizedChi2());
@@ -997,9 +1017,12 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         std::unique_ptr<reco::PFJet> corr_jet_i_jer_up(jet_i->clone());
         std::unique_ptr<reco::PFJet> corr_jet_i_jer_down(jet_i->clone());
         // For MET corrections due to jet smearing
-        std::unique_ptr<reco::PFJet> corr_jet_i_jer_only(jet_i->clone());
+        std::unique_ptr<reco::PFJet> corr_jet_i_jes_only(jet_i->clone());
 
         corr_jet_i->scaleEnergy(jec);
+        corr_jet_i_jes_only->scaleEnergy(jec);
+        corr_jet_i_jes_up->scaleEnergy(jec);
+        corr_jet_i_jes_down->scaleEnergy(jec);
         corr_jet_i_jer_up->scaleEnergy(jec);
         corr_jet_i_jer_down->scaleEnergy(jec);
 
@@ -1046,28 +1069,38 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
                 smearFactor_up = 1 + (jer_sf_up - 1.) * dPt / corr_jet_i->pt();
                 smearFactor_down = 1 + (jer_sf_down - 1.) * dPt / corr_jet_i->pt();
             }
-            else if (jer_sf > 1) { 
+            if (!matched_genJet && jer_sf > 1) { 
                 double sigma = jet_resolution * std::sqrt(jer_sf * jer_sf - 1);
                 std::normal_distribution<> d(0, sigma);
                 smearFactor = 1. + d(m_random_generator);
             }
-            //else
-            //   std::cout << "ERROR! Impossible to smear this jet. jer_sf: " << jer_sf << std::endl;
-            if (jer_sf_up >= 1.0) {
+            if (!matched_genJet && jer_sf_up > 1) {
                 double sigma_up = jet_resolution * std::sqrt(jer_sf_up * jer_sf_up - 1);
                 std::normal_distribution<> d_up(0, sigma_up);
                 smearFactor_up = 1. + d_up(m_random_generator);
             }
-            if (jer_sf_down >= 1.0) {
+            if (!matched_genJet && jer_sf_down > 1) {
                 double sigma_down = jet_resolution * std::sqrt(jer_sf_down * jer_sf_down - 1);
                 std::normal_distribution<> d_down(0, sigma_down);
                 smearFactor_down = 1. + d_down(m_random_generator);
             }
+            //else
+            //   std::cout << "ERROR! Impossible to smear this jet. jer_sf: " << jer_sf << std::endl;
 
             if (corr_jet_i->energy() * smearFactor < 0.01) {
                 double newSmearFactor = 0.01 / corr_jet_i->energy();
                 //std::cout << "The smearing factor (" << smearFactor << ") is either negative or too small. Fixing it to " << newSmearFactor << " to avoid change of direction." << std::endl;
                 smearFactor = newSmearFactor;
+            }
+            if (corr_jet_i->energy() * smearFactor_up < 0.01) {
+                double newSmearFactor = 0.01 / corr_jet_i->energy();
+                //std::cout << "The smearing factor (" << smearFactor << ") is either negative or too small. Fixing it to " << newSmearFactor << " to avoid change of direction." << std::endl;
+                smearFactor_up = newSmearFactor;
+            }
+            if (corr_jet_i->energy() * smearFactor_down < 0.01) {
+                double newSmearFactor = 0.01 / corr_jet_i->energy();
+                //std::cout << "The smearing factor (" << smearFactor << ") is either negative or too small. Fixing it to " << newSmearFactor << " to avoid change of direction." << std::endl;
+                smearFactor_down = newSmearFactor;
             }
         } // end if checking for isData
 
@@ -1076,23 +1109,25 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         corr_jet_i_jes_down->scaleEnergy(smearFactor);
         corr_jet_i_jer_up->scaleEnergy(smearFactor_up);
         corr_jet_i_jer_down->scaleEnergy(smearFactor_down);
-        corr_jet_i_jer_only->scaleEnergy(smearFactor);
+        //corr_jet_i_jes_only->scaleEnergy(smearFactor);
 
         // Before finishing, compute the MET correction due to JER alone (MET type-I already accounts for JEC)
-        corr_METpx -= (corr_jet_i_jer_only->px() - jet_i->px());
-        corr_METpy -= (corr_jet_i_jer_only->py() - jet_i->py());
+        //corr_METpx -= (corr_jet_i_jer_only->px() - jet_i->px());
+        //corr_METpy -= (corr_jet_i_jer_only->py() - jet_i->py());
+        corr_METpx -= (corr_jet_i->px() - corr_jet_i_jes_only->px());
+        corr_METpy -= (corr_jet_i->py() - corr_jet_i_jes_only->py());
         
-        // Now temporarily "un-apply" smear factor to get JEC-corrected-only jet that was used in the original type-I calculation of MET
-        corr_jet_i->scaleEnergy(1.0/smearFactor);
-        corr_METpx_JESUp -= (corr_jet_i_jes_up->px() - corr_jet_i->px());
-        corr_METpy_JESUp -= (corr_jet_i_jes_up->py() - corr_jet_i->py());
-        corr_METpx_JESDown -= (corr_jet_i_jes_down->px() - corr_jet_i->px());
-        corr_METpy_JESDown -= (corr_jet_i_jes_down->py() - corr_jet_i->py());
-        corr_METpx_JERUp -= (corr_jet_i_jer_up->px() - corr_jet_i->px());
-        corr_METpy_JERUp -= (corr_jet_i_jer_up->py() - corr_jet_i->py());
-        corr_METpx_JERDown -= (corr_jet_i_jer_down->px() - corr_jet_i->px());
-        corr_METpy_JERDown -= (corr_jet_i_jer_down->py() - corr_jet_i->py());
-        corr_jet_i->scaleEnergy(smearFactor);
+        // OBSOLETE --> temporarily "un-apply" smear factor to get JEC-corrected-only jet that was used in the original type-I calculation of MET
+        //corr_jet_i->scaleEnergy(1.0/smearFactor);
+        corr_METpx_JESUp -= (corr_jet_i_jes_up->px() - corr_jet_i_jes_only->px());
+        corr_METpy_JESUp -= (corr_jet_i_jes_up->py() - corr_jet_i_jes_only->py());
+        corr_METpx_JESDown -= (corr_jet_i_jes_down->px() - corr_jet_i_jes_only->px());
+        corr_METpy_JESDown -= (corr_jet_i_jes_down->py() - corr_jet_i_jes_only->py());
+        corr_METpx_JERUp -= (corr_jet_i_jer_up->px() - corr_jet_i_jes_only->px());
+        corr_METpy_JERUp -= (corr_jet_i_jer_up->py() - corr_jet_i_jes_only->py());
+        corr_METpx_JERDown -= (corr_jet_i_jer_down->px() - corr_jet_i_jes_only->px());
+        corr_METpy_JERDown -= (corr_jet_i_jer_down->py() - corr_jet_i_jes_only->py());
+        //corr_jet_i->scaleEnergy(smearFactor);
 
         correctedJets.push_back(std::make_pair(std::move(corr_jet_i), i));
         correctedJetsJESUp.push_back(std::make_pair(std::move(corr_jet_i_jes_up), i));
@@ -1224,7 +1259,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             if (tv.isValid()) {
                 reco::Vertex vertex = reco::Vertex(tv);
                 vxy = sqrt(vertex.x()*vertex.x() + vertex.y()*vertex.y());
-                sigma_vxy = (1/vxy)*(vertex.x()*vertex.xError() + vertex.y()*vertex.yError());
+                sigma_vxy = (1/vxy)*sqrt(vertex.x()*vertex.x()*vertex.xError()*vertex.xError() +
+                        vertex.y()*vertex.y()*vertex.yError()*vertex.yError());
+                //sigma_vxy = (1/vxy)*(vertex.x()*vertex.xError() + vertex.y()*vertex.yError());
                 vtx_chi2 = vertex.normalizedChi2();
                 vz = vertex.z();
                 dr = reco::deltaR(*muon_i, *muon_j);
@@ -1263,7 +1300,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             if (tv.isValid()) {
                 reco::Vertex vertex = reco::Vertex(tv);
                 vxy = sqrt(vertex.x()*vertex.x() + vertex.y()*vertex.y());
-                sigma_vxy = (1/vxy)*(vertex.x()*vertex.xError() + vertex.y()*vertex.yError());
+                sigma_vxy = (1/vxy)*sqrt(vertex.x()*vertex.x()*vertex.xError()*vertex.xError() +
+                        vertex.y()*vertex.y()*vertex.yError()*vertex.yError());
+                //sigma_vxy = (1/vxy)*(vertex.x()*vertex.xError() + vertex.y()*vertex.yError());
                 vtx_chi2 = vertex.normalizedChi2();
                 vz = vertex.z();
                 dr = reco::deltaR(*muon_i, *muon_j);
@@ -1302,7 +1341,9 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
             if (tv.isValid()) {
                 reco::Vertex vertex = reco::Vertex(tv);
                 vxy = sqrt(vertex.x()*vertex.x() + vertex.y()*vertex.y());
-                sigma_vxy = (1/vxy)*(vertex.x()*vertex.xError() + vertex.y()*vertex.yError());
+                sigma_vxy = (1/vxy)*sqrt(vertex.x()*vertex.x()*vertex.xError()*vertex.xError() +
+                        vertex.y()*vertex.y()*vertex.yError()*vertex.yError());
+                //sigma_vxy = (1/vxy)*(vertex.x()*vertex.xError() + vertex.y()*vertex.yError());
                 vtx_chi2 = vertex.normalizedChi2();
                 vz = vertex.z();
                 dr = reco::deltaR(*muon_i, *muon_j);
@@ -1507,7 +1548,6 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         genT->Fill();
     }
 
-    //
     recoT->Fill();
 
     return;

@@ -48,6 +48,8 @@
 #include "DataFormats/EgammaCandidates/interface/Photon.h"
 #include "DataFormats/EgammaCandidates/interface/PhotonFwd.h"
 #include "DataFormats/Common/interface/ValueMap.h"
+#include "DataFormats/VertexReco/interface/VertexFwd.h"
+#include "DataFormats/VertexReco/interface/Vertex.h"
 
 #include "SimDataFormats/PileupSummaryInfo/interface/PileupSummaryInfo.h"
 #include "SimDataFormats/GeneratorProducts/interface/GenEventInfoProduct.h"
@@ -102,6 +104,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag HBHENoiseFilterResultProducerTag_;
         const edm::InputTag HBHEIsoNoiseFilterResultProducerTag_;
         const edm::InputTag primaryVertexFilterTag_;
+        const edm::InputTag primaryVertexTag_;
         const edm::InputTag globalSuperTightHalo2016FilterTag_;
         const edm::InputTag EcalDeadCellTriggerPrimitiveFilterTag_;
         const edm::InputTag ecalBadCalibFilterTag_;
@@ -134,6 +137,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::EDGetTokenT<bool>HBHENoiseFilterResultProducerToken_;
         const edm::EDGetTokenT<bool>HBHEIsoNoiseFilterResultProducerToken_;
         const edm::EDGetTokenT<int>primaryVertexFilterToken_;
+        const edm::EDGetTokenT<reco::VertexCollection>primaryVertexToken_;
         const edm::EDGetTokenT<bool>globalSuperTightHalo2016FilterToken_;
         const edm::EDGetTokenT<bool>EcalDeadCellTriggerPrimitiveFilterToken_;
         const edm::EDGetTokenT<bool>ecalBadCalibFilterToken_;
@@ -153,6 +157,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         edm::Handle<reco::MuonTimeExtraMap> dsaRecoMuTimingHandle_;
         edm::Handle<reco::TrackCollection> muTrackHandle1_;
         edm::Handle<reco::TrackCollection> muTrackHandle2_;
+        edm::Handle<reco::VertexCollection> primaryVertexHandle_;
         edm::Handle<reco::GenParticleCollection> genParticleHandle_;
         edm::Handle<reco::GenJetCollection> genJetHandle_;
         edm::Handle<reco::GenMETCollection> genMETHandle_;
@@ -315,6 +320,9 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<int> recoPhotonIDResult_;
 
         // Vertex branches
+        float pvx_;
+        float pvy_;
+        float pvz_;
         float recoVtxVxy_;
         float recoVtxVz_;
         float recoVtxSigmaVxy_;
