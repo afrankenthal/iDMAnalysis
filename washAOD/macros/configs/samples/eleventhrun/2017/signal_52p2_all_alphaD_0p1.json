@@ -1,0 +1,20 @@
+{
+    "Mchi-52p5_dMchi-5p0_ctau-all": {
+        "ctau_cm": 0,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/signal/iDMAnalysis_eleventhrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-1.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/signal/iDMAnalysis_eleventhrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-10.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/signal/iDMAnalysis_eleventhrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-100.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/signal/iDMAnalysis_eleventhrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-100.root"
+        ],
+        "group": "sig_52p5_all",
+        "limit_num_files": -1,
+        "lumi": 58.647,
+        "m1": 50.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 156103.0,
+        "xsec": 0.0022,
+        "year": 2017
+    }
+}

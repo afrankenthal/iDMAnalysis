@@ -1,0 +1,13 @@
+{
+    "MET_Run2018A": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/data_ninthrun/MET/crab_iDMAnalysis_MET_Run2018A/200313_034559/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "year": 2018,
+        "xsec": -1
+    }
+}

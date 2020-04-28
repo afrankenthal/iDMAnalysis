@@ -1,0 +1,62 @@
+{
+    "Mchi-84p0_dMchi-8p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_tenthrun/iDMAnalysis_Mchi-84p0_dMchi-8p0_ctau-1.root"
+        ],
+        "group": "sig_84p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 80.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.103157905915767e-05,
+        "xsec": 0.04,
+        "year": 2016
+    },
+    "Mchi-84p0_dMchi-8p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_tenthrun/iDMAnalysis_Mchi-84p0_dMchi-8p0_ctau-10.root"
+        ],
+        "group": "sig_84p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 80.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.051461951101632e-05,
+        "xsec": 0.004,
+        "year": 2016
+    },
+    "Mchi-84p0_dMchi-8p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_tenthrun/iDMAnalysis_Mchi-84p0_dMchi-8p0_ctau-100.root"
+        ],
+        "group": "sig_84p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 80.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.0623060395388041e-05,
+        "xsec": 0.0004,
+        "year": 2016
+    },
+    "Mchi-84p0_dMchi-8p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_tenthrun/iDMAnalysis_Mchi-84p0_dMchi-8p0_ctau-1000.root"
+        ],
+        "group": "sig_84p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 80.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.081238259694967e-05,
+        "xsec": 4e-05,
+        "year": 2016
+    }
+}
