@@ -54,7 +54,7 @@ def getOptions():
     parser.add_option('-s', '--sampleType',
                       dest = 'sampleType',
                       default = 'custom',
-                      help = "Which kind of sample to process ('MC' (default), 'data', 'trig' or 'custom')",
+                      help = "Which kind of sample to process ('MC' (default), 'data', 'NoBPTX', 'trig' or 'custom')",
                       metavar = 'STYP')
 
     parser.add_option('-y', '--year',
@@ -83,7 +83,7 @@ def main():
     options = getOptions()
 
     isData = False
-    if options.sampleType == 'data':
+    if options.sampleType == 'data' or options.sampleType == 'NoBPTX':
         isData = True
 
     year = options.year
@@ -122,9 +122,9 @@ def main():
                 config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt'
 
         if isData == True:
-            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/data_ninthrun' % year
+            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/data_twelthrun' % year
         else:
-            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_ninthrun' % year
+            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_twelthrun' % year
 
         config.Data.publication = False
         config.Data.ignoreLocality = True
@@ -158,9 +158,11 @@ def main():
                     del TTbar[it]
 
             SingleTop = data['SingleTop_' + year]
-            for it in ['ST_t-channel_top_5f', 'ST_t-channel_antitop_5f']:
-                if it in SingleTop:
-                    del SingleTop[it]
+            #for it in ['ST_t-channel_top_5f', 'ST_t-channel_antitop_5f']:
+            if year != '2016':
+                for it in ['ST_t-channel_top_4f', 'ST_t-channel_antitop_4f']:
+                    if it in SingleTop:
+                        del SingleTop[it]
 
             WJets = data['WJets_' + year]
             for it in ['WJetsToLnu', 'WJetsToLNu_HT-70To100']:
@@ -173,6 +175,14 @@ def main():
             for it in ['DYJetsToTauTau', 'DYJetsToLL_M-5to50']:
                 if it in DY:
                     del DY[it]
+            if year == '2017':
+                for it in ['DYJetsToLL_M-50toInf']:
+                    if it in DY:
+                        del DY[it]
+            elif year == '2016':
+                for it in ['DYJetsToLL_M-50toInf_NLO']:
+                    if it in DY:
+                        del DY[it]
 
             Diboson = data['Diboson_' + year]
             for it in ['WZTo3LNu', 'ZZTo2L2Nu', 'ZZTo2L2Nu_ext2', 'WWTo2L2Nu', 'WWJJToLNuLNu']:
@@ -188,17 +198,21 @@ def main():
                 del total_MC[key]
 
             total_Data = data['Data_MET_' + year]
-            del total_Data["MET_2017RunB"]
-            del total_Data["MET_2017RunC"]
-            del total_Data["MET_2017RunD"]
-            del total_Data["MET_2017RunF"]
+            #del total_Data["MET_2017RunB"]
+            #del total_Data["MET_Run2018A"]
+            #del total_Data["MET_2016RunB"]
 
             total_Trig = data['Data_SingleMu_' + year]
+
+            total_NoBPTX = data['Data_NoBPTX_' + year]
+
 
             if options.sampleType == 'data':
                 total = merge_dicts(total, total_Data)
             elif options.sampleType == 'trig':
                 total = merge_dicts(total, total_Trig)
+            elif options.sampleType == 'NoBPTX':
+                total = merge_dicts(total, total_NoBPTX)
             elif options.sampleType == 'MC':
                 total = merge_dicts(total, total_MC)
             elif options.sampleType == 'all':
@@ -216,7 +230,7 @@ def main():
         for sample, dataset in total.items():
 
             isRun2018D = False
-            if sample == 'MET_Run2018D':
+            if sample == 'MET_Run2018D' or sample == 'NoBPTX_2018D':
                 isRun2018D = True
 
             config.JobType.pyCfgParams = ['data={}'.format(isData), 'Run2018D={}'.format(isRun2018D), 'numThreads={}'.format(1), 'year={}'.format(year)]

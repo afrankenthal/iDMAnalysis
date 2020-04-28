@@ -110,7 +110,8 @@ process.maxEvents = cms.untracked.PSet(
     input = cms.untracked.int32(options.maxEvents)
     )
 process.source = cms.Source("PoolSource",
-    fileNames = cms.untracked.vstring(options.inputFiles)
+    fileNames = cms.untracked.vstring(options.inputFiles),
+    skipBadFiles = cms.untracked.bool(True)
     )
 process.TFileService = cms.Service("TFileService",
     fileName = cms.string(options.outputFile),
@@ -191,6 +192,7 @@ from iDMSkimmer.washAOD.iDMAnalyzer_cfi import iDMAnalyzer
 process.ntuples_gbm = iDMAnalyzer.clone(
     jetCorrector = jetCorrector,
     muTrack2 = cms.InputTag('globalMuons'),
+    primaryVertex = cms.InputTag('offlinePrimaryVertices'),
     photonID = photonID,
     electronID = electronID,
     isData = cms.untracked.bool(options.data),
