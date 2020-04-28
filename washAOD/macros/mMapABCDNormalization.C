@@ -5,15 +5,19 @@ namespace macro {
     bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
         // macro options
-        TString in_filename1 = TString(cfg["infilename1"].get<std::string>());
-        TString in_filename2 = TString(cfg["infilename2"].get<std::string>());
-        if (in_filename1 == TString("") || in_filename2 == TString("")) {
+        vector<std::string> in_filenames = cfg["infilenames"].get<std::vector<std::string>>();
+
+        if (in_filenames.size() < 2) {
             cout << "ERROR! Need 2 input filenames in config. Exiting..." << endl;
             return 0;
         }
-        TFile * out_file = new TFile("normalization_map.root", "RECREATE");
-        TFile * in_file1 = new TFile(in_filename1, "READ");
-        TFile * in_file2 = new TFile(in_filename2, "READ");
+        TFile * in_file1 = new TFile(in_filenames[0].c_str(), "READ");
+        TFile * in_file2 = new TFile(in_filenames[0].c_str(), "READ");
+
+        TString out_filename = TString(cfg["outfilename"].get<std::string>());
+        if (out_filename == TString(""))
+            out_filename = "normalization_map.root";
+        TFile * out_file = new TFile(out_filename, "RECREATE");
 
         gROOT->SetBatch(kTRUE);
 

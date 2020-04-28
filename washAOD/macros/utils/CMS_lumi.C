@@ -12,9 +12,12 @@ void CMS_lumi(TPad * pad, int iPeriod, int iPosX, TString years) {
 
     const Bool_t writeLumiText = 1;
     TString lumiText = "(13 TeV)";
-    if (writeLumiText)
-        if (lumi_13TeV.find(years) != lumi_13TeV.end())
+    if (writeLumiText) {
+        if (lumi_13TeV.find(years) != lumi_13TeV.end()) // lumi is one of standard year combos
             lumiText.Prepend(lumi_13TeV[years]);
+        else // lumi is custom (likely incomplete samples)
+            lumiText.Prepend(years);
+    }
 
     // text sizes and text offsets with respect to the top frame
     // in unit of the top margin size

@@ -80,15 +80,13 @@ namespace macro {
     bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
         setTDRStyle();
         // macro options
-        TString in_filename = TString(cfg["infilename"].get<std::string>());
+        TString in_filename = TString(cfg["infilenames"].get<std::vector<std::string>>()[0]);
         if (in_filename == TString("")) {
             cout << "ERROR! No input filename. Exiting..." << endl;
             return 0;
         }
-        TString out_filename;
-        if (cfg.find("outfilename") != cfg.end()) 
-            out_filename = TString(cfg["outfilename"].get<std::string>());
-        else 
+        TString out_filename = TString(cfg["outfilename"].get<std::string>());
+        if (out_filename == TString(""))
             out_filename = in_filename;
 
         TFile * in_file, * out_file;

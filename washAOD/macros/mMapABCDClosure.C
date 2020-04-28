@@ -5,13 +5,17 @@ namespace macro {
     bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
         // macro options
-        TString in_filename = TString(cfg["infilename"].get<std::string>());
+        TString in_filename = TString(cfg["infilenames"].get<std::vector<std::string>>()[0]);
         if (in_filename == TString("")) {
             cout << "ERROR! No input filename. Exiting..." << endl;
             return 0;
         }
-        TFile * out_file = new TFile("closure_map.root", "RECREATE");
         TFile * in_file = new TFile(in_filename, "READ");
+
+        TString out_filename = TString(cfg["outfilename"].get<std::string>());
+        if (out_filename == TString(""))
+            out_filename = TString("closure_map.root");
+        TFile * out_file = new TFile(out_filename, "RECREATE");
 
         gROOT->SetBatch(kTRUE);
 

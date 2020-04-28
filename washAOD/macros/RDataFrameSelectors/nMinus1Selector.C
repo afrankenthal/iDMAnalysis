@@ -278,9 +278,9 @@ Bool_t nMinus1Selector::Process(TChain * chain) {
            // if we are at last cut, make N-1 plot
            if (cut == cuts_info_.size()-1) {
 
-               // if current sample's group is not included in histo's list of groups continue
-               if (std::find(histo_info->groups.begin(), histo_info->groups.end(), group_) == histo_info->groups.end()) continue;
-
+               // if current sample's group is included in histo's list of groups to exclude, continue
+               if (std::find(histo_info->groups_to_exclude.begin(), histo_info->groups_to_exclude.end(), group_) != histo_info->groups_to_exclude.end())
+                   continue;
 
                // split into 1D and 2D, and int and float cases
            

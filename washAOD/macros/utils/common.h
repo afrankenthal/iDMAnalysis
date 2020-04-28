@@ -78,8 +78,7 @@ namespace common {
 
     typedef struct THInfo {
         TString quantity;
-        std::vector<std::string> groups;
-        std::vector<int> cuts;
+        std::vector<std::string> groups_to_exclude;
         TString type;
         TString name;
         TString title;
@@ -108,6 +107,7 @@ namespace common {
         TString inclusive;
         TString efficiency;
         TString special;
+        TString book_plot;
     } CutInfo;
 
     typedef struct SampleInfo {
@@ -118,51 +118,52 @@ namespace common {
         Int_t limit_num_files;
         Float_t weight;
         int year;
+        Float_t lumi;
         TString group;
         MODE mode;
         int color;
         int style;
     } SampleInfo;
 
-    extern "C" {
-        static std::map<int, std::string> cut_descriptions {
-            {0, "No cuts"},
-            {1, "MET filter bits pass"},
-            {2, "HEM vetoed"},
-            {3, "120 GeV MET trigger fired"},
-            {4, "MET > 200 GeV"},
-            {5, "nJets > 0 (pT > 30 GeV)"},
-            {6, "jets |#eta| < 2.5"},
-            {7, "Leading jet pT > 200 GeV"},
-            {8, "Veto electrons"},
-            {9, "Veto photons"},
-            {10, "good dSA muons >= 0"},
-            {11, "|#Delta#Phi(jet, MET)| > 1"},
-            {12, "nJets < 3 (pT > 30 GeV)"},
-            {13, "0 b-tagged jets"},
-            {14, "good dSA muons >= 1"},
-            {15, "good dSA muons >= 2"},
-            {16, "muon 1: >= 2 muon planes"},
-            {17, "muon 1: >= 12 muon hits"},
-            {18, "muon 1: #chi2 < 10"},
-            {19, "muon 1: pT > 5 GeV"},
-            {20, "muon 1: |eta| < 2.4"},
-            {21, "muon 2: >= 2 muon planes"},
-            {22, "muon 2: >= 12 muon hits"},
-            {23, "muon 2: #chi2 < 10"},
-            {24, "muon 2: pT > 5 GeV"},
-            {25, "muon 2: |eta| < 2.4"},
-            {26, "muon dR < 0.9"},
-            {27, "muons: OSSF"},
-            {28, "0 GM-dSA matched"},
-            {29, "1 GM-dSA matched"},
-            {30, "2 GM-dSA matched"}
-        };
-    }
+    //extern "C" {
+    //    static std::map<int, std::string> cut_descriptions {
+    //        {0, "No cuts"},
+    //        {1, "MET filter bits pass"},
+    //        {2, "HEM vetoed"},
+    //        {3, "120 GeV MET trigger fired"},
+    //        {4, "MET > 200 GeV"},
+    //        {5, "nJets > 0 (pT > 30 GeV)"},
+    //        {6, "jets |#eta| < 2.5"},
+    //        {7, "Leading jet pT > 200 GeV"},
+    //        {8, "Veto electrons"},
+    //        {9, "Veto photons"},
+    //        {10, "good dSA muons >= 0"},
+    //        {11, "|#Delta#Phi(jet, MET)| > 1"},
+    //        {12, "nJets < 3 (pT > 30 GeV)"},
+    //        {13, "0 b-tagged jets"},
+    //        {14, "good dSA muons >= 1"},
+    //        {15, "good dSA muons >= 2"},
+    //        {16, "muon 1: >= 2 muon planes"},
+    //        {17, "muon 1: >= 12 muon hits"},
+    //        {18, "muon 1: #chi2 < 10"},
+    //        {19, "muon 1: pT > 5 GeV"},
+    //        {20, "muon 1: |eta| < 2.4"},
+    //        {21, "muon 2: >= 2 muon planes"},
+    //        {22, "muon 2: >= 12 muon hits"},
+    //        {23, "muon 2: #chi2 < 10"},
+    //        {24, "muon 2: pT > 5 GeV"},
+    //        {25, "muon 2: |eta| < 2.4"},
+    //        {26, "muon dR < 0.9"},
+    //        {27, "muons: OSSF"},
+    //        {28, "0 GM-dSA matched"},
+    //        {29, "1 GM-dSA matched"},
+    //        {30, "2 GM-dSA matched"}
+    //    };
+    //}
 
     inline void printTimeElapsed(TDatime begin) {
         TDatime end;
-        std::cout << "Time elapsed: " << (end.Convert() - begin.Convert()) << " seconds"
+        std::cout << std::endl << ">>>>>>>>> Time elapsed: " << (end.Convert() - begin.Convert()) << " seconds"
             << " or " << (end.Convert() - begin.Convert())/3600.0 << " hours" << std::endl;
     }
 

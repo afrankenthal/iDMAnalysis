@@ -44,7 +44,7 @@ int main(int argc, char ** argv) {
         ("c,cuts", "Cuts config file to use", cxxopts::value<std::string>()->default_value("")) //configs/cuts/CR_nJets.json"))
         ("y,years", "Year(s) to process: 2016, 2017, 2018, 161718, 1618, 1718, 1617", cxxopts::value<std::string>()->default_value(""))
         ("o,outfile", "Output file or directory (depends on macro)", cxxopts::value<std::string>()->default_value(""))
-        ("i,infile", "Input file", cxxopts::value<std::string>()->default_value(""))
+        ("i,infile", "Input file(s) (for macros that use results of other macros)", cxxopts::value<std::vector<std::string>>()->default_value({""}))
         ("h,help", "Print help and exit.")
     ;
     auto result = options.parse(argc, argv);
@@ -64,8 +64,10 @@ int main(int argc, char ** argv) {
         sample_config_filenames.push_back(TString(result["data"].as<std::string>()));
     TString macro_filename = TString(result["macro"].as<std::string>());
     TString cuts_filename = TString(result["cuts"].as<std::string>());
-    TString out_filename = TString(result["outfile"].as<std::string>());
-    TString in_filename = TString(result["infile"].as<std::string>());
+    TString out_filename = TString(result["outfile"].as<std::string>()); // default is empty string ""
+    std::vector<std::string> in_filenames = result["infile"].as<std::vector<std::string>>(); // default is length-one vector with {""}
+    if (in_filenames.size() == 0)
+        in_filenames.push_back("");
     TString years = TString(result["years"].as<std::string>());
  
     map<TString, SampleInfo> samples;
@@ -82,6 +84,8 @@ int main(int argc, char ** argv) {
                 vector<TString> newlist = listFiles(dir.c_str());
                 filelist.insert(filelist.end(), newlist.begin(), newlist.end());
             }
+            if (filelist.size() == 0)
+                cout << "WARNING! List of files for sample " << sample << "is empty! Make sure you specfied the right directory." << endl;
             samples[TString(sample)] = SampleInfo{
                 filelist,
                 sample, // plot label
@@ -90,6 +94,7 @@ int main(int argc, char ** argv) {
                 cfg["limit_num_files"].get<int>(), // limit_num_files
                 1, // weight
                 cfg["year"].get<int>(), // year 
+                (cfg.find("lumi") != cfg.end() ? cfg["lumi"].get<float>() : -1.0f), // custom lumi
                 TString(cfg["group"].get<std::string>()), // sample group
                 mapMODE[TString(cfg["mode"].get<std::string>())], // mode: 0 = BKG, 1 = DATA, 2 = SIGNAL
                 (cfg.find("color") != cfg.end() ? cfg["color"].get<int>() : color++), // line color
@@ -109,22 +114,32 @@ int main(int argc, char ** argv) {
         for (auto const & item : cut_configs) {
             auto cut = TString(item["cut"].get<std::string>());
             auto description = TString(item["description"].get<std::string>());
-            std::string inclusive;
-            std::string efficiency;
+
+            TString inclusive;
             if (item.find("inclusive") != item.end())
                 inclusive = TString(item["inclusive"].get<std::string>());
             else
                 inclusive = TString("yes");
+
+            TString efficiency;
             if (item.find("efficiency") != item.end())
                 efficiency = TString(item["efficiency"].get<std::string>());
             else
                 efficiency = TString("none");
-            std::string special;
+
+            TString special;
             if (item.find("special") != item.end())
                 special = TString(item["special"].get<std::string>());
             else
                 special = TString("no");
-            cuts_info.push_back(CutInfo{cut, description, inclusive,efficiency, special});
+
+            TString book_plot;
+            if (item.find("book_plot") != item.end())
+                book_plot = TString(item["book_plot"].get<std::string>());
+            else
+                book_plot = TString("yes");
+
+            cuts_info.push_back(CutInfo{cut, description, inclusive, efficiency, special, book_plot});
         }
     }
 
@@ -140,17 +155,15 @@ int main(int argc, char ** argv) {
 
     //for (auto const & [macro, cfg] : macro_configs.items()) {
     for (auto const & item : macro_configs) {
+
         auto macro = item["name"].get<std::string>();
         auto cfg = item["config"];
 
         if (years != TString(""))
             cfg["years"] = years;
 
-        if (macro == "mMainAnalysis" || macro == "mNminus1Analysis")
-            cfg["outfilename"] = out_filename.Data();
-
-        if (macro == "mCalcABCD" || macro == "mMake1DPlotsFromFile" || macro == "mMake1DEffPlotsFromFile" || macro == "mMake2DPlotsFromFile" || macro == "mMakeTemplates" || macro == "mMapABCDClosure")
-            cfg["infilename"] = in_filename.Data();
+        cfg["outfilename"] = out_filename.Data();
+        cfg["infilenames"] = in_filenames;
 
         if (macro == "mSumGenWgts") {
             if (sample_config_filenames.size() != 1) {
@@ -160,10 +173,8 @@ int main(int argc, char ** argv) {
             cfg["sample_config_filename"] = sample_config_filenames[0].Data();
         }
 
-        if (macro == "mSaveCanvases") {
+        if (macro == "mSaveCanvases")
             cfg["outdir"] = out_filename.Data();
-            cfg["infilename"] = in_filename.Data();
-        }
 
         // Load macro .so dynamically
         void * handle;
@@ -180,6 +191,9 @@ int main(int argc, char ** argv) {
             dlclose(handle);
             return 2;
         }
+
+        cout << endl << ">>>>>>>>> Starting macro " << macro << " with config:" << endl << endl;
+        cout << cfg.dump(4) << endl << endl;
         process(samples, cuts_info, cfg);
         dlclose(handle);
 

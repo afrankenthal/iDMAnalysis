@@ -5,7 +5,7 @@ namespace macro {
     bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
         // macro options
-        TString in_filename = TString(cfg["infilename"].get<std::string>());
+        TString in_filename = TString(cfg["infilenames"].get<std::vector<std::string>>()[0]);
         if (in_filename == TString("")) {
             cout << "ERROR! No input filename. Exiting..." << endl;
             return 0;

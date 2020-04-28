@@ -21,7 +21,6 @@ namespace macro {
             histos_info[plot["name"].get<std::string>()] = new THInfo{
                     plot["quantity"].get<std::string>(),
                     plot["groups"].get<std::vector<std::string>>(),
-                    plot["cuts"].get<std::vector<int>>(),
                     plot["type"].get<std::string>(),
                     plot["name"].get<std::string>(), 
                     plot["title"].get<std::string>(),

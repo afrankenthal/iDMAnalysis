@@ -3,8 +3,6 @@
 namespace macro {
 
     bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
-        cout << "Warning: re-scaling signal yields from 2018 to 2016+2017+2018 (factor of x2.30)" << endl;
-        cout << "Make sure data comparison includes all years, otherwise it will be wrong!" << endl;
 
         // macro options
         TString in_filename_signal = TString(cfg["infilename_signal"].get<std::string>());
@@ -15,11 +13,27 @@ namespace macro {
             cout << "ERROR! Need 4 input filenames in config. Exiting..." << endl;
             return 0;
         }
-        TFile * out_file = new TFile("sensitivity_map.root", "RECREATE");
+        TString out_filename = TString(cfg["outfilename"].get<std::string>());
+        if (out_filename == TString(""))
+            out_filename = "sensitivity_map.root";
+
+        TFile * out_file = new TFile(out_filename, "RECREATE");
         TFile * in_file_signal = new TFile(in_filename_signal, "READ");
         TFile * in_file_VR = new TFile(in_filename_VR, "READ");
         TFile * in_file_template = new TFile(in_filename_template, "READ");
         TFile * in_file_SR = new TFile(in_filename_SR, "READ");
+
+        std::vector<std::string> cuts_to_keep = cfg["cuts_to_keep"].get<std::vector<std::string>>();
+        
+        //float rescale_years = 2.30;
+        float rescale_years = 1.00;
+        if (cfg.find("rescale_years") != cfg.end())
+                rescale_years = cfg["rescale_years"].get<float>();
+
+        if (fabs(rescale_years - 1.00) > 0.1) {
+            cout << "Warning: re-scaling signal yields from 2018 to 2016+2017+2018 (factor of x2.30)" << endl;
+            cout << "Make sure data comparison includes all years, otherwise it will be wrong!" << endl;
+        }
 
         json out_json;
 
@@ -31,16 +45,22 @@ namespace macro {
             TString canvas_name = TString(key->GetName());
             if (!canvas_name.Contains("canvas2D")) continue;
             if (!canvas_name.Contains("-DATA")) continue;
-            if (!canvas_name.Contains("34") && !canvas_name.Contains("36") && 
-                    !canvas_name.Contains("37") && !canvas_name.Contains("38") && 
-                    !canvas_name.Contains("39")) continue;
 
-            cout << "Processing " << canvas_name << ", class " << key->GetClassName() << endl;
+            bool cut_contained = false;
+            for (auto cut : cuts_to_keep)
+                cut_contained = cut_contained || canvas_name.Contains(TString(cut.c_str()));
+            if (!cut_contained)
+                continue;
+                
+            //if (!canvas_name.Contains("34") && !canvas_name.Contains("36") && 
+            //        !canvas_name.Contains("37") && !canvas_name.Contains("38") && 
+            //        !canvas_name.Contains("39")) continue;
+
+            cout << "Processing " << canvas_name << ", class " << key->GetClassName() << endl << endl;
 
             // Get TH2D
             TString h_name = canvas_name;
             h_name.Remove(0, 9); // remove "Canvas2D_" to get TH2D name
-            cout << h_name << endl;
             TCanvas * c_VR = (TCanvas*)in_file_VR->Get(canvas_name);
             TCanvas * c_SR = (TCanvas*)in_file_SR->Get(canvas_name);
             TH2D * h_VR = (TH2D*)c_VR->FindObject(h_name);
@@ -49,15 +69,16 @@ namespace macro {
             TH1D * template_px = (TH1D*)in_file_template->Get(h_name + TString("_px"));
             TH1D * template_py = (TH1D*)in_file_template->Get(h_name + TString("_py"));
 
-            template_px->Scale(1/template_px->Integral());
-            template_py->Scale(1/template_py->Integral());
+            template_px->Scale(1/template_px->Integral(0, template_px->GetNbinsX()+1));
+            template_py->Scale(1/template_py->Integral(0, template_py->GetNbinsX()+1));
 
             canvas_name.ReplaceAll("-DATA", "_sig_");
-            cout << canvas_name << endl;
             for (auto && keyAsObj2 : *in_file_signal->GetListOfKeys()) {
                 auto key2 = (TKey*)keyAsObj2;
                 if (TString(key2->GetClassName()) != "TCanvas") continue;
                 if (!TString(key2->GetName()).Contains(canvas_name)) continue;
+
+                cout << "Signal histogram: " << key2->GetName() << endl << endl;
 
                 TCanvas * c_sig = (TCanvas*)in_file_signal->Get(key2->GetName());
 
@@ -66,7 +87,7 @@ namespace macro {
                 TH2D * h_sig = (TH2D*)c_sig->FindObject(h_sig_name);
                 TH2D * h_map_sig = (TH2D*)h_sig->Clone();
                 h_map_sig->Reset();
-                h_map_sig->SetName("SensivityMap_" + h_sig_name);
+                h_map_sig->SetName("SensitivityMap_" + h_sig_name);
 
                 float max_ZA_sig = -1.0;
                 float max_x_sig, max_y_sig;
@@ -74,20 +95,21 @@ namespace macro {
                 float max_A_sig, max_B_sig, max_C_sig, max_D_sig;
                 float max_A_SR, max_B_SR_pred, max_C_SR_pred, max_D_SR_pred;
 
-                for (int i = 0; i <= h_VR->GetNbinsX()+1; i++) {
-                    for (int j = 0; j <= h_VR->GetNbinsY()+1; j++) {
+                for (int i = 1; i <= h_VR->GetNbinsX()+1; i++) {
+                    for (int j = 1; j <= h_VR->GetNbinsY()+1; j++) {
                         float A_SR = h_SR->Integral(0, i-1, 0, j-1);
                         // Template method
-                        float c1 = template_px->Integral(i, template_px->GetNbinsX()+1);
-                        float c2 = template_py->Integral(j, template_py->GetNbinsX()+1);
+                        float c1 = template_px->Integral(i, template_px->GetNbinsX()+1)/template_px->Integral(0,i-1);
+                        float c2 = template_py->Integral(j, template_py->GetNbinsX()+1)/template_py->Integral(0,j-1);
                         float B_SR_pred = A_SR * c1;
                         float C_SR_pred = A_SR * c2;
                         float D_SR_pred = A_SR * c1 * c2;
 
                         float C_SR_clos_err = C_SR_pred * 0.14;
-                        float C_SR_err = C_SR_clos_err;
+                        float C_SR_stat_err = sqrt(C_SR_pred);
+                        //float C_SR_err = C_SR_clos_err;
+                        float C_SR_err = C_SR_stat_err;
 
-                        float rescale_years = 2.30;
                         float A_sig = h_sig->Integral(0, i-1, 0, j-1);
                         float B_sig = h_sig->Integral(i, h_sig->GetNbinsX()+1, 0, j-1);
                         float C_sig = h_sig->Integral(0, i-1, j, h_sig->GetNbinsY()+1);
@@ -122,11 +144,10 @@ namespace macro {
                     }
                 }
 
-                cout << "Maximum sign = " << max_ZA_sig << endl;
-                cout << "For x, y = " << max_x_sig << ", " << max_y_sig << endl;
-                cout << "Signal MC (52p5, 100 mm) A, B, C, D = " << max_A_sig << ", " << max_B_sig << ", " << max_C_sig << ", " << max_D_sig << endl;
-                cout << "A in SR = " << max_A_SR << endl;
-                cout << "B, C, D prediction in SR = " << max_B_SR_pred << ", " << max_C_SR_pred << ", " << max_D_SR_pred << endl;
+                cout << "Maximum significance = " << max_ZA_sig << " @ (x, y) = (" << max_x_sig << ", " << max_y_sig << ")" << endl;
+                cout << "Signal MC A, B, C, D = " << max_A_sig << ", " << max_B_sig << ", " << max_C_sig << ", " << max_D_sig << endl;
+                cout << "Bkg predicted A, B, C, D  = " << max_A_SR << ", " << max_B_SR_pred << ", " << max_C_SR_pred << ", " << max_D_SR_pred << endl;
+                cout << "A observed in SR = " << max_A_SR << endl << endl;
 
                 out_json[h_sig_name.Data()] = {
                     {"A_bkg", max_A_SR},
@@ -283,6 +304,12 @@ namespace macro {
         in_file_VR->Close();
         in_file_SR->Close();
         out_file->Close();
+
+        if (fabs(rescale_years - 1.00) > 0.1) {
+            cout << "Warning: re-scaling signal yields from 2018 to 2016+2017+2018 (factor of x2.30)" << endl;
+            cout << "Make sure data comparison includes all years, otherwise it will be wrong!" << endl;
+        }
+
         return 0;
     }
 } // namespace macro

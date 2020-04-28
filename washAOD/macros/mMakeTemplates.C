@@ -5,13 +5,17 @@ namespace macro {
     bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
         // macro options
-        TString in_filename_VR = TString(cfg["infilename_VR"].get<std::string>());
+        TString in_filename_VR = TString(cfg["infilenames"].get<std::vector<std::string>>()[0]);
         if (in_filename_VR == TString("")) {
             cout << "ERROR! Need an input filename in config. Exiting..." << endl;
             return 0;
         }
-        TFile * out_file = new TFile("ABCD_template.root", "RECREATE");
         TFile * in_file_VR = new TFile(in_filename_VR, "READ");
+
+        TString out_filename = TString(cfg["outfilename"].get<std::string>());
+        if (out_filename == TString(""))
+            out_filename = "ABCD_template.root";
+        TFile * out_file = new TFile(out_filename, "RECREATE");
 
         gROOT->SetBatch(kTRUE);
 

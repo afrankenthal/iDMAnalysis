@@ -24,39 +24,22 @@ namespace macro {
         setTDRStyle();
 
         // macro options
-        TString in_filename1 = TString(cfg["infilename1"].get<std::string>());
-        TString in_filename2 = TString(cfg["infilename2"].get<std::string>());
-        TString in_filename3("");
-        if (cfg.find("infilename3") != cfg.end())
-            in_filename3 = TString(cfg["infilename3"].get<std::string>());
+        vector<std::string> in_filenames = cfg["infilenames"].get<std::vector<std::string>>();
 
-        if (in_filename1 == TString("") || in_filename2 == TString("")) {
+        if (in_filenames.size() < 2) {
             cout << "ERROR! Need at least 2 input files to merge. Exiting..." << endl;
             return 0;
         }
-        TString out_filename;
-        if (cfg.find("outfilename") != cfg.end()) 
-            out_filename = TString(cfg["outfilename"].get<std::string>());
-        else 
-            out_filename = "merged_stacks.root";
 
-        vector<TFile*> in_files;
-        TFile * out_file;
-        if (out_filename == "" || out_filename == in_filename1) {
-            in_files.push_back(new TFile(in_filename1, "UPDATE"));
-            out_file = in_files[0];
-        }
-        else {
-            in_files.push_back(new TFile(in_filename1));
-            in_files.push_back(new TFile(in_filename2));
-            if (in_filename3 != TString(""))
-                in_files.push_back(new TFile(in_filename3));
-            out_file = new TFile(out_filename, "RECREATE");
-        }
+        TString out_filename = TString(cfg["outfilename"].get<std::string>());
+        if (out_filename == TString(""))
+            out_filename = "merged_stacks.root";
         	
         map<TString, THStack*> all_stacks;
 
-        for (auto * in_file : in_files) {
+        for (auto in_filename : in_filenames) {
+            cout << endl << "Opening file " << in_filename << endl << endl;
+            auto * in_file = new TFile(in_filename.c_str());
             for (auto && keyAsObj : *in_file->GetListOfKeys()) {
                 auto key = (TKey*)keyAsObj;
                 if (TString(key->GetClassName()) != "THStack") continue;
@@ -74,7 +57,14 @@ namespace macro {
                     all_stacks[hs_name] = hs;
                 }
             }
+            in_file->Close();
         }
+
+        TFile * out_file;
+        if (out_filename == "" || out_filename.Data() == in_filenames[0].c_str())
+            out_file = new TFile(in_filenames[0].c_str(), "UPDATE");
+        else
+            out_file = new TFile(out_filename, "RECREATE");
 
         out_file->cd();
         // Write updated stacks to ROOT file
@@ -82,11 +72,7 @@ namespace macro {
             pair.second->Write();
         }
 
-        //out_file->Write();
         out_file->Close();
-        for (auto * in_file : in_files) {
-            in_file->Close();
-        }
 
         return 0;
     }
