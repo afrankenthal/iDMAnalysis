@@ -2,8 +2,6 @@
     {
         "name": "mScanABCD",
         "config": {
-            "infilename1": "plots_SR_seventhrun_noData_2DHists_MuonIPCut1mm_signal_2018.root",
-            "infilename2": "plots_SR_seventhrun_noData_2DHists_MuonIPCut1mm_bkg_2018.root"
         }
     }
 ]

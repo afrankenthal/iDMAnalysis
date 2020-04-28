@@ -2,7 +2,6 @@
     {
         "name": "mCalcABCD",
         "config": {
-            "infilename": "",
             "lowX": 0,
             "highX": 0.1,
             "lowY": 0,

@@ -2,10 +2,11 @@
     {
         "name": "mMapABCDSensitivity",
         "config": {
-            "infilename_signal": "plots_SR_seventhrun_noData_2DHists_ABCDSensitivitySignifRange_signal_5p25_2018.root",
-            "infilename_VR": "plots_CR_nJets_seventhrun_fullData_2DHists_ABCDSensitivitySignifRange_161718.root",
-            "infilename_template": "ABCD_template_nJets.root",
-            "infilename_SR": "plots_SR_seventhrun_YESData_2DHists_ABCDSensitivitySignifRange_161718.root"
+            "infilename_signal": "PlotsTwelthRunApril27TestUseVxy/plots_SR_twelthrun_noData_2DHists_TestUseVxy_signal_161718.root",
+            "infilename_VR": "PlotsTwelthRunApril27TestUseVxy/plots_CR_nJets_twelthrun_incompleteData_2DHists_TestUseVxy_161718.root",
+            "infilename_template": "PlotsTwelthRunApril27TestUseVxy/ABCD_template_nJets.root",
+            "infilename_SR": "PlotsTwelthRunApril27TestUseVxy/plots_SR_twelthrun_YESincompleteData_2DHists_TestUseVxy_161718.root",
+            "cuts_to_keep": ["25", "27", "28", "29", "30"]
         }
     }
 ]

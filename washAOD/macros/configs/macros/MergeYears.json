@@ -2,9 +2,6 @@
     {
         "name": "mMergeYears",
         "config": {
-            "infilename1": "plots_CR_bTag_seventhrun_fullData_2DHists_ABCDSensitivitySignifRange_2018.root",
-            "infilename2": "plots_CR_bTag_seventhrun_fullData_2DHists_ABCDSensitivitySignifRange_2017.root",
-            "infilename3": "plots_CR_bTag_seventhrun_fullData_2DHists_ABCDSensitivitySignifRange_2016.root"
         }
     }   
 ]
