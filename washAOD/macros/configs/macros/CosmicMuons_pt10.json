@@ -1,0 +1,205 @@
+[
+    {
+        "name": "mMainAnalysis",
+        "config": {
+            "PT_MIN": 10.0,
+            "ETA_MAX": 1.2,
+            "PTRES_MAX": 1.0,
+            "NHITS_MIN": 12,
+            "NPLANES_MIN": 2,
+            "CHI2_MAX": 100.0,
+            "plots": [
+                {
+                    "quantity": "charge_product",
+                    "groups_to_exclude": [],
+                    "type": "int1D",
+                    "name": "charge_product",
+                    "title": "charge(tag) x charge(probe)",
+                    "nbinsX": 4,
+                    "lowX": -2,
+                    "highX": 2 
+                },
+                {
+                    "quantity": "tag_muon_chi2",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "tag_muon_chi2",
+                    "title": "Lower leg (tag) track #chi^{2}/dof",
+                    "nbinsX": 100,
+                    "lowX": 0,
+                    "highX": 50
+                },
+                {
+                    "quantity": "probe_muon_chi2",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "probe_muon_chi2",
+                    "title": "Upper leg (probe) track #chi^{2}/dof",
+                    "nbinsX": 100,
+                    "lowX": 0,
+                    "highX": 60
+                },
+                {
+                    "quantity": "tag_muon_nhits",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "tag_muon_nhits",
+                    "title": "Lower leg (tag) nHits",
+                    "nbinsX": 30,
+                    "lowX": 0,
+                    "highX": 60
+                },
+                {
+                    "quantity": "probe_muon_nhits",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "probe_muon_nhits",
+                    "title": "Upper leg (probe) nHits",
+                    "nbinsX": 30,
+                    "lowX": 0,
+                    "highX": 60
+                },
+                {
+                    "quantity": "tag_muon_nplanes",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "tag_muon_nplanes",
+                    "title": "Lower leg (tag) nStations",
+                    "nbinsX": 6,
+                    "lowX": 0,
+                    "highX": 6 
+                },
+                {
+                    "quantity": "reco_dsa_trk_n_planes",
+                    "groups_to_exclude": [],
+                    "type": "vector_float1D",
+                    "name": "reco_dsa_trk_n_planes",
+                    "title": "nStations",
+                    "nbinsX": 6,
+                    "lowX": 0,
+                    "highX": 6
+                },
+                {
+                    "quantity": "tag_muon_ptres",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "tag_muon_ptres",
+                    "title": "Lower leg (tag) #sigma_{p_{T}}/p_{T}",
+                    "nbinsX": 12,
+                    "lowX": 0,
+                    "highX": 2.4 
+                },
+                {
+                    "quantity": "probe_muon_ptres",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "probe_muon_ptres",
+                    "title": "Upper leg (probe) #sigma_{p_{T}}/p_{T}",
+                    "nbinsX": 12,
+                    "lowX": 0,
+                    "highX": 2.4
+                },
+                {
+                    "quantity": "tag_muon_dxy",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "tag_muon_dxy",
+                    "title": "Lower leg (tag) dxy [cm]",
+                    "nbinsX": 40,
+                    "lowX": 0,
+                    "highX": 400
+                },
+                {
+                    "quantity": "probe_muon_dxy",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "probe_muon_dxy",
+                    "title": "Upper leg (probe) dxy [cm]",
+                    "nbinsX": 40,
+                    "lowX": 0,
+                    "highX": 400
+                },
+                {
+                    "quantity": "tag_muon_dz",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "tag_muon_dz",
+                    "title": "Lower leg (tag) dz [cm]",
+                    "nbinsX": 40,
+                    "lowX": 0,
+                    "highX": 400
+                },
+                {
+                    "quantity": "probe_muon_dz",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "probe_muon_dz",
+                    "title": "Upper leg (probe) dz [cm]",
+                    "nbinsX": 40,
+                    "lowX": 0,
+                    "highX": 400
+                },
+                {
+                    "quantity": "tag_muon_pt",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "tag_muon_pt",
+                    "title": "Lower leg (tag) pt",
+                    "nbinsX": 100,
+                    "lowX": 0,
+                    "highX": 500
+                },
+                {
+                    "quantity": "probe_muon_pt",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "probe_muon_pt",
+                    "title": "Upper leg (probe) pt",
+                    "nbinsX": 100,
+                    "lowX": 0,
+                    "highX": 500
+                },
+                {
+                    "quantity": "tag_muon_eta",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "tag_muon_eta",
+                    "title": "Lower leg (tag) eta",
+                    "nbinsX": 20,
+                    "lowX": -1,
+                    "highX": 1 
+                },
+                {
+                    "quantity": "probe_muon_eta",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "probe_muon_eta",
+                    "title": "Upper leg (probe) eta",
+                    "nbinsX": 20,
+                    "lowX": -1,
+                    "highX": 1 
+                },
+                {
+                    "quantity": "tag_muon_phi",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "tag_muon_phi",
+                    "title": "Lower leg (tag) phi",
+                    "nbinsX": 32,
+                    "lowX": -3.2,
+                    "highX": 3.2 
+                },
+                {
+                    "quantity": "probe_muon_phi",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "probe_muon_phi",
+                    "title": "Upper leg (probe) phi",
+                    "nbinsX": 32,
+                    "lowX": -3.2,
+                    "highX": 3.2
+                }
+            ]
+        }
+    }
+]

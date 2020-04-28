@@ -1,0 +1,28 @@
+[
+    {
+        "cut": "1",
+        "description": "No cuts"
+    },
+    {
+        "cut": "(trig_fired > 0) || (trig_fired &(1<<15))==(1<<15) || (trig_fired&(1<<14))==(1<<14)",
+        "description": "Trigger fired (NoBPTX)"
+    },
+    {
+        "cut": "reco_dsa_pt.size() > 0",
+        "description": "At least one muon"
+    },
+    {
+        "cut": "n_good_dsa > 0",
+        "description": "At least one good muon"
+    },
+    {
+        "cut": "abs(reco_dsa_dxy[tag_muon]) > 0 && abs(reco_dsa_dxy[tag_muon]) < 1000",
+        "description": "|dxy| inclusive",
+        "efficiency": "denom"
+    },
+    {
+        "cut": "tag_muon != probe_muon",
+        "description": "Found upper leg of cosmic muon",
+        "efficiency": "num"
+    }
+]
