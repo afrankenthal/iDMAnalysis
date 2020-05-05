@@ -1,0 +1,51 @@
+{
+    "singleMu_Run2018A_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_twelthrun/SingleMuon/crab_iDMAnalysis_singleMu_Run2018A_v3/200503_121337/0000",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_twelthrun/SingleMuon/crab_iDMAnalysis_singleMu_Run2018A_v3/200503_121337/0001"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "year": 2018,
+        "xsec": -1
+    },
+    "singleMu_Run2018B_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_twelthrun/SingleMuon/crab_iDMAnalysis_singleMu_Run2018B_v3/200503_121153/0000",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_twelthrun/SingleMuon/crab_iDMAnalysis_singleMu_Run2018B_v3/200503_121153/0001",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_twelthrun/SingleMuon/crab_iDMAnalysis_singleMu_Run2018B_v3/200503_121153/0002"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "year": 2018,
+        "xsec": -1
+    },
+    "singleMu_Run2018C_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_twelthrun/SingleMuon/crab_iDMAnalysis_singleMu_Run2018C_v3/200503_121246/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "year": 2018,
+        "xsec": -1
+    },
+    "singleMu_Run2018D_v3": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_twelthrun/SingleMuon/crab_iDMAnalysis_singleMu_Run2018D_v3/200503_121426/0000",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_twelthrun/SingleMuon/crab_iDMAnalysis_singleMu_Run2018D_v3/200503_121426/0001",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_twelthrun/SingleMuon/crab_iDMAnalysis_singleMu_Run2018D_v3/200503_121426/0002"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "year": 2018,
+        "xsec": -1
+    }
+}
