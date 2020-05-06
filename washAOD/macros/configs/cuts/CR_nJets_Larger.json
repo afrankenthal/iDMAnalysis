@@ -18,8 +18,8 @@
         "book_plot": "no"
     },
     {
-        "cut": "reco_PF_MET_corr_pt > 200",
-        "description": "MET > 200 GeV",
+        "cut": "reco_PF_MET_corr_pt > 140",
+        "description": "MET > 140 GeV",
         "book_plot": "no"
     },
     {

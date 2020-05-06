@@ -183,8 +183,27 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     chain_ = chain;
 
-    ROOT::EnableImplicitMT();
+    int num_cores = 0; // default is to use all available cores (never run during the day!)
+    if (macro_info_.find("num_cores") != macro_info_.end())
+        num_cores = macro_info_["num_cores"].get<int>();
+
+    cout << "Creating dataframe..." << endl;
+
+    ROOT::EnableImplicitMT(num_cores);
     ROOT::RDataFrame df(*chain_);
+
+    const auto poolSize = ROOT::GetImplicitMTPoolSize();
+    const auto nSlots = poolSize == 0 ? 1 : poolSize;
+    int nEvents = chain_->GetEntries();
+    std::string progressBar;
+    //std::mutex barMutex; // Only one thread at a time can lock a mutex. Let's use this to avoid concurrent printing.
+    // Magic numbers that yield good progress bars for nSlots = 1,2,4,8
+    //const auto everyN = nSlots == 8 ? 1000 : 100ull * nSlots;
+    const auto barWidth = 100; //nEvents / everyN;
+    const int everyN = (nEvents / nSlots) / barWidth;
+    cout << "everyN " << everyN << ", nSlots " << nSlots << endl;
+
+    cout << "Total number of events to process: " << std::scientific << nEvents << endl;
 
     // First, define all the relevant weights
 
@@ -245,14 +264,14 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     auto calcTotalWgt = [&](float Zwgt, float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt) {
         double weight =  trig_wgt * Zwgt * Wwgt * PUwgt * xsec_ * lumi_ * gen_wgt / sum_gen_wgt_;
         // Warn if large weight *due only* to PU, Z, W, or genwgt / sum_gen_wgt_, but not due to xsec or lumi
-        if (trig_wgt > 3.0 || Zwgt > 3.0 || Wwgt > 3.0 || PUwgt > 3.0 || gen_wgt / sum_gen_wgt_ > 0.1) {
-            cout << "WARNING! Very large weight: " << weight << endl;
-            cout << "Trig wgt: " << trig_wgt << endl;
-            cout << "Zwgt: " << Zwgt << endl;
-            cout << "Wwgt: " << Wwgt << endl;
-            cout << "PUwgt: " << PUwgt << endl;
-            cout << "genwgt: " << gen_wgt << endl;
-        }
+        //if (trig_wgt > 3.0 || Zwgt > 3.0 || Wwgt > 3.0 || PUwgt > 3.0 || gen_wgt / sum_gen_wgt_ > 0.1) {
+        //    cout << "WARNING! Very large weight: " << weight << endl;
+        //    cout << "Trig wgt: " << trig_wgt << endl;
+        //    cout << "Zwgt: " << Zwgt << endl;
+        //    cout << "Wwgt: " << Wwgt << endl;
+        //    cout << "PUwgt: " << PUwgt << endl;
+        //    cout << "genwgt: " << gen_wgt << endl;
+        //}
         return weight;
     };
 
@@ -564,7 +583,17 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     if (mode_ != common::DATA) {
         auto df_sumgenwgts = df_wgts.Sum("gen_wgt");
-        cout << "RDF sum_gen_wgts: " << *df_sumgenwgts << endl;
+
+        df_sumgenwgts.OnPartialResult(everyN, [&barWidth, &progressBar/*, &barMutex*/](double &) {
+                //std::lock_guard<std::mutex> l(barMutex); // lock_guard locks the mutex at construction, releases it at destruction
+                progressBar.push_back('#');
+                // re-print the line with the progress bar
+                std::cout << "\r[" << std::left << std::setw(barWidth) << progressBar << ']' << std::flush;
+                });
+
+        cout << "Triggering event loop..." << endl;
+        auto value = *df_sumgenwgts;
+        cout << endl << "RDF sum_gen_wgts: " << value << endl;
     }
 
     df_filters.Report()->Print();

@@ -9,23 +9,19 @@
     },
     {
         "cut": "hem_veto",
-        "description": "HEM veto",
-        "book_plot": "no"
+        "description": "HEM veto"
     },
     {
         "cut": "(trig_fired&(1<<3)) == (1<<3)",
-        "description": "Trigger fired (120 GeV METNoMu)",
-        "book_plot": "no"
+        "description": "Trigger fired (120 GeV METNoMu)"
     },
     {
-        "cut": "reco_PF_MET_corr_pt > 200",
-        "description": "MET > 200 GeV",
-        "book_plot": "no"
+        "cut": "reco_PF_MET_corr_pt > 140",
+        "description": "MET > 140 GeV"
     },
     {
         "cut": "CaloPFMETRatio < 1.0",
-        "description": "|CaloMET - PFMET|/CaloMET < 1",
-        "book_plot": "no"
+        "description": "|CaloMET - PFMET|/CaloMET < 1"
     },
     {
         "cut": "reco_PF_n_highPt_jets > 0",

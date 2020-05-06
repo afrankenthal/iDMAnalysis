@@ -9,9 +9,9 @@
                     "type": "float1D",
                     "name": "reco_sel_mu_dxy0",
                     "title": "Leading muon dxy",
-                    "nbinsX": 100,
+                    "nbinsX": 50,
                     "lowX": 0,
-                    "highX": 1
+                    "highX": 0.5 
                 },
                 {
                     "quantity": "reco_sel_mu_dxy1",
@@ -19,9 +19,9 @@
                     "type": "float1D",
                     "name": "reco_sel_mu_dxy1",
                     "title": "Subleading muon dxy",
-                    "nbinsX": 100,
+                    "nbinsX": 50,
                     "lowX": 0,
-                    "highX": 1
+                    "highX": 0.5
                 },
                 {
                     "quantity": "matched_muon_MT",

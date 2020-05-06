@@ -85,7 +85,7 @@ int main(int argc, char ** argv) {
                 filelist.insert(filelist.end(), newlist.begin(), newlist.end());
             }
             if (filelist.size() == 0)
-                cout << "WARNING! List of files for sample " << sample << "is empty! Make sure you specfied the right directory." << endl;
+                cout << "WARNING! List of files for sample " << sample << " is empty! Make sure you specfied the right directory." << endl;
             samples[TString(sample)] = SampleInfo{
                 filelist,
                 sample, // plot label
