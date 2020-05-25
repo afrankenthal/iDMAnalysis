@@ -16,8 +16,8 @@
         "description": "Trigger fired (120 GeV METNoMu)"
     },
     {
-        "cut": "reco_PF_MET_corr_pt > 140",
-        "description": "MET > 140 GeV"
+        "cut": "reco_PF_MET_corr_pt > 200",
+        "description": "MET > 200 GeV"
     },
     {
         "cut": "CaloPFMETRatio < 1.0",
@@ -77,12 +77,12 @@
         "description": "good dSA-dSA vertex >= 1"
     },
     {
-        "cut": "abs(reco_dsa_pt_sign[best_dsa_0]) > 1",
-        "description": "Best dSA 0 pT significance > 1"
+        "cut": "abs(reco_dsa_pt_res[best_dsa_0]) < 1",
+        "description": "Best dSA 0 pT resolution < 1"
     },
     {
-        "cut": "abs(reco_dsa_pt_sign[best_dsa_1]) > 1",
-        "description": "Best dSA 1 pT significance > 1"
+        "cut": "abs(reco_dsa_pt_res[best_dsa_1]) < 1",
+        "description": "Best dSA 1 pT resolution < 1"
     },
     {
         "cut": "abs(matched_muon_vtx_reduced_chi2) < 4",

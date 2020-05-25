@@ -9,97 +9,119 @@
     },
     {
         "cut": "hem_veto",
+        "book_plot": "no",
         "description": "HEM veto"
     },
     {
         "cut": "(trig_fired&(1<<3)) == (1<<3)",
+        "book_plot": "no",
         "description": "Trigger fired (120 GeV METNoMu)"
     },
     {
         "cut": "reco_PF_MET_corr_pt > 200",
+        "book_plot": "no",
         "description": "MET > 200 GeV"
     },
     {
         "cut": "CaloPFMETRatio < 1.0",
+        "book_plot": "no",
         "description": "|CaloMET - PFMET|/CaloMET < 1"
     },
     {
         "cut": "reco_PF_n_highPt_jets > 0",
+        "book_plot": "no",
         "description": "nJets > 0 (pT > 30 GeV)"
     },
     {
         "cut": "abs(reco_PF_jet_corr_eta[0]) < 2.5",
+        "book_plot": "no",
         "description": "leading jet |#eta| < 2.5"
     },
     {
         "cut": "reco_PF_jet_corr_pt[0] > 80",
+        "book_plot": "no",
         "description": "Leading jet pT > 80 GeV"
     },
     {
         "cut": "reco_n_good_electron == 0",
+        "book_plot": "no",
         "description": "Electron veto"
     },
     {
         "cut": "reco_n_good_photon == 0",
+        "book_plot": "no",
         "description": "Photon veto"
     },
     {
-        "cut": "MET_jet_dphi0 > 1.5;",
-        "description": "|#Delta#Phi(MET, leading jet)| > 1.5"
+        "cut": "MET_jet_dphi0 > 1.0;",
+        "book_plot": "no",
+        "description": "|#Delta#Phi(MET, leading jet)| > 1.0"
     },
     {
         "cut": "All(MET_jet_dphi > 0.5)",
+        "book_plot": "no",
         "description": "|#Delta#Phi(MET, all jets)| > 0.5"
     },
     {
         "cut": "reco_PF_n_highPt_jets < 20",
+        "book_plot": "no",
         "description": "nJets < 20 (pT > 30 GeV)",
         "special": "no"
     },
     {
         "cut": "reco_n_bTag_jets >= 1",
+        "book_plot": "no",
         "description": ">= 1 b-tagged jets",
         "special": "yes"
     },
     {
         "cut": "n_good_dsa >= 1",
+        "book_plot": "no",
         "description": "good dSA muons >= 1"
     },
     {
         "cut": "n_good_dsa >= 2",
+        "book_plot": "no",
         "description": "good dSA muons >= 2"
     },
     {
         "cut": "best_dsa_0 != best_dsa_1",
+        "book_plot": "no",
         "description": "best_dsa_0 != best_dsa_1"
     },
     {
         "cut": "best_vtx_dsadsa != 0",
+        "book_plot": "no",
         "description": "good dSA-dSA vertex >= 1"
     },
     {
-        "cut": "abs(reco_dsa_pt_sign[best_dsa_0]) > 1",
-        "description": "Best dSA 0 pT significance > 1"
+        "cut": "abs(reco_dsa_pt_res[best_dsa_0]) < 1",
+        "book_plot": "no",
+        "description": "Best dSA 0 pT resolution < 1"
     },
     {
-        "cut": "abs(reco_dsa_pt_sign[best_dsa_1]) > 1",
-        "description": "Best dSA 1 pT significance > 1"
+        "cut": "abs(reco_dsa_pt_res[best_dsa_1]) < 1",
+        "book_plot": "no",
+        "description": "Best dSA 1 pT resolution < 1"
     },
     {
         "cut": "abs(matched_muon_vtx_reduced_chi2) < 4",
+        "book_plot": "no",
         "description": "Vertex #chi^{2} < 4"
     },
     {
         "cut": "abs(matched_muon_MT) < 200",
+        "book_plot": "no",
         "description": "MT < 200 GeV"
     },
     {
-        "cut": "abs(matched_muon_Mmumu) < 30",
-        "description": "M_{#mu#mu} < 30 GeV"
+        "cut": "abs(matched_muon_Mmumu) < 1000",
+        "book_plot": "no",
+        "description": "M_{#mu#mu} < 1000 GeV"
     },
     {
-        "cut": "abs(matched_muon_vtx_dR) < 0.9",
-        "description": "dR(muons) < 0.9"
+        "cut": "abs(matched_muon_vtx_dR) < 1.5",
+        "description": "dR(muons) < 1.5"
     },
     {
         "cut": "reco_sel_mu_q0 != reco_sel_mu_q1",

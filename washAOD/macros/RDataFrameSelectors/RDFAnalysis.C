@@ -128,29 +128,29 @@ void RDFAnalysis::SetSampleConfig(common::SampleInfo sample_info) {
     if (year_ == 2017) {
         lumi_ = 41.53 * 1000;
         trig_sf = trig_hist_2017;
-        if (group_ == "ZJets") {
-            if (name_.Contains("HT-100To200"))
-                sf_pu = pileup_ZJets_2017["HT-100To200"];
-            else if (name_.Contains("HT-200To400"))
-                sf_pu = pileup_ZJets_2017["HT-200To400"];
-            else if (name_.Contains("HT-400To600"))
-                sf_pu = pileup_ZJets_2017["HT-400To600"];
-            else if (name_.Contains("HT-600To800"))
-                sf_pu = pileup_ZJets_2017["HT-600To800"];
-            else if (name_.Contains("HT-800To1200"))
-                sf_pu = pileup_ZJets_2017["HT-800To1200"];
-            else if (name_.Contains("HT-1200To2500"))
-                sf_pu = pileup_ZJets_2017["HT-1200To2500"];
-            else if (name_.Contains("HT-2500ToInf"))
-                sf_pu = pileup_ZJets_2017["HT-2500ToInf"];
-            else {
-                cout << "WARNING! Sample is from ZJets group but no pileup file could be found. Using HT-100To200 by default." << endl;
-                sf_pu = pileup_ZJets_2017["HT-100To200"];
-            }
-        }
-        else {
+        //if (group_ == "ZJets") {
+        //    if (name_.Contains("HT-100To200"))
+        //        sf_pu = pileup_ZJets_2017["HT-100To200"];
+        //    else if (name_.Contains("HT-200To400"))
+        //        sf_pu = pileup_ZJets_2017["HT-200To400"];
+        //    else if (name_.Contains("HT-400To600"))
+        //        sf_pu = pileup_ZJets_2017["HT-400To600"];
+        //    else if (name_.Contains("HT-600To800"))
+        //        sf_pu = pileup_ZJets_2017["HT-600To800"];
+        //    else if (name_.Contains("HT-800To1200"))
+        //        sf_pu = pileup_ZJets_2017["HT-800To1200"];
+        //    else if (name_.Contains("HT-1200To2500"))
+        //        sf_pu = pileup_ZJets_2017["HT-1200To2500"];
+        //    else if (name_.Contains("HT-2500ToInf"))
+        //        sf_pu = pileup_ZJets_2017["HT-2500ToInf"];
+        //    else {
+        //        cout << "WARNING! Sample is from ZJets group but no pileup file could be found. Using HT-100To200 by default." << endl;
+        //        sf_pu = pileup_ZJets_2017["HT-100To200"];
+        //    }
+        //}
+        //else {
             sf_pu = pileup_2017;
-        }
+        //}
     }
     else if (year_ == 2016) {
         sf_pu = pileup_2016;
@@ -209,6 +209,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     auto calcZsf = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
         if ((group_ != "ZJets" && group_ != "DY") || gen_pt.size() != gen_ID.size()) return 1.0f;
+        return 1.23f;
+        // TURNED OFF FOR NOW
         float Zpt = -1.0f; 
         Zpt = Min(gen_pt[abs(gen_ID) == 23]);
         if (Zpt < 0) return 1.0f;
@@ -221,12 +223,14 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     auto calcWsf = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
         if (group_ != "WJets" || gen_pt.size() != gen_ID.size()) return 1.0f;
+        return 1.21f;
+        // TURNED OFF FOR NOW
         float Wpt = -1.0f; 
         Wpt = Min(gen_pt[abs(gen_ID) == 24]);
         if (Wpt < 0) return 1.0f;
         int binNum = sf_w_qcd->FindBin(Wpt);
         if (binNum == 0) binNum++;
-        else if (binNum == sf_w_qcd->GetNbinsX()) binNum--;
+        else if (binNum == sf_w_qcd->GetNbinsX()+1) binNum--;
         float sf = (float)sf_w_qcd->GetBinContent(binNum) * (float)sf_w_ewk->GetBinContent(binNum);
         // scale down WJets MC by 15% to match with data
         // (currently not enabled, just multiply by 1)
@@ -449,6 +453,10 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         Define("best_vtx_dsadsa", pickBestVtx, {"reco_vtx_dsadsa_reduced_chi2", "good_vtx_dsadsa"}).
         Define("best_dsa_0", "best_vtx_dsadsa / 4").
         Define("best_dsa_1", "best_vtx_dsadsa % 4").
+        Define("reco_dsa_pt_res", "reco_dsa_pt_err/reco_dsa_pt").
+        Define("reco_gm_pt_res", "reco_gm_pt_err/reco_gm_pt").
+        Define("reco_dsa_pt_res0", "reco_dsa_pt_res.size() > 0 ? reco_dsa_pt_res[best_dsa_0] : -9999.f").
+        Define("reco_dsa_pt_res1", "reco_dsa_pt_res.size() > 1 ? reco_dsa_pt_res[best_dsa_1] : -9999.f").
         Define("best_muon_0", findMuonMatch0, {"reco_gbmdsa_match", "reco_gbmdsa_dR", "good_vtx_dsagm", "best_dsa_0", "best_dsa_1"}).
         Define("best_muon_1", findMuonMatch1, {"reco_gbmdsa_match", "reco_gbmdsa_dR", "good_vtx_dsagm", "good_vtx_gmgm", "best_dsa_1", "best_muon_0"}).
         Define("n_matched", "(int)(best_muon_0>3) + (int)(best_muon_1>3)").
@@ -478,6 +486,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         Define("reco_gm_pt_sign", "reco_gm_pt/reco_gm_pt_err").
         Define("reco_sel_mu_pt_sign0", takeMatchedMuonQuantity, {"reco_dsa_pt_sign", "reco_gm_pt_sign", "best_muon_0"}).
         Define("reco_sel_mu_pt_sign1", takeMatchedMuonQuantity, {"reco_dsa_pt_sign", "reco_gm_pt_sign", "best_muon_1"}).
+        Define("reco_sel_mu_pt_res0", takeMatchedMuonQuantity, {"reco_dsa_pt_res", "reco_gm_pt_res", "best_muon_0"}).
+        Define("reco_sel_mu_pt_res1", takeMatchedMuonQuantity, {"reco_dsa_pt_res", "reco_gm_pt_res", "best_muon_1"}).
         Define("matched_muon_MT", calcMatchedMuonMT, {"reco_sel_mu_pt0", "reco_sel_mu_phi0", MET_pt.Data(), MET_phi.Data()}).
         Define("matched_muon_Mmumu", calcMatchedMuonInvMass, {"reco_sel_mu_pt0", "reco_sel_mu_eta0", "reco_sel_mu_phi0", "reco_sel_mu_pt1", "reco_sel_mu_eta1", "reco_sel_mu_phi1"}).
         Define("reco_PF_jet_pt0", takeQuantity0, {jet_pt.Data()}).
@@ -596,7 +606,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         cout << endl << "RDF sum_gen_wgts: " << value << endl;
     }
 
-    df_filters.Report()->Print();
+    //df_filters.Report()->Print();
 
     return kTRUE;
 }

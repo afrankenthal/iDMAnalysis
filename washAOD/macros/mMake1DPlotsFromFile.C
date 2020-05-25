@@ -12,22 +12,28 @@ namespace macro {
         }
 
         // macro options
-        TString in_filename = TString(cfg["infilenames"].get<std::vector<std::string>>()[0]);
-        if (in_filename == TString("")) {
-            cout << "ERROR! No input filename. Exiting..." << endl;
+        vector<std::string> in_filenames = cfg["infilenames"].get<std::vector<std::string>>();
+        if (in_filenames.size() < 1) {
+            cout << "ERROR! Need at least 1 input file to process. Exiting..." << endl;
             return 0;
         }
+        
+        //TString in_filename = TString(cfg["infilenames"].get<std::vector<std::string>>()[0]);
+        //if (in_filename == TString("")) {
+        //    cout << "ERROR! No input filename. Exiting..." << endl;
+        //    return 0;
+        //}
         TString out_filename = TString(cfg["outfilename"].get<std::string>());
         if (out_filename == TString(""))
-            out_filename = in_filename;
+            out_filename = in_filenames[0];
 
         TFile * in_file, * out_file;
-        if (out_filename == "" || out_filename == in_filename) {
-            in_file = new TFile(in_filename, "UPDATE");
+        if (out_filename == in_filenames[0]) {
+            in_file = new TFile(in_filenames[0].c_str(), "UPDATE");
             out_file = in_file;
         }
         else {
-            in_file = new TFile(in_filename);
+            //in_file = new TFile(in_filenames[0].c_str());
             out_file = new TFile(out_filename, "RECREATE");
         }
 
@@ -41,96 +47,107 @@ namespace macro {
         }
         	
         map<TString, std::unique_ptr<TCanvas>> canvases;
-        for (auto && keyAsObj : *in_file->GetListOfKeys()){
-            auto key = (TKey*)keyAsObj;
-            if (TString(key->GetClassName()) != "THStack") continue;
-            TString hs_name = TString(key->GetName());
-            if (hs_name.Contains("_vs_")) continue; // mMake2DPlotsFromFile handles these
-            if (hs_name.Contains("num") or hs_name.Contains("denom")) continue; // mMake1DEffPlotsFromFile handles these            
-            cout << "Processing " << hs_name << ", class " << key->GetClassName() << endl;
-            THStack * hs = (THStack*)in_file->Get(hs_name);
-            TString hs_basename = ((TObjString*)(hs_name.Tokenize("-")->At(0)))->String();
-            TString hs_suffix = ((TObjString*)(hs_name.Tokenize("-")->At(1)))->String();
-            bool newCanvas = false;
-            if (canvases.find(hs_basename) == canvases.end()) {
-                newCanvas = true;
-                canvases[hs_basename] = std::make_unique<TCanvas>(Form("canvas_%s", hs_basename.Data()));
+
+        for (auto in_filename : in_filenames) {
+            cout << endl << "Opening file " << in_filename << endl << endl;
+            TFile * in_file_tmp;
+            if (in_filename != out_filename)
+                in_file_tmp = new TFile(in_filename.c_str());
+            else
+                in_file_tmp = out_file;
+
+            for (auto && keyAsObj : *in_file_tmp->GetListOfKeys()){
+                auto key = (TKey*)keyAsObj;
+                if (TString(key->GetClassName()) != "THStack") continue;
+                TString hs_name = TString(key->GetName());
+                if (hs_name.Contains("_vs_")) continue; // mMake2DPlotsFromFile handles these
+                if (hs_name.Contains("num") or hs_name.Contains("denom")) continue; // mMake1DEffPlotsFromFile handles these            
+                cout << "Processing " << hs_name << ", class " << key->GetClassName() << endl;
+                THStack * hs = (THStack*)in_file_tmp->Get(hs_name);
+                TString hs_basename = ((TObjString*)(hs_name.Tokenize("-")->At(0)))->String();
+                TString hs_suffix = ((TObjString*)(hs_name.Tokenize("-")->At(1)))->String();
+                bool newCanvas = false;
+                if (canvases.find(hs_basename) == canvases.end()) {
+                    newCanvas = true;
+                    canvases[hs_basename] = std::make_unique<TCanvas>(Form("canvas_%s", hs_basename.Data()));
+                    auto * c = canvases[hs_basename].get();
+                    c->SetMargin(0.1, 0.05, 0.1, 0.05);
+                    c->Range(0,0,1,1);
+                    c->Divide(1,2);
+                    // top pad
+                    c->cd(1);
+                    gPad->SetPad(0.01, 0.33, 0.99, 0.99);
+                    gPad->Draw(); 
+                    gPad->cd();
+                    gPad->SetTopMargin(0.1);
+                    gPad->SetBottomMargin(0.01);
+                    gPad->SetRightMargin(0.1);
+                    gPad->SetFillStyle(0);
+                    // bottom pad
+                    c->cd(2);
+                    gPad->SetPad(0.01, 0.01, 0.99, 0.32);
+                    gPad->Draw();
+                    gPad->cd();
+                    gPad->SetTopMargin(0.01);
+                    gPad->SetBottomMargin(0.3);
+                    gPad->SetRightMargin(0.1);
+                    gPad->SetFillStyle(0);
+                }
                 auto * c = canvases[hs_basename].get();
-                c->SetMargin(0.1, 0.05, 0.1, 0.05);
-                c->Range(0,0,1,1);
-                c->Divide(1,2);
-                // top pad
-                c->cd(1);
-                gPad->SetPad(0.01, 0.33, 0.99, 0.99);
-                gPad->Draw(); 
-                gPad->cd();
-                gPad->SetTopMargin(0.1);
-                gPad->SetBottomMargin(0.01);
-                gPad->SetRightMargin(0.1);
-                gPad->SetFillStyle(0);
-                // bottom pad
-                c->cd(2);
-                gPad->SetPad(0.01, 0.01, 0.99, 0.32);
-                gPad->Draw();
-                gPad->cd();
-                gPad->SetTopMargin(0.01);
-                gPad->SetBottomMargin(0.3);
-                gPad->SetRightMargin(0.1);
-                gPad->SetFillStyle(0);
-            }
-            auto * c = canvases[hs_basename].get();
-            c->cd(1); // top pad, the plot one
-            TString drawOption = "";
-            if (hs_suffix == "SIGNAL")
-                drawOption += "E HIST NOSTACK";
-            else if (hs_suffix == "BKG")
-                drawOption += "HIST";
-            else if (hs_suffix == "DATA")
-                drawOption += "E P";
-            if (!newCanvas)
-                drawOption += " SAME";
-            hs->Draw(drawOption.Data());
-            if (hs_suffix == "BKG") {
-                TH1F * sum_hist = ((TH1F*)(hs->GetStack()->Last()));
-                sum_hist->SetMarkerSize(0);
-                sum_hist->SetFillStyle(3254);
-                sum_hist->SetFillColor(kGray+3);
-                sum_hist->Draw("E2 SAME");
-            }
-            if (newCanvas) {
-                hs->GetXaxis()->SetTitle(hs->GetTitle());
-                hs->GetYaxis()->SetTitle("Events");
-                hs->GetXaxis()->SetTitleSize(0.00);
-                hs->GetHistogram()->GetYaxis()->SetLabelSize(0.05);
-                hs->GetHistogram()->GetYaxis()->SetTitleSize(0.06);
-                hs->GetHistogram()->GetYaxis()->SetTitleOffset(0.76);
-                hs->SetTitle("");
-                hs->GetHistogram()->SetLabelSize(0.0);
-                const bool writeExtraText = true;
-                //lumi_13TeV = "29.41 fb^{-1} ";
-                //CMS_lumi(c, 4);
-                //c->SetLogy();
-                CMS_lumi((TPad*)gPad, 4, 0, years);
-                gPad->SetLogy();
-                // Make cut description label
-                int cut;
-                TString tok;
-                Ssiz_t from = 0;
-                while (hs_basename.Tokenize(tok, from, "_")) 
-                    if (tok.Contains("cut")) 
-                        cut = (((TObjString*)(tok.Tokenize("t")->At(1)))->String()).Atoi();
-                TLatex cut_label;
-                cut_label.SetNDC();
+                c->cd(1); // top pad, the plot one
+                TString drawOption = "";
+                if (hs_suffix == "SIGNAL")
+                    drawOption += "E HIST NOSTACK";
+                else if (hs_suffix == "BKG")
+                    drawOption += "HIST";
+                else if (hs_suffix == "DATA")
+                    drawOption += "E P";
+                if (!newCanvas)
+                    drawOption += " SAME";
+                hs->Draw(drawOption.Data());
+                if (hs_suffix == "BKG") {
+                    TH1F * sum_hist = ((TH1F*)(hs->GetStack()->Last()));
+                    sum_hist->SetMarkerSize(0);
+                    sum_hist->SetFillStyle(3254);
+                    sum_hist->SetFillColor(kGray+3);
+                    sum_hist->Draw("E2 SAME");
+                }
+                if (newCanvas) {
+                    hs->GetXaxis()->SetTitle(hs->GetTitle());
+                    hs->GetYaxis()->SetTitle("Events");
+                    hs->GetXaxis()->SetTitleSize(0.00);
+                    hs->GetHistogram()->GetYaxis()->SetLabelSize(0.05);
+                    hs->GetHistogram()->GetYaxis()->SetTitleSize(0.06);
+                    hs->GetHistogram()->GetYaxis()->SetTitleOffset(0.76);
+                    hs->SetTitle("");
+                    hs->GetHistogram()->SetLabelSize(0.0);
+                    const bool writeExtraText = true;
+                    //lumi_13TeV = "29.41 fb^{-1} ";
+                    //CMS_lumi(c, 4);
+                    //c->SetLogy();
+                    CMS_lumi((TPad*)gPad, 4, 0, years);
+                    gPad->SetLogy();
+                    // Make cut description label
+                    int cut;
+                    TString tok;
+                    Ssiz_t from = 0;
+                    while (hs_basename.Tokenize(tok, from, "_")) 
+                        if (tok.Contains("cut")) 
+                            cut = (((TObjString*)(tok.Tokenize("t")->At(1)))->String()).Atoi();
+                    TLatex cut_label;
+                    cut_label.SetNDC();
 
-                cut_label.SetTextSize(0.05);
+                    cut_label.SetTextSize(0.05);
 
-                if (cuts_info[cut].special == TString("yes"))
-                    cut_label.SetTextColor(kRed);
+                    if (cuts_info[cut].special == TString("yes"))
+                        cut_label.SetTextColor(kRed);
 
-                cut_label.DrawLatexNDC(0.25, 0.85, cuts_info[cut].description.Data()); //common::cut_descriptions[cut].c_str());
+                    cut_label.DrawLatexNDC(0.25, 0.85, cuts_info[cut].description.Data()); //common::cut_descriptions[cut].c_str());
+                }
+                //hs->GetStack()->Last()->Draw("E");
+                //canvases.push_back(std::move(c));
             }
-            //hs->GetStack()->Last()->Draw("E");
-            //canvases.push_back(std::move(c));
+            //in_file->Close();
         }
         // Make ratio subplot
         for (auto & pair : canvases) {
@@ -165,8 +182,17 @@ namespace macro {
                 ratio_hist->SetFillColor(kGray+3);
                 ratio_hist->Draw("E2");
             }
-            else { // no background MC --> this will fail
-                std::cout << "ERROR! No background MC in 1D plot... Ratio hist will fail. Are you sure this is intended?" << std::endl;
+            else { // no background MC --> just use stacked signal MC to set ratio to 1
+                TH1F * h2 = (TH1F*)(signal_hist->GetStack()->Last());
+                ratio_hist = (TH1F*)h2->Clone();
+                ratio_hist->SetDirectory(0);
+                ratio_hist->Divide(h2);
+                ratio_hist->GetXaxis()->SetTitle(signal_hist->GetHistogram()->GetXaxis()->GetTitle());
+                ratio_hist->SetMarkerSize(0);
+                ratio_hist->SetFillStyle(3254);
+                ratio_hist->SetFillColor(kGray+3);
+                ratio_hist->Draw("E2");
+                //std::cout << "ERROR! No background MC in 1D plot... Ratio hist will fail. Are you sure this is intended?" << std::endl;
             }
             ratio_hist->SetMaximum(2.1);
             ratio_hist->SetMinimum(-0.1);
@@ -280,6 +306,7 @@ namespace macro {
             c->Modified();
         }
         // Write canvases to ROOT file
+        out_file->cd();
         for (auto & pair : canvases) {
             pair.second.get()->Write();
             //delete c;

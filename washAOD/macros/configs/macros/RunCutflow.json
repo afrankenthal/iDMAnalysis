@@ -7,8 +7,8 @@
                     "quantity": "reco_sel_mu_dxy0",
                     "groups_to_exclude": [],
                     "type": "float1D",
-                    "name": "reco_sel_mu_dxy0",
-                    "title": "Leading muon dxy",
+                    "name": "reco_sel_mu_dxy0_zoom",
+                    "title": "Leading muon dxy [cm]",
                     "nbinsX": 50,
                     "lowX": 0,
                     "highX": 0.5 
@@ -17,11 +17,31 @@
                     "quantity": "reco_sel_mu_dxy1",
                     "groups_to_exclude": [],
                     "type": "float1D",
-                    "name": "reco_sel_mu_dxy1",
-                    "title": "Subleading muon dxy",
+                    "name": "reco_sel_mu_dxy1_zoom",
+                    "title": "Subleading muon dxy [cm]",
                     "nbinsX": 50,
                     "lowX": 0,
                     "highX": 0.5
+                },
+                {
+                    "quantity": "reco_sel_mu_dxy0",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "reco_sel_mu_dxy0",
+                    "title": "Leading muon dxy [cm]",
+                    "nbinsX": 100,
+                    "lowX": 0,
+                    "highX": 50
+                },
+                {
+                    "quantity": "reco_sel_mu_dxy1",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "reco_sel_mu_dxy1",
+                    "title": "Subleading muon dxy [cm]",
+                    "nbinsX": 50,
+                    "lowX": 0,
+                    "highX": 50
                 },
                 {
                     "quantity": "matched_muon_MT",
@@ -56,7 +76,7 @@
                 },
                 {
                     "quantity": "gen_muon_vxy",
-                    "groups_to_exclude": [],
+                    "groups_to_exclude": ["data"],
                     "type": "float1D",
                     "name": "gen_muon_vxy",
                     "title": "Muon gen vxy [cm]",
@@ -67,7 +87,7 @@
                 },
                 {
                     "quantity": "gen_METmu_dphi",
-                    "groups_to_exclude": [],
+                    "groups_to_exclude": ["data"],
                     "type": "float1D",
                     "name": "gen_METmu_dphi",
                     "title": "gen |#Delta#Phi(MET, muons)|",
@@ -158,26 +178,44 @@
                     "highX": 3.2 
                 },
                 {
-                    "quantity": "reco_sel_mu_pt_sign0",
+                    "quantity": "reco_dsa_pt_res0",
                     "groups_to_exclude": [],
                     "type": "float1D",
-                    "name": "reco_sel_mu_pt_sign0",
-                    "title": "First muon pT significance (pT/#sigma_{pT})",
-                    "nbinsX": 19,
+                    "name": "reco_dsa_pt_res0",
+                    "title": "First dSA pT resolution (#sigma_{pT}/p_{T})",
+                    "nbinsX": 100,
                     "lowX": 0,
-                    "highX": 10,
-                    "binEdgesX": [ 0, 0.2, 0.4, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20 ]
+                    "highX": 5
                 },
                 {
-                    "quantity": "reco_sel_mu_pt_sign1",
+                    "quantity": "reco_dsa_pt_res1",
                     "groups_to_exclude": [],
                     "type": "float1D",
-                    "name": "reco_sel_mu_pt_sign1",
-                    "title": "Second muon pT significance (pT/#sigma_{pT})",
-                    "nbinsX": 19,
+                    "name": "reco_dsa_pt_res1",
+                    "title": "Second dSA p_{T} resolution (#sigma_{pT}/p_{T})",
+                    "nbinsX": 100,
                     "lowX": 0,
-                    "highX": 10,
-                    "binEdgesX": [ 0, 0.2, 0.4, 0.6, 0.8, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 12, 14, 16, 18, 20 ]
+                    "highX": 5
+                },
+                {
+                    "quantity": "reco_dsa_pt_res0",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "reco_dsa_pt_res0_zoom",
+                    "title": "First dSA pT resolution (#sigma_{pT}/p_{T})",
+                    "nbinsX": 100,
+                    "lowX": 0,
+                    "highX": 1
+                },
+                {
+                    "quantity": "reco_dsa_pt_res1",
+                    "groups_to_exclude": [],
+                    "type": "float1D",
+                    "name": "reco_dsa_pt_res1_zoom",
+                    "title": "Second dSA p_{T} resolution (#sigma_{pT}/p_{T})",
+                    "nbinsX": 100,
+                    "lowX": 0,
+                    "highX": 1
                 },
                 {
                     "quantity": "reco_sel_mu_pt0",

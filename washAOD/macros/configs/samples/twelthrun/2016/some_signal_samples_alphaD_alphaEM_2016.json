@@ -1,0 +1,62 @@
+{
+    "Mchi-52p5_dMchi-5p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-100.root"
+        ],
+        "group": "sig_52p5_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 50.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 69533.00000667977,
+        "xsec": 0.031,
+        "year": 2016
+    },
+    "Mchi-5p25_dMchi-0p5_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-5p25_dMchi-0p5_ctau-1000.root"
+        ],
+        "group": "sig_5p25_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 5.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 26917.00000013224,
+        "xsec": 0.1,
+        "year": 2016
+    },
+    "Mchi-60p0_dMchi-20p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-60p0_dMchi-20p0_ctau-1.root"
+        ],
+        "group": "sig_60p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 50.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 61243.004001446185,
+        "xsec": 0.003,
+        "year": 2016
+    },
+    "Mchi-6p0_dMchi-2p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-6p0_dMchi-2p0_ctau-10.root"
+        ],
+        "group": "sig_6p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 5.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.00026048734502926926,
+        "xsec": 0.01,
+        "year": 2016
+    }
+}
