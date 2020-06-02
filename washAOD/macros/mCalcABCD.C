@@ -31,6 +31,8 @@ namespace macro {
                     cout << h_name << endl;
                     TCanvas * c = (TCanvas*)in_file->Get(canvas_name);
                     TH2D * h = (TH2D*)c->FindObject(h_name);
+                    if (canvas_name.Contains("zoomzoom"))
+                        h->Rebin2D(2,2);
                     cout << "Integral with over+underflow: " << h->Integral(0, h->GetNbinsX()+1, 0, h->GetNbinsY()+1) << endl;
                     int lowXBin = h->GetXaxis()->FindBin(lowX), highXBin = h->GetXaxis()->FindBin(highX);
                     int lowYBin = h->GetYaxis()->FindBin(lowY), highYBin = h->GetYaxis()->FindBin(highY);

@@ -90,9 +90,12 @@ void RDFAnalysis::Begin() {
     TFile * trig_wgt_2017 = TFile::Open("../../data/trig_weights/trig_weights_2017.root");
     TFile * trig_wgt_2018 = TFile::Open("../../data/trig_weights/trig_weights_2018.root");
 
-    trig_hist_2016 = (TH1F*)(((TH1F*)trig_wgt_2016->Get("weigts_reco_PF_MetNoMu_pt_2016_MCTotal_2016_Dlow"))->Clone());
-    trig_hist_2017 = (TH1F*)(((TH1F*)trig_wgt_2017->Get("weigts_reco_PF_MetNoMu_pt_2017_MCTotal_2017_Dlow"))->Clone());
-    trig_hist_2018 = (TH1F*)(((TH1F*)trig_wgt_2018->Get("weigts_reco_PF_MetNoMu_pt_2018_MCTotal_2018_Dlow"))->Clone());
+    //trig_hist_2016 = (TH1F*)(((TH1F*)trig_wgt_2016->Get("weigts_reco_PF_MetNoMu_pt_2016_MCTotal_2016_Dlow"))->Clone());
+    //trig_hist_2017 = (TH1F*)(((TH1F*)trig_wgt_2017->Get("weigts_reco_PF_MetNoMu_pt_2017_MCTotal_2017_Dlow"))->Clone());
+    //trig_hist_2018 = (TH1F*)(((TH1F*)trig_wgt_2018->Get("weigts_reco_PF_MetNoMu_pt_2018_MCTotal_2018_Dlow"))->Clone());
+    trig_hist_2016 = (TH1F*)(((TH1F*)trig_wgt_2016->Get("weights_reco_PF_MET_pt_2016_MCTotal_2016_ratio"))->Clone());
+    trig_hist_2017 = (TH1F*)(((TH1F*)trig_wgt_2017->Get("weights_reco_PF_MET_pt_2017_MCTotal_2017_ratio"))->Clone());
+    trig_hist_2018 = (TH1F*)(((TH1F*)trig_wgt_2018->Get("weights_reco_PF_MET_pt_2018_MCTotal_2018_ratio"))->Clone());
 
     trig_hist_2016->SetDirectory(0);
     trig_hist_2017->SetDirectory(0);
@@ -254,8 +257,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     };
 
     auto calcTrigsf = [&](float met) {
-        if (met < 120.0)
-            return 0.3f;
+        if (met < 100.0)
+            return 1.0f;
+            //return 0.3f;
         if (met > 800.0)
             return 1.0f;
         return (float)trig_sf->GetBinContent(trig_sf->FindBin(met));
