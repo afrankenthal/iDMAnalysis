@@ -100,5 +100,19 @@
         "NoBPTX_2018B": "/NoBPTX/Run2018B-PromptReco-v1/AOD",
         "NoBPTX_2018C": "/NoBPTX/Run2018C-PromptReco-v3/AOD",
         "NoBPTX_2018D": "/NoBPTX/Run2018D-PromptReco-v2/AOD"
+    },
+    "signal_2018": {
+        "sig_1p2_0p4_100": "/iDM_DarkPhotonToMuMu_Mchi-1p2_dMchi-0p4_ctau-100_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM",
+        "sig_1p2_0p4_1000": "/iDM_DarkPhotonToMuMu_Mchi-1p2_dMchi-0p4_ctau-1000_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM",
+        "sig_31p5_3p0_100": "/iDM_DarkPhotonToMuMu_Mchi-31p5_dMchi-3p0_ctau-100_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM",
+        "sig_36p0_12p0_10": "/iDM_DarkPhotonToMuMu_Mchi-36p0_dMchi-12p0_ctau-10_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM",
+        "sig_3p6_1p2_1": "/iDM_DarkPhotonToMuMu_Mchi-3p6_dMchi-1p2_ctau-1_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM",
+        "sig_3p6_1p2_1000": "/iDM_DarkPhotonToMuMu_Mchi-3p6_dMchi-1p2_ctau-1000_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM",
+        "sig_42p0_4p0_10": "/iDM_DarkPhotonToMuMu_Mchi-42p0_dMchi-4p0_ctau-10_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM",
+        "sig_42p0_4p0_1000": "/iDM_DarkPhotonToMuMu_Mchi-42p0_dMchi-4p0_ctau-1000_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM",
+        "sig_63p0_6p0_1": "/iDM_DarkPhotonToMuMu_Mchi-63p0_dMchi-6p0_ctau-1_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM",
+        "sig_63p0_6p0_10": "/iDM_DarkPhotonToMuMu_Mchi-63p0_dMchi-6p0_ctau-10_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM",
+        "sig_72p0_24p0_10": "/iDM_DarkPhotonToMuMu_Mchi-72p0_dMchi-24p0_ctau-10_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM",
+        "sig_84p0_8p0_100": "/iDM_DarkPhotonToMuMu_Mchi-84p0_dMchi-8p0_ctau-100_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v2/AODSIM"
     }
 }
