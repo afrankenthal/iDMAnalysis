@@ -1,7 +1,7 @@
 #include "../macros/utils/json.hpp"
 using json = nlohmann::json;
 
-void PlotRecoEff(TString config_filename, bool fSave=0, bool fShow=1) {
+void PlotMuonRecoEffi(TString config_filename, bool fSave=0, bool fShow=1) {
     gROOT->LoadMacro("../utils/tdrstyle.C");
     gROOT->ProcessLine("setTDRStyle();");
 

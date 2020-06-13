@@ -1,0 +1,51 @@
+{
+    "observables": {
+        "gen_reco_dR": {}
+    },
+    "samples": {
+        "60p0": {
+            "files": [
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-60p0_dMchi-20p0_ctau-1.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-60p0_dMchi-20p0_ctau-10.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-60p0_dMchi-20p0_ctau-100.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-60p0_dMchi-20p0_ctau-1000.root"
+            ],
+                "color": 1,
+                "legend": "(50, 70) GeV",
+                "collection": "dsa"
+        },
+        "6p0": {
+            "files": [
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-6p0_dMchi-2p0_ctau-1.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-6p0_dMchi-2p0_ctau-10.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-6p0_dMchi-2p0_ctau-100.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-6p0_dMchi-2p0_ctau-1000.root"
+            ],
+                "color": 2,
+                "legend": "(5, 7) GeV",
+                "collection": "dsa"
+        },
+        "52p5": {
+            "files": [
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-1.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-10.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-100.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-1000.root"
+            ],
+                "color": 3,
+                "legend": "(50, 55) GeV",
+                "collection": "dsa"
+        },
+        "5p25": {
+            "files": [
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-5p25_dMchi-0p5_ctau-1.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-5p25_dMchi-0p5_ctau-10.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-5p25_dMchi-0p5_ctau-100.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-5p25_dMchi-0p5_ctau-1000.root"
+            ],
+                "color": 4,
+                "legend": "(5, 5.5) GeV",
+                "collection": "dsa"
+        }
+    }
+}

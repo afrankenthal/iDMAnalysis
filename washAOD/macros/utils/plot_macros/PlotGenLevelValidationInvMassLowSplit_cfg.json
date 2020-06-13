@@ -1,0 +1,71 @@
+{
+    "observables": {
+        "inv_mass_zoom": {}
+    },
+    "canvas_label": "iDM (2016)",
+    "samples": {
+        "03p15": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-3p15_dMchi-0p3_ctau-1.root"
+            ],
+                "color": 1,
+                "legend": "(3, 3.3) GeV"
+        },
+        "05p25": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-5p25_dMchi-0p5_ctau-1.root"
+            ],
+                "color": 867,
+                "legend": "(5, 5.5) GeV"
+        },
+        "10p5": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-10p5_dMchi-1p0_ctau-1.root"
+            ],
+                "color": 633,
+                "legend": "(10, 11) GeV"
+        },
+        "21p0": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-21p0_dMchi-2p0_ctau-1.root"
+            ],
+                "color": 797,
+                "legend": "(20, 22) GeV"
+        },
+        "31p5": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-31p5_dMchi-3p0_ctau-1.root"
+            ],
+                "color": 844,
+                "legend": "(30, 33) GeV"
+        },
+        "42p0": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-42p0_dMchi-4p0_ctau-1.root"
+            ],
+                "color": 867,
+                "legend": "(40, 44) GeV"
+        },
+        "52p5": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-1.root"
+            ],
+                "color": 921,
+                "legend": "(50, 55) GeV"
+        },
+        "63p0": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-63p0_dMchi-6p0_ctau-1.root"
+            ],
+                "color": 878,
+                "legend": "(60, 66) GeV"
+        },
+        "84p0": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-84p0_dMchi-8p0_ctau-1.root"
+            ],
+                "color": 397,
+                "legend": "(80, 88) GeV"
+        }
+    }
+}

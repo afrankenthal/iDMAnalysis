@@ -1,0 +1,21 @@
+{
+    "observables": {
+        "vxy": {},
+        "vxy_zoom": {},
+        "vz": {},
+        "vz_zoom": {}
+    },
+    "samples": {
+        "52p5_dsa": {
+            "files": [
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-1.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-10.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-100.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-1000.root"
+            ],
+                "color": 1,
+                "legend": "dSA",
+                "collection": "dsa"
+        }
+    }
+}

@@ -1,0 +1,50 @@
+{
+    "observables": {
+        "inv_mass_zoom": {}
+    },
+    "canvas_label": "iDM (2017)",
+    "samples": {
+        "84p0_private": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2017/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-84p0_dMchi-8p0_ctau-1.root"
+            ],
+                "color": 1,
+                "legend": "(80, 88) GeV private"
+        },
+        "84p0_central": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2017/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-84p0_dMchi-8p0_ctau-1_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_84p0_8p0_1_2017/200525_024600/0000/merged/merged.root"
+            ],
+                "color": 2,
+                "legend": "(80, 88) GeV central"
+        },
+        "42p0_private": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2017/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-42p0_dMchi-4p0_ctau-100.root"
+            ],
+                "color": 3,
+                "legend": "(40, 44) GeV private"
+        },
+        "42p0_central": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2017/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-42p0_dMchi-4p0_ctau-100_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_42p0_4p0_100_2017/200525_024500/0000/merged/merged.root"
+            ],
+                "color": 4,
+                "legend": "(40, 44) GeV central"
+        },
+        "52p5_private": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2017/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-52p5_dMchi-5p0_ctau-100.root"
+            ],
+                "color": 5,
+                "legend": "(50, 55) GeV private"
+        },
+        "52p5_central": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2017/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-52p5_dMchi-5p0_ctau-100_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_52p5_5p0_100_2017/200523_114544/0000/merged/merged.root"
+            ],
+                "color": 6,
+                "legend": "(50, 55) GeV central"
+        }
+    }
+}

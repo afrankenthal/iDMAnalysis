@@ -1,7 +1,7 @@
-#include "../macros/utils/json.hpp"
+#include "../utils/json.hpp"
 using json = nlohmann::json;
 
-void PlotRecoEffDsaGM(TString config_filename, bool fSave=0, bool fShow=1) {
+void PlotGMRecoEffivsDSA(TString config_filename, int year=2018, bool fSave=0, bool fShow=1) {
     gROOT->LoadMacro("../utils/tdrstyle.C");
     gROOT->ProcessLine("setTDRStyle();");
 
@@ -18,8 +18,7 @@ void PlotRecoEffDsaGM(TString config_filename, bool fSave=0, bool fShow=1) {
     std::map<TString, TString> plot_filenames;
 
     bins["pt"] = { 0, 2, 4, 6, 8, 10,
-        15, 20, 25, 30, 40, 
-        60, 80, 100 };
+        15, 20, 25, 30, 50, 70 };
     vars["pt"] = "genPt";
     axis_label["pt"] = "Muon p_{T} [GeV]";
     plot_filenames["pt"] = Form("%s_reco_eff_vs_pt_2018.pdf", "muon"); // collection.Data());
@@ -31,13 +30,13 @@ void PlotRecoEffDsaGM(TString config_filename, bool fSave=0, bool fShow=1) {
     plot_filenames["pt_zoom"] = Form("%s_reco_eff_vs_zoompt_2018.pdf", "muon"); // collection.Data());
 
     bins["eta"] = {};
-    for (auto i = -2.5; i <= 2.5; i += 0.2) bins["eta"].push_back(i);
+    for (auto i = -2.5; i <= 2.7; i += 0.2) bins["eta"].push_back(i);
     vars["eta"] = "genEta";
     axis_label["eta"] = "Muon #eta";
     plot_filenames["eta"] = Form("%s_reco_eff_vs_eta_2018.pdf", "muon"); //  collection.Data());
 
     bins["phi"] = {};
-    for (auto i = -3.2; i <= 3.2; i += 0.2) bins["phi"].push_back(i);
+    for (auto i = -3.2; i <= 3.4; i += 0.2) bins["phi"].push_back(i);
     vars["phi"] = "genPhi";
     axis_label["phi"] = "Muon #phi";
     plot_filenames["phi"] = Form("%s_reco_eff_vs_phi_2018.pdf", "muon"); // collection.Data());
@@ -49,11 +48,15 @@ void PlotRecoEffDsaGM(TString config_filename, bool fSave=0, bool fShow=1) {
     axis_label["dr"] = "Muon pair dR (gen)";
     plot_filenames["dr"] = Form("%s_reco_eff_vs_dr_2018.pdf", "muon"); // collection.Data());
 
-    bins["vxy"] = { 0, 50, 100, 150, 200, 250, 300, 350, 400, 450, 500,
-        550, 600 } ;
+    bins["vxy"] = { 0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350 };
     vars["vxy"] = "genVxy";
     axis_label["vxy"] = "Muon pair vertex v_{xy} (gen) [cm]";
     plot_filenames["vxy"] = Form("%s_reco_eff_vs_vxy_2018.pdf", "muon"); //  collection.Data());
+
+    bins["vz"] = { 0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350 };
+    vars["vz"] = "genVxy";
+    axis_label["vz"] = "Muon pair vertex v_{z} (gen) [cm]";
+    plot_filenames["vz"] = Form("%s_reco_eff_vs_vz_2018.pdf", "muon"); //  collection.Data());
 
     bins["vxy_zoom"] = { 0, 5, 10, 15, 20, 25, 30, 35, 40, 45, 50,
         55, 60, 65, 70, 75, 80, 85, 90, 95, 100 } ;
@@ -94,19 +97,19 @@ void PlotRecoEffDsaGM(TString config_filename, bool fSave=0, bool fShow=1) {
 
                 TH1F * num_temp = (TH1F*)nums[obs][sample][0]->Clone();
                 num_temp->Reset();
-                dsa_tree->Draw(Form("%s[0]>>+hnum0GM_%s_%s", vars[obs].Data(), obs.Data(), sample.c_str()), "nMatched==2 && gm.nMatched==0", "goff");
+                dsa_tree->Draw(Form("%s[0]>>+hnum0GM_%s_%s", vars[obs].Data(), obs.Data(), sample.c_str()), "nMatched==2 && gm.nMatched==0 && abs(genEta) > 1.2", "goff");
                 nums[obs][sample][0]->Add(num_temp);
                 num_temp = (TH1F*)nums[obs][sample][1]->Clone();
                 num_temp->Reset();
-                dsa_tree->Draw(Form("%s[0]>>+hnum1GM_%s_%s", vars[obs].Data(), obs.Data(), sample.c_str()), "nMatched==2 && gm.nMatched==1", "goff");
+                dsa_tree->Draw(Form("%s[0]>>+hnum1GM_%s_%s", vars[obs].Data(), obs.Data(), sample.c_str()), "nMatched==2 && gm.nMatched==1 && abs(genEta) > 1.2", "goff");
                 nums[obs][sample][1]->Add(num_temp);
                 num_temp = (TH1F*)nums[obs][sample][2]->Clone();
                 num_temp->Reset();
-                dsa_tree->Draw(Form("%s[0]>>+hnum2GM_%s_%s", vars[obs].Data(), obs.Data(), sample.c_str()), "nMatched==2 && gm.nMatched==2", "goff");
+                dsa_tree->Draw(Form("%s[0]>>+hnum2GM_%s_%s", vars[obs].Data(), obs.Data(), sample.c_str()), "nMatched==2 && gm.nMatched==2 && abs(genEta) > 1.2", "goff");
                 nums[obs][sample][2]->Add(num_temp);
                 TH1F * denom_temp = (TH1F*)denoms[obs][sample]->Clone();
                 denom_temp->Reset();
-                dsa_tree->Draw(Form("%s[0]>>+hdenom_%s_%s", vars[obs].Data(), obs.Data(), sample.c_str()), "nMatched==2", "goff");
+                dsa_tree->Draw(Form("%s[0]>>+hdenom_%s_%s", vars[obs].Data(), obs.Data(), sample.c_str()), "nMatched==2 && abs(genEta) > 1.2", "goff");
                 denoms[obs][sample]->Add(denom_temp);
             }
 
@@ -132,6 +135,10 @@ void PlotRecoEffDsaGM(TString config_filename, bool fSave=0, bool fShow=1) {
             legend->AddEntry(effs[obs][sample][2], "2 GM reco'd", "lep");
         }
         legend->Draw("SAME");
+
+        TLatex latex;
+        latex.SetTextSize(0.04);
+        latex.DrawLatexNDC(0.25, 0.9, Form("%d", year));
 
         if (fSave) {
             canvases[obs]->SaveAs(plot_filenames[obs].Data());

@@ -1,0 +1,36 @@
+{
+    "observables": {
+        "gen_vxy": {}
+    },
+    "canvas_label": "iDM: (3.0, 4.2) GeV (2018)",
+    "samples": {
+        "3p6_1_private": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-3p6_dMchi-1p2_ctau-1.root"
+            ],
+                "color": 403,
+                "legend": "1 mm private"
+        },
+        "3p6_1_central": {
+            "files": [
+                "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-3p6_dMchi-1p2_ctau-1_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_3p6_1p2_1_2018/200525_030212/0000/merged/merged.root"
+            ],
+                "color": 401,
+                "legend": "1 mm central"
+        },
+        "3p6_1000_private": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-3p6_dMchi-1p2_ctau-1000.root"
+            ],
+                "color": 416,
+                "legend": "1000 mm private"
+        },
+        "3p6_1000_central": {
+            "files": [
+                "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-3p6_dMchi-1p2_ctau-1000_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_3p6_1p2_1000_2018/200525_025739/0000/merged/merged.root"
+            ],
+                "color": 419,
+                "legend": "1000 mm central"
+        }
+    }
+}

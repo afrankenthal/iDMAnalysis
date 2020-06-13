@@ -1,0 +1,36 @@
+{
+    "observables": {
+        "gen_vxy": {}
+    },
+    "canvas_label": "iDM: (80, 88) GeV (2016)",
+    "samples": {
+        "84p0_1": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-84p0_dMchi-8p0_ctau-1.root"
+            ],
+                "color": 1,
+                "legend": "1 mm"
+        },
+        "84p0_10": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-84p0_dMchi-8p0_ctau-10.root"
+            ],
+                "color": 867,
+                "legend": "10 mm"
+        },
+        "84p0_100": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-84p0_dMchi-8p0_ctau-100.root"
+            ],
+                "color": 633,
+                "legend": "100 mm"
+        },
+        "84p0_1000": {
+            "files": [
+                "root://cmseos.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_ninthrun/iDMAnalysis_Mchi-84p0_dMchi-8p0_ctau-1000.root"
+            ],
+                "color": 797,
+                "legend": "1000 mm"
+        }
+    }
+}
