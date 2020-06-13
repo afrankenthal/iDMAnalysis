@@ -9,7 +9,7 @@ if [ -a efficiencies.dat ]; then
         rm -f samples.dat
     else
         echo "Efficiencies.dat file already exists!"
-        echo "Run with ./extractEffs.sh 1 to overwrite or delete the file prior"
+        echo "Run with ./extract_effs.sh 1 to overwrite, or delete existing file prior to running"
         exit 1
     fi
 fi

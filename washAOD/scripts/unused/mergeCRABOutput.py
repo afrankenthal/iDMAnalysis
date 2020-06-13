@@ -1,4 +1,4 @@
-## Run with python mergeCRABOutput.py, instead of ./mergeCRABOutput.py
+## Run with python mergeCRABOutput.sh, instead of ./mergeCRABOutput.py
 ## This guarantees the right python from the CMSSW release is called
 
 from CRABAPI.RawCommand import crabCommand

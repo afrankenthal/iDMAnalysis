@@ -1,9 +1,9 @@
 #!/bin/bash
 
-# Expected argument: name of crab work area
+# Expected argument: name of crab work area and year
 
-if [ $# -eq 0 ]; then
-    echo "No arguments supplied"
+if [ $# -eq 0 ] || [ $# -eq 1 ]; then
+    echo "Only zero or 1 argument supplied, need crab work area and year"
     exit
 fi
 
@@ -32,17 +32,21 @@ function process_one_sample {
     if [[ ${base} == *"2017"* ]]
     then
        echo "year = 2017"
-	year=2017
+	year="2017"
     elif [[ ${base} == *"2016"* ]]
     then
        echo "year = 2016"
-	year=2016
+	year="2016"
     else
        echo "year = 2018"
-	year=2018
+	year="2018"
+    fi
+
+    if [ "$year" != "$requestedyear" ]; then
+        return
     fi
 	
-    echo "check"
+    echo "check sample and number of dirs"
     echo ${#check[@]}
     dirfiles="\"root://cmseos.fnal.gov/$fulldir\" "
     #echo $dirfiles
@@ -81,9 +85,12 @@ function process_one_sample {
 }
 
 crabdir=$1
+requestedyear=$2
+echo "Requested year is $requestedyear" 
+
 for dirarg in $crabdir/*; do
     echo "Processing sample $dirarg"
-    process_one_sample $dirarg
+    process_one_sample $dirarg #$year
 done
 
 # remove last comma and add closing braces
