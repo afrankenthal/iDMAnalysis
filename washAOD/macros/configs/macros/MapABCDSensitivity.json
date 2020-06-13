@@ -2,11 +2,12 @@
     {
         "name": "mMapABCDSensitivity",
         "config": {
-            "infilename_signal": "PlotsTwelthRunApril27TestUseVxy/plots_SR_twelthrun_noData_2DHists_TestUseVxy_signal_161718.root",
-            "infilename_VR": "PlotsTwelthRunApril27TestUseVxy/plots_CR_nJets_twelthrun_incompleteData_2DHists_TestUseVxy_161718.root",
-            "infilename_template": "PlotsTwelthRunApril27TestUseVxy/ABCD_template_nJets.root",
-            "infilename_SR": "PlotsTwelthRunApril27TestUseVxy/plots_SR_twelthrun_YESincompleteData_2DHists_TestUseVxy_161718.root",
-            "cuts_to_keep": ["25", "27", "28", "29", "30"]
+            "infilename_signal": "PlotsTwelthRunMay29ZoomVxyMoreEvents/plots_SR_twelthrun_noData_2DHists_TestUseVxy_signal_aD_aEM_161718.root",
+            "infilename_VR": "PlotsTwelthRunMay29ZoomVxyMoreEvents/plots_CR_nJets_twelthrun_noData_2DHists_TestUseVxy_bkg_161718.root",
+            "infilename_VR_data": "PlotsTwelthRunMay29ZoomVxyMoreEvents/plots_CR_nJets_twelthrun_incompleteData_2DHists_TestUseVxy_161718.root",
+            "infilename_template": "PlotsTwelthRunMay29ZoomVxyMoreEvents/ABCD_template_nJets.root",
+            "infilename_SR": "PlotsTwelthRunMay29ZoomVxyMoreEvents/plots_SR_twelthrun_noData_2DHists_TestUseVxy_bkg_161718.root",
+            "cuts_to_keep": ["27", "28", "29", "30"]
         }
     }
 ]

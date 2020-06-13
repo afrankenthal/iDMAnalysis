@@ -7,6 +7,7 @@ namespace macro {
         // macro options
         TString in_filename_signal = TString(cfg["infilename_signal"].get<std::string>());
         TString in_filename_VR = TString(cfg["infilename_VR"].get<std::string>());
+        TString in_filename_VR_data = TString(cfg["infilename_VR_data"].get<std::string>());
         TString in_filename_template = TString(cfg["infilename_template"].get<std::string>());
         TString in_filename_SR = TString(cfg["infilename_SR"].get<std::string>());
         if (in_filename_signal == TString("") || in_filename_template == TString("") || in_filename_VR == TString("") || in_filename_SR == TString("")) {
@@ -20,6 +21,7 @@ namespace macro {
         TFile * out_file = new TFile(out_filename, "RECREATE");
         TFile * in_file_signal = new TFile(in_filename_signal, "READ");
         TFile * in_file_VR = new TFile(in_filename_VR, "READ");
+        TFile * in_file_VR_data = new TFile(in_filename_VR_data, "READ");
         TFile * in_file_template = new TFile(in_filename_template, "READ");
         TFile * in_file_SR = new TFile(in_filename_SR, "READ");
 
@@ -44,7 +46,8 @@ namespace macro {
             if (TString(key->GetClassName()) != "TCanvas") continue;
             TString canvas_name = TString(key->GetName());
             if (!canvas_name.Contains("canvas2D")) continue;
-            if (!canvas_name.Contains("-DATA")) continue;
+            //if (!canvas_name.Contains("-DATA")) continue;
+            if (!canvas_name.Contains("-BKG")) continue;
 
             bool cut_contained = false;
             for (auto cut : cuts_to_keep)
@@ -66,8 +69,19 @@ namespace macro {
             TH2D * h_VR = (TH2D*)c_VR->FindObject(h_name);
             TH2D * h_SR = (TH2D*)c_SR->FindObject(h_name);
 
+            h_name.ReplaceAll("-BKG", "-DATA");
             TH1D * template_px = (TH1D*)in_file_template->Get(h_name + TString("_px"));
             TH1D * template_py = (TH1D*)in_file_template->Get(h_name + TString("_py"));
+
+            canvas_name.ReplaceAll("-BKG", "-DATA");
+            TCanvas * c_VR_data = (TCanvas*)in_file_VR_data->Get(canvas_name);
+            TH2D * h_VR_data = (TH2D*)c_VR_data->FindObject(h_name);
+
+            if (template_px->Integral(0, -1) != template_py->Integral(0, -1))
+                cout << "ERROR! X and Y templates have different number of events in nJets data: " 
+                     << template_px->Integral(0, -1) << " and " << template_py->Integral(0, -1) << endl;
+
+            int data_nJets_N = template_px->Integral(0, -1);
 
             template_px->Scale(1/template_px->Integral(0, template_px->GetNbinsX()+1));
             template_py->Scale(1/template_py->Integral(0, template_py->GetNbinsX()+1));
@@ -78,7 +92,7 @@ namespace macro {
                 if (TString(key2->GetClassName()) != "TCanvas") continue;
                 if (!TString(key2->GetName()).Contains(canvas_name)) continue;
 
-                cout << "Signal histogram: " << key2->GetName() << endl << endl;
+                cout << "Signal histogram: " << key2->GetName() << endl;
 
                 TCanvas * c_sig = (TCanvas*)in_file_signal->Get(key2->GetName());
 
@@ -93,20 +107,41 @@ namespace macro {
                 float max_x_sig, max_y_sig;
 
                 float max_A_sig, max_B_sig, max_C_sig, max_D_sig;
-                float max_A_SR, max_B_SR_pred, max_C_SR_pred, max_D_SR_pred;
+                float max_A_SR_pred, max_B_SR_pred, max_C_SR_pred, max_D_SR_pred;
+
+                float MC_norm_ratio = h_SR->Integral(0, -1) / h_VR->Integral(0, -1);
 
                 for (int i = 1; i <= h_VR->GetNbinsX()+1; i++) {
                     for (int j = 1; j <= h_VR->GetNbinsY()+1; j++) {
-                        float A_SR = h_SR->Integral(0, i-1, 0, j-1);
                         // Template method
-                        float c1 = template_px->Integral(i, template_px->GetNbinsX()+1)/template_px->Integral(0,i-1);
-                        float c2 = template_py->Integral(j, template_py->GetNbinsX()+1)/template_py->Integral(0,j-1);
-                        float B_SR_pred = A_SR * c1;
-                        float C_SR_pred = A_SR * c2;
-                        float D_SR_pred = A_SR * c1 * c2;
+                        //float A_SR = h_SR->Integral(0, i-1, 0, j-1);
+                        //float c1 = template_px->Integral(i, template_px->GetNbinsX()+1)/template_px->Integral(0,i-1);
+                        //float c2 = template_py->Integral(j, template_py->GetNbinsX()+1)/template_py->Integral(0,j-1);
+                        //float B_SR_pred = A_SR * c1;
+                        //float C_SR_pred = A_SR * c2;
+                        //float D_SR_pred = A_SR * c1 * c2;
 
-                        float C_SR_clos_err = C_SR_pred * 0.14;
+                        // New template method using MC for normalization
+                        int nbinsx = template_px->GetNbinsX()+1;
+                        int nbinsy = template_px->GetNbinsY()+1;
+
+                        //float A_SR_pred = MC_norm_ratio * data_nJets_N * template_px->Integral(0, i-1) * template_py->Integral(0, j-1);
+                        //float B_SR_pred = MC_norm_ratio * data_nJets_N * template_px->Integral(i, nbinsx) * template_py->Integral(0, j-1);
+                        //float C_SR_pred = MC_norm_ratio * data_nJets_N * template_px->Integral(0, i-1) * template_py->Integral(j, nbinsy);
+                        //float D_SR_pred = MC_norm_ratio * data_nJets_N * template_px->Integral(i, nbinsx) * template_py->Integral(j, nbinsy);
+
+                        // Test using ABCD yields directly from nJets VR, no template
+                        float A_SR_pred = MC_norm_ratio * h_VR_data->Integral(0, i-1, 0, j-1);
+                        float B_SR_pred = MC_norm_ratio * h_VR_data->Integral(i, -1, 0, j-1);
+                        float C_SR_pred = MC_norm_ratio * h_VR_data->Integral(0, i-1, j, -1);
+                        float D_SR_pred = MC_norm_ratio * h_VR_data->Integral(i, -1, j, -1);
+
+                        if (A_SR_pred < 1e-3 || B_SR_pred < 1e-3 || C_SR_pred < 1e-3 || D_SR_pred < 1e-3)
+                            continue;
+
+                        float C_SR_clos_err = C_SR_pred * 0.14; // average closure error
                         float C_SR_stat_err = sqrt(C_SR_pred);
+                        
                         //float C_SR_err = C_SR_clos_err;
                         float C_SR_err = C_SR_stat_err;
 
@@ -136,7 +171,7 @@ namespace macro {
                             max_C_sig = C_sig;
                             max_D_sig = D_sig;
 
-                            max_A_SR = A_SR;
+                            max_A_SR_pred = A_SR_pred;
                             max_B_SR_pred = B_SR_pred;
                             max_C_SR_pred = C_SR_pred;
                             max_D_SR_pred = D_SR_pred;
@@ -146,11 +181,11 @@ namespace macro {
 
                 cout << "Maximum significance = " << max_ZA_sig << " @ (x, y) = (" << max_x_sig << ", " << max_y_sig << ")" << endl;
                 cout << "Signal MC A, B, C, D = " << max_A_sig << ", " << max_B_sig << ", " << max_C_sig << ", " << max_D_sig << endl;
-                cout << "Bkg predicted A, B, C, D  = " << max_A_SR << ", " << max_B_SR_pred << ", " << max_C_SR_pred << ", " << max_D_SR_pred << endl;
-                cout << "A observed in SR = " << max_A_SR << endl << endl;
+                cout << "Bkg predicted A, B, C, D  = " << max_A_SR_pred << ", " << max_B_SR_pred << ", " << max_C_SR_pred << ", " << max_D_SR_pred << endl << endl;
+                //cout << "A observed in SR = " << max_A_SR << endl << endl;
 
                 out_json[h_sig_name.Data()] = {
-                    {"A_bkg", max_A_SR},
+                    {"A_bkg", max_A_SR_pred},
                     {"B_bkg", max_B_SR_pred},
                     {"C_bkg", max_C_SR_pred},
                     {"D_bkg", max_D_SR_pred},
@@ -302,6 +337,7 @@ namespace macro {
 
         in_file_signal->Close();
         in_file_VR->Close();
+        in_file_VR_data->Close();
         in_file_SR->Close();
         out_file->Close();
 
