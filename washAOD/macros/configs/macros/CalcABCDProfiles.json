@@ -1,0 +1,9 @@
+[
+    {
+        "name": "mCalcABCDProfiles",
+        "config": {
+            "ratioRangesX": [0.0, 0.2, 0.4],
+            "ratioRangesY": [0, 5, 10]
+        }
+    }
+]
