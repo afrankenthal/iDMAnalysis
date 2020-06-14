@@ -11,30 +11,43 @@ TString formatName(TString name, TString f) {
     return TString("");
 }
 
-void scanSensitivity(TString filename) {
+void scanSensitivity(TString filename_bkg, TString filename_sig = "") {
     gROOT->LoadMacro("tdrstyle.C");
     gROOT->ProcessLine("setTDRStyle();");
 
-    if (filename == "") {
-        std::cout << "No filename!" << endl;
+    if (filename_bkg == "") {
+        std::cout << "ERRRO! Need at least one filename!" << endl;
         return;
     }
 
-    TFile * file = new TFile(filename.Data(), "READ");
+    TFile * file_bkg = new TFile(filename_bkg.Data(), "READ");
+    TFile * file_sig;
+    if (filename_sig != "")
+        file_sig = new TFile(filename_sig.Data(), "READ");
+    else
+        file_sig = file_bkg;
     
-    TIter next((TList*)file->GetListOfKeys());
+    TIter next((TList*)file_bkg->GetListOfKeys());
     TKey * key;
     while ((key = (TKey*)next())) {
         if (TString(key->GetClassName()) != TString("THStack") || TString(key->GetName()).Contains("SIGNAL")) {
             continue;
         }
+        if (!TString(key->GetName()).Contains("cut27"))// &&
+        //!TString(key->GetName()).Contains("cut27") &&
+        //!TString(key->GetName()).Contains("cut28") &&
+        //!TString(key->GetName()).Contains("cut29") &&
+        //!TString(key->GetName()).Contains("cut30"))
+            continue;
+        if (!TString(key->GetName()).Contains("jets"))
+            continue;
         //cout << "class name " << key->GetClassName() << endl;
         cout << " name " << key->GetName() << endl;
         TString name = key->GetName();
         name.ReplaceAll("-BKG", "");
 
-        THStack * hs_sig = (THStack*)file->Get(name + TString("-SIGNAL"));
         THStack * hs_bkg = (THStack*)key->ReadObj();
+        THStack * hs_sig = (THStack*)file_sig->Get(name + TString("-SIGNAL"));
 
         TString title = hs_sig->GetTitle();
 
@@ -97,8 +110,16 @@ void scanSensitivity(TString filename) {
         for (int i = 1; i <= nbins; i++) {
             for (auto & [name, hc] : hcs_sig) {
                 if (i == 1) {
-                    ratios_forward[name] = new TH1F(Form("ratio_forward_%s", name.Data()), formatName(name,"f") , nbins, hc->GetBinLowEdge(1), hc->GetBinLowEdge(nbins+1));
-                    ratios_backward[name] = new TH1F(Form("ratio_backward_%s", name.Data()), formatName(name,"b"), nbins, hc->GetBinLowEdge(1), hc->GetBinLowEdge(nbins+1));
+                    ratios_forward[name] = (TH1F*)hc->Clone();
+                    ratios_forward[name]->Reset();
+                    ratios_forward[name]->SetName(Form("ratio_forward_%s", name.Data()));
+                    ratios_forward[name]->SetTitle(formatName(name,"f"));
+                    //ratios_forward[name] = new TH1F(Form("ratio_forward_%s", name.Data()), formatName(name,"f") , nbins, hc->GetBinLowEdge(1), hc->GetBinHighEdge(nbins));
+                    //ratios_backward[name] = new TH1F(Form("ratio_backward_%s", name.Data()), formatName(name,"b"), nbins, hc->GetBinLowEdge(1), hc->GetBinLowEdge(nbins+1));
+                    ratios_backward[name] = (TH1F*)hc->Clone();
+                    ratios_backward[name]->Reset();
+                    ratios_backward[name]->SetName(Form("ratio_backward_%s", name.Data()));
+                    ratios_backward[name]->SetTitle(formatName(name,"b"));
                 }
                 // check forward
                 ratios_forward[name]->SetBinContent(i, hc->GetBinContent(i)/sqrt(tot_bkg_forward[i]+0.0001));
@@ -122,22 +143,38 @@ void scanSensitivity(TString filename) {
             cout << ", corresponds to bin center " << hc->GetBinCenter(best_bin_backward[name]) << endl;
         }
 
-        int color = 1;
+        int color = 0;
         THStack * hs_forward = new THStack(Form("%s_forward", name.Data()), Form("%s_forward", name.Data()));
         for (auto & [name, hratio] : ratios_forward) {
             hratio->SetDirectory(0);
-            hratio->SetLineColor(color++);
+            if (name.Contains("60p0"))
+                color = kBlack;
+            else if (name.Contains("5p25"))
+                color = kCyan;
+            else if (name.Contains("52p5"))
+                color = kGreen-4;
+            else
+                color = kYellow-3;
+            hratio->SetLineColor(color);
             hratio->SetLineWidth(2);
             hratio->Scale(1/(hratio->Integral()));
             hs_forward->Add(hratio);
             //hratio->Draw("SAME HIST");
         }
-        color = 1;
+        color = 0;
         THStack * hs_backward = new THStack(Form("%s_backward", name.Data()), Form("%s_backward", name.Data()));
         for (auto & [name, hratio] : ratios_backward) {
             hratio->SetDirectory(0);
-            hratio->SetLineColor(color++);
-            hratio->SetLineWidth(2);
+            if (name.Contains("60p0"))
+                color = kBlack;
+            else if (name.Contains("5p25"))
+                color = kCyan;
+            else if (name.Contains("52p5"))
+                color = kGreen-4;
+            else
+                color = kYellow-3;
+            hratio->SetLineColor(color);
+            hratio->SetLineWidth(3);
             hratio->SetLineStyle(2);
             hratio->Scale(1/(hratio->Integral()));
             hs_backward->Add(hratio);
@@ -161,5 +198,7 @@ void scanSensitivity(TString filename) {
 
     }
     //file->Write();
-    file->Close();
+    file_bkg->Close();
+    if (filename_sig != "")
+        file_sig->Close();
 }
