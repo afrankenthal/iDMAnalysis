@@ -1,0 +1,130 @@
+[
+    {
+        "cut": "1",
+        "description": "No cuts"
+    },
+    {
+        "cut": "MET_filters_fail_bits == 0",
+        "description": "MET filter bits pass"
+    },
+    {
+        "cut": "hem_veto",
+        "description": "HEM veto"
+    },
+    {
+        "cut": "(trig_fired&(1<<3)) == (1<<3)",
+        "description": "Trigger fired (120 GeV METNoMu)"
+    },
+    {
+        "cut": "reco_PF_MET_corr_pt > 200",
+        "description": "MET > 200 GeV"
+    },
+    {
+        "cut": "CaloPFMETRatio < 1.0",
+        "description": "|CaloMET - PFMET|/CaloMET < 1"
+    },
+    {
+        "cut": "reco_PF_n_highPt_jets > 0",
+        "description": "nJets > 0 (pT > 30 GeV)"
+    },
+    {
+        "cut": "abs(reco_PF_jet_corr_eta[0]) < 2.5",
+        "description": "leading jet |#eta| < 2.5"
+    },
+    {
+        "cut": "reco_PF_jet_corr_pt[0] > 80",
+        "description": "Leading jet pT > 80 GeV"
+    },
+    {
+        "cut": "reco_n_good_electron == 0",
+        "description": "Electron veto"
+    },
+    {
+        "cut": "reco_n_good_photon == 0",
+        "description": "Photon veto"
+    },
+    {
+        "cut": "MET_jet_dphi0 > 1.5;",
+        "description": "|#Delta#Phi(MET, leading jet)| > 1.5"
+    },
+    {
+        "cut": "All(MET_jet_dphi > 0.5)",
+        "description": "|#Delta#Phi(MET, all jets)| > 0.5"
+    },
+    {
+        "cut": "reco_PF_n_highPt_jets < 15",
+        "description": "nJets < 15 (pT > 30 GeV)",
+        "special": "no"
+    },
+    {
+        "cut": "reco_n_bTag_jets == 0",
+        "description": "0 b-tagged jets"
+    },
+    {
+        "cut": "n_good_dsa >= 1",
+        "description": "good dSA muons >= 1"
+    },
+    {
+        "cut": "n_good_dsa >= 2",
+        "description": "good dSA muons >= 2"
+    },
+    {
+        "cut": "best_dsa_0 != best_dsa_1",
+        "description": "best_dsa_0 != best_dsa_1"
+    },
+    {
+        "cut": "best_vtx_dsadsa != 0",
+        "description": "good dSA-dSA vertex >= 1"
+    },
+    {
+        "cut": "abs(reco_dsa_pt_res[best_dsa_0]) < 1",
+        "description": "Best dSA 0 pT resolution < 1"
+    },
+    {
+        "cut": "abs(reco_dsa_pt_res[best_dsa_1]) < 1",
+        "description": "Best dSA 1 pT resolution < 1"
+    },
+    {
+        "cut": "abs(matched_muon_vtx_reduced_chi2) < 4",
+        "description": "Vertex #chi^{2} < 4"
+    },
+    {
+        "cut": "abs(matched_muon_MT) < 200",
+        "description": "MT < 200 GeV"
+    },
+    {
+        "cut": "abs(matched_muon_Mmumu) < 30",
+        "description": "M_{#mu#mu} < 30 GeV"
+    },
+    {
+        "cut": "abs(matched_muon_vtx_dR) < 0.9",
+        "description": "dR(muons) < 0.9"
+    },
+    {
+        "cut": "reco_sel_mu_q0 != reco_sel_mu_q1",
+        "description": "muons: OSSF"
+    },
+    {
+        "cut": "abs(reco_sel_mu_dxy0) > 0.1", 
+        "description": "Selected muon 0 dxy > 0.1 cm"
+    },
+    {
+        "cut": "abs(reco_sel_mu_dxy1) > 0.1", 
+        "description": "Selected muon 1 dxy > 0.1 cm"
+    },
+    {
+        "cut": "n_matched == 0",
+        "description": "0 GM-dSA matched",
+        "inclusive": "no"
+    },
+    {
+        "cut": "n_matched == 1",
+        "description": "1 GM-dSA matched",
+        "inclusive": "no"
+    },
+    {
+        "cut": "n_matched == 2",
+        "description": "2 GM-dSA matched",
+        "inclusive": "no"
+    }
+]

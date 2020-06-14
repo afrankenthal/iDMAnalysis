@@ -1,0 +1,19 @@
+[
+    {
+        "name": "mMainAnalysis",
+        "config": {
+            "plots": [
+                {
+                    "quantity": "reco_PF_n_highPt_jets",
+                    "groups_to_exclude": [],
+                    "type": "int1D",
+                    "name": "reco_PF_n_highPt_jets",
+                    "title": "Number of jets with pT > 30 GeV",
+                    "nbinsX": 10,
+                    "lowX": 0,
+                    "highX": 10
+                }
+            ]
+        }
+    }
+]
