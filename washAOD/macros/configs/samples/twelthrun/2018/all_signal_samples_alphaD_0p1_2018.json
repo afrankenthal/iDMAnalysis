@@ -10,7 +10,7 @@
         "lumi": 59.74,
         "m1": 10.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 89420.0,
+        "sum_gen_wgt": 544496.0,
         "xsec": 4.84,
         "year": 2018
     },
@@ -310,7 +310,7 @@
         "lumi": 59.74,
         "m1": 30.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 258288.0,
+        "sum_gen_wgt": 1715117.0,
         "xsec": 150.0,
         "year": 2018
     },
@@ -430,7 +430,7 @@
         "lumi": 59.74,
         "m1": 3.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 53786.0,
+        "sum_gen_wgt": 870431.0,
         "xsec": 15.8,
         "year": 2018
     },
@@ -730,7 +730,7 @@
         "lumi": 59.74,
         "m1": 5.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 58205.0,
+        "sum_gen_wgt": 2161860.0,
         "xsec": 9.56,
         "year": 2018
     },

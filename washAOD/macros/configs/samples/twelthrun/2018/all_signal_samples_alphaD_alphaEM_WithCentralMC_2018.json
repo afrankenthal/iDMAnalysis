@@ -153,14 +153,15 @@
         "ctau_cm": 10,
         "delta_fraction": 0.4,
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-1p2_dMchi-0p4_ctau-100.root"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-1p2_dMchi-0p4_ctau-100.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-1p2_dMchi-0p4_ctau-100_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_1p2_0p4_100_2018/200525_025359/0000/merged/merged.root"
         ],
         "group": "sig_1p2_100",
         "limit_num_files": -1,
         "lumi": 59.74,
         "m1": 1.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 17594.0,
+        "sum_gen_wgt": 253895.0,
         "xsec": 0.005,
         "year": 2018
     },
@@ -168,14 +169,15 @@
         "ctau_cm": 100,
         "delta_fraction": 0.4,
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-1p2_dMchi-0p4_ctau-1000.root"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-1p2_dMchi-0p4_ctau-1000.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-1p2_dMchi-0p4_ctau-1000_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_1p2_0p4_1000_2018/200525_025458/0000/merged/merged.root"
         ],
         "group": "sig_1p2_1000",
         "limit_num_files": -1,
         "lumi": 59.74,
         "m1": 1.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 17674.0,
+        "sum_gen_wgt": 341541.0,
         "xsec": 0.0005,
         "year": 2018
     },
@@ -333,14 +335,15 @@
         "ctau_cm": 10,
         "delta_fraction": 0.1,
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-31p5_dMchi-3p0_ctau-100.root"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-31p5_dMchi-3p0_ctau-100.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-31p5_dMchi-3p0_ctau-100_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_31p5_3p0_100_2018/200525_025836/0000/merged/merged.root"
         ],
         "group": "sig_31p5_100",
         "limit_num_files": -1,
         "lumi": 59.74,
         "m1": 30.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 260899.0,
+        "sum_gen_wgt": 745543.0,
         "xsec": 4.0,
         "year": 2018
     },
@@ -378,14 +381,15 @@
         "ctau_cm": 1,
         "delta_fraction": 0.4,
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-36p0_dMchi-12p0_ctau-10.root"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-36p0_dMchi-12p0_ctau-10.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-36p0_dMchi-12p0_ctau-10_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_36p0_12p0_10_2018/200525_025308/0000/merged/merged.root"
         ],
         "group": "sig_36p0_10",
         "limit_num_files": -1,
         "lumi": 59.74,
         "m1": 30.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 122686.0,
+        "sum_gen_wgt": 535784.0,
         "xsec": 0.46,
         "year": 2018
     },
@@ -483,14 +487,15 @@
         "ctau_cm": 0.1,
         "delta_fraction": 0.4,
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-3p6_dMchi-1p2_ctau-1.root"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-3p6_dMchi-1p2_ctau-1.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-3p6_dMchi-1p2_ctau-1_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_3p6_1p2_1_2018/200525_030212/0000/merged/merged.root"
         ],
         "group": "sig_3p6_1",
         "limit_num_files": -1,
         "lumi": 59.74,
         "m1": 3.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 34244.0,
+        "sum_gen_wgt": 432430.0,
         "xsec": 0.163,
         "year": 2018
     },
@@ -528,14 +533,15 @@
         "ctau_cm": 100,
         "delta_fraction": 0.4,
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-3p6_dMchi-1p2_ctau-1000.root"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-3p6_dMchi-1p2_ctau-1000.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-3p6_dMchi-1p2_ctau-1000_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_3p6_1p2_1000_2018/200525_025739/0000/merged/merged.root"
         ],
         "group": "sig_3p6_1000",
         "limit_num_files": -1,
         "lumi": 59.74,
         "m1": 3.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 32576.0,
+        "sum_gen_wgt": 382074.0,
         "xsec": 0.000163,
         "year": 2018
     },
@@ -558,14 +564,15 @@
         "ctau_cm": 1,
         "delta_fraction": 0.1,
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-42p0_dMchi-4p0_ctau-10.root"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-42p0_dMchi-4p0_ctau-10.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-42p0_dMchi-4p0_ctau-10_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_42p0_4p0_10_2018/200525_030024/0000/merged/merged.root"
         ],
         "group": "sig_42p0_10",
         "limit_num_files": -1,
         "lumi": 59.74,
         "m1": 40.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 158647.0,
+        "sum_gen_wgt": 413412.0,
         "xsec": 0.98,
         "year": 2018
     },
@@ -588,14 +595,15 @@
         "ctau_cm": 100,
         "delta_fraction": 0.1,
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-42p0_dMchi-4p0_ctau-1000.root"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-42p0_dMchi-4p0_ctau-1000.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-42p0_dMchi-4p0_ctau-1000_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_42p0_4p0_1000_2018/200525_030300/0000/merged/merged.root"
         ],
         "group": "sig_42p0_1000",
         "limit_num_files": -1,
         "lumi": 59.74,
         "m1": 40.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 158391.0,
+        "sum_gen_wgt": 414711.0,
         "xsec": 0.0098,
         "year": 2018
     },
@@ -843,14 +851,15 @@
         "ctau_cm": 0.1,
         "delta_fraction": 0.1,
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-63p0_dMchi-6p0_ctau-1.root"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-63p0_dMchi-6p0_ctau-1.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-63p0_dMchi-6p0_ctau-1_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_63p0_6p0_1_2018/200525_025648/0000/merged/merged.root"
         ],
         "group": "sig_63p0_1",
         "limit_num_files": -1,
         "lumi": 59.74,
         "m1": 60.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 172665.0,
+        "sum_gen_wgt": 431425.0,
         "xsec": 1.55,
         "year": 2018
     },
@@ -858,14 +867,15 @@
         "ctau_cm": 1,
         "delta_fraction": 0.1,
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-63p0_dMchi-6p0_ctau-10.root"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-63p0_dMchi-6p0_ctau-10.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-63p0_dMchi-6p0_ctau-10_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_63p0_6p0_10_2018/200525_025927/0000/merged/merged.root"
         ],
         "group": "sig_63p0_10",
         "limit_num_files": -1,
         "lumi": 59.74,
         "m1": 60.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 172739.0,
+        "sum_gen_wgt": 439019.0,
         "xsec": 0.155,
         "year": 2018
     },
@@ -978,14 +988,15 @@
         "ctau_cm": 1,
         "delta_fraction": 0.4,
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-72p0_dMchi-24p0_ctau-10.root"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-72p0_dMchi-24p0_ctau-10.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-72p0_dMchi-24p0_ctau-10_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_72p0_24p0_10_2018/200525_025553/0000/merged/merged.root"
         ],
         "group": "sig_72p0_10",
         "limit_num_files": -1,
         "lumi": 59.74,
         "m1": 60.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 139700.0,
+        "sum_gen_wgt": 493237.0,
         "xsec": 0.0001,
         "year": 2018
     },
@@ -1053,14 +1064,15 @@
         "ctau_cm": 10,
         "delta_fraction": 0.1,
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-84p0_dMchi-8p0_ctau-100.root"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-84p0_dMchi-8p0_ctau-100.root",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/signal_twelthrun/iDM_DarkPhotonToMuMu_Mchi-84p0_dMchi-8p0_ctau-100_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_sig_84p0_8p0_100_2018/200525_030118/0000/merged/merged.root"
         ],
         "group": "sig_84p0_100",
         "limit_num_files": -1,
         "lumi": 59.74,
         "m1": 80.0,
         "mode": "SIGNAL",
-        "sum_gen_wgt": 158057.0,
+        "sum_gen_wgt": 426182.0,
         "xsec": 0.006,
         "year": 2018
     },
