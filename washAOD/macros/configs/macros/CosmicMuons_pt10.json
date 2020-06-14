@@ -2,12 +2,14 @@
     {
         "name": "mMainAnalysis",
         "config": {
+            "analysis": "cosmics",
+            "COSALPHA": -0.5,
             "PT_MIN": 10.0,
             "ETA_MAX": 1.2,
-            "PTRES_MAX": 1.0,
-            "NHITS_MIN": 12,
+            "PTRES_MAX": 0.2,
+            "NHITS_MIN": 30,
             "NPLANES_MIN": 2,
-            "CHI2_MAX": 100.0,
+            "CHI2_MAX": 2.0,
             "plots": [
                 {
                     "quantity": "charge_product",
@@ -105,9 +107,9 @@
                     "type": "float1D",
                     "name": "tag_muon_dxy",
                     "title": "Lower leg (tag) dxy [cm]",
-                    "nbinsX": 40,
+                    "nbinsX": 60,
                     "lowX": 0,
-                    "highX": 400
+                    "highX": 300
                 },
                 {
                     "quantity": "probe_muon_dxy",
@@ -115,9 +117,9 @@
                     "type": "float1D",
                     "name": "probe_muon_dxy",
                     "title": "Upper leg (probe) dxy [cm]",
-                    "nbinsX": 40,
+                    "nbinsX": 60,
                     "lowX": 0,
-                    "highX": 400
+                    "highX": 300
                 },
                 {
                     "quantity": "tag_muon_dz",
@@ -145,9 +147,9 @@
                     "type": "float1D",
                     "name": "tag_muon_pt",
                     "title": "Lower leg (tag) pt",
-                    "nbinsX": 100,
+                    "nbinsX": 50,
                     "lowX": 0,
-                    "highX": 500
+                    "highX": 100
                 },
                 {
                     "quantity": "probe_muon_pt",
@@ -155,9 +157,9 @@
                     "type": "float1D",
                     "name": "probe_muon_pt",
                     "title": "Upper leg (probe) pt",
-                    "nbinsX": 100,
+                    "nbinsX": 50,
                     "lowX": 0,
-                    "highX": 500
+                    "highX": 100
                 },
                 {
                     "quantity": "tag_muon_eta",
@@ -165,9 +167,9 @@
                     "type": "float1D",
                     "name": "tag_muon_eta",
                     "title": "Lower leg (tag) eta",
-                    "nbinsX": 20,
-                    "lowX": -1,
-                    "highX": 1 
+                    "nbinsX": 48,
+                    "lowX": -1.2,
+                    "highX": 1.2
                 },
                 {
                     "quantity": "probe_muon_eta",
@@ -175,9 +177,9 @@
                     "type": "float1D",
                     "name": "probe_muon_eta",
                     "title": "Upper leg (probe) eta",
-                    "nbinsX": 20,
-                    "lowX": -1,
-                    "highX": 1 
+                    "nbinsX": 48,
+                    "lowX": -1.2,
+                    "highX": 1.2
                 },
                 {
                     "quantity": "tag_muon_phi",
@@ -198,6 +200,20 @@
                     "nbinsX": 32,
                     "lowX": -3.2,
                     "highX": 3.2
+                },
+                {
+                    "name": "tag_muon_pt_vs_tag_muon_eta",
+                    "title": "Lower leg (tag) pt vs lower leg (tag) eta",
+                    "groups_to_exclude": [],
+                    "type": "float2D",
+                    "quantity": "tag_muon_pt",
+                    "nbinsX": 100,
+                    "lowX": 0,
+                    "highX": 100,
+                    "quantity2": "tag_muon_eta",
+                    "nbinsY": 20,
+                    "lowY": -1.2,
+                    "highY": 1.2
                 }
             ]
         }

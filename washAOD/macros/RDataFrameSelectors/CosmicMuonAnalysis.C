@@ -46,6 +46,9 @@ Bool_t CosmicMuonAnalysis::Process(TChain * chain) {
     ROOT::EnableImplicitMT();
     ROOT::RDataFrame df(*chain_);
 
+    float COSALPHA = -0.94;
+    if (macro_info_.find("COSALPHA") != macro_info_.end())
+        COSALPHA = macro_info_["COSALPHA"].get<float>();
     float PHI_MAX = -0.8;
     if (macro_info_.find("PHI_MAX") != macro_info_.end())
         PHI_MAX = macro_info_["PHI_MAX"].get<float>();
@@ -118,17 +121,22 @@ Bool_t CosmicMuonAnalysis::Process(TChain * chain) {
 
    auto calcVtxSignificance = [&](float reco_vtx_vxy, float reco_vtx_sigmavxy) { return reco_vtx_vxy/reco_vtx_sigmavxy; };
 
-   auto passMuonID = [&](RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_chi2, RVec<float> pt, RVec<float> pt_err, RVec<float> eta, RVec<float> phi) {
+   auto passTagMuonID = [&](RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_chi2, RVec<float> pt, RVec<float> pt_err, RVec<float> eta, RVec<float> phi) {
        RVec<bool> pass = (phi > PHI_MIN) && (phi < PHI_MAX) && (abs(eta) < ETA_MAX) &&
                             (trk_n_planes >= (float)NPLANES_MIN) && (trk_n_hits >= (float)NHITS_MIN) && 
                             (trk_chi2 < CHI2_MAX) && (pt > PT_MIN) && (pt_err/pt < PTRES_MAX);
+       return pass;
+   };
+   auto passProbeMuonID = [&](RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_chi2, RVec<float> pt, RVec<float> pt_err, RVec<float> eta, RVec<float> phi) {
+       RVec<bool> pass =    (trk_n_planes >= 2) && (trk_n_hits >= 12) && 
+                            (trk_chi2 < 10) && (pt > 5) && (pt_err/pt < 1);
        return pass;
    };
 
    auto passVtxID = [&](RVec<bool> muon_pass0, RVec<bool> muon_pass1, RVec<int> q0, RVec<int> q1, RVec<float> vtx_chi2) {
        // construct vertex id mask from each muon id mask
        // vertex index is 4 * muon0 + muon1
-       RVec<bool> vtx_pass(16, 0);
+       RVec<bool> vtx_pass(17, 0);
        auto comb_idx = Combinations(4, 4);
        for (size_t i = 0; i < comb_idx[0].size(); i++)
            if (comb_idx[0][i] < muon_pass0.size() && comb_idx[1][i] < muon_pass1.size())
@@ -171,6 +179,12 @@ Bool_t CosmicMuonAnalysis::Process(TChain * chain) {
    };
 
    auto calcCosAlpha = [&](RVec<float> mu_pt, RVec<float> mu_eta, RVec<float> mu_phi, RVec<bool> muon_pass) {
+       // Calculate cos_alpha for all combinations of muons in the event (up to 4).
+       // The default impossible value is -10k, so e.g. diagonal elements in the 
+       // 4x4 matrix (refer to the same muon) have that value, or if there are 
+       // fewer muons than 4 in the dSA collection, the remaining elements also 
+       // get -10k. Also require that the tag muon (the row in the matrix) passes
+       // the tight (tag) ID
        RVec<float> vtx_cosalpha(16, -10000);
        auto comb_idx = Combinations(4, 4);
        for (size_t i = 0; i < comb_idx[0].size(); i++) {
@@ -200,17 +214,37 @@ Bool_t CosmicMuonAnalysis::Process(TChain * chain) {
        return vtx_cosalpha;
    };
 
-   auto passCosmicLeg = [&](RVec<float> vtx_cosalpha) {
-       RVec<bool> pass = Where(vtx_cosalpha < -0.94 && vtx_cosalpha > -10000, 1, 0);
+   auto passCosmicLeg = [&](RVec<float> vtx_cosalpha, RVec<bool> dsa_pass_probe_ID) {
+       // Check if there are any combinations of muons 
+       // back-to-back and both passing the probe (loose) ID
+       // Note that probe ID *must* be looser than tag ID
+       RVec<bool> dsa_pass_probe_ID_pair(16, 0);
+       auto comb_idx = Combinations(4, 4);
+       for (size_t i = 0; i < comb_idx[0].size(); i++) {
+           size_t idx0 = comb_idx[0][i];
+           size_t idx1 = comb_idx[1][i];
+           if (idx1 >= dsa_pass_probe_ID.size()) continue;
+           dsa_pass_probe_ID_pair[i] = dsa_pass_probe_ID[idx1];
+       }
+       RVec<bool> pass = Where(vtx_cosalpha < COSALPHA && vtx_cosalpha > -10000 &&
+               dsa_pass_probe_ID_pair == 1, 1, 0);
        return pass;
    };
 
    auto findTagMuon = [&](RVec<bool> passCosmicLeg) {
+       // If a pair exists s.t. passCosmicLeg is 1, then tag != probe
+       // This is b/c if all elements in passCosmicLeg are 0, then the
+       // ArgMax(passCosmicLeg) will be the first element, which has 
+       // both tag and probe equal to 0 (the combination (4,4))
        size_t tag = ArgMax(passCosmicLeg)/4;
        return tag;
    };
 
    auto findProbeMuon = [&](RVec<bool> passCosmicLeg) {
+       // If a pair exists s.t. passCosmicLeg is 1, then tag != probe
+       // This is b/c if all elements in passCosmicLeg are 0, then the
+       // ArgMax(passCosmicLeg) will be the first element, which has 
+       // both tag and probe equal to 0 (the combination (4,4))
        size_t probe = ArgMax(passCosmicLeg) % 4;
        return probe;
    };
@@ -222,10 +256,11 @@ Bool_t CosmicMuonAnalysis::Process(TChain * chain) {
    TString MET_phi = "reco_PF_MET_corr_phi";
 
    auto df_wgts = df.
-       Define("dsa_pass_ID", passMuonID, {"reco_dsa_trk_n_planes", "reco_dsa_trk_n_hits", "reco_dsa_trk_chi2", "reco_dsa_pt", "reco_dsa_pt_err", "reco_dsa_eta", "reco_dsa_phi"}).
-       Define("n_good_dsa", "(int)Nonzero(dsa_pass_ID).size()").
-       Define("cosalpha", calcCosAlpha, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_phi", "dsa_pass_ID"}).
-       Define("vtx_pass_cosmicleg", passCosmicLeg, {"cosalpha"}).
+       Define("dsa_pass_tag_ID", passTagMuonID, {"reco_dsa_trk_n_planes", "reco_dsa_trk_n_hits", "reco_dsa_trk_chi2", "reco_dsa_pt", "reco_dsa_pt_err", "reco_dsa_eta", "reco_dsa_phi"}).
+       Define("dsa_pass_probe_ID", passProbeMuonID, {"reco_dsa_trk_n_planes", "reco_dsa_trk_n_hits", "reco_dsa_trk_chi2", "reco_dsa_pt", "reco_dsa_pt_err", "reco_dsa_eta", "reco_dsa_phi"}).
+       Define("n_good_dsa", "(int)Nonzero(dsa_pass_tag_ID).size()").
+       Define("cosalpha", calcCosAlpha, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_phi", "dsa_pass_tag_ID"}).
+       Define("vtx_pass_cosmicleg", passCosmicLeg, {"cosalpha", "dsa_pass_probe_ID"}).
        Define("tag_muon", findTagMuon, {"vtx_pass_cosmicleg"}).
        Define("probe_muon", findProbeMuon, {"vtx_pass_cosmicleg"}).
        Define("tag_muon_pt", takeMatchedMuonQuantity, {"reco_dsa_pt", "reco_gm_pt", "tag_muon"}).

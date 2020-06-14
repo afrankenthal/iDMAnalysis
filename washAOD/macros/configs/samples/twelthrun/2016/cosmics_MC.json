@@ -1,0 +1,14 @@
+{
+    "cosmicsMC": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_twelthrun/CosmicMuonsMCPrivate/crab_iDMAnalysis_Cosmics_pt10To3000/200608_063436/0000"
+        ],
+        "group": "cosmicsMC",
+        "limit_num_files": -1,
+        "mode": "DATA",
+        "sum_gen_wgt": 0.0,
+        "xsec": -1,
+        "lumi": 35.92,
+        "year": 2016
+    }
+}

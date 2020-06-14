@@ -1,0 +1,62 @@
+{
+    "NoBPTX_2016RunC": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_twelthrun/NoBPTX/crab_iDMAnalysis_NoBPTX_2016RunC/200609_042011/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "year": 2016,
+        "lumi": 35.92,
+        "xsec": -1
+    },
+    "NoBPTX_2016RunD": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_twelthrun/NoBPTX/crab_iDMAnalysis_NoBPTX_2016RunD/200609_041914/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "year": 2016,
+        "lumi": 35.92,
+        "xsec": -1
+    },
+    "NoBPTX_2016RunE": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_twelthrun/NoBPTX/crab_iDMAnalysis_NoBPTX_2016RunE/200609_041819/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "year": 2016,
+        "lumi": 35.92,
+        "xsec": -1
+    },
+    "NoBPTX_2016RunF": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_twelthrun/NoBPTX/crab_iDMAnalysis_NoBPTX_2016RunF/200609_041721/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "year": 2016,
+        "lumi": 35.92,
+        "xsec": -1
+    },
+    "NoBPTX_2016RunH": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_twelthrun/NoBPTX/crab_iDMAnalysis_NoBPTX_2016RunH/200609_041527/0000"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "year": 2016,
+        "lumi": 35.92,
+        "xsec": -1
+    }
+}
