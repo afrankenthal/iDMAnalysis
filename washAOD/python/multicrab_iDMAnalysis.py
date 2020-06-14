@@ -13,6 +13,7 @@ from CRABAPI.RawCommand import crabCommand
 from CRABClient.ClientExceptions import ClientException
 from httplib import HTTPException
 
+
 def merge_dicts(*dict_args):
     """
     Given any number of dicts, shallow copy and merge into a new dict,
@@ -54,7 +55,7 @@ def getOptions():
     parser.add_option('-s', '--sampleType',
                       dest = 'sampleType',
                       default = 'custom',
-                      help = "Which kind of sample to process ('MC' (default), 'data', 'NoBPTX', 'trig' or 'custom')",
+                      help = "Which kind of sample to process ('MC' (default), 'signal', 'data', 'NoBPTX', 'cosmics', 'trig' or 'custom')",
                       metavar = 'STYP')
 
     parser.add_option('-y', '--year',
@@ -83,7 +84,7 @@ def main():
     options = getOptions()
 
     isData = False
-    if options.sampleType == 'data' or options.sampleType == 'NoBPTX':
+    if options.sampleType == 'data' or options.sampleType == 'NoBPTX' or options.sampleType == 'trig':
         isData = True
 
     year = options.year
@@ -94,7 +95,7 @@ def main():
         #--------------------------------------------------------
         # This is the base config:
         #--------------------------------------------------------
-        from CRABClient.UserUtilities import config, getUsernameFromSiteDB
+        from CRABClient.UserUtilities import config#, getUsernameFromSiteDB
         config = config()
 
         if not options.workArea:
@@ -124,10 +125,16 @@ def main():
         if isData == True:
             config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/data_twelthrun' % year
         else:
-            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_twelthrun' % year
+            if options.sampleType == 'signal':
+                config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/signal_twelthrun' % year
+            else:
+                config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_twelthrun' % year
 
         config.Data.publication = False
         config.Data.ignoreLocality = True
+
+        if options.sampleType == 'cosmics':
+            config.Data.inputDBS = 'phys03'
 
         #config.Site.ignoreGlobalBlacklist = True
         #config.Site.whitelist = ['T2_RU_ITEP']
@@ -206,18 +213,63 @@ def main():
 
             total_NoBPTX = data['Data_NoBPTX_' + year]
 
+            total_cosmics = data['CosmicsMC_' + year]
+
+            total_signal = data['signal_' + year]
+            for key, val in total_signal.items():
+                total_signal[key + '_' + year] = val
+                del total_signal[key]
+
 
             if options.sampleType == 'data':
                 total = merge_dicts(total, total_Data)
+            elif options.sampleType == 'signal':
+                total = merge_dicts(total, total_signal)
             elif options.sampleType == 'trig':
                 total = merge_dicts(total, total_Trig)
             elif options.sampleType == 'NoBPTX':
                 total = merge_dicts(total, total_NoBPTX)
+            elif options.sampleType == 'cosmics':
+                total = merge_dicts(total, total_cosmics)
             elif options.sampleType == 'MC':
                 total = merge_dicts(total, total_MC)
             elif options.sampleType == 'all':
                 total = merge_dicts(total, total_MC, total_Data, total_Trig)
             elif options.sampleType == 'custom':
+                #total = {'ST_tW_top': '/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/AODSIM',
+                #        'WWW': '/WWW_4F_TuneCUETP8M1_13TeV-amcatnlo-pythia8/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/AODSIM',
+                #        'WW': '/WW_TuneCUETP8M1_13TeV-pythia8/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/AODSIM'
+                #        }
+                #total = {'ST_tW_top_2018': '/ST_tW_top_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v1/AODSIM',
+                #        'ST_t-channel_antitop_5f_2018': '/ST_t-channel_antitop_5f_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+                #        'ST_t-channel_top_5f_2018': '/ST_t-channel_top_5f_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+                #        'ZJetsToNuNu_HT-100To200_2018': '/ZJetsToNuNu_HT-100To200_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+                #        'WJetsToLNu_HT-400To600_2018': '/WJetsToLNu_HT-400To600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+                #        'WJetsToLNu_HT-200To400_2018': '/WJetsToLNu_HT-200To400_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+                #        'DYJetsToLL_M-50toInf_2018': '/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+                #        'WWZ_2018': '/WWZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v2/AODSIM'
+                #        }
+                #total = {'QCD_HT500To700_2017': '/QCD_HT500to700_TuneCP5_13TeV-madgraph-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM'}
+                #total = {'DYJetsToLL_M-50_HT1200to2500_2017': '/DYJetsToLL_M-50_HT-1200to2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-94X_mc2017_realistic_v11-v1/AODSIM'}
+                #total = {'ZJetsToNuNu_HT-1200To2500_2018': '/ZJetsToNuNu_HT-1200To2500_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
+                #total = {'QCD_HT200To300_2018': '/QCD_HT200to300_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
+                #total = {'DYJetsToLL_M-50toInf_2016': '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/AODSIM'}
+                #total = {'WJetsToLNu_HT-2500ToInf_2018': '/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+                #        'ZJetsToNuNu_HT-200To400_2018': '/ZJetsToNuNu_HT-200To400_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
+                #        }
+                #total = {'ST_t-channel_antitop_4f_2016': '/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/AODSIM'}
+                #total = {'QCD_HT100To200_2018': '/QCD_HT100to200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
+                #total = {'ST_s-channel_2016': '/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/AODSIM'}
+                #total = {'WW_2017': '/WW_TuneCP5_13TeV-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                #        'WWZ_2017': '/WWZ_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM',
+                #        'WZZ_2017': '/WZZ_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM',
+                #        'WWW_2017': '/WWW_4F_TuneCP5_13TeV-amcatnlo-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v2/AODSIM',
+                #        'DYJetsToLL_M-50_HT100to200_2017': '/DYJetsToLL_M-50_HT-100to200_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-PU2017_94X_mc2017_realistic_v11-v1/AODSIM'
+                #        }
+                #total = {'DYJetsToLL_M-50toInf_2016': '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext1-v1/AODSIM'}
+                #total = {'DYJetsToLL_M-50_HT-400to600_2017': '/DYJetsToLL_M-50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-94X_mc2017_realistic_v10_ext1-v1/AODSIM'}
+                #total = {'ZJetsToNuNu_HT-200To400_2018': '/ZJetsToNuNu_HT-200To400_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
+                #total = {'WJetsToLNu_HT-2500ToInf_2018': '/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
                 total = merge_dicts() # -------------------------------> put here the custom samples you want!!!
             else:
                 print "ERROR! SampleType option %s not recoginzed." % options.sampleType
