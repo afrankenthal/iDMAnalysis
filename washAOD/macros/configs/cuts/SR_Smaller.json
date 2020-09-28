@@ -16,7 +16,7 @@
         "description": "Trigger fired (120 GeV METNoMu)"
     },
     {
-        "cut": "reco_PF_MET_corr_pt > 200",
+        "cut": "MET_pt > 200",
         "description": "MET > 200 GeV"
     },
     {
@@ -34,14 +34,6 @@
     {
         "cut": "reco_PF_jet_corr_pt[0] > 80",
         "description": "Leading jet pT > 80 GeV"
-    },
-    {
-        "cut": "reco_n_good_electron == 0",
-        "description": "Electron veto"
-    },
-    {
-        "cut": "reco_n_good_photon == 0",
-        "description": "Photon veto"
     },
     {
         "cut": "MET_jet_dphi0 > 1.5;",

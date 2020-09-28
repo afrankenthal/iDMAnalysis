@@ -18,7 +18,7 @@
         "book_plot": "no"
     },
     {
-        "cut": "reco_PF_MET_corr_pt > 200",
+        "cut": "MET_pt > 200",
         "description": "MET > 200 GeV",
         "book_plot": "no"
     },
@@ -40,16 +40,6 @@
     {
         "cut": "reco_PF_jet_corr_pt[0] > 80",
         "description": "Leading jet pT > 80 GeV",
-        "book_plot": "no"
-    },
-    {
-        "cut": "reco_n_good_electron == 0",
-        "description": "Electron veto",
-        "book_plot": "no"
-    },
-    {
-        "cut": "reco_n_good_photon == 0",
-        "description": "Photon veto",
         "book_plot": "no"
     },
     {
