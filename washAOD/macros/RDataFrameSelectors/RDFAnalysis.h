@@ -104,12 +104,12 @@ public :
    TH1F * sf_pu;
    TH1F * pileup_2016, * pileup_2017, * pileup_2018;
    std::map<TString, TH1F*> pileup_ZJets_2017;
-   TH2D * gm_sf_2016, * gm_sf_2017, * gm_sf_2018;
-   TH2D * gm_sf;
-   TH2D * el_sf_2016, * el_sf_2017, * el_sf_2018;
-   TH2D * el_sf;
-   TH2D * ph_sf_2016, * ph_sf_2017, * ph_sf_2018;
-   TH2D * ph_sf;
+   //TH2D * gm_sf_2016, * gm_sf_2017, * gm_sf_2018;
+   //TH2D * gm_sf;
+   //TH2D * el_sf_2016, * el_sf_2017, * el_sf_2018;
+   //TH2D * el_sf;
+   //TH2D * ph_sf_2016, * ph_sf_2017, * ph_sf_2018;
+   //TH2D * ph_sf;
 };
 
 #endif
