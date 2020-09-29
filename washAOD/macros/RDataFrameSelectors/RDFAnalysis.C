@@ -115,8 +115,6 @@ void RDFAnalysis::Begin() {
     veto_p_wgt_2018->Close();
 
     // Set global muon weights
-    //TFile * gm_wgt_2016 = TFile::Open("../../data/idm_gm_scalefactors/GM_SF_2016ID.root");
-    //TFile * gm_wgt_2017 = TFile::Open("../../data/idm_gm_scalefactors/GM_SF_2017ID.root");
     TFile * gm_wgt_2016 = TFile::Open("../../data/idm_gm_scalefactors/GM_SF_2016sys.root");
     TFile * gm_wgt_2016GH = TFile::Open("../../data/idm_gm_scalefactors/GM_SF_2016sys_GH.root");
     TFile * gm_wgt_2017 = TFile::Open("../../data/idm_gm_scalefactors/GM_SF_2017sys.root");
@@ -133,19 +131,6 @@ void RDFAnalysis::Begin() {
     gm_hist_2016sysGH = (TH2F*)(((TH2F*)gm_wgt_2016GH->Get("NUM_LooseID_DEN_genTracks_eta_pt_syst"))->Clone());
     gm_hist_2017sys = (TH2F*)(((TH2F*)gm_wgt_2017->Get("NUM_LooseID_DEN_genTracks_pt_abseta_syst"))->Clone());
     gm_hist_2018sys = (TH2F*)(((TH2F*)gm_wgt_2018->Get("NUM_LooseID_DEN_TrackerMuons_pt_abseta_syst"))->Clone());
-    //gm_hist_2016->Scale(20.0/35.92);
-    //gm_hist_2016GH->Scale(15.92/35.92);
-    //gm_hist_2016->Add(gm_hist_2016GH);
-    //gm_hist_2016stat->Scale(20.0/35.92);
-    //gm_hist_2016statGH->Scale(15.92/35.92);
-    //gm_hist_2016stat->Multiply(gm_hist_2016stat);
-    //gm_hist_2016statGH->Multiply(gm_hist_2016statGH);
-    //gm_hist_2016stat->Add(gm_hist_2016statGH);
-    ///gm_hist_2016sys->Scale(20.0/35.92);
-    //gm_hist_2016sysGH->Scale(15.92/35.92);
-    //gm_hist_2016sys->Multiply(gm_hist_2016sys);
-    //gm_hist_2016sysGH->Multiply(gm_hist_2016sysGH);
-   // gm_hist_2016sys->Add(gm_hist_2016sysGH);
     gm_hist_2016->SetDirectory(0);
     gm_hist_2016GH->SetDirectory(0);
     gm_hist_2017->SetDirectory(0);
@@ -182,6 +167,57 @@ void RDFAnalysis::Begin() {
     trig_wgt_2016->Close();
     trig_wgt_2017->Close();
     trig_wgt_2018->Close();
+
+    // Set muon GM loose ID sf
+    TFile * gm_sf_2016_file = TFile::Open("../../data/muon_ID_SF_2016.root");
+    TFile * gm_sf_2017_file = TFile::Open("../../data/muon_ID_SF_2017.root");
+    TFile * gm_sf_2018_file = TFile::Open("../../data/muon_ID_SF_2018.root");
+
+    gm_sf_2016 = (TH2D*)gm_sf_2016_file->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
+    gm_sf_2017 = (TH2D*)gm_sf_2017_file->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
+    gm_sf_2018 = (TH2D*)gm_sf_2018_file->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
+
+    gm_sf_2016->SetDirectory(0);
+    gm_sf_2017->SetDirectory(0);
+    gm_sf_2018->SetDirectory(0);
+
+    gm_sf_2016_file->Close();
+    gm_sf_2017_file->Close();
+    gm_sf_2018_file->Close();
+
+    // Set electron ID sf
+    TFile * electron_sf_2016_file = TFile::Open("../../data/ElectronWPVeto_80X_2016.root");
+    TFile * electron_sf_2017_file = TFile::Open("../../data/ElectronWPVeto_Fall17V2_2017.root");
+    TFile * electron_sf_2018_file = TFile::Open("../../data/ElectronWPVeto_Fall17V2_2018.root");
+
+    el_sf_2016 = (TH2D*)electron_sf_2016_file->Get("EGamma_SF2D");
+    el_sf_2017 = (TH2D*)electron_sf_2017_file->Get("EGamma_SF2D");
+    el_sf_2018 = (TH2D*)electron_sf_2018_file->Get("EGamma_SF2D");
+
+    el_sf_2016->SetDirectory(0);
+    el_sf_2017->SetDirectory(0);
+    el_sf_2018->SetDirectory(0);
+
+    electron_sf_2016_file->Close();
+    electron_sf_2017_file->Close();
+    electron_sf_2018_file->Close();
+    
+    // Set photon ID sf
+    TFile * photon_sf_2016_file = TFile::Open("../../data/PhotonsLoose_2016_Fall17V2.root");
+    TFile * photon_sf_2017_file = TFile::Open("../../data/PhotonsLoose_2017.root");
+    TFile * photon_sf_2018_file = TFile::Open("../../data/PhotonsLoose_2018.root");
+
+    ph_sf_2016 = (TH2D*)photon_sf_2016_file->Get("EGamma_SF2D");
+    ph_sf_2017 = (TH2D*)photon_sf_2017_file->Get("EGamma_SF2D");
+    ph_sf_2018 = (TH2D*)photon_sf_2018_file->Get("EGamma_SF2D");
+
+    ph_sf_2016->SetDirectory(0);
+    ph_sf_2017->SetDirectory(0);
+    ph_sf_2018->SetDirectory(0);
+
+    photon_sf_2016_file->Close();
+    photon_sf_2017_file->Close();
+    photon_sf_2018_file->Close();
 }
 
 void RDFAnalysis::SetMacroConfig(json macro_info) {
@@ -209,11 +245,16 @@ void RDFAnalysis::SetSampleConfig(common::SampleInfo sample_info) {
     if (year_ == 2017) {
         lumi_ = 41.53 * 1000;
         trig_sf = trig_hist_2017;
+        /* BEGIN TRES
         gm_sf = gm_hist_2017;
         gm_sf_sys = gm_hist_2017sys;
         gm_sf_stat = gm_hist_2017stat;
         veto_e_sf = veto_e_hist_2017;
         veto_p_sf = veto_p_hist_2017;
+        END TRES */
+        gm_sf = gm_sf_2017;
+        el_sf = el_sf_2017;
+        ph_sf = ph_sf_2017;
         //if (group_ == "ZJets") {
         //    if (name_.Contains("HT-100To200"))
         //        sf_pu = pileup_ZJets_2017["HT-100To200"];
@@ -242,6 +283,7 @@ void RDFAnalysis::SetSampleConfig(common::SampleInfo sample_info) {
         sf_pu = pileup_2016;
         lumi_ = 35.92 * 1000;
         trig_sf = trig_hist_2016;
+        /* BEGIN TRES
         gm_sf = gm_hist_2016;//->Add(gm_hist_2016GH);
         gm_sf_sys = gm_hist_2016sys;
         gm_sf_stat = gm_hist_2016stat;
@@ -250,16 +292,25 @@ void RDFAnalysis::SetSampleConfig(common::SampleInfo sample_info) {
         gm_sf_stat2 = gm_hist_2016statGH;
         veto_e_sf = veto_e_hist_2016;
         veto_p_sf = veto_p_hist_2016;
+        END TRES */
+        gm_sf = gm_sf_2016;
+        el_sf = el_sf_2016;
+        ph_sf = ph_sf_2016;
     }
     else if (year_ == 2018) {
         sf_pu = pileup_2018;
         lumi_ = 59.74 * 1000;
         trig_sf = trig_hist_2018;
+        /* BEGIN TRES
         gm_sf = gm_hist_2018;
         gm_sf_sys = gm_hist_2018sys;
         gm_sf_stat = gm_hist_2018stat;
         veto_e_sf = veto_e_hist_2018;
         veto_p_sf = veto_p_hist_2018;
+        END TRES */
+        gm_sf = gm_sf_2018;
+        el_sf = el_sf_2018;
+        ph_sf = ph_sf_2018;
     }
     else {
         cout << "ERROR! Year not one of 2016/2017/2018. Exiting..." << endl;
@@ -305,6 +356,48 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     cout << "Total number of events to process: " << std::scientific << nEvents << endl;
 
     // First, define all the relevant weights
+
+    auto calcGMsf = [&](RVec<float> gm_pt, RVec<float> gm_eta, RVec<bool> gm_pass_ID) {
+        float sf = 1.0;
+        for (size_t i = 0; i < gm_pt.size(); i++) {
+            if (!gm_pass_ID[i]) continue;
+            int binX = gm_sf->GetXaxis()->FindBin(gm_pt[i]);
+            int binY = gm_sf->GetYaxis()->FindBin(abs(gm_eta[i]));
+            float temp_sf = gm_sf->GetBinContent(binX, binY);
+            if (temp_sf < 1e-5)
+                temp_sf = 1.0;
+            sf *= temp_sf;
+        }
+        return sf;
+    };
+
+    auto calcElectronsf = [&](RVec<float> el_pt, RVec<float> el_eta, RVec<int> el_pass_ID) {
+        float sf = 1.0;
+        for (size_t i = 0; i < el_pt.size(); i++) {
+            if (el_pass_ID[i] % 2 != 1 || el_pt[i] < 10.0 || abs(el_eta[i]) > 2.5) continue;
+            int binX = el_sf->GetXaxis()->FindBin(abs(el_eta[i]));
+            int binY = el_sf->GetYaxis()->FindBin(el_pt[i]);
+            float temp_sf = el_sf->GetBinContent(binX, binY);
+            if (temp_sf < 1e-5)
+                temp_sf = 1.0;
+            sf *= temp_sf;
+        }
+        return sf;
+    };
+
+    auto calcPhotonsf = [&](RVec<float> ph_pt, RVec<float> ph_eta, RVec<int> ph_pass_ID) {
+        float sf = 1.0;
+        for (size_t i = 0; i < ph_pt.size(); i++) {
+            if (ph_pass_ID[i] != 1 || ph_pt[i] < 15.0 || abs(ph_eta[i]) > 2.5) continue;
+            int binX = ph_sf->GetXaxis()->FindBin(abs(ph_eta[i]));
+            int binY = ph_sf->GetYaxis()->FindBin(ph_pt[i]);
+            float temp_sf = ph_sf->GetBinContent(binX, binY);
+            if (temp_sf < 1e-5)
+                temp_sf = 1.0;
+            sf *= temp_sf;
+        }
+        return sf;
+    };
 
     auto calcZsf = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
         if ((group_ != "ZJets" && group_ != "DY") || gen_pt.size() != gen_ID.size()) return 1.0f;
@@ -365,6 +458,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         return (float)sf_pu->GetBinContent(sf_pu->FindBin((double)pileup)); 
     };
 
+  /* BEGIN TRES
     auto gm_lowpt_lookup = [&](int eta, int err, int year ){
 
         float sf = 1.0;
@@ -500,6 +594,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     auto calcTotalWgt = [&](float Zwgt, float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt, float veto_wgt, float gm_wgt) {
         double weight =  gm_wgt*veto_wgt*trig_wgt * Zwgt * Wwgt * PUwgt * xsec_ * lumi_ * gen_wgt / sum_gen_wgt_;
+    END TRES */
+    auto calcTotalWgt = [&](float ph_sf_wgt, float el_sf_wgt, float gm_sf_wgt, float Zwgt, float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt) {
+        double weight =  trig_wgt * ph_sf_wgt * el_sf_wgt * gm_sf_wgt * Zwgt * Wwgt * PUwgt * xsec_ * lumi_ * gen_wgt / sum_gen_wgt_;
         // Warn if large weight *due only* to PU, Z, W, or genwgt / sum_gen_wgt_, but not due to xsec or lumi
         //if (trig_wgt > 3.0 || Zwgt > 3.0 || Wwgt > 3.0 || PUwgt > 3.0 || gen_wgt / sum_gen_wgt_ > 0.1) {
         //    cout << "WARNING! Very large weight: " << weight << endl;
@@ -573,6 +670,11 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     auto passMuonID = [&](RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_chi2, RVec<float> pt, RVec<float> eta, RVec<float> pt_err) {
         RVec<bool> pass = (trk_n_planes > 1) && (trk_n_hits > 11) && (trk_chi2 < 10) && (pt > 5) && (abs(eta) < 2.4);// && (pt_err/pt < 1);
+        return pass;
+    };
+
+    auto passGMMuonID = [&](RVec<bool> isPF, RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_chi2, RVec<float> pt, RVec<float> eta) {
+        RVec<bool> pass = isPF==1 && (trk_n_planes > 1) && (trk_n_hits > 0) && (trk_chi2 < 10) && (pt > 5) && (abs(eta) < 2.4);
         return pass;
     };
 
@@ -654,6 +756,42 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         return final_quant;
     };
 
+    auto calcCosAlpha = [&](RVec<float> mu_pt, RVec<float> mu_eta, RVec<float> mu_phi, RVec<bool> muon_pass) {
+        // Calculate cos_alpha for all combinations of muons in the event (up to 4).
+        // The default impossible value is -10k, so e.g. diagonal elements in the
+        // 4x4 matrix (refer to the same muon) have that value, or if there are
+        // fewer muons than 4 in the dSA collection, the remaining elements also
+        // get -10k. Also require that the tag muon (the row in the matrix) passes
+        // the tight (tag) ID
+        RVec<float> vtx_cosalpha(16, 10000);
+        auto comb_idx = Combinations(4, 4);
+        for (size_t i = 0; i < comb_idx[0].size(); i++) {
+            size_t idx0 = comb_idx[0][i];
+            size_t idx1 = comb_idx[1][i];
+            if (idx0 == idx1) continue;
+            if (idx0 >= muon_pass.size() || idx1 >= muon_pass.size())
+                continue;
+            if (!muon_pass[idx0]) continue;
+            float mu1_pt = mu_pt[idx0];
+            float mu1_eta = mu_eta[idx0];
+            float mu1_phi = mu_phi[idx0];
+            float mu2_pt = mu_pt[idx1];
+            float mu2_eta = mu_eta[idx1];
+            float mu2_phi = mu_phi[idx1];
+            float mu1_px = mu1_pt * cos(mu1_phi);
+            float mu1_py = mu1_pt * sin(mu1_phi);
+            float mu1_pz = mu1_pt * sinh(mu1_eta);
+            float mu2_px = mu2_pt * cos(mu2_phi);
+            float mu2_py = mu2_pt * sin(mu2_phi);
+            float mu2_pz = mu2_pt * sinh(mu2_eta);
+            float dot_product = mu1_px*mu2_px + mu1_py*mu2_py + mu1_pz*mu2_pz;
+            float mu1_p = sqrt(mu1_px*mu1_px + mu1_py*mu1_py + mu1_pz*mu1_pz);
+            float mu2_p = sqrt(mu2_px*mu2_px + mu2_py*mu2_py + mu2_pz*mu2_pz);
+            vtx_cosalpha[i] = dot_product / (mu1_p * mu2_p);
+        }
+        return vtx_cosalpha;
+    };
+
     auto takeMatchedMuonQuantity = [&](RVec<float> quant_dsa, RVec<float> quant_gm, size_t best_muon) {
         if (quant_dsa.size() == 0) return -9999.f;
         return (best_muon > 3) ? quant_gm[best_muon-4] : quant_dsa[best_muon];
@@ -690,9 +828,12 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     auto df_wgts = df.
         Define("dsa_pass_ID", passMuonID, {"reco_dsa_trk_n_planes", "reco_dsa_trk_n_hits", "reco_dsa_trk_chi2", "reco_dsa_pt", "reco_dsa_eta", "reco_dsa_pt_err"}).
         Define("gm_pass_ID", passMuonID, {"reco_gm_trk_n_planes", "reco_gm_trk_n_hits", "reco_gm_trk_chi2", "reco_gm_pt", "reco_gm_eta", "reco_gm_pt_err"}).
+        /* BEGIN TRES
         Define("reco_pass_gm_pt", goodQuantity, {"reco_gm_pt","gm_pass_ID"}).
         Define("reco_pass_gm_eta", goodQuantity, {"reco_gm_eta","gm_pass_ID"}).
         Define("reco_pass_gm_phi", goodQuantity, {"reco_gm_phi","gm_pass_ID"}).
+        END TRES */
+        //Define("gm_pass_ID", passGMMuonID, {"reco_gm_isPF", "reco_gm_trk_n_planes", "reco_gm_trk_n_hits", "reco_gm_trk_chi2", "reco_gm_pt", "reco_gm_eta"}).
         Define("n_good_dsa", "(int)Nonzero(dsa_pass_ID).size()").
         Define("n_good_gm", "(int)Nonzero(gm_pass_ID).size()").
         Define("good_vtx_dsadsa", passVtxID, {"dsa_pass_ID", "dsa_pass_ID", "reco_dsa_charge", "reco_dsa_charge", "reco_vtx_dsadsa_reduced_chi2"}).
@@ -701,6 +842,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         Define("best_vtx_dsadsa", pickBestVtx, {"reco_vtx_dsadsa_reduced_chi2", "good_vtx_dsadsa"}).
         Define("best_dsa_0", "best_vtx_dsadsa / 4").
         Define("best_dsa_1", "best_vtx_dsadsa % 4").
+        Define("cosalphas", calcCosAlpha, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_phi", "dsa_pass_ID"}).
+        Define("min_cosalpha", "Min(cosalphas)").//[best_dsa_0*4 + best_dsa_1]").
         Define("reco_dsa_pt_res", "reco_dsa_pt_err/reco_dsa_pt").
         Define("reco_gm_pt_res", "reco_gm_pt_err/reco_gm_pt").
         Define("reco_dsa_pt_res0", "reco_dsa_pt_res.size() > 0 ? reco_dsa_pt_res[best_dsa_0] : -9999.f").
@@ -738,6 +881,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         Define("reco_sel_mu_pt_res1", takeMatchedMuonQuantity, {"reco_dsa_pt_res", "reco_gm_pt_res", "best_muon_1"}).
         Define("matched_muon_MT", calcMatchedMuonMT, {"reco_sel_mu_pt0", "reco_sel_mu_phi0", MET_pt.Data(), MET_phi.Data()}).
         Define("matched_muon_Mmumu", calcMatchedMuonInvMass, {"reco_sel_mu_pt0", "reco_sel_mu_eta0", "reco_sel_mu_phi0", "reco_sel_mu_pt1", "reco_sel_mu_eta1", "reco_sel_mu_phi1"}).
+        Define("n_highpt_corr_jets", Form("(int)%s.size()", jet_pt.Data())).
         Define("reco_PF_jet_pt0", takeQuantity0, {jet_pt.Data()}).
         Define("reco_PF_jet_pt1", takeQuantity1, {jet_pt.Data()}).
         Define("reco_PF_jet_eta0", takeQuantity0, {jet_eta.Data()}).
@@ -766,15 +910,21 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         df_wgts = df_wgts.
             Define("gen_muon_vxy", takeGenMuVxy, {"gen_vxy", "gen_ID"}).
             Define("gen_METmu_dphi", calcGenMETmuDphi, {"gen_pt", "gen_phi", "gen_ID", "gen_MET_phi"}).
+            Define("gm_sf_wgt", calcGMsf, {"reco_gm_pt", "reco_gm_eta", "gm_pass_ID"}).
+            Define("el_sf_wgt", calcElectronsf, {"reco_electron_pt", "reco_electron_eta", "reco_electron_id_result"}).
+            Define("ph_sf_wgt", calcPhotonsf, {"reco_photon_pt", "reco_photon_eta", "reco_photon_id_result"}).
             Define("Zwgt", calcZsf, {"gen_ID", "gen_pt"}).
             Define("Wwgt", calcWsf, {"gen_ID", "gen_pt"}).
             Define("Twgt", calcTsf, {"gen_ID", "gen_pt"}).
             Define("PUwgt", calcPUsf, {"gen_pu_true"}).
             Define("trig_wgt", calcTrigsf, {"reco_PF_MetNoMu_pt"}).
+            /* BEGIN TRES
             Define("veto_wgt", calcVetosf, {"reco_electron_id_result","reco_electron_eta","reco_electron_pt","reco_photon_id_result","reco_photon_eta","reco_photon_pt"}).
             Define("gm_wgt", calcGMsf, {"reco_gm_pt","reco_gm_eta","best_muon_0","best_muon_1"}).
             //Define("wgt", "1.0");
             Define("wgt", calcTotalWgt, {"Zwgt", "Wwgt", "Twgt", "PUwgt", "trig_wgt", "gen_wgt","veto_wgt","gm_wgt"});
+            END TRES */
+            Define("wgt", calcTotalWgt, {"ph_sf_wgt", "el_sf_wgt", "gm_sf_wgt", "Zwgt", "Wwgt", "Twgt", "PUwgt", "trig_wgt", "gen_wgt"});
     }
 
 
@@ -845,9 +995,11 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
             df_filters = temp_df;
     }
 
-    if (mode_ != common::DATA) {
-        auto df_sumgenwgts = df_wgts.Sum("gen_wgt");
+    TString wgt = (mode_ != common::DATA) ? "gen_wgt" : "reco_PF_MET_corr_phi";
 
+    auto df_sumgenwgts = df_wgts.Sum(wgt.Data());
+
+    if (mode_ != common::SIGNAL)
         df_sumgenwgts.OnPartialResult(everyN, [&barWidth, &progressBar/*, &barMutex*/](double &) {
                 //std::lock_guard<std::mutex> l(barMutex); // lock_guard locks the mutex at construction, releases it at destruction
                 progressBar.push_back('#');
@@ -855,12 +1007,11 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                 std::cout << "\r[" << std::left << std::setw(barWidth) << progressBar << ']' << std::flush;
                 });
 
-        cout << "Triggering event loop..." << endl;
-        auto value = *df_sumgenwgts;
-        cout << endl << "RDF sum_gen_wgts: " << value << endl;
-    }
+    cout << "Triggering event loop..." << endl;
+    auto value = *df_sumgenwgts;
+    cout << endl << "RDF sum_gen_wgts (dummy MET phi if running on data): " << value << endl;
 
-    //df_filters.Report()->Print();
+    df_filters.Report()->Print();
 
     return kTRUE;
 }
@@ -879,4 +1030,13 @@ void RDFAnalysis::Terminate() {
     delete trig_hist_2018;
     delete trig_hist_2017;
     delete trig_hist_2016;
+    delete gm_sf_2018;
+    delete gm_sf_2017;
+    delete gm_sf_2016;
+    delete el_sf_2018;
+    delete el_sf_2017;
+    delete el_sf_2016;
+    delete ph_sf_2018;
+    delete ph_sf_2017;
+    delete ph_sf_2016;
 }

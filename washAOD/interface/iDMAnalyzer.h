@@ -88,6 +88,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::InputTag bTagProbbbTag_;
         const edm::InputTag dsaRecoMuTag_;
         const edm::InputTag dsaRecoMuTimingTag_;
+        const edm::InputTag pfRecoMuTag_;
         const edm::InputTag muTrackTag1_;
         const edm::InputTag muTrackTag2_;
         const edm::InputTag genParticleTag_;
@@ -122,6 +123,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         const edm::EDGetTokenT<reco::JetTagCollection> bTagProbbbToken_;
         const edm::EDGetTokenT<reco::MuonCollection> dsaRecoMuToken_;
         const edm::EDGetTokenT<reco::MuonTimeExtraMap> dsaRecoMuTimingToken_;
+        const edm::EDGetTokenT<reco::MuonCollection> pfRecoMuToken_;
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken1_;
         const edm::EDGetTokenT<reco::TrackCollection> muTrackToken2_;
         const edm::EDGetTokenT<reco::GenParticleCollection> genParticleToken_;
@@ -155,6 +157,7 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         edm::Handle<reco::JetTagCollection> bTagProbbbHandle_;
         edm::Handle<reco::MuonCollection> dsaRecoMuHandle_;
         edm::Handle<reco::MuonTimeExtraMap> dsaRecoMuTimingHandle_;
+        edm::Handle<reco::MuonCollection> pfRecoMuHandle_;
         edm::Handle<reco::TrackCollection> muTrackHandle1_;
         edm::Handle<reco::TrackCollection> muTrackHandle2_;
         edm::Handle<reco::VertexCollection> primaryVertexHandle_;
@@ -281,6 +284,11 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         std::vector<float> recoGMTrkNumHits_;
         std::vector<float> recoGMTrkNumDTHits_;
         std::vector<float> recoGMTrkNumCSCHits_;
+        std::vector<bool> recoGMIsPF_;
+        std::vector<float> recoGMPFIso_;
+        std::vector<float> recoGMTrkIso_;
+        std::vector<float> recoGMTrkNumPixelHit_;
+        std::vector<float> recoGMTrkNumTrkLayers_;
 
         // Selected muon branches
         int nSelectedMuons_;
@@ -353,6 +361,8 @@ class iDMAnalyzer : public edm::one::EDAnalyzer<edm::one::WatchRuns, edm::one::S
         float recoPFMETSmearingOnlyPhi_;
         float recoPFMETCorrectedPt_;
         float recoPFMETCorrectedPhi_;
+        float recoPFMETEEDeltaPx_;
+        float recoPFMETEEDeltaPy_;
         float recoPFMETJESUpPt_;
         float recoPFMETJESUpPhi_;
         float recoPFMETJESDownPt_;

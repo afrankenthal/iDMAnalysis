@@ -11,23 +11,17 @@
 #include <map>
 #include <vector>
 
-#include <TH1D.h>
-#include <TH2D.h>
 #include <ROOT/RDF/InterfaceUtils.hxx>
 #include <ROOT/RDataFrame.hxx>
 template<typename T>
 using RDFSumReturnType_t = ROOT::RDF::RDFDetail::SumReturnType_t<T>;
-//typedef ROOT::RDF::RDFDetail::SumReturnType_t<double> RDFSumReturnType_t;
 template<typename T>
 using RDFResultPtrSumType = ROOT::RDF::RResultPtr<RDFSumReturnType_t<T>>;
 using RDFResultPtrSumType_d = RDFResultPtrSumType<double>;
-//typedef ROOT::RDF::RResultPtr<RDFSumReturnType_t> RDFResultPtrSumType;
 template<typename T>
 using RDFResultPtr = ROOT::RDF::RResultPtr<T>;
 using RDFResultPtr1D = RDFResultPtr<TH1D>;
 using RDFResultPtr2D = RDFResultPtr<TH2D>;
-//typedef ROOT::RDF::RResultPtr<TH1D> RDFResultPtr1D;
-//typedef ROOT::RDF::RResultPtr<TH2D> RDFResultPtr2D;
 #include <TChain.h>
 #include <TH1F.h>
 
@@ -110,6 +104,12 @@ public :
    TH1F * sf_pu;
    TH1F * pileup_2016, * pileup_2017, * pileup_2018;
    std::map<TString, TH1F*> pileup_ZJets_2017;
+   TH2D * gm_sf_2016, * gm_sf_2017, * gm_sf_2018;
+   TH2D * gm_sf;
+   TH2D * el_sf_2016, * el_sf_2017, * el_sf_2018;
+   TH2D * el_sf;
+   TH2D * ph_sf_2016, * ph_sf_2017, * ph_sf_2018;
+   TH2D * ph_sf;
 };
 
 #endif
