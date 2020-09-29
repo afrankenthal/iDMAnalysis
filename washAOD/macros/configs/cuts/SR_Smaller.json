@@ -28,20 +28,20 @@
         "description": "nJets > 0 (pT > 30 GeV)"
     },
     {
-        "cut": "abs(reco_PF_jet_corr_eta[0]) < 2.5",
-        "description": "leading jet |#eta| < 2.5"
+        "cut": "abs(reco_PF_jet_corr_eta[0]) < 2.4",
+        "description": "leading jet |#eta| < 2.4"
     },
     {
         "cut": "reco_PF_jet_corr_pt[0] > 80",
         "description": "Leading jet pT > 80 GeV"
     },
     {
-        "cut": "reco_n_good_electron == 0",
-        "description": "Electron veto"
+        "cut": "if (reco_PF_n_highPt_jets > 1) { return abs(reco_PF_jet_corr_eta[1]) < 5; } else return true;",
+        "description": "Subleading jet |#eta| < 5 if exists"
     },
     {
-        "cut": "reco_n_good_photon == 0",
-        "description": "Photon veto"
+        "cut": "reco_n_good_photon == 0 && reco_n_good_electron == 0",
+        "description": "Photon and electron veto"
     },
     {
         "cut": "MET_jet_dphi0 > 1.5;",
@@ -71,6 +71,10 @@
     {
         "cut": "best_dsa_0 != best_dsa_1",
         "description": "best_dsa_0 != best_dsa_1"
+    },
+    {
+        "cut": "min_cosalpha > -0.94",
+        "description": "Cosmic veto (min(cosalpha) > -0.94)"
     },
     {
         "cut": "best_vtx_dsadsa != 0",

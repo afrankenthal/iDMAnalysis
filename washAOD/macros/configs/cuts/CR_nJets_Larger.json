@@ -33,8 +33,8 @@
         "book_plot": "no"
     },
     {
-        "cut": "abs(reco_PF_jet_corr_eta[0]) < 2.5",
-        "description": "leading jet |#eta| < 2.5",
+        "cut": "abs(reco_PF_jet_corr_eta[0]) < 2.4",
+        "description": "leading jet |#eta| < 2.4",
         "book_plot": "no"
     },
     {
@@ -43,13 +43,13 @@
         "book_plot": "no"
     },
     {
-        "cut": "reco_n_good_electron == 0",
-        "description": "Electron veto",
+        "cut": "if (reco_PF_n_highPt_jets > 1) { return abs(reco_PF_jet_corr_eta[1]) < 5; } else return true;",
+        "description": "Subleading jet |#eta| < 5 if exists",
         "book_plot": "no"
     },
     {
-        "cut": "reco_n_good_photon == 0",
-        "description": "Photon veto",
+        "cut": "reco_n_good_electron == 0 && reco_n_good_photon == 0",
+        "description": "Photon and electron veto",
         "book_plot": "no"
     },
     {
@@ -87,6 +87,10 @@
         "cut": "best_dsa_0 != best_dsa_1",
         "description": "best_dsa_0 != best_dsa_1",
         "book_plot": "no"
+    },
+    {
+        "cut": "min_cosalpha > -0.94",
+        "description": "Cosmic veto (min(cosalpha) > -0.94)"
     },
     {
         "cut": "best_vtx_dsadsa != 0",
