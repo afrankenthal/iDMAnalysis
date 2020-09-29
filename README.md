@@ -4,12 +4,7 @@ iDM Analysis repository (skimming, trigger/reco efficiency, and analysis)
 ## Environment setup
 
 ```bash
-# For 2018
-cmsrel CMSSW_10_2_14
-cd CMSSW_10_2_14/src
-cmsenv
-
-# For both years (needs testing to validate):
+# For all years:
 cmsrel CMSSW_10_2_18
 cd CMSSW_10_2_18/src
 cmsenv
