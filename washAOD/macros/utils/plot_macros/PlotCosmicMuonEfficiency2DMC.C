@@ -15,7 +15,8 @@ void PlotCosmicMuonEfficiency2DMC(int year=2016, bool fSave=0) {
         //_file0 = TFile::Open("../../bin/PlotsCosmicsStudiesJune8/plots_Cosmics_twelthrun_efficiency_pt25_dzlt100_data_2016.root");
         //_file1 = TFile::Open("../../bin/PlotsCosmicsStudiesJune8/plots_Cosmics_twelthrun_efficiency_pt10_dzlt100_data_2016.root");
         //_file2 = TFile::Open("../../bin/PlotsCosmicsStudiesJune8/plots_Cosmics_twelthrun_efficiency_pt25_dzlt200_data_2016.root");
-        _file0 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt10_dzlt200_MC_2016.root");
+        //_file0 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt10_dzlt200_MC_2016.root");
+        _file0 = TFile::Open("../../bin/PlotsCosmicsStudiesJune17/plots_Cosmics_twelthrun_efficiency_pt10_dzlt200_MC_2016.root");
     }
     else if (year == 2017) {
         _file0 = TFile::Open("../../bin/PlotsCosmicsStudiesApril23/plots_Cosmics_eleventhrun_efficiency_pt25_dzlt100_2017.root");

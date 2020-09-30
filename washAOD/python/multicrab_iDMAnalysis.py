@@ -115,7 +115,9 @@ def main():
         if isData == True:
             #config.Data.splitting = 'LumiBased'
             #config.Data.unitsPerJob = 100
-            if year == '2018':
+            if options.sampleType == 'NoBPTX':
+                config.Data.lumiMask = '../data/CosmicJSON_E_D_UGMT_bottomOnly.txt'
+            elif year == '2018':
                 config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt'
             elif year == '2017':
                 config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions17/13TeV/ReReco/Cert_294927-306462_13TeV_EOY2017ReReco_Collisions17_JSON_v1.txt'
@@ -123,12 +125,12 @@ def main():
                 config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt'
 
         if isData == True:
-            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/data_twelthrun' % year
+            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/data_fourteenthrun' % year
         else:
             if options.sampleType == 'signal':
-                config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/signal_twelthrun' % year
+                config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/signal_fourteenthrun' % year
             else:
-                config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_twelthrun' % year
+                config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_fourteenthrun' % year
 
         config.Data.publication = False
         config.Data.ignoreLocality = True
@@ -212,8 +214,12 @@ def main():
             total_Trig = data['Data_SingleMu_' + year]
 
             total_NoBPTX = data['Data_NoBPTX_' + year]
+            for it in ['NoBPTX_2016RunB','NoBPTX_2016RunC','NoBPTX_2016RunD',
+                    'NoBPTX_2016RunF','NoBPTX_2016RunG','NoBPTX_2016RunH']:
+                if it in total_NoBPTX:
+                    del total_NoBPTX[it]
 
-            total_cosmics = data['CosmicsMC_' + year]
+            #total_cosmics = data['CosmicsMC_' + year]
 
             total_signal = data['signal_' + year]
             for key, val in total_signal.items():
@@ -270,7 +276,8 @@ def main():
                 #total = {'DYJetsToLL_M-50_HT-400to600_2017': '/DYJetsToLL_M-50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-94X_mc2017_realistic_v10_ext1-v1/AODSIM'}
                 #total = {'ZJetsToNuNu_HT-200To400_2018': '/ZJetsToNuNu_HT-200To400_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
                 #total = {'WJetsToLNu_HT-2500ToInf_2018': '/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
-                total = merge_dicts() # -------------------------------> put here the custom samples you want!!!
+                total = {'QCD_HT500to700_2018': '/QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
+                #total = merge_dicts() # -------------------------------> put here the custom samples you want!!!
             else:
                 print "ERROR! SampleType option %s not recoginzed." % options.sampleType
                 sys.exit()

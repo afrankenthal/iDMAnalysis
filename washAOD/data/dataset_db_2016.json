@@ -80,7 +80,8 @@
         "NoBPTX_2016RunH": "/NoBPTX/Run2016H-07Aug17-v1/AOD"
     },
     "CosmicsMC_2016": {
-        "Cosmics_pt10To3000": "/CosmicMuonsMCPrivate/lpcmetx-RunIISummer15DR80_LooseMuCosmic_38T_pt10_3000_DIGIRAW_step2_AOD_CMSSW_8_0_21-0f111def6b9b94823916592fdafc5ec9/USER"
+        "Cosmics_pt10To3000": "/CosmicMuonsMCPrivate/lpcmetx-RunIISummer15DR80_LooseMuCosmic_38T_pt10_3000_DIGIRAW_step2_AOD_CMSSW_8_0_21-0f111def6b9b94823916592fdafc5ec9/USER",
+        "Cosmics_pt5To3000": "/CosmicMuonsMCPrivate/lpcmetx-RunIISummer15DR80_LooseMuCosmic_38T_pt5_3000_TimingMinus40To0_DIGIRAW_step2_AOD_CMSSW_8_0_21-0f111def6b9b94823916592fdafc5ec9/USER"
     },
     "signal_2016": {
         "sig_52p5_5p0_1": "/iDM_DarkPhotonToMuMu_Mchi-52p5_dMchi-5p0_ctau-1_TuneCUETP8M1_13TeV-madgraph-pythia8/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v2/AODSIM",
