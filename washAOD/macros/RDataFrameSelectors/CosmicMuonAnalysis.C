@@ -128,8 +128,8 @@ Bool_t CosmicMuonAnalysis::Process(TChain * chain) {
        return pass;
    };
    auto passProbeMuonID = [&](RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_chi2, RVec<float> pt, RVec<float> pt_err, RVec<float> eta, RVec<float> phi) {
-       RVec<bool> pass =    (trk_n_planes >= 2) && (trk_n_hits >= 12) && 
-                            (trk_chi2 < 10) && (pt > 5) && (pt_err/pt < 1);
+       RVec<bool> pass =  (trk_n_planes > 0) && (trk_n_hits > 0);// && 
+                            (trk_chi2 < 10) && (pt > 5);// && (pt_err/pt < 1);
        return pass;
    };
 
