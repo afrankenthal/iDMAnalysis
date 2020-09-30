@@ -1,0 +1,18 @@
+{
+    "observables": {
+        "vxy": {}
+    },
+    "samples": {
+        "60p0": {
+            "files": [
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-60p0_dMchi-20p0_ctau-1.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-60p0_dMchi-20p0_ctau-10.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-60p0_dMchi-20p0_ctau-100.root",
+                "root://cmsxrootd.fnal.gov///store/group/lpcmetx/iDM/Ntuples/2018/signal/iDMAnalysis_twelthrun/iDMAnalysis_Mchi-60p0_dMchi-20p0_ctau-1000.root"
+            ],
+                "color": 1,
+                "legend": "(50, 70) GeV",
+                "collection": "dsa"
+        }
+    }
+}
