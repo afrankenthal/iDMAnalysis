@@ -21,7 +21,7 @@ git cms-addpkg RecoVertex/KalmanVertexFit
 # const float TrackerBoundsHalfLength = 273.5; ==> const float TrackerBoundsHalfLength = 960;
 
 # Now clone iDM repo
-git clone https://git@github.com:afrankenthal/iDMSkimmer.git
+git clone https://github.com/afrankenthal/iDMSkimmer.git
 cd iDMSkimmer/washAOD
 scram b -j8
 ```
