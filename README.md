@@ -4,43 +4,51 @@ iDM Analysis repository (skimming, trigger/reco efficiency, and analysis)
 ## Environment setup
 
 ```bash
-# For 2018
-cmsrel CMSSW_10_2_14
-cd CMSSW_10_2_14/src
-cmsenv
-
-# For both years (needs testing to validate):
+# For all years:
 cmsrel CMSSW_10_2_18
 cd CMSSW_10_2_18/src
 cmsenv
-
-# Need to pull KalmanVertexFit and VertexTools packages to 
-# extend the native Kalman Filter range limit:
-git cms-addpkg RecoVertex/VertexTools
-git cms-addpkg RecoVertex/KalmanVertexFit
-# Then Change lines 13 and 14 of RecoVertex/VertexTools/src/SequentialVertexFitter.cc:
-# const float TrackerBoundsRadius = 112; ==> const float TrackerBoundsRadius = 740;
-# const float TrackerBoundsHalfLength = 273.5; ==> const float TrackerBoundsHalfLength = 960;
-# Same for lines 14 and 15 of RecoVertex/KalmanVertexFit/src/SingleTrackVertexConstraint.cc:
-# const float TrackerBoundsRadius = 112; ==> const float TrackerBoundsRadius = 740;
-# const float TrackerBoundsHalfLength = 273.5; ==> const float TrackerBoundsHalfLength = 960;
-
-# Now clone iDM repo
-git clone https://git@github.com:afrankenthal/iDMSkimmer.git
-cd iDMSkimmer/washAOD
-scram b -j8
 ```
 
-## Running ntuplizer to make flat trees from AODs
+## Pull and compile packages
+
+Pull KalmanVertexFit and VertexTools packages to extend the native Kalman Filter range limit:
 
 ```bash
-# Might need to renew your proxy:
+git cms-addpkg RecoVertex/VertexTools
+git cms-addpkg RecoVertex/KalmanVertexFit
+```
+and apply the following git patch:
+
+```bash
+curl https://home.fnal.gov/~as2872/extendTrackerDimensions.patch | git apply
+```
+
+Now clone the iDM repo and compile everything:
+
+```bash
+git clone https://github.com/afrankenthal/iDMSkimmer.git
+scram b -j 8
+cd iDMSkimmer/washAOD
+```
+
+## Running ntuplizer to make flat trees from AODs:
+
+Might need to renew your proxy first:
+
+```bash
 voms-proxy-init -voms cms -valid 192:00
+```
 
-# Test run
+For a local test run:
+
+```bash
 cmsRun python/iDMAnalyzer_cfg.py test=1
+```
 
-# Call multicrab to run over all samples
+Call multicrab to run over more samples in EOS:
+
+```bash
 cd python
 ./multicrab_iDMAnalyzer -c submit -w WORKAREA -s X # where X = {data,MC,custom}
 ```

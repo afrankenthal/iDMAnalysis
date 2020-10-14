@@ -12,10 +12,14 @@ void PlotCosmicMuonEfficiencyMC(int year=2016, bool fSave=0) {
     TFile *_file3;
 
     if (year == 2016) {
-        _file0 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt25_dzlt100_MC_2016.root");
-        _file1 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt10_dzlt100_MC_2016.root");
-        _file2 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt25_dzlt200_MC_2016.root");
-        _file3 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt10_dzlt200_MC_2016.root");
+        //_file0 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt25_dzlt100_MC_2016.root");
+        //_file1 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt10_dzlt100_MC_2016.root");
+        //_file2 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt25_dzlt200_MC_2016.root");
+        //_file3 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt10_dzlt200_MC_2016.root");
+        _file0 = TFile::Open("../../bin/PlotsCosmicsStudiesJune17/plots_Cosmics_twelthrun_efficiency_pt25_dzlt200_MC_fixtime_2016.root");
+        _file1 = TFile::Open("../../bin/PlotsCosmicsStudiesJune17/plots_Cosmics_twelthrun_efficiency_pt25_dzlt200_data_2016.root");
+        _file2 = TFile::Open("../../bin/PlotsCosmicsStudiesJune17/plots_Cosmics_twelthrun_efficiency_pt25_dzlt200_MC_2016.root");
+        //_file3 = TFile::Open("../../bin/PlotsCosmicsStudiesJune17/plots_Cosmics_twelthrun_efficiency_pt10_dzlt200_MC_2016.root");
     }
     else if (year == 2017) {
         _file0 = TFile::Open("PlotsCosmicsStudiesApril23/plots_Cosmics_eleventhrun_efficiency_pt25_dzlt100_2017.root");
@@ -37,8 +41,8 @@ void PlotCosmicMuonEfficiencyMC(int year=2016, bool fSave=0) {
     THStack * hs1_denom = (THStack*)_file1->Get(Form("tag_muon_%s_denomcut4-DATA", obs.Data()));
     THStack * hs2_num = (THStack*)_file2->Get(Form("tag_muon_%s_numcut5-DATA", obs.Data()));
     THStack * hs2_denom = (THStack*)_file2->Get(Form("tag_muon_%s_denomcut4-DATA", obs.Data()));
-    THStack * hs3_num = (THStack*)_file3->Get(Form("tag_muon_%s_numcut5-DATA", obs.Data()));
-    THStack * hs3_denom = (THStack*)_file3->Get(Form("tag_muon_%s_denomcut4-DATA", obs.Data()));
+    //THStack * hs3_num = (THStack*)_file3->Get(Form("tag_muon_%s_numcut5-DATA", obs.Data()));
+    //THStack * hs3_denom = (THStack*)_file3->Get(Form("tag_muon_%s_denomcut4-DATA", obs.Data()));
 
     TH1F * obs0_num = (TH1F*)hs0_num->GetStack()->Last();
     TH1F * obs0_denom = (TH1F*)hs0_denom->GetStack()->Last();
@@ -49,9 +53,9 @@ void PlotCosmicMuonEfficiencyMC(int year=2016, bool fSave=0) {
     TH1F * obs2_num = (TH1F*)hs2_num->GetStack()->Last();
     TH1F * obs2_denom = (TH1F*)hs2_denom->GetStack()->Last();
     TEfficiency * obs2_eff = new TEfficiency(*obs2_num, *obs2_denom);
-    TH1F * obs3_num = (TH1F*)hs3_num->GetStack()->Last();
-    TH1F * obs3_denom = (TH1F*)hs3_denom->GetStack()->Last();
-    TEfficiency * obs3_eff = new TEfficiency(*obs3_num, *obs3_denom);
+    //TH1F * obs3_num = (TH1F*)hs3_num->GetStack()->Last();
+    //TH1F * obs3_denom = (TH1F*)hs3_denom->GetStack()->Last();
+    //TEfficiency * obs3_eff = new TEfficiency(*obs3_num, *obs3_denom);
 
     TCanvas * c0 = new TCanvas();
     TH1F * frame0;
@@ -84,18 +88,18 @@ void PlotCosmicMuonEfficiencyMC(int year=2016, bool fSave=0) {
     obs2_eff->SetMarkerSize(1.0);
     obs2_eff->Draw("EPZ SAME");
 
-    obs3_eff->SetLineColor(kViolet);
-    obs3_eff->SetLineWidth(2);
-    obs3_eff->SetMarkerStyle(20);
-    obs3_eff->SetMarkerColor(kViolet);
-    obs3_eff->SetMarkerSize(1.0);
-    obs3_eff->Draw("EPZ SAME");
+    //obs3_eff->SetLineColor(kViolet);
+    //obs3_eff->SetLineWidth(2);
+    //obs3_eff->SetMarkerStyle(20);
+    //obs3_eff->SetMarkerColor(kViolet);
+    //obs3_eff->SetMarkerSize(1.0);
+    //obs3_eff->Draw("EPZ SAME");
 
     TLegend * leg0 = new TLegend(0.3, 0.77, 0.7, 0.92);
     leg0->AddEntry(obs0_eff, Form("%d, p_{T} > 25 GeV, |dz| < 100 cm", year), "lep");
     leg0->AddEntry(obs1_eff, Form("%d, p_{T} > 10 GeV, |dz| < 100 cm", year), "lep");
     leg0->AddEntry(obs2_eff, Form("%d, p_{T} > 25 GeV, |dz| < 200 cm", year), "lep");
-    leg0->AddEntry(obs3_eff, Form("%d, p_{T} > 10 GeV, |dz| < 200 cm", year), "lep");
+    //leg0->AddEntry(obs3_eff, Form("%d, p_{T} > 10 GeV, |dz| < 200 cm", year), "lep");
     leg0->Draw();
 
     //CMS_lumi(c, 4, 0);

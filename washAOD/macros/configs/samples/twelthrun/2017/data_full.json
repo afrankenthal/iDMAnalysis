@@ -25,7 +25,7 @@
     },
     "MET_2017RunD": {
         "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_twelthrun/MET/crab_iDMAnalysis_MET_2017RunD/200423_031542/0000/merged"
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/data_twelthrun/MET/crab_iDMAnalysis_MET_2017RunD/200624_175047/0000/merged"
         ],
         "group": "data",
         "mode": "DATA",

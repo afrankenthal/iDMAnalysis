@@ -1,16 +1,17 @@
 #include "../json.hpp"
+#include "../CMS_lumi.C"
 using json = nlohmann::json;
 using namespace ROOT::VecOps;
 
-void PlotMuonObjectRecoEffi(TString config_filename, int year=2018, bool fSave=0, bool fShow=1) {
+void PlotMuonObjectRecoEffiTogether(TString config_filename, int year=2018, bool fSave=0, bool fShow=1) {
     gROOT->LoadMacro("../tdrstyle.C");
     gROOT->ProcessLine("setTDRStyle();");
 
     gROOT->SetBatch(!fShow);
     //std::vector<TString> observables = { "pt", "pt_zoom", "eta", "phi", "dr", "vxy" };
 
-    std::map<TString, map<TString, TH1F*>> nums, denoms;
-    std::map<TString, map<TString, TEfficiency*>> effs;
+    std::map<TString, map<TString, TH1F*>> nums_gm, nums_dsa, denoms;
+    std::map<TString, map<TString, TEfficiency*>> effs_gm, effs_dsa;
     std::map<TString, TCanvas*> canvases;
     std::map<TString, std::vector<float>> bins;
     std::map<TString, TString> vars;
@@ -18,6 +19,7 @@ void PlotMuonObjectRecoEffi(TString config_filename, int year=2018, bool fSave=0
     std::map<TString, TString> plot_filenames;
 
     TString collection = "gm";
+    TString collection2 = "dsa";
     TString region = "inclusive";
 
     bins["pt"] = { 0, 2, 4, 6, 8, 10,
@@ -61,7 +63,7 @@ void PlotMuonObjectRecoEffi(TString config_filename, int year=2018, bool fSave=0
         //550, 600, 650, 700, 750, 800, 850, 900, 950, 1000};
     //vars["vxy"] = "genVxy";
     vars["vxy"] = "mu_gen_vxy";
-    axis_label["vxy"] = "Muon pair vertex v_{xy} (gen) [cm]";
+    axis_label["vxy"] = "Muon transverse production distance v_{xy} [cm]";
     plot_filenames["vxy"] = TString::Format("%s_vxy_%s.pdf", collection.Data(), region.Data());
 
     bins["vz"] = { 0, 25, 50, 75, 100, 125, 150, 175, 200, 225, 250, 275, 300, 325, 350};
@@ -92,11 +94,12 @@ void PlotMuonObjectRecoEffi(TString config_filename, int year=2018, bool fSave=0
         frame->GetXaxis()->SetTitle(axis_label[obs].Data());
         frame->GetYaxis()->SetTitle("Efficiency");
         canvases[obs]->Update();
-        TLegend * legend = new TLegend(0.55, 0.75, 0.8, 0.9);
+        TLegend * legend = new TLegend(0.45, 0.75, 0.8, 0.9);
 
         for (auto const & [sample, sample_cfg] : config["samples"].items()) {
 
-            nums[obs][sample] = new TH1F(Form("hnum_%s_%s", obs.Data(), sample.c_str()), Form("hnum_%s_%s", obs.Data(), sample.c_str()), sizeof(bins_temp)/sizeof(float) - 1, bins_temp);
+            nums_gm[obs][sample] = new TH1F(Form("hnum_gm_%s_%s", obs.Data(), sample.c_str()), Form("hnum_gm_%s_%s", obs.Data(), sample.c_str()), sizeof(bins_temp)/sizeof(float) - 1, bins_temp);
+            nums_dsa[obs][sample] = new TH1F(Form("hnum_dsa_%s_%s", obs.Data(), sample.c_str()), Form("hnum_dsa_%s_%s", obs.Data(), sample.c_str()), sizeof(bins_temp)/sizeof(float) - 1, bins_temp);
             denoms[obs][sample] = new TH1F(Form("hdenom_%s_%s", obs.Data(), sample.c_str()), Form("hdenom_%s_%s", obs.Data(), sample.c_str()), sizeof(bins_temp)/sizeof(float) - 1, bins_temp);
 
             for (auto filename : sample_cfg["files"].get<std::vector<std::string>>()) {
@@ -192,34 +195,53 @@ void PlotMuonObjectRecoEffi(TString config_filename, int year=2018, bool fSave=0
                                 Define("mu_gen_vz", "gen_vz[abs(gen_ID)==13]").
                                 Define("mu_gen_charge", "gen_charge[abs(gen_ID)==13]").
                                 Define("mu_gen_dR", calcGenMudR, {"mu_gen_eta", "mu_gen_phi"}).
-                                Define("gen_reco_dR", findMatch, {"mu_gen_eta", "mu_gen_phi", "reco_gm_eta", "reco_gm_phi", "mu_gen_charge", "reco_gm_charge"}).
-                                Define("match_gen", "gen_reco_dR < 0.06");
+                                Define("gen_reco_gm_dR", findMatch, {"mu_gen_eta", "mu_gen_phi", "reco_gm_eta", "reco_gm_phi", "mu_gen_charge", "reco_gm_charge"}).
+                                Define("gen_reco_dsa_dR", findMatch, {"mu_gen_eta", "mu_gen_phi", "reco_dsa_eta", "reco_dsa_phi", "mu_gen_charge", "reco_dsa_charge"}).
+                                Define("match_gm_gen", "gen_reco_gm_dR < 0.06").
+                                Define("match_dsa_gen", "gen_reco_dsa_dR < 0.15");
 
-                auto hdenom_temp = df_new.Define("filter_by_eta", Form("%s[abs(mu_gen_eta)>1.2]", vars[obs].Data())).Histo1D<RVec<float>>(model, "filter_by_eta"); //vars[obs].Data());
-                auto hnum_temp = df_new.Define("matched_obs", Form("%s[match_gen==1&&abs(mu_gen_eta)>1.2]", vars[obs].Data())).Histo1D<RVec<float>>(model, "matched_obs");
+                auto hdenom_temp = df_new.Define("filter_by_eta", Form("%s[abs(mu_gen_eta)<1.2]", vars[obs].Data())).Histo1D<RVec<float>>(model, "filter_by_eta"); //vars[obs].Data());
+                auto hnum_gm_temp = df_new.Define("matched_gm_obs", Form("%s[match_gm_gen==1&&abs(mu_gen_eta)<1.2]", vars[obs].Data())).Histo1D<RVec<float>>(model, "matched_gm_obs");
+                auto hnum_dsa_temp = df_new.Define("matched_dsa_obs", Form("%s[match_dsa_gen==1&&abs(mu_gen_eta)<1.2]", vars[obs].Data())).Histo1D<RVec<float>>(model, "matched_dsa_obs");
 
                 //TH1F * num_temp = (TH1F*)nums[obs][sample]->Clone();
                 //num_temp->Reset();
                 //tree->Draw(Form("%s[0]>>+hnum_%s_%s", vars[obs].Data(), obs.Data(), sample.c_str()), "nMatched>0", "goff");
                 //tree->Draw(Form("%s[1]>>+hnum_%s_%s", vars[obs].Data(), obs.Data(), sample.c_str()), "nMatched>1", "goff");
-                nums[obs][sample]->Add(hnum_temp.GetPtr());
+                nums_gm[obs][sample]->Add(hnum_gm_temp.GetPtr());
+                nums_dsa[obs][sample]->Add(hnum_dsa_temp.GetPtr());
                 //TH1F * denom_temp = (TH1F*)denoms[obs][sample]->Clone();
                 //denom_temp->Reset();
                 //tree->Draw(Form("%s>>+hdenom_%s_%s", vars[obs].Data(), obs.Data(), sample.c_str()), "", "goff");
                 denoms[obs][sample]->Add(hdenom_temp.GetPtr());
             }
 
-            effs[obs][sample] = new TEfficiency(*nums[obs][sample], *denoms[obs][sample]);
-            effs[obs][sample]->SetName(sample_cfg["legend"].get<std::string>().c_str());
-            effs[obs][sample]->SetMarkerColor(sample_cfg["color"].get<int>());
-            effs[obs][sample]->SetLineColor(sample_cfg["color"].get<int>());
-            effs[obs][sample]->Draw("ZE SAME");
-            legend->AddEntry(effs[obs][sample], sample_cfg["legend"].get<std::string>().c_str(), "lep");
-            TLatex latex;
-            latex.SetTextSize(0.04);
-            latex.DrawLatexNDC(0.25, 0.9, Form("%d", year));
+            effs_gm[obs][sample] = new TEfficiency(*nums_gm[obs][sample], *denoms[obs][sample]);
+            effs_gm[obs][sample]->SetName("GM");
+            //effs_gm[obs][sample]->SetMarkerColor(sample_cfg["color"].get<int>());
+            //effs_gm[obs][sample]->SetLineColor(sample_cfg["color"].get<int>());
+            effs_gm[obs][sample]->SetMarkerColor(4);
+            effs_gm[obs][sample]->SetLineColor(4);
+            effs_gm[obs][sample]->Draw("ZE SAME");
+            //legend->AddEntry(effs_gm[obs][sample], sample_cfg["legend"].get<std::string>().c_str(), "lep");
+            legend->AddEntry(effs_gm[obs][sample], "Standard reconstruction", "lep");
+
+            effs_dsa[obs][sample] = new TEfficiency(*nums_dsa[obs][sample], *denoms[obs][sample]);
+            effs_dsa[obs][sample]->SetName("dSA");
+            //effs_dsa[obs][sample]->SetMarkerColor(sample_cfg["color"].get<int>());
+            //effs_dsa[obs][sample]->SetLineColor(sample_cfg["color"].get<int>());
+            effs_dsa[obs][sample]->SetMarkerColor(2);
+            effs_dsa[obs][sample]->SetLineColor(2);
+            effs_dsa[obs][sample]->Draw("ZE SAME");
+            legend->AddEntry(effs_dsa[obs][sample], "Displaced reconstruction", "lep");
+
+            //TLatex latex;
+            //latex.SetTextSize(0.04);
+            //latex.DrawLatexNDC(0.25, 0.9, Form("%d", year));
         }
         legend->Draw("SAME");
+
+        CMS_lumi((TPad*)gPad, 4, 10, "2018");
 
         if (fSave) {
             canvases[obs]->SaveAs(plot_filenames[obs].Data());

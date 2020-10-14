@@ -16,7 +16,7 @@
         "description": "Trigger fired (120 GeV METNoMu)"
     },
     {
-        "cut": "MET_pt > 200",
+        "cut": "reco_PF_MET_corr_pt > 200",
         "description": "MET > 200 GeV"
     },
     {
@@ -24,16 +24,24 @@
         "description": "|CaloMET - PFMET|/CaloMET < 1"
     },
     {
-        "cut": "reco_PF_n_highPt_jets > 0",
+        "cut": "n_highpt_corr_jets > 0",
         "description": "nJets > 0 (pT > 30 GeV)"
     },
     {
-        "cut": "abs(reco_PF_jet_corr_eta[0]) < 2.4",
-        "description": "leading jet |#eta| < 2.4"
+        "cut": "abs(reco_PF_jet_corr_JERUp_eta[0]) < 2.1",
+        "description": "leading jet |#eta| < 2.5"
     },
     {
-        "cut": "reco_PF_jet_corr_pt[0] > 80",
+        "cut": "reco_PF_jet_corr_JERUp_pt[0] > 80",
         "description": "Leading jet pT > 80 GeV"
+    },
+    {
+        "cut": "if (n_highpt_corr_jets > 1) { return abs(reco_PF_jet_corr_JERUp_eta[1]) < 5.0; } else return true;",
+        "description": "Subleading jet eta < 2.1 if exists"
+    },
+    {
+        "cut": "reco_n_good_photon == 0 && reco_n_good_electron == 0",
+        "description": "Photon and electron veto"
     },
     {
         "cut": "MET_jet_dphi0 > 1.5;",
@@ -44,7 +52,7 @@
         "description": "|#Delta#Phi(MET, all jets)| > 0.5"
     },
     {
-        "cut": "reco_PF_n_highPt_jets < 3",
+        "cut": "n_highpt_corr_jets < 3",
         "description": "nJets < 3 (pT > 30 GeV)",
         "special": "no"
     },
@@ -55,6 +63,7 @@
     {
         "cut": "n_good_dsa >= 1",
         "description": "good dSA muons >= 1"
+
     },
     {
         "cut": "n_good_dsa >= 2",

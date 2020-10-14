@@ -4,11 +4,11 @@
         "description": "No cuts"
     },
     {
-        "cut": "(trig_fired &(1<<14))==(1<<14) || (trig_fired&(1<<15))==(1<<15)",
+        "cut": "1==1 || (trig_fired &(1<<14))==(1<<14) || (trig_fired&(1<<15))==(1<<15)",
         "description": "Trigger fired (NoBPTX)"
     },
     {
-        "cut": "reco_dsa_pt.size() == 2",
+        "cut": "reco_dsa_pt.size() > 0",
         "description": "Exactly two muons"
     },
     {

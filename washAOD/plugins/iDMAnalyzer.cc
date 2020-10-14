@@ -31,6 +31,7 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     bTagProbbbTag_(ps.getParameter<edm::InputTag>("bTagProbbb")),
     dsaRecoMuTag_(ps.getParameter<edm::InputTag>("dsaRecoMu")),
     dsaRecoMuTimingTag_(ps.getParameter<edm::InputTag>("dsaRecoMuTiming")),
+    pfRecoMuTag_(ps.getParameter<edm::InputTag>("pfRecoMu")),
     muTrackTag1_(ps.getParameter<edm::InputTag>("muTrack1")),
     muTrackTag2_(ps.getParameter<edm::InputTag>("muTrack2")),
     genParticleTag_(ps.getParameter<edm::InputTag>("genParticle")),
@@ -64,6 +65,7 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     bTagProbbbToken_(consumes<reco::JetTagCollection>(bTagProbbbTag_)),
     dsaRecoMuToken_(consumes<reco::MuonCollection>(dsaRecoMuTag_)),
     dsaRecoMuTimingToken_(consumes<reco::MuonTimeExtraMap>(dsaRecoMuTimingTag_)),
+    pfRecoMuToken_(consumes<reco::MuonCollection>(pfRecoMuTag_)),
     muTrackToken1_(consumes<reco::TrackCollection>(muTrackTag1_)),
     muTrackToken2_(consumes<reco::TrackCollection>(muTrackTag2_)),
     genParticleToken_(consumes<reco::GenParticleCollection>(genParticleTag_)),
@@ -106,6 +108,7 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     desc.add<edm::InputTag>("bTagProbbb", edm::InputTag("pfDeepCSVJetTags:probbb"));
     desc.add<edm::InputTag>("dsaRecoMu", edm::InputTag("muonsFromdSA"));
     desc.add<edm::InputTag>("dsaRecoMuTiming", edm::InputTag("muontimingFromdSA","combined"));
+    desc.add<edm::InputTag>("pfRecoMu", edm::InputTag("muons"));
     desc.add<edm::InputTag>("muTrack1", edm::InputTag("displacedStandAloneMuons"));
     desc.add<edm::InputTag>("muTrack2", edm::InputTag("globalMuons"));
     desc.add<edm::InputTag>("primaryVertex", edm::InputTag("offlinePrimaryVertices"));
@@ -184,6 +187,11 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_gm_trk_n_hits", &recoGMTrkNumHits_);
     recoT->Branch("reco_gm_trk_n_DT_hits", &recoGMTrkNumDTHits_);
     recoT->Branch("reco_gm_trk_n_CSC_hits", &recoGMTrkNumCSCHits_);
+    recoT->Branch("reco_gm_isPF", &recoGMIsPF_);
+    recoT->Branch("reco_gm_PFIso", &recoGMPFIso_);
+    recoT->Branch("reco_gm_TrkIso", &recoGMTrkIso_);
+    recoT->Branch("reco_gm_trk_n_pix_hits", &recoGMTrkNumPixelHit_);
+    recoT->Branch("reco_gm_trk_n_trk_layers", &recoGMTrkNumTrkLayers_);
     recoT->Branch("reco_n_gbmdsa_match", &recoNMatchedGBMvDSA_);
     recoT->Branch("reco_gbmdsa_dR", &recoGMdSAdR_);
     recoT->Branch("reco_gbmdsa_match", &recoGMdSAmatch_);
@@ -240,6 +248,8 @@ void iDMAnalyzer::beginJob()
     recoT->Branch("reco_PF_MET_smearing_phi", &recoPFMETSmearingOnlyPhi_);
     recoT->Branch("reco_PF_MET_corr_pt", &recoPFMETCorrectedPt_);
     recoT->Branch("reco_PF_MET_corr_phi", &recoPFMETCorrectedPhi_);
+    recoT->Branch("reco_PF_MET_EE_delta_px", &recoPFMETEEDeltaPx_);
+    recoT->Branch("reco_PF_MET_EE_delta_py", &recoPFMETEEDeltaPy_);
     recoT->Branch("reco_PF_MET_corr_JESUp_pt", &recoPFMETJESUpPt_);
     recoT->Branch("reco_PF_MET_corr_JESUp_phi", &recoPFMETJESUpPhi_);
     recoT->Branch("reco_PF_MET_corr_JESDown_pt", &recoPFMETJESDownPt_);
@@ -326,7 +336,59 @@ void iDMAnalyzer::beginRun(edm::Run const& iRun, edm::EventSetup const& iSetup)
     } 
     else {
         LogError("HLTConfig") << "iDMAnalyzer::beginRun: config extraction failure with triggerProcessName -> " << triggerProcessName_;
+        return;
     }
+
+    // Add trigger paths if they exist
+    triggerPathsWithoutVersionNum_.clear();
+    triggerPathsWithVersionNum_.clear();
+    trigExist_.clear();
+
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET120_PFMHT120_IDTight");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET130_PFMHT130_IDTight");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET140_PFMHT140_IDTight");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu130_PFMHTNoMu130_IDTight");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu140_PFMHTNoMu140_IDTight");
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET120_PFMHT120_IDTight_PFHT60"); // 2017+2018
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60"); // 2017+2018
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET200_HBHECleaned"); // 2017+2018
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET200_HBHE_BeamHaloCleaned"); // 2017+2018
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETTypeOne200_HBHE_BeamHaloCleaned"); // 2017+2018
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFHT500_PFMET100_PFMHT100_IDTight"); // 2017+2018
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFHT700_PFMET85_PFMHT85_IDTight"); // 2017+2018
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFHT800_PFMET75_PFMHT75_IDTight"); // 2017+2018
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET170_HBHECleaned"); // 2016
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET300"); // 2016
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_MET200"); // 2016
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFHT300_PFMET110"); // 2016
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_IsoMu27"); // For MET trigger eff. studies in data
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu100_PFMHTNoMu100_IDTight"); // Alternative triggers
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DCA_PFMET50_PFMHT60"); // Alternative triggers
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET50_PFMHT60");  // Alternative triggers
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET70_PFMHT70");  // Alternative triggers
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET90_PFMHT90");  // Alternative triggers
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_L2Mu10_NoVertex_NoBPTX");    // For dSA eff. studies in data
+    triggerPathsWithoutVersionNum_.emplace_back("HLT_L2Mu10_NoVertex_NoBPTX3BX"); // For dSA eff. studies in data
+    
+    const std::vector<std::string>& pathNames = hltConfig_.triggerNames();
+    for (auto trigPathNoVersion : triggerPathsWithoutVersionNum_) {
+        auto matchedPaths(hltConfig_.restoreVersion(pathNames, trigPathNoVersion));
+        if (matchedPaths.size() == 0) {
+            LogWarning("TriggerNotFound") << "Could not find matched full trigger path with --> " << trigPathNoVersion;
+            triggerPathsWithVersionNum_.push_back("None");
+            trigExist_.push_back(false);
+        }
+        else {
+            trigExist_.push_back(true);
+            triggerPathsWithVersionNum_.push_back(matchedPaths[0]);
+            if (hltConfig_.triggerIndex(matchedPaths[0]) >= hltConfig_.size()) {
+                LogError("TriggerError") << "Cannot find trigger path --> " << matchedPaths[0];
+                return;
+            }
+        }
+    }
+
     // JEC Uncertainty object
     iSetup.get<JetCorrectionsRecord>().get("AK4PFchs", JetCorParCollHandle_); 
     JetCorrectorParameters const & JetCorPar = (*JetCorParCollHandle_)["Uncertainty"];
@@ -360,6 +422,11 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
     iEvent.getByToken(dsaRecoMuTimingToken_, dsaRecoMuTimingHandle_);
     if (!dsaRecoMuTimingHandle_.isValid()) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "dsaRecoMuTiming");
+        return false;
+    }
+    iEvent.getByToken(pfRecoMuToken_, pfRecoMuHandle_);
+    if (!pfRecoMuHandle_.isValid()) {
+        LogError("HandleError") << boost::str(boost::format(error_msg) % "pfRecoMu");
         return false;
     }
     iEvent.getByToken(muTrackToken1_, muTrackHandle1_);
@@ -402,45 +469,6 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "trigEvent");
         return false;
     }
-    triggerPathsWithoutVersionNum_.clear();
-    triggerPathsWithVersionNum_.clear();
-    trigExist_.clear();
-
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET120_PFMHT120_IDTight");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET130_PFMHT130_IDTight");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET140_PFMHT140_IDTight");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu130_PFMHTNoMu130_IDTight");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu140_PFMHTNoMu140_IDTight");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMET120_PFMHT120_IDTight_PFHT60");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_PFMETNoMu120_PFMHTNoMu120_IDTight_PFHT60");
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_IsoMu27"); // For MET trigger eff. studies in data
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_Mu3er1p5_PFJet100er2p5_PFMETNoMu100_PFMHTNoMu100_IDTight"); // Alternative triggers
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DCA_PFMET50_PFMHT60"); // Alternative triggers
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET50_PFMHT60");  // Alternative triggers
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET70_PFMHT70");  // Alternative triggers
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_DoubleMu3_DZ_PFMET90_PFMHT90");  // Alternative triggers
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_L2Mu10_NoVertex_NoBPTX");    // For dSA eff. studies in data
-    triggerPathsWithoutVersionNum_.emplace_back("HLT_L2Mu10_NoVertex_NoBPTX3BX"); // For dSA eff. studies in data
-    
-    const std::vector<std::string>& pathNames = hltConfig_.triggerNames();
-    for (auto trigPathNoVersion : triggerPathsWithoutVersionNum_) {
-        auto matchedPaths(hltConfig_.restoreVersion(pathNames, trigPathNoVersion));
-        if (matchedPaths.size() == 0) {
-            //LogError("TriggerError") << "Could not find matched full trigger path with -> " << trigPathNoVersion;
-            triggerPathsWithVersionNum_.push_back("None");
-            trigExist_.push_back(false);
-        }
-        else {
-            trigExist_.push_back(true);
-            triggerPathsWithVersionNum_.push_back(matchedPaths[0]);
-            if (hltConfig_.triggerIndex(matchedPaths[0]) >= hltConfig_.size()) {
-                LogError("TriggerError") << "Cannot find trigger path -> " << matchedPaths[0];
-                return false;
-            }
-        }
-    }
-    
     iEvent.getByToken(HBHENoiseFilterResultProducerToken_, HBHENoiseFilterResultProducerHandle_);
     if (!HBHENoiseFilterResultProducerHandle_.isValid()) {
         LogError("HandleError") << boost::str(boost::format(error_msg) % "HBHENoiseFilter");
@@ -628,6 +656,11 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoGMTrkNumHits_.clear();
     recoGMTrkNumDTHits_.clear();
     recoGMTrkNumCSCHits_.clear();
+    recoGMIsPF_.clear();
+    recoGMPFIso_.clear();
+    recoGMTrkIso_.clear();
+    recoGMTrkNumPixelHit_.clear();
+    recoGMTrkNumTrkLayers_.clear();
     dsadsa_recoVtxVxy_.clear();
     dsadsa_recoVtxVz_.clear();
     dsadsa_recoVtxSigmaVxy_.clear();
@@ -701,6 +734,8 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoPFMETSmearingOnlyPhi_ = -9999;
     recoPFMETCorrectedPt_ = -9999;
     recoPFMETCorrectedPhi_ = -9999;
+    recoPFMETEEDeltaPx_ = 0.0;
+    recoPFMETEEDeltaPy_ = 0.0;
     recoPFMETJESUpPt_ = -9999;
     recoPFMETJESUpPhi_ = -9999;
     recoPFMETJESDownPt_ = -9999;
@@ -824,12 +859,42 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     recoNGM_ = muTrackHandle2_->size();
 
     vector<reco::TrackRef> muTracks2{};
-    for (size_t i = 0; i < muTrackHandle2_->size(); i++) 
-        muTracks2.emplace_back(muTrackHandle2_, i);
+    vector<reco::MuonRef> muObjs2{};
+    for (size_t i = 0; i < pfRecoMuHandle_->size(); i++) {
+        reco::MuonRef muon_i(pfRecoMuHandle_, i);
+        reco::TrackRef track_i = muon_i->combinedMuon();
+        if (track_i.isNonnull()) {
+            muTracks2.emplace_back(track_i);
+            muObjs2.emplace_back(muon_i);
+        }
+    }
+
+    //vector<reco::TrackRef> muTracks2{};
+    //for (size_t i = 0; i < muTrackHandle2_->size(); i++) 
+    //    muTracks2.emplace_back(muTrackHandle2_, i);
+
+    sort(muObjs2.begin(), muObjs2.end(), [](const auto & l, const auto & r) {
+            reco::TrackRef lt = l->combinedMuon();
+            reco::TrackRef rt = r->combinedMuon();
+            return lt->pt() > rt->pt();
+            });
 
     sort(muTracks2.begin(), muTracks2.end(), [](const auto & l, const auto & r) {
            return l->pt() > r->pt();
            });
+
+    // Quick check if collection of global tracks inside Muon object is the same as global muon tracks collection
+    //for (auto global_track : muTracks2_check) {
+    //    bool match = 0;
+    //    for (auto check : muTracks2) {
+    //        if (global_track == check)
+    //            match = 1;
+    //    }
+    //    if (!match)
+    //        cout << "Global muon track in reco::Muon object not inside global track collection!" << endl;
+    //    else
+    //        cout << "Found a match for muon!" << endl;
+    //}
 
     // Create separate collection for good quality dSA muons
     // DEPRECATED
@@ -925,6 +990,16 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         recoGMTrkNumHits_.push_back(mu_i->hitPattern().numberOfValidMuonHits());
         recoGMTrkNumDTHits_.push_back(mu_i->hitPattern().numberOfValidMuonDTHits());
         recoGMTrkNumCSCHits_.push_back(mu_i->hitPattern().numberOfValidMuonCSCHits());
+
+        reco::MuonRef muon_i = muObjs2[i];
+        recoGMIsPF_.push_back(muon_i->isPFMuon());
+        recoGMPFIso_.push_back((muon_i->pfIsolationR04().sumChargedHadronPt + std::max(0., 
+                        muon_i->pfIsolationR04().sumNeutralHadronEt + muon_i->pfIsolationR04().sumPhotonEt
+                        - 0.5*muon_i->pfIsolationR04().sumPUPt))/muon_i->pt());
+        recoGMTrkIso_.push_back(muon_i->isolationR03().sumPt/muon_i->pt());
+        recoGMTrkNumPixelHit_.push_back(muon_i->innerTrack()->hitPattern().numberOfValidPixelHits());
+        recoGMTrkNumTrkLayers_.push_back(muon_i->innerTrack()->hitPattern().trackerLayersWithMeasurement());
+
         recoil_px += mu_i->px();
         recoil_py += mu_i->py();
     }
@@ -1010,6 +1085,14 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
 
     for (size_t i = 0; i < recoJetHandle_->size(); ++i) {
         reco::PFJetRef jet_i(recoJetHandle_, i);
+
+        // before JEC, check for EE noise and see if jet is in
+        // critical region
+        if (jet_i->pt() < 50 && abs(jet_i->eta()) > 2.65 && abs(jet_i->eta()) < 3.139) {
+            recoPFMETEEDeltaPx_ += jet_i->px();
+            recoPFMETEEDeltaPy_ += jet_i->py();
+        }
+
         double jec = jetCorrectorHandle_->correction(*jet_i);
         std::unique_ptr<reco::PFJet> corr_jet_i(jet_i->clone());
         std::unique_ptr<reco::PFJet> corr_jet_i_jes_up(jet_i->clone());
@@ -1057,9 +1140,6 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
                     continue;
                 if (dR < 0.2) {
                     double dPt = std::abs(genJet.pt() - corr_jet_i->pt());
-                    if (dPt > 3 * corr_jet_i->pt() * jet_resolution)
-                        continue;
-                    min_dR = dR;
                     matched_genJet = &genJet;
                 }
             }
@@ -1119,6 +1199,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         
         // OBSOLETE --> temporarily "un-apply" smear factor to get JEC-corrected-only jet that was used in the original type-I calculation of MET
         //corr_jet_i->scaleEnergy(1.0/smearFactor);
+        
         corr_METpx_JESUp -= (corr_jet_i_jes_up->px() - corr_jet_i_jes_only->px());
         corr_METpy_JESUp -= (corr_jet_i_jes_up->py() - corr_jet_i_jes_only->py());
         corr_METpx_JESDown -= (corr_jet_i_jes_down->px() - corr_jet_i_jes_only->px());
@@ -1127,6 +1208,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
         corr_METpy_JERUp -= (corr_jet_i_jer_up->py() - corr_jet_i_jes_only->py());
         corr_METpx_JERDown -= (corr_jet_i_jer_down->px() - corr_jet_i_jes_only->px());
         corr_METpy_JERDown -= (corr_jet_i_jer_down->py() - corr_jet_i_jes_only->py());
+        
         //corr_jet_i->scaleEnergy(smearFactor);
 
         correctedJets.push_back(std::make_pair(std::move(corr_jet_i), i));

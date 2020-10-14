@@ -12,10 +12,14 @@ void PlotCosmicMuonEfficiency(int year=2016, bool fSave=0) {
     TFile *_file3;
 
     if (year == 2016) {
-        _file0 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt25_dzlt100_data_2016.root");
-        _file1 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt10_dzlt100_data_2016.root");
-        _file2 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt25_dzlt200_data_2016.root");
-        _file3 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt10_dzlt200_data_2016.root");
+        //_file0 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt25_dzlt100_data_2016.root");
+        //_file1 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt10_dzlt100_data_2016.root");
+        //_file2 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt25_dzlt200_data_2016.root");
+        //_file3 = TFile::Open("../../bin/PlotsCosmicsStudiesJune11TighterID/plots_Cosmics_twelthrun_efficiency_pt10_dzlt200_data_2016.root");
+        _file0 = TFile::Open("../../bin/PlotsCosmicsStudiesJune17/plots_Cosmics_twelthrun_efficiency_pt25_dzlt100_data_2016.root");
+        _file1 = TFile::Open("../../bin/PlotsCosmicsStudiesJune17/plots_Cosmics_twelthrun_efficiency_pt10_dzlt100_data_2016.root");
+        _file2 = TFile::Open("../../bin/PlotsCosmicsStudiesJune17/plots_Cosmics_twelthrun_efficiency_pt25_dzlt200_data_2016.root");
+        _file3 = TFile::Open("../../bin/PlotsCosmicsStudiesJune17/plots_Cosmics_twelthrun_efficiency_pt10_dzlt200_data_2016.root");
     }
     else if (year == 2017) {
         _file0 = TFile::Open("../../bin/PlotsCosmicsStudiesApril23/plots_Cosmics_eleventhrun_efficiency_pt25_dzlt100_2017.root");
@@ -30,7 +34,7 @@ void PlotCosmicMuonEfficiency(int year=2016, bool fSave=0) {
         _file3 = TFile::Open("../../bin/PlotsCosmicsStudiesApril23/plots_Cosmics_eleventhrun_efficiency_pt10_dzlt200_2018.root");
     }
 
-    TString obs = "eta";
+    TString obs = "dxy";
     THStack * hs0_num = (THStack*)_file0->Get(Form("tag_muon_%s_numcut5-DATA", obs.Data()));
     THStack * hs0_denom = (THStack*)_file0->Get(Form("tag_muon_%s_denomcut4-DATA", obs.Data()));
     THStack * hs1_num = (THStack*)_file1->Get(Form("tag_muon_%s_numcut5-DATA", obs.Data()));
