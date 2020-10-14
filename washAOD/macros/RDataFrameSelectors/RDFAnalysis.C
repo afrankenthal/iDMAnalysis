@@ -756,6 +756,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         Define("reco_dsa0_trk_chi2", takeQuantity0, {"reco_dsa_trk_chi2"}).
         Define("reco_dsa1_trk_chi2", takeQuantity1, {"reco_dsa_trk_chi2"}).
         Define("reco_dsa_muon_pt0", takeQuantity0, {"reco_dsa_pt"}).
+        Define("reco_dsa_muon_eta0", takeQuantity0, {"reco_dsa_eta"}).
         Define("reco_dsa_trk_n_hits0", takeQuantity0, {"reco_dsa_trk_n_hits"}).
         Define("reco_dsa_trk_n_planes0", takeQuantity0, {"reco_dsa_trk_n_planes"}).
         Define("reco_gm_muon_pt0", takeQuantity0, {"reco_pass_gm_pt"}).
