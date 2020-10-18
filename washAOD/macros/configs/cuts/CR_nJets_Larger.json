@@ -18,7 +18,7 @@
         "book_plot": "no"
     },
     {
-        "cut": "reco_PF_MET_corr_pt > 200",
+        "cut": "MET_pt > 200",
         "description": "MET > 200 GeV",
         "book_plot": "no"
     },
@@ -40,16 +40,6 @@
     {
         "cut": "reco_PF_jet_corr_pt[0] > 80",
         "description": "Leading jet pT > 80 GeV",
-        "book_plot": "no"
-    },
-    {
-        "cut": "if (reco_PF_n_highPt_jets > 1) { return abs(reco_PF_jet_corr_eta[1]) < 5; } else return true;",
-        "description": "Subleading jet |#eta| < 5 if exists",
-        "book_plot": "no"
-    },
-    {
-        "cut": "reco_n_good_electron == 0 && reco_n_good_photon == 0",
-        "description": "Photon and electron veto",
         "book_plot": "no"
     },
     {
