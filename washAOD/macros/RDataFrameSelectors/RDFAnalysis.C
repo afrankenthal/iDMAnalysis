@@ -1002,7 +1002,7 @@ void RDFAnalysis::Terminate() {
     delete trig_hist_2018;
     delete trig_hist_2017;
     delete trig_hist_2016;
-    delete gm_sf_2018;
+    /*delete gm_sf_2018;
     delete gm_sf_2017;
     delete gm_sf_2016;
     delete el_sf_2018;
@@ -1010,5 +1010,5 @@ void RDFAnalysis::Terminate() {
     delete el_sf_2016;
     delete ph_sf_2018;
     delete ph_sf_2017;
-    delete ph_sf_2016;
+    delete ph_sf_2016;*/
 }
