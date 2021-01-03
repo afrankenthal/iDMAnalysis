@@ -108,6 +108,18 @@ public :
    TH2F * dsa_sf;
    TH2F * dsa_sf_sys;
    TH2F * dsa_sf_stat;
+   TH2F * dsa_hist_2016sys_low;
+   TH2F * dsa_hist_2017sys_low;
+   TH2F * dsa_hist_2018sys_low;
+   TH2F * dsa_hist_2016stat_low;
+   TH2F * dsa_hist_2017stat_low;
+   TH2F * dsa_hist_2018stat_low;
+   TH2F * dsa_hist_2016_low;
+   TH2F * dsa_hist_2017_low;
+   TH2F * dsa_hist_2018_low;
+   TH2F * dsa_sf_low;
+   TH2F * dsa_sf_sys_low;
+   TH2F * dsa_sf_stat_low;
    common::MODE mode_;
    TString group_;
 
