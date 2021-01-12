@@ -9,6 +9,12 @@ import json
 import copy
 from multiprocessing import Process
 
+# ADDED BY JMONROY
+
+import CRABClient
+
+#-----------
+
 from CRABAPI.RawCommand import crabCommand
 from CRABClient.ClientExceptions import ClientException
 from httplib import HTTPException
@@ -55,7 +61,7 @@ def getOptions():
     parser.add_option('-s', '--sampleType',
                       dest = 'sampleType',
                       default = 'custom',
-                      help = "Which kind of sample to process ('MC' (default), 'signal', 'data', 'NoBPTX', 'cosmics', 'trig' or 'custom')",
+                      help = "Which kind of sample to process ('MC', 'signal', 'data', 'NoBPTX', 'cosmics', 'trig' or 'custom' (Default))",
                       metavar = 'STYP')
 
     parser.add_option('-y', '--year',
@@ -107,6 +113,15 @@ def main():
 
         config.JobType.pluginName = 'Analysis'
         config.JobType.psetName = 'iDMAnalyzer_cfg.py'
+
+        #added by jmonroy
+        # ERROR: CMSSW_10_2_18 on slc7_amd64_gcc700 is not among supported releases; Use config.JobType.allowUndistributedCMSSW = True if you are sure of what you are doing'
+
+        config.JobType.allowUndistributedCMSSW = True  
+
+        #----------------
+
+
         #config.JobType.psetName = 'python/iDMAnalyzer_cfg.py'
         #config.JobType.maxMemoryMB = 4000
         #config.JobType.numCores = 1
@@ -125,13 +140,16 @@ def main():
                 config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions16/13TeV/ReReco/Final/Cert_271036-284044_13TeV_ReReco_07Aug2017_Collisions16_JSON.txt'
 
         if isData == True:
-            config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/data_fourteenthrun' % year
+
+            #config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/data_fourteenthrun' % year
+            config.Data.outLFNDirBase = '/store/user/jmonroym/iDM/Ntuples/%s/data' % year   #added by jmonroy
         else:
             if options.sampleType == 'signal':
-                config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/signal_fourteenthrun' % year
+                #config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/signal_fourteenthrun' % year 
+                config.Data.outLFNDirBase = '/store/user/jmonroym/iDM/Ntuples/%s/signal' % year  #added by jmonroy
             else:
-                config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_fourteenthrun' % year
-
+                #config.Data.outLFNDirBase = '/store/group/lpcmetx/iDM/Ntuples/%s/backgrounds_fourteenthrun' % year
+                config.Data.outLFNDirBase = '/store/user/jmonroym/iDM/Ntuples/%s/bg' % year  #added by jmonroy
         config.Data.publication = False
         config.Data.ignoreLocality = True
 
