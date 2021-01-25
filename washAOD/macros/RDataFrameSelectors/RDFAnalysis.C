@@ -148,6 +148,106 @@ void RDFAnalysis::Begin() {
     gm_wgt_2017->Close();
     gm_wgt_2018->Close();
 
+    // Set dsa muon weights
+    TFile * dsa_wgt_2016 = TFile::Open("../../data/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root");
+    TFile * dsa_wgt_2017 = TFile::Open("../../data/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root");
+    TFile * dsa_wgt_2018 = TFile::Open("../../data/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root");
+    dsa_hist_2016 = (TH2F*)(((TH2F*)dsa_wgt_2016->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
+    dsa_hist_2017 = (TH2F*)(((TH2F*)dsa_wgt_2017->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
+    dsa_hist_2018 = (TH2F*)(((TH2F*)dsa_wgt_2018->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
+    dsa_hist_2016stat = (TH2F*)(((TH2F*)dsa_wgt_2016->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
+    dsa_hist_2017stat = (TH2F*)(((TH2F*)dsa_wgt_2017->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
+    dsa_hist_2018stat = (TH2F*)(((TH2F*)dsa_wgt_2018->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
+    dsa_hist_2016sys = (TH2F*)(((TH2F*)dsa_wgt_2016->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
+    dsa_hist_2017sys = (TH2F*)(((TH2F*)dsa_wgt_2017->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
+    dsa_hist_2018sys = (TH2F*)(((TH2F*)dsa_wgt_2018->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
+    dsa_hist_2016->SetDirectory(0);
+    dsa_hist_2017->SetDirectory(0);
+    dsa_hist_2018->SetDirectory(0);
+    dsa_hist_2016stat->SetDirectory(0);
+    dsa_hist_2017stat->SetDirectory(0);
+    dsa_hist_2018stat->SetDirectory(0);
+    dsa_hist_2016sys->SetDirectory(0);
+    dsa_hist_2017sys->SetDirectory(0);
+    dsa_hist_2018sys->SetDirectory(0);
+    dsa_wgt_2016->Close();
+    dsa_wgt_2017->Close();
+    dsa_wgt_2018->Close();
+    TFile * dsa_wgt_2016_low = TFile::Open("../../data/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root");
+    TFile * dsa_wgt_2017_low = TFile::Open("../../data/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root");
+    TFile * dsa_wgt_2018_low = TFile::Open("../../data/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root");
+    dsa_hist_2016_low = (TH2F*)(((TH2F*)dsa_wgt_2016_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
+    dsa_hist_2017_low = (TH2F*)(((TH2F*)dsa_wgt_2017_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
+    dsa_hist_2018_low = (TH2F*)(((TH2F*)dsa_wgt_2018_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
+    dsa_hist_2016stat_low = (TH2F*)(((TH2F*)dsa_wgt_2016_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
+    dsa_hist_2017stat_low = (TH2F*)(((TH2F*)dsa_wgt_2017_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
+    dsa_hist_2018stat_low = (TH2F*)(((TH2F*)dsa_wgt_2018_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
+    dsa_hist_2016sys_low = (TH2F*)(((TH2F*)dsa_wgt_2016_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
+    dsa_hist_2017sys_low = (TH2F*)(((TH2F*)dsa_wgt_2017_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
+    dsa_hist_2018sys_low = (TH2F*)(((TH2F*)dsa_wgt_2018_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
+    dsa_hist_2016_low->SetDirectory(0);
+    dsa_hist_2017_low->SetDirectory(0);
+    dsa_hist_2018_low->SetDirectory(0);
+    dsa_hist_2016stat_low->SetDirectory(0);
+    dsa_hist_2017stat_low->SetDirectory(0);
+    dsa_hist_2018stat_low->SetDirectory(0);
+    dsa_hist_2016sys_low->SetDirectory(0);
+    dsa_hist_2017sys_low->SetDirectory(0);
+    dsa_hist_2018sys_low->SetDirectory(0);
+    dsa_wgt_2016_low->Close();
+    dsa_wgt_2017_low->Close();
+    dsa_wgt_2018_low->Close();
+
+    // Set dsa muon reco weights
+    TFile * reco_dsa_wgt_2016 = TFile::Open("../../data/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root");
+    TFile * reco_dsa_wgt_2017 = TFile::Open("../../data/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root");
+    TFile * reco_dsa_wgt_2018 = TFile::Open("../../data/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root");
+    reco_dsa_hist_2016 = (TH2F*)(((TH2F*)reco_dsa_wgt_2016->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
+    reco_dsa_hist_2017 = (TH2F*)(((TH2F*)reco_dsa_wgt_2017->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
+    reco_dsa_hist_2018 = (TH2F*)(((TH2F*)reco_dsa_wgt_2018->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
+    reco_dsa_hist_2016stat = (TH2F*)(((TH2F*)reco_dsa_wgt_2016->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
+    reco_dsa_hist_2017stat = (TH2F*)(((TH2F*)reco_dsa_wgt_2017->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
+    reco_dsa_hist_2018stat = (TH2F*)(((TH2F*)reco_dsa_wgt_2018->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
+    reco_dsa_hist_2016sys = (TH2F*)(((TH2F*)reco_dsa_wgt_2016->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
+    reco_dsa_hist_2017sys = (TH2F*)(((TH2F*)reco_dsa_wgt_2017->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
+    reco_dsa_hist_2018sys = (TH2F*)(((TH2F*)reco_dsa_wgt_2018->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
+    reco_dsa_hist_2016->SetDirectory(0);
+    reco_dsa_hist_2017->SetDirectory(0);
+    reco_dsa_hist_2018->SetDirectory(0);
+    reco_dsa_hist_2016stat->SetDirectory(0);
+    reco_dsa_hist_2017stat->SetDirectory(0);
+    reco_dsa_hist_2018stat->SetDirectory(0);
+    reco_dsa_hist_2016sys->SetDirectory(0);
+    reco_dsa_hist_2017sys->SetDirectory(0);
+    reco_dsa_hist_2018sys->SetDirectory(0);
+    reco_dsa_wgt_2016->Close();
+    reco_dsa_wgt_2017->Close();
+    reco_dsa_wgt_2018->Close();
+    TFile * reco_dsa_wgt_2016_low = TFile::Open("../../data/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root");
+    TFile * reco_dsa_wgt_2017_low = TFile::Open("../../data/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root");
+    TFile * reco_dsa_wgt_2018_low = TFile::Open("../../data/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root");
+    reco_dsa_hist_2016_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2016_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
+    reco_dsa_hist_2017_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2017_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
+    reco_dsa_hist_2018_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2018_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
+    reco_dsa_hist_2016stat_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2016_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
+    reco_dsa_hist_2017stat_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2017_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
+    reco_dsa_hist_2018stat_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2018_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
+    reco_dsa_hist_2016sys_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2016_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
+    reco_dsa_hist_2017sys_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2017_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
+    reco_dsa_hist_2018sys_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2018_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
+    reco_dsa_hist_2016_low->SetDirectory(0);
+    reco_dsa_hist_2017_low->SetDirectory(0);
+    reco_dsa_hist_2018_low->SetDirectory(0);
+    reco_dsa_hist_2016stat_low->SetDirectory(0);
+    reco_dsa_hist_2017stat_low->SetDirectory(0);
+    reco_dsa_hist_2018stat_low->SetDirectory(0);
+    reco_dsa_hist_2016sys_low->SetDirectory(0);
+    reco_dsa_hist_2017sys_low->SetDirectory(0);
+    reco_dsa_hist_2018sys_low->SetDirectory(0);
+    reco_dsa_wgt_2016_low->Close();
+    reco_dsa_wgt_2017_low->Close();
+    reco_dsa_wgt_2018_low->Close();
+
     // Set trig weights
     TFile * trig_wgt_2016 = TFile::Open("../../data/trig_weights/trig_weights_2016.root");
     TFile * trig_wgt_2017 = TFile::Open("../../data/trig_weights/trig_weights_2017.root");
@@ -216,6 +316,18 @@ void RDFAnalysis::SetSampleConfig(common::SampleInfo sample_info) {
         gm_sf = gm_hist_2017;
         gm_sf_sys = gm_hist_2017sys;
         gm_sf_stat = gm_hist_2017stat;
+        dsa_sf_low = dsa_hist_2017_low;
+        dsa_sf_sys_low = dsa_hist_2017sys_low;
+        dsa_sf_stat_low = dsa_hist_2017stat_low;
+        dsa_sf = dsa_hist_2017;
+        dsa_sf_sys = dsa_hist_2017sys;
+        dsa_sf_stat = dsa_hist_2017stat;
+        reco_dsa_sf_low = reco_dsa_hist_2017_low;
+        reco_dsa_sf_sys_low = reco_dsa_hist_2017sys_low;
+        reco_dsa_sf_stat_low = reco_dsa_hist_2017stat_low;
+        reco_dsa_sf = reco_dsa_hist_2017;
+        reco_dsa_sf_sys = reco_dsa_hist_2017sys;
+        reco_dsa_sf_stat = reco_dsa_hist_2017stat;
         veto_e_sf = veto_e_hist_2017;
         veto_p_sf = veto_p_hist_2017;
         //if (group_ == "ZJets") {
@@ -252,6 +364,18 @@ void RDFAnalysis::SetSampleConfig(common::SampleInfo sample_info) {
         gm_sf2 = gm_hist_2016GH;//->Add(gm_hist_2016GH);
         gm_sf_sys2 = gm_hist_2016sysGH;
         gm_sf_stat2 = gm_hist_2016statGH;
+        dsa_sf = dsa_hist_2016;
+        dsa_sf_sys = dsa_hist_2016sys;
+        dsa_sf_stat = dsa_hist_2016stat;
+        dsa_sf_low = dsa_hist_2016_low;
+        dsa_sf_sys_low = dsa_hist_2016sys_low;
+        dsa_sf_stat_low = dsa_hist_2016stat_low;
+        reco_dsa_sf = reco_dsa_hist_2016;
+        reco_dsa_sf_sys = reco_dsa_hist_2016sys;
+        reco_dsa_sf_stat = reco_dsa_hist_2016stat;
+        reco_dsa_sf_low = reco_dsa_hist_2016_low;
+        reco_dsa_sf_sys_low = reco_dsa_hist_2016sys_low;
+        reco_dsa_sf_stat_low = reco_dsa_hist_2016stat_low;
         veto_e_sf = veto_e_hist_2016;
         veto_p_sf = veto_p_hist_2016;
     }
@@ -262,6 +386,18 @@ void RDFAnalysis::SetSampleConfig(common::SampleInfo sample_info) {
         gm_sf = gm_hist_2018;
         gm_sf_sys = gm_hist_2018sys;
         gm_sf_stat = gm_hist_2018stat;
+        dsa_sf = dsa_hist_2018;
+        dsa_sf_sys = dsa_hist_2018sys;
+        dsa_sf_stat = dsa_hist_2018stat;
+        dsa_sf_low = dsa_hist_2018_low;
+        dsa_sf_sys_low = dsa_hist_2018sys_low;
+        dsa_sf_stat_low = dsa_hist_2018stat_low;
+        reco_dsa_sf = reco_dsa_hist_2018;
+        reco_dsa_sf_sys = reco_dsa_hist_2018sys;
+        reco_dsa_sf_stat = reco_dsa_hist_2018stat;
+        reco_dsa_sf_low = reco_dsa_hist_2018_low;
+        reco_dsa_sf_sys_low = reco_dsa_hist_2018sys_low;
+        reco_dsa_sf_stat_low = reco_dsa_hist_2018stat_low;
         veto_e_sf = veto_e_hist_2018;
         veto_p_sf = veto_p_hist_2018;
     }
@@ -453,7 +589,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         return full_sf;
     };
 
-    auto calcGMsf = [&](RVec<float> muonpt, RVec<float> muoneta, size_t id1, size_t id2) {
+    auto calcrecoDSAsf = [&](RVec<float> muonpt_dsa, RVec<float> muoneta_dsa, RVec<float> dxy_dsa, size_t id1, size_t id2) {
 
           int err_type = 0; // 0: normal, 1: uperr, 2: down err
           float sf1 = 1.0;
@@ -464,19 +600,150 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
           float sf2_sys = 0.;
           float sf1_err = 0.;
           float sf2_err = 0.;
-          if( id1 >3) {
-            if(muonpt[id1-4] < 20){ sf1 = gm_lowpt_lookup(muoneta[id1-4],err_type,year_);}
+          if (muonpt_dsa.size() == 0) return 0.f;
+          //x is eta and y is pt
+          if(muonpt_dsa[id1] < 3){ sf1=0;}
+          else if(muonpt_dsa[id1] < 20){ 
+            sf1 = reco_dsa_sf_low->GetBinContent(reco_dsa_sf_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_sys = reco_dsa_sf_sys_low->GetBinError(reco_dsa_sf_sys_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_stat = reco_dsa_sf_stat_low->GetBinError(reco_dsa_sf_stat_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+
+            sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf1 = sf1 + sf1_err;}
+            if (err_type == 2) {sf1 = sf1 - sf1_err;}
+          }
+
+          else{
+            sf1 = reco_dsa_sf->GetBinContent(reco_dsa_sf->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_sys = reco_dsa_sf_sys->GetBinError(reco_dsa_sf_sys->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_stat = reco_dsa_sf_stat->GetBinError(reco_dsa_sf_stat->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            //std::cout<<"sf1 "<<sf1<<" "<<sf1_sys<<" "<<sf1_stat<<std::endl;
+            sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf1 = sf1 + sf1_err;}
+            if (err_type == 2) {sf1 = sf1 - sf1_err;}
+          }
+          if(muonpt_dsa[id2] < 3){ sf2=0;}
+          else if(muonpt_dsa[id2] < 20){
+            sf2 = reco_dsa_sf_low->GetBinContent(reco_dsa_sf_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_sys = reco_dsa_sf_sys_low->GetBinError(reco_dsa_sf_sys_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_stat = reco_dsa_sf_stat_low->GetBinError(reco_dsa_sf_stat_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+
+            sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf2 = sf2 + sf2_err;}
+            if (err_type == 2) {sf2 = sf2 - sf2_err;}
+          }
+
+          else{
+            sf2 = reco_dsa_sf->GetBinContent(reco_dsa_sf->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_sys = reco_dsa_sf_sys->GetBinError(reco_dsa_sf_sys->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_stat = reco_dsa_sf_stat->GetBinError(reco_dsa_sf_stat->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+
+            sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf2 = sf2 + sf2_err;}
+            if (err_type == 2) {sf2 = sf2 - sf2_err;}
+          }
+         // // efficiency from displacement
+         // float slope = 0.00035; 
+         // //float slope = 0.00035*1.02; 
+         // //float slope = 0.00035*.98; 
+         // float dis1 = (1- slope* dxy_dsa[id1]);
+         // float dis2 = (1- slope* dxy_dsa[id2]);
+          return sf1*sf2;//*dis1*dis2;
+    };
+    auto calcDSAsf = [&](RVec<float> muonpt_dsa, RVec<float> muoneta_dsa, RVec<float> dxy_dsa, size_t id1, size_t id2) {
+
+          int err_type = 0; // 0: normal, 1: uperr, 2: down err
+          float sf1 = 1.0;
+          float sf2 = 1.0;
+          float sf1_stat = 0.;
+          float sf2_stat = 0.;
+          float sf1_sys = 0.;
+          float sf2_sys = 0.;
+          float sf1_err = 0.;
+          float sf2_err = 0.;
+          if (muonpt_dsa.size() == 0) return 0.f;
+          //x is eta and y is pt
+          if(muonpt_dsa[id1] < 3){ sf1=0;}
+          else if(muonpt_dsa[id1] < 20){ 
+            sf1 = dsa_sf_low->GetBinContent(dsa_sf_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_sys = dsa_sf_sys_low->GetBinError(dsa_sf_sys_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_stat = dsa_sf_stat_low->GetBinError(dsa_sf_stat_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+
+            sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf1 = sf1 + sf1_err;}
+            if (err_type == 2) {sf1 = sf1 - sf1_err;}
+          }
+
+          else{
+            sf1 = dsa_sf->GetBinContent(dsa_sf->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_sys = dsa_sf_sys->GetBinError(dsa_sf_sys->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_stat = dsa_sf_stat->GetBinError(dsa_sf_stat->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+
+            sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf1 = sf1 + sf1_err;}
+            if (err_type == 2) {sf1 = sf1 - sf1_err;}
+          }
+          if(muonpt_dsa[id2] < 3){ sf2=0;}
+          else if(muonpt_dsa[id2] < 20){
+            sf2 = dsa_sf_low->GetBinContent(dsa_sf_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_sys = dsa_sf_sys_low->GetBinError(dsa_sf_sys_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_stat = dsa_sf_stat_low->GetBinError(dsa_sf_stat_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+
+            sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf2 = sf2 + sf2_err;}
+            if (err_type == 2) {sf2 = sf2 - sf2_err;}
+          }
+
+          else{
+            sf2 = dsa_sf->GetBinContent(dsa_sf->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_sys = dsa_sf_sys->GetBinError(dsa_sf_sys->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_stat = dsa_sf_stat->GetBinError(dsa_sf_stat->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+
+            sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf2 = sf2 + sf2_err;}
+            if (err_type == 2) {sf2 = sf2 - sf2_err;}
+          }
+          // efficiency from displacement
+          float slope = 0.00035; 
+          //float slope = 0.00035*1.02; 
+          //float slope = 0.00035*.98; 
+          float dis1 = (1- slope* dxy_dsa[id1]);
+          float dis2 = (1- slope* dxy_dsa[id2]);
+          return sf1*sf2*dis1*dis2;
+    };
+    auto calcGMsf = [&](RVec<float> muonpt_gm, RVec<float> muoneta_gm, size_t id1, size_t id2) {
+
+          int err_type = 2; // 0: normal, 1: uperr, 2: down err
+          float sf1 = 1.0;
+          float sf2 = 1.0;
+          float sf1_stat = 0.;
+          float sf2_stat = 0.;
+          float sf1_sys = 0.;
+          float sf2_sys = 0.;
+          float sf1_err = 0.;
+          float sf2_err = 0.;
+          if( id1 >3) {// global muon
+            //x is pt and y is eta
+            if(muonpt_gm[id1-4] < 20){ sf1 = gm_lowpt_lookup(muoneta_gm[id1-4],err_type,year_);}
             else{
-              sf1 = gm_sf->GetBinContent(gm_sf->FindBin(muonpt[id1-4],abs(muoneta[id1-4])));
-              sf1_sys = gm_sf_sys->GetBinError(gm_sf_sys->FindBin(muonpt[id1-4],abs(muoneta[id1-4])));
-              sf1_stat = gm_sf_stat->GetBinError(gm_sf_stat->FindBin(muonpt[id1-4],abs(muoneta[id1-4])));
+              sf1 = gm_sf->GetBinContent(gm_sf->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
+              sf1_sys = gm_sf_sys->GetBinError(gm_sf_sys->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
+              sf1_stat = gm_sf_stat->GetBinError(gm_sf_stat->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
               if (year_ == 2016){ 
               sf1 = sf1*(20./35.92);
-              float sf1x = (15./35.92)*gm_sf2->GetBinContent(gm_sf2->FindBin(muonpt[id1-4],abs(muoneta[id1-4])));
+              float sf1x = (15./35.92)*gm_sf2->GetBinContent(gm_sf2->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
               sf1_sys = ((20./35.92)*sf1_sys);
-              float sf1_sysx =(15./35.92)*gm_sf_sys2->GetBinError(gm_sf_sys2->FindBin(muonpt[id1-4],abs(muoneta[id1-4])));
+              float sf1_sysx =(15./35.92)*gm_sf_sys2->GetBinError(gm_sf_sys2->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
               sf1_stat = (20./35.92)*sf1_stat;
-              float sf1_statx = (15./35.92)*gm_sf_stat2->GetBinError(gm_sf_stat2->FindBin(muonpt[id1-4],abs(muoneta[id1-4])));
+              float sf1_statx = (15./35.92)*gm_sf_stat2->GetBinError(gm_sf_stat2->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
 
               sf1 = sf1 + sf1x;
               sf1_sys = sqrt(sf1_sys*sf1_sys + sf1_sysx*sf1_sysx);
@@ -489,18 +756,18 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
             }
           }
           if(id2 > 3) { 
-            if(muonpt[id2-4] < 20){ sf2 = gm_lowpt_lookup(muoneta[id2-4],err_type,year_);}
+            if(muonpt_gm[id2-4] < 20){ sf2 = gm_lowpt_lookup(muoneta_gm[id2-4],err_type,year_);}
             else{
-              sf2_err = gm_sf->GetBinContent(gm_sf->FindBin(muonpt[id2-4],abs(muoneta[id2-4])));
-              sf2_sys = gm_sf_sys->GetBinError(gm_sf_sys->FindBin(muonpt[id2-4],abs(muoneta[id2-4])));
-              sf2_stat = gm_sf_stat->GetBinError(gm_sf_stat->FindBin(muonpt[id2-4],abs(muoneta[id2-4])));
+              sf2 = gm_sf->GetBinContent(gm_sf->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
+              sf2_sys = gm_sf_sys->GetBinError(gm_sf_sys->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
+              sf2_stat = gm_sf_stat->GetBinError(gm_sf_stat->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
               if (year_ == 2016){ 
               sf2 = sf2*(20./35.92);
-              float sf2x = (15./35.92)*gm_sf2->GetBinContent(gm_sf2->FindBin(muonpt[id2-4],abs(muoneta[id2-4])));
+              float sf2x = (15./35.92)*gm_sf2->GetBinContent(gm_sf2->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
               sf2_sys = ((20./35.92)*sf2_sys);
-              float sf2_sysx =(15./35.92)*gm_sf_sys2->GetBinError(gm_sf_sys2->FindBin(muonpt[id2-4],abs(muoneta[id2-4])));
+              float sf2_sysx =(15./35.92)*gm_sf_sys2->GetBinError(gm_sf_sys2->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
               sf2_stat = (20./35.92)*sf2_stat;
-              float sf2_statx = (15./35.92)*gm_sf_stat2->GetBinError(gm_sf_stat2->FindBin(muonpt[id2-4],abs(muoneta[id2-4])));
+              float sf2_statx = (15./35.92)*gm_sf_stat2->GetBinError(gm_sf_stat2->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
 
               sf2 = sf2 + sf2x;
               sf2_sys = sqrt(sf2_sys*sf2_sys + sf2_sysx*sf2_sysx);
@@ -536,8 +803,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         return wgt_e*wgt_p;
     };
 
-    auto calcTotalWgt = [&](float veto_wgt, float gm_wgt, float Zwgt, float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt) {
-        double weight =  veto_wgt * gm_wgt * Zwgt * Wwgt * PUwgt * trig_wgt * xsec_ * lumi_ * gen_wgt / sum_gen_wgt_;
+    auto calcTotalWgt = [&](float veto_wgt, float reco_dsa_wgt, float dsa_wgt, float gm_wgt, float Zwgt, float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt) {
+        double weight =  veto_wgt * reco_dsa_wgt * dsa_wgt * gm_wgt * Zwgt * Wwgt * PUwgt * trig_wgt * xsec_ * lumi_ * gen_wgt / sum_gen_wgt_;
     //auto calcTotalWgt = [&](float ph_sf_wgt, float el_sf_wgt, float gm_sf_wgt, float Zwgt, float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt) {
     //    double weight =  trig_wgt * ph_sf_wgt * el_sf_wgt * gm_sf_wgt * Zwgt * Wwgt * PUwgt * xsec_ * lumi_ * gen_wgt / sum_gen_wgt_;
         // Warn if large weight *due only* to PU, Z, W, or genwgt / sum_gen_wgt_, but not due to xsec or lumi
@@ -813,8 +1080,6 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         Define("best_dsa_1", "best_vtx_dsadsa % 4").
         Define("cosalphas", calcCosAlpha, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_phi", "dsa_pass_ID"}).
         Define("min_cosalpha", "Min(cosalphas)").//[best_dsa_0*4 + best_dsa_1]").
-        Define("reco_dsa_pt_res", "reco_dsa_pt_err/reco_dsa_pt").
-        Define("reco_gm_pt_res", "reco_gm_pt_err/reco_gm_pt").
         Define("reco_dsa_pt_res0", "reco_dsa_pt_res.size() > 0 ? reco_dsa_pt_res[best_dsa_0] : -9999.f").
         Define("reco_dsa_pt_res1", "reco_dsa_pt_res.size() > 1 ? reco_dsa_pt_res[best_dsa_1] : -9999.f").
         Define("best_muon_0", findMuonMatch0, {"reco_gbmdsa_match", "reco_gbmdsa_dR", "good_vtx_dsagm", "best_dsa_0", "best_dsa_1"}).
@@ -893,8 +1158,10 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
             Define("trig_wgt", calcTrigsf, {"reco_PF_MetNoMu_pt"}).
             Define("veto_wgt", calcVetosf, {"reco_electron_id_result", "reco_electron_eta", "reco_electron_pt", 
                                             "reco_photon_id_result", "reco_photon_eta", "reco_photon_pt"}).
+            Define("dsa_wgt", calcDSAsf, {"reco_dsa_pt", "reco_dsa_eta","reco_dsa_dxy", "best_dsa_0", "best_dsa_1"}).
+            Define("reco_dsa_wgt", calcrecoDSAsf, {"reco_dsa_pt", "reco_dsa_eta","reco_dsa_dxy", "best_dsa_0", "best_dsa_1"}).
             Define("gm_wgt", calcGMsf, {"reco_gm_pt", "reco_gm_eta", "best_muon_0", "best_muon_1"}).
-            Define("wgt", calcTotalWgt, {"veto_wgt", "gm_wgt", "Zwgt", "Wwgt", "Twgt", "PUwgt", "trig_wgt", "gen_wgt"});
+            Define("wgt", calcTotalWgt, {"veto_wgt", "reco_dsa_wgt","dsa_wgt", "gm_wgt", "Zwgt", "Wwgt", "Twgt", "PUwgt", "trig_wgt", "gen_wgt"});
             //Define("wgt", "1.0");
             //Define("wgt", calcTotalWgt, {"ph_sf_wgt", "el_sf_wgt", "gm_sf_wgt", "Zwgt", "Wwgt", "Twgt", "PUwgt", "trig_wgt", "gen_wgt"});
     }
