@@ -2,7 +2,7 @@
 
 ### Need to adjust samples directory and directory of runGenFilterEfficiencyAnalyzer_cfg.py
 
-samples=$(ls ../../skimmer/data/iDM/2018/GenFilter/Mchi-{5,6,7,8}*ctau-1.list)
+samples=$(ls ../data/iDM/2018/GenFilter/Mchi-{5,6,7,8}*ctau-1.list)
 
 declare -a pidarray
 

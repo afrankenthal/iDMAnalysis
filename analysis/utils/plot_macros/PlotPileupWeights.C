@@ -1,8 +1,8 @@
 void PlotPileupWeights(TString year, bool fSave=0) {
     TH1::AddDirectory(kFALSE);
 
-    TFile * file_MC = TFile::Open(TString("../../skimmer/data/pileup/pileup_QCD_") + year + TString(".root"));
-    TFile * file_data = TFile::Open(TString("../../skimmer/data/pileup/pileup_data_") + year + TString(".root"));
+    TFile * file_MC = TFile::Open(TString("../data/pileup/pileup_QCD_") + year + TString(".root"));
+    TFile * file_data = TFile::Open(TString("../data/pileup/pileup_data_") + year + TString(".root"));
     
     auto * h_data = (TH1D*)file_data->Get("pileup");
     h_data->Scale(1/h_data->Integral());
@@ -95,7 +95,7 @@ void PlotPileupWeights(TString year, bool fSave=0) {
     h_ratio->Divide(h_MC);
     h_ratio->SetName("puWeights");
 
-    TFile * pu_wgt_file = new TFile(TString("../../skimmer/data/pileup/PUWeights_") + year + ".root", TString("RECREATE"));
+    TFile * pu_wgt_file = new TFile(TString("../data/pileup/PUWeights_") + year + ".root", TString("RECREATE"));
     h_ratio->Write();
     pu_wgt_file->Close();
 

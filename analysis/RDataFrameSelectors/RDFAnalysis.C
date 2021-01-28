@@ -15,56 +15,56 @@ void RDFAnalysis::Begin() {
 
     TFile * pileup_file;
     
-    //pileup_file = TFile::Open("../../skimmer/data/puWeights_80x_37ifb.root");
-    pileup_file = TFile::Open("../../skimmer/data/pileup/PUWeights_2016.root");
+    //pileup_file = TFile::Open("../data/puWeights_80x_37ifb.root");
+    pileup_file = TFile::Open("../data/pileup/PUWeights_2016.root");
     pileup_2016 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
     pileup_2016->SetDirectory(0);
     pileup_file->Close();
 
-    pileup_file = TFile::Open("../../skimmer/data/puWeights_90x_41ifb.root");
-    //pileup_file = TFile::Open("../../skimmer/data/pileup/PUWeights_2017.root");
+    pileup_file = TFile::Open("../data/puWeights_90x_41ifb.root");
+    //pileup_file = TFile::Open("../data/pileup/PUWeights_2017.root");
     pileup_2017 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
     pileup_2017->SetDirectory(0);
     pileup_file->Close();
     
-    //pileup_file = TFile::Open("../../skimmer/data/puWeights_10x_56ifb.root");
-    pileup_file = TFile::Open("../../skimmer/data/pileup/PUWeights_2018.root");
+    //pileup_file = TFile::Open("../data/puWeights_10x_56ifb.root");
+    pileup_file = TFile::Open("../data/pileup/PUWeights_2018.root");
     pileup_2018 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
     pileup_2018->SetDirectory(0);
     pileup_file->Close();
 
-    pileup_file = TFile::Open("../../skimmer/data/zjetpileup/zjetratio100.root");
+    pileup_file = TFile::Open("../data/zjetpileup/zjetratio100.root");
     pileup_ZJets_2017["HT-100To200"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-100To200"]->SetDirectory(0);
     pileup_file->Close();
-    pileup_file = TFile::Open("../../skimmer/data/zjetpileup/zjetratio200.root");
+    pileup_file = TFile::Open("../data/zjetpileup/zjetratio200.root");
     pileup_ZJets_2017["HT-200To400"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-200To400"]->SetDirectory(0);
     pileup_file->Close();
     ////// FIXME FIXME FIXME zjetratio400.root does not exist!
-    pileup_file = TFile::Open("../../skimmer/data/zjetpileup/zjetratio200.root");
+    pileup_file = TFile::Open("../data/zjetpileup/zjetratio200.root");
     pileup_ZJets_2017["HT-400To600"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-400To600"]->SetDirectory(0);
     pileup_file->Close();
-    pileup_file = TFile::Open("../../skimmer/data/zjetpileup/zjetratio600.root");
+    pileup_file = TFile::Open("../data/zjetpileup/zjetratio600.root");
     pileup_ZJets_2017["HT-600To800"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-600To800"]->SetDirectory(0);
     pileup_file->Close();
-    pileup_file = TFile::Open("../../skimmer/data/zjetpileup/zjetratio800.root");
+    pileup_file = TFile::Open("../data/zjetpileup/zjetratio800.root");
     pileup_ZJets_2017["HT-800To1200"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-800To1200"]->SetDirectory(0);
     pileup_file->Close();
-    pileup_file = TFile::Open("../../skimmer/data/zjetpileup/zjetratio1200.root");
+    pileup_file = TFile::Open("../data/zjetpileup/zjetratio1200.root");
     pileup_ZJets_2017["HT-1200To2500"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-1200To2500"]->SetDirectory(0);
     pileup_file->Close();
-    pileup_file = TFile::Open("../../skimmer/data/zjetpileup/zjetratio2500.root");
+    pileup_file = TFile::Open("../data/zjetpileup/zjetratio2500.root");
     pileup_ZJets_2017["HT-2500ToInf"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-2500ToInf"]->SetDirectory(0);
     pileup_file->Close();
     
     // Set up QCD and EWK corrections
-    TFile * kfactors = TFile::Open("../../skimmer/data/kfactors.root");
+    TFile * kfactors = TFile::Open("../data/kfactors.root");
     TH1F * z_nlo = (TH1F*)kfactors->Get("ZJets_012j_NLO/nominal");
     TH1F * z_ewk = (TH1F*)kfactors->Get("EWKcorr/Z");
     TH1F * z_lo = (TH1F*)kfactors->Get("ZJets_LO/inv_pt");
@@ -86,9 +86,9 @@ void RDFAnalysis::Begin() {
     kfactors->Close();
 
     // Set electron veto weights
-    TFile * veto_e_wgt_2016 = TFile::Open("../../skimmer/data/ElectronWPVeto_80X_2016.root");
-    TFile * veto_e_wgt_2017 = TFile::Open("../../skimmer/data/ElectronWPVeto_Fall17V2_2017.root");
-    TFile * veto_e_wgt_2018 = TFile::Open("../../skimmer/data/ElectronWPVeto_Fall17V2_2018.root");
+    TFile * veto_e_wgt_2016 = TFile::Open("../data/ElectronWPVeto_80X_2016.root");
+    TFile * veto_e_wgt_2017 = TFile::Open("../data/ElectronWPVeto_Fall17V2_2017.root");
+    TFile * veto_e_wgt_2018 = TFile::Open("../data/ElectronWPVeto_Fall17V2_2018.root");
     veto_e_hist_2016 = (TH2F*)(((TH2F*)veto_e_wgt_2016->Get("EGamma_SF2D"))->Clone());
     veto_e_hist_2017 = (TH2F*)(((TH2F*)veto_e_wgt_2017->Get("EGamma_SF2D"))->Clone());
     veto_e_hist_2018 = (TH2F*)(((TH2F*)veto_e_wgt_2018->Get("EGamma_SF2D"))->Clone());
@@ -101,9 +101,9 @@ void RDFAnalysis::Begin() {
 
 
     // Set photon veto weights
-    TFile * veto_p_wgt_2016 = TFile::Open("../../skimmer/data/PhotonsLoose_2016_Fall17V2.root");
-    TFile * veto_p_wgt_2017 = TFile::Open("../../skimmer/data/PhotonsLoose_2017.root");
-    TFile * veto_p_wgt_2018 = TFile::Open("../../skimmer/data/PhotonsLoose_2018.root");
+    TFile * veto_p_wgt_2016 = TFile::Open("../data/PhotonsLoose_2016_Fall17V2.root");
+    TFile * veto_p_wgt_2017 = TFile::Open("../data/PhotonsLoose_2017.root");
+    TFile * veto_p_wgt_2018 = TFile::Open("../data/PhotonsLoose_2018.root");
     veto_p_hist_2016 = (TH2F*)(((TH2F*)veto_p_wgt_2016->Get("EGamma_SF2D"))->Clone());
     veto_p_hist_2017 = (TH2F*)(((TH2F*)veto_p_wgt_2017->Get("EGamma_SF2D"))->Clone());
     veto_p_hist_2018 = (TH2F*)(((TH2F*)veto_p_wgt_2018->Get("EGamma_SF2D"))->Clone());
@@ -115,10 +115,10 @@ void RDFAnalysis::Begin() {
     veto_p_wgt_2018->Close();
 
     // Set global muon weights
-    TFile * gm_wgt_2016 = TFile::Open("../../skimmer/data/idm_gm_scalefactors/GM_SF_2016sys.root");
-    TFile * gm_wgt_2016GH = TFile::Open("../../skimmer/data/idm_gm_scalefactors/GM_SF_2016sys_GH.root");
-    TFile * gm_wgt_2017 = TFile::Open("../../skimmer/data/idm_gm_scalefactors/GM_SF_2017sys.root");
-    TFile * gm_wgt_2018 = TFile::Open("../../skimmer/data/idm_gm_scalefactors/GM_SF_2018ID.root");
+    TFile * gm_wgt_2016 = TFile::Open("../data/idm_gm_scalefactors/GM_SF_2016sys.root");
+    TFile * gm_wgt_2016GH = TFile::Open("../data/idm_gm_scalefactors/GM_SF_2016sys_GH.root");
+    TFile * gm_wgt_2017 = TFile::Open("../data/idm_gm_scalefactors/GM_SF_2017sys.root");
+    TFile * gm_wgt_2018 = TFile::Open("../data/idm_gm_scalefactors/GM_SF_2018ID.root");
     gm_hist_2016 = (TH2F*)(((TH2F*)gm_wgt_2016->Get("NUM_LooseID_DEN_genTracks_eta_pt"))->Clone());
     gm_hist_2016GH = (TH2F*)(((TH2F*)gm_wgt_2016GH->Get("NUM_LooseID_DEN_genTracks_eta_pt"))->Clone());
     gm_hist_2017 = (TH2F*)(((TH2F*)gm_wgt_2017->Get("NUM_LooseID_DEN_genTracks_pt_abseta"))->Clone());
@@ -149,9 +149,9 @@ void RDFAnalysis::Begin() {
     gm_wgt_2018->Close();
 
     // Set dsa muon weights
-    TFile * dsa_wgt_2016 = TFile::Open("../../skimmer/data/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root");
-    TFile * dsa_wgt_2017 = TFile::Open("../../skimmer/data/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root");
-    TFile * dsa_wgt_2018 = TFile::Open("../../skimmer/data/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root");
+    TFile * dsa_wgt_2016 = TFile::Open("../data/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root");
+    TFile * dsa_wgt_2017 = TFile::Open("../data/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root");
+    TFile * dsa_wgt_2018 = TFile::Open("../data/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root");
     dsa_hist_2016 = (TH2F*)(((TH2F*)dsa_wgt_2016->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
     dsa_hist_2017 = (TH2F*)(((TH2F*)dsa_wgt_2017->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
     dsa_hist_2018 = (TH2F*)(((TH2F*)dsa_wgt_2018->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
@@ -173,9 +173,9 @@ void RDFAnalysis::Begin() {
     dsa_wgt_2016->Close();
     dsa_wgt_2017->Close();
     dsa_wgt_2018->Close();
-    TFile * dsa_wgt_2016_low = TFile::Open("../../skimmer/data/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root");
-    TFile * dsa_wgt_2017_low = TFile::Open("../../skimmer/data/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root");
-    TFile * dsa_wgt_2018_low = TFile::Open("../../skimmer/data/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root");
+    TFile * dsa_wgt_2016_low = TFile::Open("../data/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root");
+    TFile * dsa_wgt_2017_low = TFile::Open("../data/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root");
+    TFile * dsa_wgt_2018_low = TFile::Open("../data/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root");
     dsa_hist_2016_low = (TH2F*)(((TH2F*)dsa_wgt_2016_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
     dsa_hist_2017_low = (TH2F*)(((TH2F*)dsa_wgt_2017_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
     dsa_hist_2018_low = (TH2F*)(((TH2F*)dsa_wgt_2018_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
@@ -199,9 +199,9 @@ void RDFAnalysis::Begin() {
     dsa_wgt_2018_low->Close();
 
     // Set dsa muon reco weights
-    TFile * reco_dsa_wgt_2016 = TFile::Open("../../skimmer/data/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root");
-    TFile * reco_dsa_wgt_2017 = TFile::Open("../../skimmer/data/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root");
-    TFile * reco_dsa_wgt_2018 = TFile::Open("../../skimmer/data/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root");
+    TFile * reco_dsa_wgt_2016 = TFile::Open("../data/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root");
+    TFile * reco_dsa_wgt_2017 = TFile::Open("../data/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root");
+    TFile * reco_dsa_wgt_2018 = TFile::Open("../data/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root");
     reco_dsa_hist_2016 = (TH2F*)(((TH2F*)reco_dsa_wgt_2016->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
     reco_dsa_hist_2017 = (TH2F*)(((TH2F*)reco_dsa_wgt_2017->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
     reco_dsa_hist_2018 = (TH2F*)(((TH2F*)reco_dsa_wgt_2018->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
@@ -223,9 +223,9 @@ void RDFAnalysis::Begin() {
     reco_dsa_wgt_2016->Close();
     reco_dsa_wgt_2017->Close();
     reco_dsa_wgt_2018->Close();
-    TFile * reco_dsa_wgt_2016_low = TFile::Open("../../skimmer/data/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root");
-    TFile * reco_dsa_wgt_2017_low = TFile::Open("../../skimmer/data/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root");
-    TFile * reco_dsa_wgt_2018_low = TFile::Open("../../skimmer/data/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root");
+    TFile * reco_dsa_wgt_2016_low = TFile::Open("../data/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root");
+    TFile * reco_dsa_wgt_2017_low = TFile::Open("../data/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root");
+    TFile * reco_dsa_wgt_2018_low = TFile::Open("../data/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root");
     reco_dsa_hist_2016_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2016_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
     reco_dsa_hist_2017_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2017_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
     reco_dsa_hist_2018_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2018_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
@@ -249,9 +249,9 @@ void RDFAnalysis::Begin() {
     reco_dsa_wgt_2018_low->Close();
 
     // Set trig weights
-    TFile * trig_wgt_2016 = TFile::Open("../../skimmer/data/trig_weights/trig_weights_2016.root");
-    TFile * trig_wgt_2017 = TFile::Open("../../skimmer/data/trig_weights/trig_weights_2017.root");
-    TFile * trig_wgt_2018 = TFile::Open("../../skimmer/data/trig_weights/trig_weights_2018.root");
+    TFile * trig_wgt_2016 = TFile::Open("../data/trig_weights/trig_weights_2016.root");
+    TFile * trig_wgt_2017 = TFile::Open("../data/trig_weights/trig_weights_2017.root");
+    TFile * trig_wgt_2018 = TFile::Open("../data/trig_weights/trig_weights_2018.root");
 
     //trig_hist_2016 = (TH1F*)(((TH1F*)trig_wgt_2016->Get("weigts_reco_PF_MetNoMu_pt_2016_MCTotal_2016_Dlow"))->Clone());
     //trig_hist_2017 = (TH1F*)(((TH1F*)trig_wgt_2017->Get("weigts_reco_PF_MetNoMu_pt_2017_MCTotal_2017_Dlow"))->Clone());
@@ -270,9 +270,9 @@ void RDFAnalysis::Begin() {
 
     // Set muon GM loose ID sf
     /* ANDRE: commented out for now but TRES, check LooseID vs genTracks and TrackerMuons on yours
-    TFile * gm_sf_2016_file = TFile::Open("../../skimmer/data/muon_ID_SF_2016.root");
-    TFile * gm_sf_2017_file = TFile::Open("../../skimmer/data/muon_ID_SF_2017.root");
-    TFile * gm_sf_2018_file = TFile::Open("../../skimmer/data/muon_ID_SF_2018.root");
+    TFile * gm_sf_2016_file = TFile::Open("../data/muon_ID_SF_2016.root");
+    TFile * gm_sf_2017_file = TFile::Open("../data/muon_ID_SF_2017.root");
+    TFile * gm_sf_2018_file = TFile::Open("../data/muon_ID_SF_2018.root");
 
     gm_sf_2016 = (TH2D*)gm_sf_2016_file->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
     gm_sf_2017 = (TH2D*)gm_sf_2017_file->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
@@ -428,7 +428,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     cout << "Creating dataframe..." << endl;
 
-    ROOT::EnableImplicitMT(num_cores);
+    ROOT::EnableImplicitMT(2); //num_cores);
     ROOT::RDataFrame df(*chain_);
 
     const auto poolSize = ROOT::GetImplicitMTPoolSize();
