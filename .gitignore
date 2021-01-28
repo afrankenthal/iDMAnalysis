@@ -1,8 +1,6 @@
 *.pyc
 *.log
 *.root
-!skimmer/data/*.root
-!skimmer/data/**/*.root
 *.so
 *.pcm
 *.d
@@ -13,11 +11,6 @@
 *tmp*
 messages.txt
 nohup.out
-skimmer/python/201*
-skimmer/python/crab/*
 bin/
 studies/
 build/
-analysis/bin
-analyses/build
-analyses/plots

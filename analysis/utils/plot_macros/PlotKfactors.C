@@ -1,7 +1,7 @@
 void PlotKfactors(bool fSave=0) {
     TH1::AddDirectory(kFALSE);
 
-    TFile * file = TFile::Open("../../data/kfactors.root");
+    TFile * file = TFile::Open("../../skimmer/data/kfactors.root");
 
     auto * hZNLO = (TH1D*)file->Get("ZJets_012j_NLO/nominal");
     auto * hZEWK = (TH1D*)file->Get("EWKcorr/Z");
