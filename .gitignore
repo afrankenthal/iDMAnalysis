@@ -1,6 +1,8 @@
 *.pyc
 *.log
 *.root
+!skimmer/data/*.root
+!skimmer/data/**/*.root
 *.so
 *.pcm
 *.d
@@ -11,12 +13,11 @@
 *tmp*
 messages.txt
 nohup.out
-washAOD/python/201*
-washAOD/python/crab/*
-washAOD/python/*.pyc
+skimmer/python/201*
+skimmer/python/crab/*
 bin/
 studies/
 build/
-washAOD/macros/bin
-washAOD/macros/build
-washAOD/macros/plots
+analysis/bin
+analyses/build
+analyses/plots

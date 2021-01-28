@@ -1,4 +1,4 @@
-# iDMSkimmer
+# iDMAnalysis
 iDM Analysis repository (skimming, trigger/reco efficiency, and analysis)
 
 ## Environment setup
@@ -24,18 +24,12 @@ and apply the following git patch:
 $ curl https://home.fnal.gov/~as2872/extendTrackerDimensions.patch | git apply
 ```
 
-Now clone the iDM repo and compile everything:
+Now clone the iDM repo (either via SSH or HTTPS if you don't have SSH keys) and compile everything:
 
 ```bash
-$ git clone git@github.com:afrankenthal/iDMSkimmer.git
+$ git clone git@github.com:afrankenthal/iDMAnalysis.git # or https://github.com/afrankenthal/iDMAnalysis.git
 $ scram b -j 8
-$ cd iDMSkimmer/washAOD
-```
-
-or clone using HTTPS instead of SSH if you don't have SSH keys set up:
-
-```bash
-$ git clone https://github.com/afrankenthal/iDMSkimmer.git
+$ cd iDMAnalysis/skimmer
 ```
 
 ## Running ntuplizer to make flat trees from AODs:
