@@ -13,6 +13,8 @@ $ source /cvmfs/sft.cern.ch/lcg/views/LCG_96python3/x86_64-centos7-gcc8-opt/setu
 ```
 The ROOT version set up by this LCG is 6.18.00, and the compiler is GCC 8.2.0.
 
+**NOTE**: this setup should not be used simultaneously with a CMSSW release, since cmsenv sets up conflicting software versions. Use a different session between running the skimmer and this code.
+
 ## Compiling
 
 The framework has a CMakeLists.txt file to easily build the executable and each macro as a shared library. Just make a build directory, call cmake and then run make install to build:
