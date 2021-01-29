@@ -1,8 +1,22 @@
-#include "mNminus1Plots.h"
+#include <TCanvas.h>
+#include <TCut.h>
+#include <TChain.h>
+#include <TH1F.h>
+#include <THStack.h>
+#include <TLegend.h>
+#include <TPaveText.h>
+
+#include "../utils/common.h"
+using namespace common;
+#include "../utils/json.hpp"
+using json = nlohmann::json;
+#include "../utils/tdrstyle.h"
+
+using std::cout, std::endl, std::map, std::vector;
 
 namespace macro {
 
-    bool process(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) { 
+    extern "C" bool process(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) { 
         bool fSave = cfg["fSave"].get<bool>();
 
         vector<int> colors{kBlack, kRed, kMagenta, kBlue,

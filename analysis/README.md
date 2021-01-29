@@ -1,21 +1,21 @@
 # Analysis
 
-This is a self-contained macro-based framework similar in spirit to cmsRun. It allows one to write a new macro, and dynamically load it into the framework at runtime. The point of entry is macroRun.C. The MC and data samples to use, as well as the cuts and histograms to make can all be specified at runtime as well via a collection of json config files (see 'Running' below).
+This is a self-contained macro-based framework similar in spirit to cmsRun. One can write a new macro and dynamically load it into the framework at runtime. The point of entry is macroRun.cc. The MC and data samples to use, and the cuts and histograms to make can all be specified at runtime as well via a collection of json config files (see 'Running' below).
 
-The framework takes care of loading the samples and parsing them into a nice structure that can be easily used by any macro, to avoid code repetition and promote a uniform syntax across code with different purposes.
+The framework takes care of loading the samples and parsing them into a clean structure that can be easily used by any macro, to avoid code repetition and promote a uniform syntax across the codebase.
 
 ## Setting up environment
 
-The framework is meant to be run on the LPC, though it probably works on lxplus without major changes needed. It uses RDataFrame which is a recent ROOT feature, so after logging into the LPC first set up an LCG release with a new version of ROOT, such as LCG_96python3:
+The framework is meant to be run on the LPC, though it probably works on lxplus without major changes. It uses RDataFrame which is a recent ROOT feature, so after logging into the LPC, first set up an LCG release with a new version of ROOT, such as LCG_96python3:
 
 ```bash
-$ source /cvmfs/sft.cern.ch/lcg/views/LCG_96python3/x86_64-slc6-gcc8-opt/setup.sh
+$ source /cvmfs/sft.cern.ch/lcg/views/LCG_96python3/x86_64-centos7-gcc8-opt/setup.sh
 ```
-(Only tested on SL6 for now, but hopefully CentOS 7 works too.) The ROOT version setup by this LCG is 6.18.00, and the compiler is GCC 8.2.0.
+The ROOT version set up by this LCG is 6.18.00, and the compiler is GCC 8.2.0.
 
 ## Compiling
 
-The framework has a CMakeLists.txt file to make it easy to build the executable and the macros as shared libraries. Just make a build directory, call cmake and then run make install to build:
+The framework has a CMakeLists.txt file to easily build the executable and each macro as a shared library. Just make a build directory, call cmake and then run make install to build:
 
 ```bash
 $ mkdir build
@@ -24,11 +24,11 @@ $ cmake ..
 $ make install -j8
 ```
 
-This will install the libraries and the macroRun executable under macros/bin/, as well as needed ROOT dictionaries.
+This will install the libraries and the macroRun executable under bin/, as well as needed ROOT dictionaries.
 
 ## Running
 
-To run, invoke macroRun with the desired set of configs (assuming you're at the build dir from the previous step):
+To run, invoke macroRun with the desired set of configs from the bin/ dir:
 
 ```bash
 $ cd ../bin
@@ -39,13 +39,13 @@ $ ./macroRun -c ../configs/cuts/CUTFILENAME.json -m ../configs/macros/MACROFILEN
 
 (note the need to switch to the bin directory for now, in order to avoid having to specify LD_LIBRARY_PATH to find the macro libraries.)
 
-Capitalized names are placeholders for the actual config files and dirs. There's a config to define the desired set of cuts, another one to define the macros to run and each of theirconfigs, and a set of configs to specify the ntuples to run for each group of samples (data, background, and signal).
+Capitalized names are placeholders for the actual config files and dirs. There's a config to define the desired set of cuts, another one to define the macros to run and each of theirconfigs, and a set of configs to specify the ntuples to run for each group of samples (data, background, and signal). You can run on only background or signal or data by omitting their respective configs.
 
-Run '.macroRun -h' to see the expected syntax.
+Run './macroRun -h' to see the expected syntax.
 
 ## Adding new macros
 
-As mentioned above, the framework is able to dynamically load new macros. To create a new macro, add two new files 'mYourMacro.C' and 'mYourMacro.h' following the structure of an existing macro. Note that all macros must have the same call signature, with the same main function 'process'. Then add this new macro name (mYourMacro) to the list of libraries to be build in 'CMakeLists.txt' (near the top of the file). When you run 'make' from the build directory, it should compile the new macro and place it under bin/ to be used by the framework. Then all that's left is to create a .json config file uncer configs/macros/ to use the new macro.
+As mentioned above, the framework is able to dynamically load new macros. To create a new macro, just create a new file 'mYourMacro.C' under macros/following the structure of existing macros. Note that all macros must have the same call signature, with the same main function 'process'. When you run 'make' from the build directory, it should automatically find and compile the new macro and move it to bin/ for use by the framework. Then all that's left is to create a .json config file uncer configs/macros/ to use the new macro.
 
 ## Current macros and workflow
 

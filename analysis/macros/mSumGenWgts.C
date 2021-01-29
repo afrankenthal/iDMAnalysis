@@ -1,8 +1,20 @@
-#include "mSumGenWgts.h"
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <vector>
+using std::cout, std::endl, std::map, std::vector;
+
+#include <TChain.h>
+
+#include "../utils/common.h"
+using namespace common;
+#include "../utils/json.hpp"
+using json = nlohmann::json;
 
 namespace macro {
 
-    bool process(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
+    extern "C" bool process(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
         std::ifstream json_file(cfg["sample_config_filename"].get<std::string>());
         int limit_num_files = cfg["limit_num_files"].get<int>();

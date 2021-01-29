@@ -1,10 +1,43 @@
-#include "mMake1DEffPlotsFromFile.h"
+#include <algorithm>
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
 #include <string.h>
+#include <vector>
+using std::cout, std::endl, std::map, std::vector;
+
+#include <TApplication.h>
+#include <TCanvas.h>
+#include <TChain.h>
+#include <TCollection.h>
+#include <TCut.h>
+#include <TDatime.h>
+#include <TFile.h>
+#include <TH1F.h>
+#include <TF1.h>
+#include <THStack.h>
+#include <TLegend.h>
+#include <TEfficiency.h>
+#include <TMath.h>
+#include <TGraphAsymmErrors.h>
+#include <TString.h>
+#include <TSystemDirectory.h>
+#include <TSystemFile.h>
+
+#include "../utils/CMS_lumi.h"
+#include "../utils/common.h"
+using namespace common;
+#include "../utils/cxxopts.hpp"
+#include "../utils/json.hpp"
+using json = nlohmann::json;
+#include "../utils/tdrstyle.h"
+
 //TString lumi_13TeV = "59.74 fb^{-1} ";
 
-
 namespace macro {
-    void canvasDraw(TString hs_basename, TString hs_suffix,TEfficiency *hs, TCanvas *c,bool newCanvas, bool zoom, TString year){
+
+    extern "C" void canvasDraw(TString hs_basename, TString hs_suffix,TEfficiency *hs, TCanvas *c,bool newCanvas, bool zoom, TString year){
     TString x_title = TString(hs->GetPassedHistogram()->GetXaxis()->GetTitle());
     if(newCanvas){
         c->Range(0,0,1,1);
@@ -78,7 +111,7 @@ namespace macro {
     }
     }
     
-    bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
+    extern "C" bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
         setTDRStyle();
         // macro options
         TString in_filename = TString(cfg["infilenames"].get<std::vector<std::string>>()[0]);

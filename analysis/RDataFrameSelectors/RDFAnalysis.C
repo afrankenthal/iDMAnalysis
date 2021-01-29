@@ -422,13 +422,13 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     chain_ = chain;
 
-    int num_cores = 0; // default is to use all available cores (never run during the day!)
+    int num_cores = 3; // default is 3 cores to still fit comfortably within condor's 2 GB memory limit
     if (macro_info_.find("num_cores") != macro_info_.end())
         num_cores = macro_info_["num_cores"].get<int>();
 
     cout << "Creating dataframe..." << endl;
 
-    ROOT::EnableImplicitMT(2); //num_cores);
+    ROOT::EnableImplicitMT(num_cores);
     ROOT::RDataFrame df(*chain_);
 
     const auto poolSize = ROOT::GetImplicitMTPoolSize();

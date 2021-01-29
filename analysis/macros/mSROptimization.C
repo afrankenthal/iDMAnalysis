@@ -1,8 +1,41 @@
-#include "mCutflowTables.h"
+#include <fstream>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <string.h>
+#include <vector>
+using std::cout, std::endl, std::map, std::vector;
+
+#include <TApplication.h>
+#include <TChain.h>
+#include <TCollection.h>
+#include <TCut.h>
+#include <TDatime.h>
+#include <TH1F.h>
+#include <TString.h>
+#include <TSystemDirectory.h>
+#include <TSystemFile.h>
+
+#include "../utils/common.h"
+using namespace common;
+#include "../utils/cxxopts.hpp"
+#include "../utils/json.hpp"
+using json = nlohmann::json;
 
 namespace macro {
 
-    bool process(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
+    extern "C" bool process(map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
+
+        // macro options
+        TString which_cutflow = TString(cfg["cutflow"].get<std::string>());
+        TString outfilename = TString(cfg["outfilename"].get<std::string>());
+        TString custom_cut = TString(cfg["param"].get<std::string>());
+        Float_t dR_cut = cfg["value"].get<float>(); 
+        Int_t dR_cut_mask = 1, nHighPtJets_cut_mask = 1;
+        if (custom_cut.Contains("dR"))
+            dR_cut_mask = 2;
+        else 
+            nHighPtJets_cut_mask = 2;
 
         map<TString, vector<Float_t>> cutsIncl, cutsExcl;
         map<TString, vector<Float_t>> cutsGroupIncl, cutsGroupExcl;
@@ -16,11 +49,10 @@ namespace macro {
         }
 
         vector<int> cutOrder { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 21, 22, 23, 19, 20 };
-        // Mask -- 1: require cut bit set; 0: require cut bit unset; -1:  cut bit can be anything
+        // Mask -- 1: require cut bit set; 0: require cut bit unset; -1:  cut bit can be anything; 2: custom
         vector<int> cutMask;
-        std::string which_cutflow = "SR";
         if (which_cutflow == "SR")
-            cutMask = { 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
+            cutMask = { 1, 1, 1, 1, nHighPtJets_cut_mask, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, dR_cut_mask, 1, 1, 1, 1, 1, 1, 1 };
         else if (which_cutflow == "SR_noBTagging")
             cutMask = { 1, 1, 1, 1, 1, -1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1 };
         else if (which_cutflow == "CR_QCD")
@@ -57,11 +89,14 @@ namespace macro {
 
             uint32_t cutInclPosMask = 0, cutInclNegMask = 0;
             //uint32_t cutExcl;
+            bool bCustom = false;
             for (auto j : cutOrder) {
                 if (cutMask[j] == 1)
                     cutInclPosMask |= (1 << j); 
                 else if (cutMask[j] == 0)
                     cutInclNegMask |= (1 << j);
+                else if (cutMask[j] == 2)
+                    bCustom = true;
                 //cutExclMask = 1 << j;
 
                 // Handle categories cut (GBM-GBM, GBM-DSA, DSA-DSA)
@@ -73,15 +108,26 @@ namespace macro {
                 else if (j == 23) 
                     cutInclPosMask &= ~((1 << 21) | (1 << 22));
 
-                data_reco->Draw("1",
-                        TCut(Form("(gen_wgt * %f * %f / %f)", lumi, props.xsec, props.sum_gen_wgt))
-                        * (TCut(Form("%d == (cuts&%d)", cutInclPosMask, cutInclPosMask))
-                            && TCut(Form("0 == (cuts&%d)", cutInclNegMask))), // XOR
-                        //&& TCut(Form("%d == (((cuts | %d) & (!cuts | !%d)) & %d)", cutInclNegMask, cutInclNegMask, cutInclNegMask, cutInclNegMask))), // XOR
-                        //lumi, props.xsec, props.sum_gen_wgt, cutInclPosMask, cutInclPosMask)), //cutInclNegMask, cutInclNegMask, cutInclNegMask)),
-                        //* TCut(Form("gen_wgt * %f * %f / %f", lumi, props.xsec, props.sum_gen_wgt)),
-                        //&& TCut(Form("(%d == ((cuts ^ %d) & %d))", cutInclNegMask, cutInclNegMask, cutInclNegMask))),
-                    "goff");
+                if (bCustom) 
+                    data_reco->Draw("1",
+                            TCut(Form("(gen_wgt * %f * %f / %f)", lumi, props.xsec, props.sum_gen_wgt))
+                            * (TCut(Form("%d == (cuts&%d)", cutInclPosMask, cutInclPosMask))
+                                && TCut(Form("0 == (cuts&%d)", cutInclNegMask)) && TCut(Form("%s < %f", custom_cut.Data(), dR_cut))), 
+                            //&& TCut(Form("%d == (((cuts | %d) & (!cuts | !%d)) & %d)", cutInclNegMask, cutInclNegMask, cutInclNegMask, cutInclNegMask))), // XOR
+                            //lumi, props.xsec, props.sum_gen_wgt, cutInclPosMask, cutInclPosMask)), //cutInclNegMask, cutInclNegMask, cutInclNegMask)),
+                            //* TCut(Form("gen_wgt * %f * %f / %f", lumi, props.xsec, props.sum_gen_wgt)),
+                            //&& TCut(Form("(%d == ((cuts ^ %d) & %d))", cutInclNegMask, cutInclNegMask, cutInclNegMask))),
+                        "goff");
+                else 
+                    data_reco->Draw("1",
+                            TCut(Form("(gen_wgt * %f * %f / %f)", lumi, props.xsec, props.sum_gen_wgt))
+                            * (TCut(Form("%d == (cuts&%d)", cutInclPosMask, cutInclPosMask))
+                                && TCut(Form("0 == (cuts&%d)", cutInclNegMask))), 
+                            //&& TCut(Form("%d == (((cuts | %d) & (!cuts | !%d)) & %d)", cutInclNegMask, cutInclNegMask, cutInclNegMask, cutInclNegMask))), // XOR
+                            //lumi, props.xsec, props.sum_gen_wgt, cutInclPosMask, cutInclPosMask)), //cutInclNegMask, cutInclNegMask, cutInclNegMask)),
+                            //* TCut(Form("gen_wgt * %f * %f / %f", lumi, props.xsec, props.sum_gen_wgt)),
+                            //&& TCut(Form("(%d == ((cuts ^ %d) & %d))", cutInclNegMask, cutInclNegMask, cutInclNegMask))),
+                        "goff");
                 TH1F * htemp = (TH1F*)gDirectory->Get("htemp");
                 cutsGroupIncl[props.group][j] += htemp->GetSumOfWeights();
             }
@@ -139,9 +185,9 @@ namespace macro {
             cout << " \\\\ ";
         }
 
-        if (cfg.find("outfilename") != cfg.end()) {
+        if (outfilename != TString("")) {
             std::ofstream outfile;
-            outfile.open(cfg["outfilename"].get<std::string>());
+            outfile.open(outfilename.Data());
             outfile << "Inclusive:" << endl;
             for (auto group : cutsGroupIncl)
                 outfile << " " << group.first;
