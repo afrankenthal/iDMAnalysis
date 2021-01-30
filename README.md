@@ -5,9 +5,9 @@ iDM Analysis repository (skimming, trigger/reco efficiency, and analysis)
 
 ```bash
 # For all years:
-cmsrel CMSSW_10_2_18
-cd CMSSW_10_2_18/src
-cmsenv
+$ cmsrel CMSSW_10_2_18
+$ cd CMSSW_10_2_18/src
+$ cmsenv
 ```
 
 ## Pull and compile packages
@@ -15,21 +15,27 @@ cmsenv
 Pull KalmanVertexFit and VertexTools packages to extend the native Kalman Filter range limit:
 
 ```bash
-git cms-addpkg RecoVertex/VertexTools
-git cms-addpkg RecoVertex/KalmanVertexFit
+$ git cms-addpkg RecoVertex/VertexTools
+$ git cms-addpkg RecoVertex/KalmanVertexFit
 ```
 and apply the following git patch:
 
 ```bash
-curl https://home.fnal.gov/~as2872/extendTrackerDimensions.patch | git apply
+$ curl https://home.fnal.gov/~as2872/extendTrackerDimensions.patch | git apply
 ```
 
 Now clone the iDM repo and compile everything:
 
 ```bash
-git clone https://github.com/afrankenthal/iDMSkimmer.git
-scram b -j 8
-cd iDMSkimmer/washAOD
+$ git clone git@github.com:afrankenthal/iDMSkimmer.git
+$ scram b -j 8
+$ cd iDMSkimmer/washAOD
+```
+
+or clone using HTTPS instead of SSH if you don't have SSH keys set up:
+
+```bash
+$ git clone https://github.com/afrankenthal/iDMSkimmer.git
 ```
 
 ## Running ntuplizer to make flat trees from AODs:
@@ -37,18 +43,18 @@ cd iDMSkimmer/washAOD
 Might need to renew your proxy first:
 
 ```bash
-voms-proxy-init -voms cms -valid 192:00
+$ voms-proxy-init -voms cms -valid 192:00
 ```
 
 For a local test run:
 
 ```bash
-cmsRun python/iDMAnalyzer_cfg.py test=1
+$ cmsRun python/iDMAnalyzer_cfg.py test=1
 ```
 
 Call multicrab to run over more samples in EOS:
 
 ```bash
-cd python
-./multicrab_iDMAnalyzer -c submit -w WORKAREA -s X # where X = {data,MC,custom}
+$ cd python
+$ ./multicrab_iDMAnalyzer -c submit -w WORKAREA -s X # where X = {data,MC,custom}
 ```
