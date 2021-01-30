@@ -139,7 +139,7 @@ private:
     const edm::EDGetTokenT<bool>ecalBadCalibFilterToken_;
     const edm::EDGetTokenT<bool>BadPFMuonFilterToken_;
     const edm::EDGetTokenT<bool>muonBadTrackFilterToken_;
-    const edm::EDGetTokenT<reco::JetCorrector> mJetCorrectorToken_;
+    const edm::EDGetTokenT<reco::JetCorrector> jetCorrectorToken_;
     const edm::EDGetTokenT<reco::GsfElectronCollection> recoElectronToken_;
     const edm::EDGetTokenT<edm::ValueMap<float>> recoElectronIDToken_;
     const edm::EDGetTokenT<reco::PhotonCollection> recoPhotonToken_;
@@ -218,7 +218,7 @@ iDMAnalyzer::iDMAnalyzer(const edm::ParameterSet& ps):
     ecalBadCalibFilterToken_(consumes<bool>(ps.getParameter<edm::InputTag>("ecalBadCalibFilter"))),
     BadPFMuonFilterToken_(consumes<bool>(ps.getParameter<edm::InputTag>("BadPFMuonFilter"))),
     muonBadTrackFilterToken_(consumes<bool>(ps.getParameter<edm::InputTag>("muonBadTrackFilter"))),
-    mJetCorrectorToken_(consumes<reco::JetCorrector>(ps.getParameter<edm::InputTag>("jetCorrector"))),
+    jetCorrectorToken_(consumes<reco::JetCorrector>(ps.getParameter<edm::InputTag>("jetCorrector"))),
     recoElectronToken_(consumes<reco::GsfElectronCollection>(ps.getParameter<edm::InputTag>("recoElectron"))),
     recoElectronIDToken_(consumes<edm::ValueMap<float>>(ps.getParameter<edm::InputTag>("electronID"))),
     recoPhotonToken_(consumes<reco::PhotonCollection>(ps.getParameter<edm::InputTag>("recoPhoton"))),
@@ -257,7 +257,9 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     desc.add<edm::InputTag>("trigResult", edm::InputTag("TriggerResults", "", "HLT"));
     desc.add<edm::InputTag>("trigEvent", edm::InputTag("hltTriggerSummaryAOD", "", "HLT"));
     desc.add<edm::InputTag>("recoElectron", edm::InputTag("gedGsfElectrons"));
+    desc.add<edm::InputTag>("electronID", edm::InputTag("nodefault"));
     desc.add<edm::InputTag>("recoPhoton", edm::InputTag("gedPhotons"));
+    desc.add<edm::InputTag>("photonID", edm::InputTag("nodefault"));
     desc.add<edm::InputTag>("pileups", edm::InputTag("addPileupInfo"));
     desc.add<edm::InputTag>("genEvt", edm::InputTag("generator"));
     desc.add<edm::InputTag>("HBHENoiseFilter", edm::InputTag("HBHENoiseFilterResultProducer","HBHENoiseFilterResult"));
@@ -267,6 +269,7 @@ void iDMAnalyzer::fillDescriptions(edm::ConfigurationDescriptions& descriptions)
     desc.add<edm::InputTag>("ecalBadCalibFilter", edm::InputTag("ecalBadCalibFilter"));
     desc.add<edm::InputTag>("BadPFMuonFilter", edm::InputTag("BadPFMuonFilter"));
     desc.add<edm::InputTag>("muonBadTrackFilter", edm::InputTag("muonBadTrackFilter"));
+    desc.add<edm::InputTag>("jetCorrector", edm::InputTag("nodefault"));
     desc.add<edm::InputTag>("rho", edm::InputTag("fixedGridRhoFastjetAll"));
     
     descriptions.add("iDMAnalyzer", desc);
@@ -367,171 +370,51 @@ bool iDMAnalyzer::getCollections(const edm::Event& iEvent) {
 
     char error_msg[] = "iDMAnalyzer::GetCollections: Error in getting product %s from Event!";
 
-    iEvent.getByToken(bTagProbbToken_, bTagProbbHandle_);
-    if (!bTagProbbHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagProbb");
-        return false;
-    }
-    iEvent.getByToken(bTagProbbbToken_, bTagProbbbHandle_);
-    if (!bTagProbbbHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "bTagProbbb");
-        return false;
-    }
-    iEvent.getByToken(dsaRecoMuToken_, dsaRecoMuHandle_);
-    if (!dsaRecoMuHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "dsaRecoMu");
-        return false;
-    }
-    iEvent.getByToken(dsaRecoMuTimingToken_, dsaRecoMuTimingHandle_);
-    if (!dsaRecoMuTimingHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "dsaRecoMuTiming");
-        return false;
-    }
-    iEvent.getByToken(pfRecoMuToken_, pfRecoMuHandle_);
-    if (!pfRecoMuHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "pfRecoMu");
-        return false;
-    }
-    iEvent.getByToken(muTrackToken1_, muTrackHandle1_);
-    if (!muTrackHandle1_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "muTrack1");
-        return false;
-    }
-    iEvent.getByToken(muTrackToken2_, muTrackHandle2_);
-    if (!muTrackHandle2_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "muTrack2");
-        return false;
-    }
-    iEvent.getByToken(primaryVertexToken_, primaryVertexHandle_);
-    if (!primaryVertexHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "primaryVertex");
-        return false;
-    }
-    iEvent.getByToken(recoPFMETToken_, recoPFMETHandle_);
-    if (!recoPFMETHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "PFMET");
-        return false;
-    }
-    iEvent.getByToken(recoCaloMETToken_, recoCaloMETHandle_);
-    if (!recoCaloMETHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "CaloMET");
-        return false;
-    }
-    iEvent.getByToken(recoJetToken_, recoJetHandle_);
-    if (!recoJetHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "recoJet");
-        return false;
-    }
-    iEvent.getByToken(trigResultsToken_, trigResultsHandle_);
-    if (!trigResultsHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "trigResults");
-        return false;
-    }
-    iEvent.getByToken(trigEventToken_, trigEventHandle_);
-    if (!trigEventHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "trigEvent");
-        return false;
-    }
-    iEvent.getByToken(HBHENoiseFilterResultProducerToken_, HBHENoiseFilterResultProducerHandle_);
-    if (!HBHENoiseFilterResultProducerHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "HBHENoiseFilter");
-        return false;
-    }
-    iEvent.getByToken(HBHEIsoNoiseFilterResultProducerToken_, HBHEIsoNoiseFilterResultProducerHandle_);
-    if (!HBHEIsoNoiseFilterResultProducerHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "HBHEIsoNoiseFilter");
-        return false;
-    }
-    iEvent.getByToken(primaryVertexFilterToken_, primaryVertexFilterHandle_);
-    if (!primaryVertexFilterHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "primaryVertexFilter");
-        return false;
-    }
-    iEvent.getByToken(globalSuperTightHalo2016FilterToken_, globalSuperTightHalo2016FilterHandle_);
-    if (!globalSuperTightHalo2016FilterHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "globalSuperTightHalo2016");
-        return false;
-    }
-    iEvent.getByToken(EcalDeadCellTriggerPrimitiveFilterToken_, EcalDeadCellTriggerPrimitiveFilterHandle_);
-    if (!EcalDeadCellTriggerPrimitiveFilterHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "EcalDeadCellTriggerPrimitive");
-        return false;
-    }
-    iEvent.getByToken(ecalBadCalibFilterToken_, ecalBadCalibFilterHandle_);
-    if (!ecalBadCalibFilterHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "ecalBadCalibFilter");
-        return false;
-    }
-    iEvent.getByToken(BadPFMuonFilterToken_, BadPFMuonFilterHandle_);
-    if (!BadPFMuonFilterHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "BadPFMuonFilter");
-        return false;
-    }
-    iEvent.getByToken(muonBadTrackFilterToken_, muonBadTrackFilterHandle_);
-    if (!muonBadTrackFilterHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "muonBadTrackFilter");
-        return false;
-    }
-    iEvent.getByToken(mJetCorrectorToken_, jetCorrectorHandle_);
-    if (!jetCorrectorHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "mJetCorrector");
-        return false;
-    }
-    iEvent.getByToken(recoElectronToken_, recoElectronHandle_);
-    if (!recoElectronHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "recoElectron");
-        return false;
-    }
-    iEvent.getByToken(recoElectronIDToken_, recoElectronIDHandle_);
-    if (!recoElectronIDHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "recoElectronID");
-        return false;
-    }
-    iEvent.getByToken(recoPhotonToken_, recoPhotonHandle_);
-    if (!recoPhotonHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "recoPhoton");
-        return false;
-    }
-    iEvent.getByToken(recoPhotonIDToken_, recoPhotonIDHandle_);
-    if (!recoPhotonIDHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "recoPhotonID");
-        return false;
-    }
-    iEvent.getByToken(rhoToken_, rhoHandle_);
-    if (!rhoHandle_.isValid()) {
-        LogError("HandleError") << boost::str(boost::format(error_msg) % "rho");
-        return false;
-    }
+    bool ret = true;
+    auto getHandle = [&]<typename T>(const EDGetTokenT<T> &token, Handle<T> &handle, std::string name) {
+        iEvent.getByToken(token, handle);
+        if (!handle.isValid()) {
+            LogError("HandleError") << boost::str(boost::format(error_msg) % name);
+            ret = false;
+        }
+    };
 
+    getHandle(bTagProbbToken_, bTagProbbHandle_, "bTagProbb");
+    getHandle(bTagProbbbToken_, bTagProbbbHandle_, "bTagProbbb");
+    getHandle(dsaRecoMuToken_, dsaRecoMuHandle_, "dsaRecoMu");
+    getHandle(dsaRecoMuTimingToken_, dsaRecoMuTimingHandle_, "dsaRecoMuTiming");
+    getHandle(pfRecoMuToken_, pfRecoMuHandle_, "pfRecoMu");
+    getHandle(muTrackToken1_, muTrackHandle1_, "muTrack1");
+    getHandle(muTrackToken2_, muTrackHandle2_, "muTrack2");
+    getHandle(primaryVertexToken_, primaryVertexHandle_, "primaryVertex");
+    getHandle(recoPFMETToken_, recoPFMETHandle_, "PFMET");
+    getHandle(recoCaloMETToken_, recoCaloMETHandle_, "CaloMET");
+    getHandle(recoJetToken_, recoJetHandle_, "recoJet");
+    getHandle(trigResultsToken_, trigResultsHandle_, "trigResults");
+    getHandle(trigEventToken_, trigEventHandle_, "trigEvent");
+    getHandle(HBHENoiseFilterResultProducerToken_, HBHENoiseFilterResultProducerHandle_, "HBHENoiseFilter");
+    getHandle(HBHEIsoNoiseFilterResultProducerToken_, HBHEIsoNoiseFilterResultProducerHandle_, "HBHEIsoNoiseFilter");
+    getHandle(primaryVertexFilterToken_, primaryVertexFilterHandle_, "primaryVertexFilter");
+    getHandle(globalSuperTightHalo2016FilterToken_, globalSuperTightHalo2016FilterHandle_, "globalSuperTightHalo2016");
+    getHandle(EcalDeadCellTriggerPrimitiveFilterToken_, EcalDeadCellTriggerPrimitiveFilterHandle_, "EcalDeadCellTriggerPrimitive");
+    getHandle(ecalBadCalibFilterToken_, ecalBadCalibFilterHandle_, "ecalBadCalibFilter");
+    getHandle(BadPFMuonFilterToken_, BadPFMuonFilterHandle_, "BadPFMuonFilter");
+    getHandle(muonBadTrackFilterToken_, muonBadTrackFilterHandle_, "muonBadTrackFilter");
+    getHandle(jetCorrectorToken_, jetCorrectorHandle_, "jetCorrector");
+    getHandle(recoElectronToken_, recoElectronHandle_, "recoElectron");
+    getHandle(recoElectronIDToken_, recoElectronIDHandle_, "recoElectronID");
+    getHandle(recoPhotonToken_, recoPhotonHandle_, "recoPhoton");
+    getHandle(recoPhotonIDToken_, recoPhotonIDHandle_, "recoPhotonID");
+    getHandle(rhoToken_, rhoHandle_, "rho");
     if (!isData) {
-        iEvent.getByToken(genEvtInfoToken_, genEvtInfoHandle_);
-        if (!genEvtInfoHandle_.isValid()) {
-            LogError("HandleError") << boost::str(boost::format(error_msg) % "genEventInfo");
-            return false;
-        }
-        iEvent.getByToken(genParticleToken_, genParticleHandle_);
-        if (!genParticleHandle_.isValid()) {
-            LogError("HandleError") << boost::str(boost::format(error_msg) % "genParticle");
-            return false;
-        }
-        iEvent.getByToken(genJetToken_, genJetHandle_);
-        if (!genJetHandle_.isValid()) {
-            LogError("HandleError") << boost::str(boost::format(error_msg) % "genJet");
-            return false;
-        }
-        iEvent.getByToken(genMETToken_, genMETHandle_);
-        if (!genMETHandle_.isValid()) {
-            LogError("HandleError") << boost::str(boost::format(error_msg) % "genMET");
-            return false;
-        }
-        iEvent.getByToken(pileupInfosToken_, pileupInfosHandle_);
-        if (!pileupInfosHandle_.isValid()) {
-            LogError("HandleError") << boost::str(boost::format(error_msg) % "pileupInfos");
-            return false;
-        }
+        getHandle(genEvtInfoToken_, genEvtInfoHandle_, "genEventInfo");
+        getHandle(genParticleToken_, genParticleHandle_, "genParticle");
+        getHandle(genJetToken_, genJetHandle_, "genJet");
+        getHandle(genMETToken_, genMETHandle_, "genMET");
+        getHandle(pileupInfosToken_, pileupInfosHandle_, "pileupInfos");
     }
-
-    return true;
+    
+    return ret;
 }
 
 
@@ -1138,8 +1021,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     iSetup.get<TransientTrackRecord>().get("TransientTrackBuilder", theB);
     KalmanVertexFitter kvf(true);
 
-    auto computeVertices = [&](vector<reco::TrackRef> coll_1, vector<reco::TrackRef> coll_2, std::string type)
-    {
+    auto computeVertices = [&](vector<reco::TrackRef> coll_1, vector<reco::TrackRef> coll_2, std::string type) {
         for (size_t i = 0; i < 4; i++) {
             for (size_t j = 0; j < 4; j++) {
                 reco::TrackRef muon_i, muon_j;
@@ -1200,7 +1082,7 @@ void iDMAnalyzer::analyze(const edm::Event& iEvent, const edm::EventSetup& iSetu
     // dSA-dSA
     computeVertices(muTracks1, muTracks1, "dsadsa");
     // GM-GM
-    computeVertices(muTracks2, muTracks2, "dsadsa");
+    computeVertices(muTracks2, muTracks2, "gmgm");
     // dSA-GM
     computeVertices(muTracks1, muTracks2, "dsagm");
 
