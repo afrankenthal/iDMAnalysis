@@ -7,22 +7,13 @@
 #include <vector>
 using std::cout, std::endl, std::map, std::vector;
 
-//#include <TApplication.h>
-//#include <TChain.h>
-//#include <TCollection.h>
-//#include <TCut.h>
-//#include <TDatime.h>
-//#include <TSelector.h>
-//#include <TSystemDirectory.h>
-//#include <TSystemFile.h>
-
 #include <TH1F.h>
 #include <TH2F.h>
 #include <THStack.h>
 #include <TString.h>
 
-#include "../RDataFrameSelectors/RDFAnalysis.h"
-#include "../RDataFrameSelectors/CosmicMuonAnalysis.h"
+#include "../Selectors/RDataFrame/RDFAnalysis.h"
+#include "../Selectors/RDataFrame/CosmicMuonAnalysis.h"
 #include "../utils/cxxopts.hpp"
 #include "../utils/common.h"
 using namespace common;
@@ -151,7 +142,8 @@ namespace macro {
             map<TString, map<int, RDFResultPtr2D>> all_sample_histos_2D;
 
             if (analysis_type == TString("main")) {
-                    dfAnalysis->Begin();
+                    if (!dfAnalysis->Begin())
+                        return false;
                     dfAnalysis->SetMacroConfig(cfg);
                     dfAnalysis->SetHistoConfig(histos_info);
                     dfAnalysis->SetCutConfig(cuts_info);
@@ -191,7 +183,6 @@ namespace macro {
             for (auto & [histo_name, histos_by_cut] : all_sample_histos_2D) {
                 for (auto & [cut, histo] : histos_by_cut) {
                     bool kFound = false;
-                    //for (TH1 * existing_histo : all_hstacks[histo_name][props.mode][cut]) {
                     for (auto existing_histo : all_hstacks_2D[histo_name][props.mode][cut]) {
                         if (TString(existing_histo->GetName()) == TString(histo->GetName())) { // hist already exists in stack
                             histo->Sumw2();
@@ -200,10 +191,6 @@ namespace macro {
                         }
                     }
                     if (!kFound) { // first time hist is referenced, so add to stack
-                        //TH1 * h_pointer = (TH1*)(histo->Clone());
-                        //h_pointer->Sumw2();
-                        //h_pointer->SetDirectory(0);
-                        //all_hstacks[histo_name][props.mode][cut].push_back(h_pointer);
                         histo->Sumw2();
                         histo->SetDirectory(0);
                         all_hstacks_2D[histo_name][props.mode][cut].push_back(histo);
@@ -213,7 +200,6 @@ namespace macro {
             for (auto & [histo_name, histos_by_cut] : all_sample_histos_1D) {
                 for (auto & [cut, histo] : histos_by_cut) {
                     bool kFound = false;
-                    //for (TH1 * existing_histo : all_hstacks[histo_name][props.mode][cut]) {
                     for (auto existing_histo : all_hstacks_1D[histo_name][props.mode][cut]) {
                         if (TString(existing_histo->GetName()) == TString(histo->GetName())) { // hist already exists in stack
                             histo->Sumw2();
@@ -222,39 +208,6 @@ namespace macro {
                         }
                     }
                     if (!kFound) { // first time hist is referenced, so add to stack
-                        //TH1 * h_pointer = (TH1*)(histo->Clone());
-                        //h_pointer->Sumw2();
-                        //h_pointer->SetDirectory(0);
-                        //if (props.mode == common::BKG) {
-                        //    if (common::group_plot_info.find(props.group) != common::group_plot_info.end())
-                        //        h_pointer->SetFillColor(common::group_plot_info[props.group].color);
-                        //    else
-                        //        h_pointer->SetFillColorAlpha(kBlue, 0.35);
-                        //}
-                        //else if (props.mode == common::DATA) {
-                        //    if (common::group_plot_info.find(props.group) != common::group_plot_info.end()) {
-                        //        h_pointer->SetMarkerColor(common::group_plot_info[props.group].color);
-                        //        h_pointer->SetMarkerStyle(common::group_plot_info[props.group].style);
-                        //    }
-                        //    else {
-                        //        h_pointer->SetMarkerColor(kBlack);
-                        //        h_pointer->SetMarkerStyle(kSolid);
-                        //    }
-                        //    h_pointer->SetMarkerSize(0.9);
-                        //}
-                        //else if (props.mode == common::SIGNAL) {
-                        //    if (common::group_plot_info.find(props.group) != common::group_plot_info.end()) {
-                        //        h_pointer->SetLineColor(common::group_plot_info[props.group].color);
-                        //        h_pointer->SetLineStyle(common::group_plot_info[props.group].style);
-                        //    }
-                        //    else {
-                        //        h_pointer->SetLineColor(kBlack);
-                        //        h_pointer->SetLineStyle(kDashed);
-                        //    }
-                        //    h_pointer->SetLineWidth(2);
-                        //    h_pointer->SetMarkerSize(0);
-                        //}
-                        //all_hstacks[histo_name][props.mode][cut].push_back(h_pointer);
                         histo->Sumw2();
                         histo->SetDirectory(0);
                         if (props.mode == common::BKG) {
@@ -304,45 +257,6 @@ namespace macro {
         // Save histograms into THStack objects
 
         TFile * outfile = new TFile(out_filename, "RECREATE");
-        //for (auto & [plot_name, modes] : all_hstacks) {
-        //    for (auto & [mode, cuts] : modes) {
-        //        for (auto & [cut, hist_vec] : cuts) {
-        //            THStack * hstack;
-        //            if (mode == common::BKG)
-        //                hstack = new THStack(Form("%s_cut%d-BKG", plot_name.Data(), cut), histos_info[plot_name]->title);
-        //            else if (mode == common::DATA)
-        //                hstack = new THStack(Form("%s_cut%d-DATA", plot_name.Data(), cut), histos_info[plot_name]->title);
-        //            else if (mode == common::SIGNAL)
-        //                hstack = new THStack(Form("%s_cut%d-SIGNAL", plot_name.Data(), cut), histos_info[plot_name]->title);
-        //            
-        //            //sort by "smallest integral first"
-        //            std::sort(hist_vec.begin(), hist_vec.end(),
-        //                    [](TH1 *a, TH1 *b) { return a->Integral() < b->Integral(); });
-        //            for (auto hist : hist_vec)
-        //                hstack->Add(hist);
-        //            if (hstack->GetNhists() > 0)
-        //                hstack->Write();
-
-        //            if (!cuts_info[cut].efficiency.Contains("none")) {
-        //                THStack * hstack2;
-        //                if (mode == common::BKG)
-        //                    hstack2 = new THStack(Form("%s_%scut%d-BKG", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut), histos_info[plot_name]->title);
-        //                else if (mode == common::DATA)
-        //                    hstack2 = new THStack(Form("%s_%scut%d-DATA", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut), histos_info[plot_name]->title);
-        //                else if (mode == common::SIGNAL)
-        //                    hstack2 = new THStack(Form("%s_%scut%d-SIGNAL", plot_name.Data(),cuts_info[cut].efficiency.Data(), cut), histos_info[plot_name]->title);
-
-        //                //sort by "smallest integral first"
-        //                std::sort(hist_vec.begin(), hist_vec.end(),
-        //                        [](TH1 *a, TH1 *b) { return a->Integral() < b->Integral(); });
-        //                for (auto hist : hist_vec)
-        //                    hstack2->Add(hist);
-        //                if (hstack2->GetNhists() > 0)
-        //                    hstack2->Write();
-        //            }
-        //        }
-        //    }
-        //}
         
         //sort by "smallest integral first"
         auto sortHists = [](auto a_hist_ptr, auto b_hist_ptr) { return a_hist_ptr->Integral() < b_hist_ptr->Integral(); };

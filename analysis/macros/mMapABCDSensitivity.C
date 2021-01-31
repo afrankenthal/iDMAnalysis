@@ -19,6 +19,7 @@ using std::cout, std::endl, std::map, std::vector;
 #include <TH1F.h>
 #include <TH2D.h>
 #include <THStack.h>
+#include <TKey.h>
 #include <TImage.h>
 #include <TROOT.h>
 #include <TString.h>
@@ -140,7 +141,7 @@ namespace macro {
                 float max_A_sig, max_B_sig, max_C_sig, max_D_sig;
                 float max_A_SR_pred, max_B_SR_pred, max_C_SR_pred, max_D_SR_pred;
 
-                float MC_norm_ratio = h_SR->Integral(0, -1) / h_VR->Integral(0, -1);
+                float MC_norm_ratio = h_SR->Integral(0, -1, 0, -1) / h_VR->Integral(0, -1, 0, -1);
 
                 for (int i = 1; i <= h_VR->GetNbinsX()+1; i++) {
                     for (int j = 1; j <= h_VR->GetNbinsY()+1; j++) {

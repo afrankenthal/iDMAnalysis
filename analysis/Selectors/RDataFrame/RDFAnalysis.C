@@ -1,4 +1,5 @@
 #include <math.h>
+#include <cstdlib>
 
 #include <ROOT/RVec.hxx>
 using namespace ROOT::VecOps;
@@ -11,60 +12,67 @@ using namespace ROOT::VecOps;
 
 using std::map, std::vector, std::cout, std::endl;
 
-void RDFAnalysis::Begin() {
+Bool_t RDFAnalysis::Begin() {
 
     TFile * pileup_file;
+
+    const char* data_path_c = std::getenv("ANALYSIS_DATA_PATH");
+    if (!data_path_c) {
+        cout << "ERROR! Could not find environment variable $ANALYSIS_DATA_PATH. Make sure you have sourced setup.sh before proceeding." << endl;
+        return false;
+    }
+    TString data_path(data_path_c);
     
     //pileup_file = TFile::Open("../data/puWeights_80x_37ifb.root");
-    pileup_file = TFile::Open("../data/pileup/PUWeights_2016.root");
+    pileup_file = TFile::Open(data_path + TString("/pileup/PUWeights_2016.root"));
     pileup_2016 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
     pileup_2016->SetDirectory(0);
     pileup_file->Close();
 
-    pileup_file = TFile::Open("../data/puWeights_90x_41ifb.root");
+    pileup_file = TFile::Open(data_path + TString("/puWeights_90x_41ifb.root"));
     //pileup_file = TFile::Open("../data/pileup/PUWeights_2017.root");
     pileup_2017 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
     pileup_2017->SetDirectory(0);
     pileup_file->Close();
     
     //pileup_file = TFile::Open("../data/puWeights_10x_56ifb.root");
-    pileup_file = TFile::Open("../data/pileup/PUWeights_2018.root");
+    pileup_file = TFile::Open(data_path + TString("/pileup/PUWeights_2018.root"));
     pileup_2018 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
     pileup_2018->SetDirectory(0);
     pileup_file->Close();
 
-    pileup_file = TFile::Open("../data/zjetpileup/zjetratio100.root");
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio100.root"));
     pileup_ZJets_2017["HT-100To200"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-100To200"]->SetDirectory(0);
     pileup_file->Close();
-    pileup_file = TFile::Open("../data/zjetpileup/zjetratio200.root");
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio200.root"));
     pileup_ZJets_2017["HT-200To400"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-200To400"]->SetDirectory(0);
     pileup_file->Close();
     ////// FIXME FIXME FIXME zjetratio400.root does not exist!
-    pileup_file = TFile::Open("../data/zjetpileup/zjetratio200.root");
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio200.root"));
     pileup_ZJets_2017["HT-400To600"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-400To600"]->SetDirectory(0);
     pileup_file->Close();
-    pileup_file = TFile::Open("../data/zjetpileup/zjetratio600.root");
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio600.root"));
     pileup_ZJets_2017["HT-600To800"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-600To800"]->SetDirectory(0);
     pileup_file->Close();
-    pileup_file = TFile::Open("../data/zjetpileup/zjetratio800.root");
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio800.root"));
     pileup_ZJets_2017["HT-800To1200"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-800To1200"]->SetDirectory(0);
     pileup_file->Close();
-    pileup_file = TFile::Open("../data/zjetpileup/zjetratio1200.root");
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio1200.root"));
     pileup_ZJets_2017["HT-1200To2500"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-1200To2500"]->SetDirectory(0);
     pileup_file->Close();
-    pileup_file = TFile::Open("../data/zjetpileup/zjetratio2500.root");
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio2500.root"));
     pileup_ZJets_2017["HT-2500ToInf"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
     pileup_ZJets_2017["HT-2500ToInf"]->SetDirectory(0);
     pileup_file->Close();
     
     // Set up QCD and EWK corrections
-    TFile * kfactors = TFile::Open("../data/kfactors.root");
+    TFile * kfactors = TFile::Open(data_path + TString("/kfactors.root"));
     TH1F * z_nlo = (TH1F*)kfactors->Get("ZJets_012j_NLO/nominal");
     TH1F * z_ewk = (TH1F*)kfactors->Get("EWKcorr/Z");
     TH1F * z_lo = (TH1F*)kfactors->Get("ZJets_LO/inv_pt");
@@ -86,9 +94,9 @@ void RDFAnalysis::Begin() {
     kfactors->Close();
 
     // Set electron veto weights
-    TFile * veto_e_wgt_2016 = TFile::Open("../data/ElectronWPVeto_80X_2016.root");
-    TFile * veto_e_wgt_2017 = TFile::Open("../data/ElectronWPVeto_Fall17V2_2017.root");
-    TFile * veto_e_wgt_2018 = TFile::Open("../data/ElectronWPVeto_Fall17V2_2018.root");
+    TFile * veto_e_wgt_2016 = TFile::Open(data_path + TString("/ElectronWPVeto_80X_2016.root"));
+    TFile * veto_e_wgt_2017 = TFile::Open(data_path + TString("/ElectronWPVeto_Fall17V2_2017.root"));
+    TFile * veto_e_wgt_2018 = TFile::Open(data_path + TString("/ElectronWPVeto_Fall17V2_2018.root"));
     veto_e_hist_2016 = (TH2F*)(((TH2F*)veto_e_wgt_2016->Get("EGamma_SF2D"))->Clone());
     veto_e_hist_2017 = (TH2F*)(((TH2F*)veto_e_wgt_2017->Get("EGamma_SF2D"))->Clone());
     veto_e_hist_2018 = (TH2F*)(((TH2F*)veto_e_wgt_2018->Get("EGamma_SF2D"))->Clone());
@@ -101,9 +109,9 @@ void RDFAnalysis::Begin() {
 
 
     // Set photon veto weights
-    TFile * veto_p_wgt_2016 = TFile::Open("../data/PhotonsLoose_2016_Fall17V2.root");
-    TFile * veto_p_wgt_2017 = TFile::Open("../data/PhotonsLoose_2017.root");
-    TFile * veto_p_wgt_2018 = TFile::Open("../data/PhotonsLoose_2018.root");
+    TFile * veto_p_wgt_2016 = TFile::Open(data_path + TString("/PhotonsLoose_2016_Fall17V2.root"));
+    TFile * veto_p_wgt_2017 = TFile::Open(data_path + TString("/PhotonsLoose_2017.root"));
+    TFile * veto_p_wgt_2018 = TFile::Open(data_path + TString("/PhotonsLoose_2018.root"));
     veto_p_hist_2016 = (TH2F*)(((TH2F*)veto_p_wgt_2016->Get("EGamma_SF2D"))->Clone());
     veto_p_hist_2017 = (TH2F*)(((TH2F*)veto_p_wgt_2017->Get("EGamma_SF2D"))->Clone());
     veto_p_hist_2018 = (TH2F*)(((TH2F*)veto_p_wgt_2018->Get("EGamma_SF2D"))->Clone());
@@ -115,10 +123,10 @@ void RDFAnalysis::Begin() {
     veto_p_wgt_2018->Close();
 
     // Set global muon weights
-    TFile * gm_wgt_2016 = TFile::Open("../data/idm_gm_scalefactors/GM_SF_2016sys.root");
-    TFile * gm_wgt_2016GH = TFile::Open("../data/idm_gm_scalefactors/GM_SF_2016sys_GH.root");
-    TFile * gm_wgt_2017 = TFile::Open("../data/idm_gm_scalefactors/GM_SF_2017sys.root");
-    TFile * gm_wgt_2018 = TFile::Open("../data/idm_gm_scalefactors/GM_SF_2018ID.root");
+    TFile * gm_wgt_2016 = TFile::Open(data_path + TString("/idm_gm_scalefactors/GM_SF_2016sys.root"));
+    TFile * gm_wgt_2016GH = TFile::Open(data_path + TString("/idm_gm_scalefactors/GM_SF_2016sys_GH.root"));
+    TFile * gm_wgt_2017 = TFile::Open(data_path + TString("/idm_gm_scalefactors/GM_SF_2017sys.root"));
+    TFile * gm_wgt_2018 = TFile::Open(data_path + TString("/idm_gm_scalefactors/GM_SF_2018ID.root"));
     gm_hist_2016 = (TH2F*)(((TH2F*)gm_wgt_2016->Get("NUM_LooseID_DEN_genTracks_eta_pt"))->Clone());
     gm_hist_2016GH = (TH2F*)(((TH2F*)gm_wgt_2016GH->Get("NUM_LooseID_DEN_genTracks_eta_pt"))->Clone());
     gm_hist_2017 = (TH2F*)(((TH2F*)gm_wgt_2017->Get("NUM_LooseID_DEN_genTracks_pt_abseta"))->Clone());
@@ -149,9 +157,9 @@ void RDFAnalysis::Begin() {
     gm_wgt_2018->Close();
 
     // Set dsa muon weights
-    TFile * dsa_wgt_2016 = TFile::Open("../data/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root");
-    TFile * dsa_wgt_2017 = TFile::Open("../data/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root");
-    TFile * dsa_wgt_2018 = TFile::Open("../data/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root");
+    TFile * dsa_wgt_2016 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root"));
+    TFile * dsa_wgt_2017 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root"));
+    TFile * dsa_wgt_2018 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root"));
     dsa_hist_2016 = (TH2F*)(((TH2F*)dsa_wgt_2016->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
     dsa_hist_2017 = (TH2F*)(((TH2F*)dsa_wgt_2017->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
     dsa_hist_2018 = (TH2F*)(((TH2F*)dsa_wgt_2018->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
@@ -173,9 +181,9 @@ void RDFAnalysis::Begin() {
     dsa_wgt_2016->Close();
     dsa_wgt_2017->Close();
     dsa_wgt_2018->Close();
-    TFile * dsa_wgt_2016_low = TFile::Open("../data/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root");
-    TFile * dsa_wgt_2017_low = TFile::Open("../data/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root");
-    TFile * dsa_wgt_2018_low = TFile::Open("../data/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root");
+    TFile * dsa_wgt_2016_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root"));
+    TFile * dsa_wgt_2017_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root"));
+    TFile * dsa_wgt_2018_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root"));
     dsa_hist_2016_low = (TH2F*)(((TH2F*)dsa_wgt_2016_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
     dsa_hist_2017_low = (TH2F*)(((TH2F*)dsa_wgt_2017_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
     dsa_hist_2018_low = (TH2F*)(((TH2F*)dsa_wgt_2018_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
@@ -199,9 +207,9 @@ void RDFAnalysis::Begin() {
     dsa_wgt_2018_low->Close();
 
     // Set dsa muon reco weights
-    TFile * reco_dsa_wgt_2016 = TFile::Open("../data/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root");
-    TFile * reco_dsa_wgt_2017 = TFile::Open("../data/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root");
-    TFile * reco_dsa_wgt_2018 = TFile::Open("../data/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root");
+    TFile * reco_dsa_wgt_2016 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root"));
+    TFile * reco_dsa_wgt_2017 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root"));
+    TFile * reco_dsa_wgt_2018 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root"));
     reco_dsa_hist_2016 = (TH2F*)(((TH2F*)reco_dsa_wgt_2016->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
     reco_dsa_hist_2017 = (TH2F*)(((TH2F*)reco_dsa_wgt_2017->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
     reco_dsa_hist_2018 = (TH2F*)(((TH2F*)reco_dsa_wgt_2018->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
@@ -223,9 +231,9 @@ void RDFAnalysis::Begin() {
     reco_dsa_wgt_2016->Close();
     reco_dsa_wgt_2017->Close();
     reco_dsa_wgt_2018->Close();
-    TFile * reco_dsa_wgt_2016_low = TFile::Open("../data/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root");
-    TFile * reco_dsa_wgt_2017_low = TFile::Open("../data/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root");
-    TFile * reco_dsa_wgt_2018_low = TFile::Open("../data/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root");
+    TFile * reco_dsa_wgt_2016_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root"));
+    TFile * reco_dsa_wgt_2017_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root"));
+    TFile * reco_dsa_wgt_2018_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root"));
     reco_dsa_hist_2016_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2016_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
     reco_dsa_hist_2017_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2017_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
     reco_dsa_hist_2018_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2018_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
@@ -249,9 +257,9 @@ void RDFAnalysis::Begin() {
     reco_dsa_wgt_2018_low->Close();
 
     // Set trig weights
-    TFile * trig_wgt_2016 = TFile::Open("../data/trig_weights/trig_weights_2016.root");
-    TFile * trig_wgt_2017 = TFile::Open("../data/trig_weights/trig_weights_2017.root");
-    TFile * trig_wgt_2018 = TFile::Open("../data/trig_weights/trig_weights_2018.root");
+    TFile * trig_wgt_2016 = TFile::Open(data_path + TString("/trig_weights/trig_weights_2016.root"));
+    TFile * trig_wgt_2017 = TFile::Open(data_path + TString("/trig_weights/trig_weights_2017.root"));
+    TFile * trig_wgt_2018 = TFile::Open(data_path + TString("/trig_weights/trig_weights_2018.root"));
 
     //trig_hist_2016 = (TH1F*)(((TH1F*)trig_wgt_2016->Get("weigts_reco_PF_MetNoMu_pt_2016_MCTotal_2016_Dlow"))->Clone());
     //trig_hist_2017 = (TH1F*)(((TH1F*)trig_wgt_2017->Get("weigts_reco_PF_MetNoMu_pt_2017_MCTotal_2017_Dlow"))->Clone());
@@ -286,6 +294,7 @@ void RDFAnalysis::Begin() {
     gm_sf_2017_file->Close();
     gm_sf_2018_file->Close();
     */
+    return true;
 }
 
 void RDFAnalysis::SetMacroConfig(json macro_info) {
@@ -431,7 +440,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     ROOT::EnableImplicitMT(num_cores);
     ROOT::RDataFrame df(*chain_);
 
-    const auto poolSize = ROOT::GetImplicitMTPoolSize();
+    const auto poolSize = ROOT::GetThreadPoolSize();
     const auto nSlots = poolSize == 0 ? 1 : poolSize;
     int nEvents = chain_->GetEntries();
     std::string progressBar;
@@ -900,7 +909,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     // NOTE: this passMuonID is wrong! It assumes the same ID for GM as the one used for dSA --> not correct. passGMMuonID below is the right one.
     auto passMuonID = [&](RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_chi2, RVec<float> pt, RVec<float> eta, RVec<float> pt_err) {
-        RVec<bool> pass = (trk_n_planes > 1) && (trk_n_hits > 11) && (trk_chi2 < 10) && (pt > 5) && (abs(eta) < 2.4);// && (pt_err/pt < 1);
+        RVec<bool> pass = (trk_n_planes > 1) && (trk_n_hits > 12) && (trk_chi2 < 2.5) && (pt > 5) && (abs(eta) < 2.4) && (pt_err/pt < 1);
         return pass;
     };
 
@@ -1062,8 +1071,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         Define("MET_phi", correct_EE_MET_phi,{MET_pt_corr_noEE.Data(),MET_phi_corr_noEE.Data(),"reco_PF_MET_EE_delta_px","reco_PF_MET_EE_delta_py"}).
         Define("reco_dsa_pt_res", "reco_dsa_pt_err/reco_dsa_pt").
         Define("reco_gm_pt_res", "reco_gm_pt_err/reco_gm_pt").
-        Define("dsa_pass_ID", passMuonID, {"reco_dsa_trk_n_planes", "reco_dsa_trk_n_hits", "reco_dsa_trk_chi2", "reco_dsa_pt", "reco_dsa_eta", "reco_dsa_pt_res"}).
-        Define("gm_pass_ID", passMuonID, {"reco_gm_trk_n_planes", "reco_gm_trk_n_hits", "reco_gm_trk_chi2", "reco_gm_pt", "reco_gm_eta", "reco_gm_pt_res"}).
+        Define("dsa_pass_ID", passMuonID, {"reco_dsa_trk_n_planes", "reco_dsa_trk_n_hits", "reco_dsa_trk_chi2", "reco_dsa_pt", "reco_dsa_eta", "reco_dsa_pt_err"}).
+        // Define("gm_pass_ID", passMuonID, {"reco_gm_trk_n_planes", "reco_gm_trk_n_hits", "reco_gm_trk_chi2", "reco_gm_pt", "reco_gm_eta", "reco_gm_pt_err"}).
+        Define("gm_pass_ID", passGMMuonID, {"reco_gm_isPF", "reco_gm_trk_n_planes", "reco_gm_trk_n_hits", "reco_gm_trk_chi2", "reco_gm_pt", "reco_gm_eta"}).
         Define("reco_pass_dsa_pt", goodQuantity, {"reco_dsa_pt","dsa_pass_ID"}).
         Define("reco_pass_dsa_eta", goodQuantity, {"reco_dsa_eta","dsa_pass_ID"}).
         Define("reco_pass_dsa_phi", goodQuantity, {"reco_dsa_phi","dsa_pass_ID"}).
@@ -1255,7 +1265,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     return kTRUE;
 }
 
-void RDFAnalysis::Terminate() {
+Bool_t RDFAnalysis::Terminate() {
     //delete sf_pu;
     delete pileup_2018;
     delete pileup_2017;
@@ -1278,4 +1288,6 @@ void RDFAnalysis::Terminate() {
     delete ph_sf_2018;
     delete ph_sf_2017;
     delete ph_sf_2016;*/
+    
+    return true;
 }

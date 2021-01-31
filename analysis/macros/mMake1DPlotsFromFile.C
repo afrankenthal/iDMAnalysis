@@ -16,7 +16,9 @@ using std::cout, std::endl, std::map, std::vector;
 #include <TFile.h>
 #include <TH1F.h>
 #include <THStack.h>
+#include <TKey.h>
 #include <TLegend.h>
+#include <TObjString.h>
 #include <TString.h>
 #include <TSystemDirectory.h>
 #include <TSystemFile.h>

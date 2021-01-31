@@ -18,6 +18,7 @@ using std::cout, std::endl, std::map, std::vector;
 #include <TH1F.h>
 #include <TH2D.h>
 #include <THStack.h>
+#include <TKey.h>
 #include <TImage.h>
 #include <TROOT.h>
 #include <TString.h>

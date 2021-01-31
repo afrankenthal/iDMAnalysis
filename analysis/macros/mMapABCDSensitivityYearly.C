@@ -16,9 +16,10 @@ using std::cout, std::endl, std::map, std::vector;
 #include <TCut.h>
 #include <TDatime.h>
 #include <TFile.h>
-#include <TH1F.h>
+#include <TH1D.h>
 #include <TH2D.h>
 #include <THStack.h>
+#include <TKey.h>
 #include <TImage.h>
 #include <TROOT.h>
 #include <TString.h>
@@ -183,7 +184,7 @@ namespace macro {
                 float max_A_sig, max_B_sig, max_C_sig, max_D_sig;
                 float max_A_SR_pred, max_B_SR_pred, max_C_SR_pred, max_D_SR_pred;
 
-                float MC_norm_ratio = h_SR->Integral(0, -1) / h_VR->Integral(0, -1);
+                float MC_norm_ratio = h_SR->Integral(0, -1, 0, -1) / h_VR->Integral(0, -1, 0, -1);
 
                 if (dphi_bin_edge.size() == 0) { // bin edges not provided, figure it out
 
@@ -431,7 +432,7 @@ namespace macro {
                     bin_x = h_VR_data->GetXaxis()->FindBin(dphi_bin_edge[cut_idx]);
                 }
 
-                float MC_norm_ratio = h_SR->Integral(0, -1) / h_VR->Integral(0, -1);
+                float MC_norm_ratio = h_SR->Integral(0, -1, 0, -1) / h_VR->Integral(0, -1, 0, -1);
                 
                 // Test using ABCD yields directly from nJets VR, no template
                 float A_SR_pred = MC_norm_ratio * h_VR_data->Integral(0, bin_x-1, 0, bin_y-1);
@@ -569,7 +570,7 @@ namespace macro {
                     bin_x = h_VR_data->GetXaxis()->FindBin(dphi_bin_edge[cut_idx]);
                 }
 
-                float MC_norm_ratio = h_SR->Integral(0, -1) / h_VR->Integral(0, -1);
+                float MC_norm_ratio = h_SR->Integral(0, -1, 0, -1) / h_VR->Integral(0, -1, 0, -1);
 
                 // Test using ABCD yields directly from nJets VR, no template
                 float A_SR_pred = MC_norm_ratio * h_VR_data->Integral(0, bin_x-1, 0, bin_y-1);
@@ -707,7 +708,7 @@ namespace macro {
                     bin_x = h_VR_data->GetXaxis()->FindBin(dphi_bin_edge[cut_idx]);
                 }
 
-                float MC_norm_ratio = h_SR->Integral(0, -1) / h_VR->Integral(0, -1);
+                float MC_norm_ratio = h_SR->Integral(0, -1, 0, -1) / h_VR->Integral(0, -1, 0, -1);
 
                 // Test using ABCD yields directly from nJets VR, no template
                 float A_SR_pred = MC_norm_ratio * h_VR_data->Integral(0, bin_x-1, 0, bin_y-1);

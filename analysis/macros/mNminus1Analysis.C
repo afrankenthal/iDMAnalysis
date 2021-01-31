@@ -26,7 +26,7 @@ using namespace common;
 #include "../utils/json.hpp"
 using json = nlohmann::json;
 #include "../utils/tdrstyle.h"
-#include "../RDataFrameSelectors/nMinus1Selector.h"
+#include "../Selectors/RDataFrame/nMinus1Selector.h"
 
 namespace macro {
 

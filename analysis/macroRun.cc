@@ -37,14 +37,12 @@ int main(int argc, char ** argv) {
 
     cxxopts::Options options("macroRun", "Run configurable macros with common IO interface");
     options.add_options()
-        ("s,signal", "Signal sample config file to use", cxxopts::value<std::string>()->default_value("")) //configs/thirdrun/signal.json"))
-        ("b,background", "Background sample config file to use", cxxopts::value<std::string>()->default_value("")) //configs/thirdrun/backgrounds_subset.json"))
-        ("d,data", "Data sample config file to use", cxxopts::value<std::string>()->default_value("")) //configs/data.json"))
+        ("s,sample", "Sample config file(s), if any", cxxopts::value<vector<std::string>>()->default_value("")) //configs/thirdrun/signal.json"))
         ("m,macro", "Macro config file to use", cxxopts::value<std::string>()->default_value("")) //configs/macros/nminus1.json"))
         ("c,cuts", "Cuts config file to use", cxxopts::value<std::string>()->default_value("")) //configs/cuts/CR_nJets.json"))
         ("y,years", "Year(s) to process: 2016, 2017, 2018, 161718, 1618, 1718, 1617", cxxopts::value<std::string>()->default_value(""))
         ("o,outfile", "Output file or directory (depends on macro)", cxxopts::value<std::string>()->default_value(""))
-        ("i,infile", "Input file(s) (for macros that use results of other macros)", cxxopts::value<std::vector<std::string>>()->default_value({""}))
+        ("i,infile", "Input file(s) (for macros that use results of other macros)", cxxopts::value<vector<std::string>>()->default_value({""}))
         ("h,help", "Print help and exit.")
     ;
     auto result = options.parse(argc, argv);
@@ -55,32 +53,24 @@ int main(int argc, char ** argv) {
     }
 
     // Program options
-    vector<TString> sample_config_filenames {};
-    if (TString(result["background"].as<std::string>()) != "")
-        sample_config_filenames.push_back(TString(result["background"].as<std::string>()));
-    if (TString(result["signal"].as<std::string>()) != "")
-        sample_config_filenames.push_back(TString(result["signal"].as<std::string>()));
-    if (TString(result["data"].as<std::string>()) != "")
-        sample_config_filenames.push_back(TString(result["data"].as<std::string>()));
+    vector<std::string> sample_config_filenames = result["sample"].as<vector<std::string>>();
     TString macro_filename = TString(result["macro"].as<std::string>());
     TString cuts_filename = TString(result["cuts"].as<std::string>());
     TString out_filename = TString(result["outfile"].as<std::string>()); // default is empty string ""
-    std::vector<std::string> in_filenames = result["infile"].as<std::vector<std::string>>(); // default is length-one vector with {""}
-    if (in_filenames.size() == 0)
-        in_filenames.push_back("");
+    vector<std::string> in_filenames = result["infile"].as<vector<std::string>>(); // default is length-one vector with {""}
     TString years = TString(result["years"].as<std::string>());
  
     map<TString, SampleInfo> samples;
 
     for (auto config_filename : sample_config_filenames) { 
 
-        std::ifstream config_file(config_filename.Data());
+        std::ifstream config_file(config_filename);
         json configs;
         config_file >> configs;
         int color = 1;
         for (auto const & [sample, cfg] : configs.items()) {
             vector<TString> filelist{};
-            for (auto dir : cfg["dir"].get<std::vector<std::string>>()) {
+            for (auto dir : cfg["dir"].get<vector<std::string>>()) {
                 vector<TString> newlist = listFiles(dir.c_str());
                 filelist.insert(filelist.end(), newlist.begin(), newlist.end());
             }
@@ -98,7 +88,7 @@ int main(int argc, char ** argv) {
                 TString(cfg["group"].get<std::string>()), // sample group
                 mapMODE[TString(cfg["mode"].get<std::string>())], // mode: 0 = BKG, 1 = DATA, 2 = SIGNAL
                 (cfg.find("color") != cfg.end() ? cfg["color"].get<int>() : color++), // line color
-                (config_filename.Contains("signal") ? 1 : 1) // line style (bkg vs signal)
+                (mapMODE[TString(cfg["mode"].get<std::string>())] > 0 ? 1 : 1) // line style (bkg vs signal)
             };
         }
     }
@@ -145,7 +135,7 @@ int main(int argc, char ** argv) {
 
     // Process macro config json and invoke configured macros
     if (macro_filename == TString("")) {
-        cout << "Error! Need to specify a macro config json file. Exiting." << endl;
+        cout << "Error! Need to specify a macro config json file. Exiting..." << endl;
         printTimeElapsed(time_begin);
         return 1;
     }
@@ -170,7 +160,7 @@ int main(int argc, char ** argv) {
                 cout << "Can only run mSumGenWgts with 1 sample config!" << endl;
                 break;
             }
-            cfg["sample_config_filename"] = sample_config_filenames[0].Data();
+            cfg["sample_config_filename"] = sample_config_filenames[0];
         }
 
         if (macro == "mSaveCanvases")
@@ -179,7 +169,7 @@ int main(int argc, char ** argv) {
         // Load macro .so dynamically
         void * handle;
         bool (*process)(map<TString, SampleInfo>, vector<CutInfo>, json);
-        if ( (handle = dlopen(Form("./lib%s.so", macro.c_str()), RTLD_NOW)) == NULL) {
+        if ( (handle = dlopen(Form("lib%s.so", macro.c_str()), RTLD_NOW)) == NULL) {
             cout << "Error! Could not find lib" << macro << ".so" << endl;
             cout << "dlerror(): " << dlerror() << endl;
             return 1;

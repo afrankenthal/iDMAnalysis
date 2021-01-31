@@ -35,9 +35,9 @@ public :
    RDFAnalysis() { }
    ~RDFAnalysis() { }
 
-   void    Begin();
-   Bool_t  Process(TChain * chain);
-   void    Terminate();
+   Bool_t    Begin();
+   Bool_t    Process(TChain * chain);
+   Bool_t    Terminate();
 
    void SetMacroConfig(json macro_info);
    void SetHistoConfig(std::map<TString, common::THInfo*> histos_info);

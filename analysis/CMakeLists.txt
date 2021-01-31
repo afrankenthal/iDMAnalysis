@@ -16,7 +16,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 ## Find required libraries
 
 find_library(MATH_LIBRARY m)
-find_package(ROOT 6.18 CONFIG REQUIRED)
+find_package(ROOT 6.22 CONFIG REQUIRED)
 
 set(all_root_libs 
     ROOT::Core ROOT::Gpad ROOT::Graf3d ROOT::Graf ROOT::Hist
@@ -28,14 +28,14 @@ set(all_root_libs
 ## Generate ROOT dictionary for TSelector -- but use manual mode below (n.b. but TSelector code is OBSOLETE)
 # find_package(ROOT REQUIRED)
 # include(${ROOT_USE_FILE})
-# ROOT_GENERATE_DICTIONARY("${CMAKE_CURRENT_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict" \
-#     "${CMAKE_CURRENT_SOURCE_DIR}/TSelectors/mainAnalysisSelector.h" MODULE mainAnalysisSelector LINKDEF \
-#     "${CMAKE_CURRENT_SOURCE_DIR}/TSelectors/Linkdef.h")
+# ROOT_GENERATE_DICTIONARY("${CMAKE_CURRENT_SOURCE_DIR}/Selectors/TSelectors/mainAnalysisSelectorDict" \
+#     "${CMAKE_CURRENT_SOURCE_DIR}/Selectors/TSelectors/mainAnalysisSelector.h" MODULE mainAnalysisSelector LINKDEF \
+#     "${CMAKE_CURRENT_SOURCE_DIR}/Selectors/TSelectors/Linkdef.h")
 ## [TSelector OBSELETE since March 2020 -- kept for pedagogical purposes]
 ## manual mode 
 # add_custom_command(
-#     OUTPUT "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
-#     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/TSelectors
+#     OUTPUT "${CMAKE_SOURCE_DIR}/Selectors/TSelectors/mainAnalysisSelectorDict.cxx"
+#     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}/Selectors/TSelectors
 #     COMMAND rootcling -f mainAnalysisSelectorDict.cxx
 #                          mainAnalysisSelector.h
 #                          Linkdef.h
@@ -49,9 +49,9 @@ foreach (macro_file ${macro_files})
     get_filename_component(macro_lib ${macro_file} NAME_WLE)
     if ("x_${macro_lib}" STREQUAL "x_mMainAnalysis") # OR "x_${macro_lib}" STREQUAL "x_mSaveCanvases")
         add_library(${macro_lib} SHARED ${macro_file} utils/tdrstyle.C utils/CMS_lumi.C
-        RDataFrameSelectors/RDFAnalysis.C RDataFrameSelectors/nMinus1Selector.C
-        RDataFrameSelectors/CosmicMuonAnalysis.C)
-        # TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
+            Selectors/RDataFrame/RDFAnalysis.C Selectors/RDataFrame/nMinus1Selector.C
+            Selectors/RDataFrame/CosmicMuonAnalysis.C)
+        # Selectors/TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/Selectors/TSelectors/mainAnalysisSelectorDict.cxx"
     else()
         add_library(${macro_lib} SHARED ${macro_file} utils/tdrstyle.C utils/CMS_lumi.C)
     endif()
@@ -80,12 +80,12 @@ endif()
 ## Copy ROOT dictionaries to final bin location, needed during runtime
 # add_custom_command(TARGET macroRun POST_BUILD
 #                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#                   "${CMAKE_CURRENT_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict.cxx"
+#                   "${CMAKE_CURRENT_SOURCE_DIR}/Selectors/TSelectors/mainAnalysisSelectorDict.cxx"
 #                   $<TARGET_FILE_DIR:macroRun>
 #                   )
 # add_custom_command(TARGET macroRun POST_BUILD
 #                   COMMAND ${CMAKE_COMMAND} -E copy_if_different
-#                   "${CMAKE_CURRENT_SOURCE_DIR}/TSelectors/mainAnalysisSelectorDict_rdict.pcm"
+#                   "${CMAKE_CURRENT_SOURCE_DIR}/Selectors/TSelectors/mainAnalysisSelectorDict_rdict.pcm"
 #                   $<TARGET_FILE_DIR:macroRun>
 #                   )
 #
@@ -96,5 +96,5 @@ endif()
 install (TARGETS macroRun DESTINATION "${CMAKE_SOURCE_DIR}/bin")
 foreach (macro_file ${macro_files})
     get_filename_component(macro_lib ${macro_file} NAME_WLE)
-    install (TARGETS ${macro_lib} DESTINATION "${CMAKE_SOURCE_DIR}/bin")
+    install (TARGETS ${macro_lib} DESTINATION "${CMAKE_SOURCE_DIR}/lib")
 endforeach()
