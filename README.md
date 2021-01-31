@@ -1,5 +1,6 @@
 # iDMAnalysis
-iDM Analysis repository (skimming, trigger/reco efficiency, and analysis)
+
+iDM Analysis repository (includes skimmer, analysis, and limits computation)
 
 ## Environment setup
 
@@ -8,47 +9,31 @@ iDM Analysis repository (skimming, trigger/reco efficiency, and analysis)
 $ cmsrel CMSSW_10_2_18
 $ cd CMSSW_10_2_18/src
 $ cmsenv
+$ git cms-init
 ```
 
-## Pull and compile packages
-
-Pull KalmanVertexFit and VertexTools packages to extend the native Kalman Filter range limit:
+Now clone the iDM repository:
 
 ```bash
-$ git cms-addpkg RecoVertex/VertexTools
-$ git cms-addpkg RecoVertex/KalmanVertexFit
+git clone git@github.com:afrankenthal/iDMAnalysis.git
 ```
-and apply the following git patch:
+
+or via HTTPS if you don't have SSH keys set up:
 
 ```bash
-$ curl https://home.fnal.gov/~as2872/extendTrackerDimensions.patch | git apply
+git clone https://github.com/afrankenthal/iDMAnalysis.git
 ```
 
-Now clone the iDM repo (either via SSH or HTTPS if you don't have SSH keys) and compile everything:
+Follow the README files below depending on what you want to do.
 
-```bash
-$ git clone git@github.com:afrankenthal/iDMAnalysis.git # or https://github.com/afrankenthal/iDMAnalysis.git
-$ scram b -j 8
-$ cd iDMAnalysis/skimmer
-```
+## Running ntuplizer to make flat trees from AODs
 
-## Running ntuplizer to make flat trees from AODs:
+Check out the instructions in the [README](skimmer/README.md) file inside skimmer/.
 
-Might need to renew your proxy first:
+## Running the analysis on top of flat ntuples
 
-```bash
-$ voms-proxy-init -voms cms -valid 192:00
-```
+Check out the instructions in the [README](analysis/README.md) file inside analysis/.
 
-For a local test run:
+## Running limits computations
 
-```bash
-$ cmsRun python/iDMAnalyzer_cfg.py test=1
-```
-
-Call multicrab to run over more samples in EOS:
-
-```bash
-$ cd python
-$ ./multicrab_iDMAnalyzer -c submit -w WORKAREA -s X # where X = {data,MC,custom}
-```
+Check out the instructions in the [README](limits/README.md) file inside limits/.
