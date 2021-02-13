@@ -1,6 +1,6 @@
 [
     {
-        "name": "mMake1DEffPlotsFromFile",
+        "name": "mMake1DEffCanvasFromStacks",
         "config": {
         }
     }

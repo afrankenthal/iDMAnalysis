@@ -1,4 +1,5 @@
 #include <algorithm>
+#include <cstdlib>
 #include <experimental/filesystem>
 namespace fs = std::experimental::filesystem;
 #include <fstream>
@@ -35,28 +36,40 @@ namespace macro {
     extern "C" bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
         // macro options
-        //TString in_filename = TString(cfg["infilename"].get<std::string>());
-        TString in_filename = TString(cfg["infilenames"].get<std::vector<std::string>>()[0]);
-        if (in_filename == TString("")) {
+
+        bool force_overwrite = cfg["force_overwrite"].get<bool>();
+
+        vector<std::string> in_filenames = cfg["infilenames"].get<vector<std::string>>();
+        if (in_filenames.size() == 0) {
             cout << "ERROR! No input filename. Exiting..." << endl;
             return 0;
         }
-        TFile * in_file = new TFile(in_filename, "READ");
+
+        TString in_filename = TString(in_filenames[0]);
+        TFile * in_file = TFile::Open(in_filename, "READ");
 
         TString out_dir;
-        // Use output dir if provided
-        if (cfg.find("outdir") != cfg.end() && cfg["outdir"] != std::string("")) 
-            out_dir = TString(cfg["outdir"].get<std::string>());
-        // or just strip the filename's extension and use it as dir
+        // Use output dir if provided or just strip the filename's extension to use as dir
+        if (cfg.find("outfilename") != cfg.end() && cfg["outfilename"] != std::string("")) 
+            out_dir = TString(cfg["outfilename"].get<std::string>());
         else 
-            out_dir = Form("../plots/%s", in_filename.ReplaceAll(".root", "").Data());
+            out_dir = in_filename.ReplaceAll(".root", "");
 
-        fs::path dir(out_dir.Data());
-        if (fs::exists(dir)) {
-            cout << "Error! Output directory " << out_dir.Data() << " already exists! Not overwriting." << endl;
+        // fs::path dir(out_dir.Data());
+        // if (fs::exists(dir) && !out_dir.Contains("root://") && force_overwrite == false) {
+        //     cout << "Error! Local output directory " << out_dir.Data() << " already exists!" << endl;
+        //     cout << "Set 'force_overwrite: true' in the config or --force_overwrite=true in the command line to overwrite." << endl;
+        //     return 0;
+        // }
+        // fs::remove_all(dir);
+        // fs::create_directories(dir);
+
+        if (!fs::is_directory("plot_temp") || !fs::exists("plot_temp"))
+            fs::create_directory("plot_temp");
+        else {
+            std::cout << "Error! Temporary plot directory plot_temp already exists. Not overwriting..." << endl;
             return 0;
         }
-        fs::create_directories(dir);
 
         gROOT->SetBatch(kTRUE);
         for (auto && keyAsObj : *in_file->GetListOfKeys()){
@@ -64,39 +77,32 @@ namespace macro {
             if (TString(key->GetClassName()) != "TCanvas") continue;
             TString canvas_name = TString(key->GetName());
             cout << "Processing " << canvas_name << ", class " << key->GetClassName() << endl;
-            TString tok;
-            Ssiz_t from = 0;
-            TString canvas_subdir;
-            int cut_num = -1;
-            while (canvas_name.Tokenize(tok, from, "_cut")) {
-                if (tok.Contains("canvas2D")) {
-                    if (canvas_name.Contains("DATA"))
-                        canvas_subdir = Form("%s_DATA", tok.Data());
-                    else if (canvas_name.Contains("BKG"))
-                        canvas_subdir = Form("%s_BKG", tok.Data());
-                    else if (canvas_name.Contains("SIGNAL"))
-                        canvas_subdir = Form("%s_SIGNAL", tok.Data());
-                }
-                else if (tok.Contains("canvas"))
-                    canvas_subdir = tok;
-                else
-                    cut_num = tok.Atoi();
-            }
-            fs::create_directories(Form("%s/%s", out_dir.Data(), canvas_subdir.Data()));
+            
+            // TString tok;
+            // Ssiz_t from = 0;
+            // int cut_num = 00;
+            // while (canvas_name.Tokenize(tok, from, "_cut"))
+            //     if (!tok.Contains("canvas"))
+            //         cut_num = tok.Atoi();
+            // fs::create_directories(Form("plot_temp/cut%02d", cut_num));
+
             TCanvas * c = (TCanvas*)in_file->Get(canvas_name);
-            c->cd();
-            c->SaveAs(Form("%s/%s/%s_cut%02d.pdf", out_dir.Data(), canvas_subdir.Data(), canvas_subdir.Data(), cut_num));
-            TImage *img = TImage::Create();
-            img->FromPad(c);
-            img->WriteImage(Form("%s/%s/%s_cut%02d.png", out_dir.Data(), canvas_subdir.Data(), canvas_subdir.Data(), cut_num));
-            //c->SaveAs(Form("%s/%s/%s_cut%02d.png", out_dir.Data(), canvas_subdir.Data(), canvas_subdir.Data(), cut_num));
-            c->SaveAs(Form("%s/%s/%s_cut%02d.root", out_dir.Data(), canvas_subdir.Data(), canvas_subdir.Data(), cut_num));
-            //c->SaveAs(Form("%s/%s.C", out_dir.Data(), canvas_name.Data())); // FIXME Getting error on this one
+            canvas_name.ReplaceAll("-", "_");
+            c->Print(Form("plot_temp/%s.pdf", canvas_name.Data()));
+            c->Print(Form("plot_temp/%s.png", canvas_name.Data()));
+            c->SaveAs(Form("plot_temp/%s.root", canvas_name.Data()));
         }
+
+        // Move newly-created plots to EOS using xrdcp and delete temporary dir
+        auto command = Form("xrdcp --streams 8 --recursive %s plot_temp %s", (force_overwrite ? "--force" : ""), out_dir.Data());
+        system(command);
+        // fs::remove_all("./plot_temp");
+
         gROOT->SetBatch(kFALSE);
 
         in_file->Close();
 
         return 0;
     }
+
 } // namespace macro

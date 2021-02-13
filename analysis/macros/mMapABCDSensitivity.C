@@ -380,4 +380,5 @@ namespace macro {
 
         return 0;
     }
+    
 } // namespace macro

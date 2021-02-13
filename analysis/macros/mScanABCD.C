@@ -135,4 +135,5 @@ namespace macro {
 
         return 0;
     }
-} // namespace macro
+
+} // end namespace macro

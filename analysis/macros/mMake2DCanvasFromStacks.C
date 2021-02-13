@@ -83,13 +83,41 @@ namespace macro {
         
         // macro options
 
-        TString years("");
-        if (cfg.find("years") != cfg.end())
-            years = TString(cfg["years"].get<std::string>());
-        else {
-            // TODO: extract years from filename itself
-            cout << "ERROR: Year(s) can only be specified as a macro config or in the command line currently (not via filename)! Exiting..." << endl;
+        vector<std::string> in_filenames = cfg["infilenames"].get<vector<std::string>>();
+        if (in_filenames.size() == 0) {
+            cout << "ERROR! No input filename. Exiting..." << endl;
             return 0;
+        }
+        TString in_filename = TString(in_filenames[0]);
+
+        TString out_filename = TString(cfg["outfilename"].get<std::string>());
+        if (out_filename == TString(""))
+            out_filename = in_filename;
+
+        TFile * in_file, * out_file;
+        if (out_filename == "" || out_filename == in_filename) {
+            in_file = TFile::Open(in_filename, "UPDATE");
+            out_file = in_file;
+        }
+        else {
+            in_file = TFile::Open(in_filename);
+            out_file = TFile::Open(out_filename, "RECREATE");
+        }
+
+        TString years = TString(cfg["years"].get<std::string>());
+        if (years == "") {
+            // Try to infer year from filenames
+            vector<TString> year_set{"2016", "2017", "2018", "161718", "1617", "1618", "1718"};
+            for (auto year : year_set) {
+                if (in_filename.Contains(year)) {
+                    years = year;
+                    break;
+                }
+            }
+            if (years == "") {
+                cout << "ERROR: Year(s) must be specified! (Via macro config, command line, or filename.) Exiting..." << endl;
+                return 0;
+            }
         }
 
         if (cfg.find("custom_lumi") != cfg.end()) { // custom lumi (likely incomplete samples)
@@ -97,24 +125,7 @@ namespace macro {
             years = TString(cfg["custom_lumi"].get<std::string>());
         }
 
-        TString in_filename = TString(cfg["infilenames"].get<std::vector<std::string>>()[0]);
-        if (in_filename == TString("")) {
-            cout << "ERROR! No input filename. Exiting..." << endl;
-            return 0;
-        }
-        TString out_filename = TString(cfg["outfilename"].get<std::string>());
-        if (out_filename == TString(""))
-            out_filename = in_filename;
-
-        TFile * in_file, * out_file;
-        if (out_filename == "" || out_filename == in_filename) {
-            in_file = new TFile(in_filename, "UPDATE");
-            out_file = in_file;
-        }
-        else {
-            in_file = new TFile(in_filename);
-            out_file = new TFile(out_filename, "RECREATE");
-        }
+        // Loop over the keys
         
         map<TString, std::unique_ptr<TCanvas>> canvases;
         for (auto && keyAsObj : *in_file->GetListOfKeys()){
@@ -154,12 +165,12 @@ namespace macro {
         }
 
         // Save canvases
+
         for (auto & pair : canvases) {
             pair.second.get()->Write();
             //delete c;
         }
 
-        //out_file->Write();
         out_file->Close();
         if (out_file != in_file)
             in_file->Close();

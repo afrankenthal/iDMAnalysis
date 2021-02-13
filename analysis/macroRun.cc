@@ -42,7 +42,9 @@ int main(int argc, char ** argv) {
         ("c,cuts", "Cuts config file to use", cxxopts::value<std::string>()->default_value("")) //configs/cuts/CR_nJets.json"))
         ("y,years", "Year(s) to process: 2016, 2017, 2018, 161718, 1618, 1718, 1617", cxxopts::value<std::string>()->default_value(""))
         ("o,outfile", "Output file or directory (depends on macro)", cxxopts::value<std::string>()->default_value(""))
-        ("i,infile", "Input file(s) (for macros that use results of other macros)", cxxopts::value<vector<std::string>>()->default_value({""}))
+        ("i,infile", "Input file(s) (for macros that use results of other macros)", cxxopts::value<vector<std::string>>()->default_value({}))
+        ("l,filelist", "File(s) with list of input files (one input file per line)", cxxopts::value<vector<std::string>>()->default_value({}))
+        ("k,force_overwrite", "Force overwrite of plot directory", cxxopts::value<bool>()->default_value("false")->implicit_value("false"))
         ("h,help", "Print help and exit.")
     ;
     auto result = options.parse(argc, argv);
@@ -56,12 +58,24 @@ int main(int argc, char ** argv) {
     vector<std::string> sample_config_filenames = result["sample"].as<vector<std::string>>();
     TString macro_filename = TString(result["macro"].as<std::string>());
     TString cuts_filename = TString(result["cuts"].as<std::string>());
-    TString out_filename = TString(result["outfile"].as<std::string>()); // default is empty string ""
-    vector<std::string> in_filenames = result["infile"].as<vector<std::string>>(); // default is length-one vector with {""}
     TString years = TString(result["years"].as<std::string>());
- 
-    map<TString, SampleInfo> samples;
+    TString out_filename = TString(result["outfile"].as<std::string>()); // default is empty string ""
+    vector<std::string> in_filenames = result["infile"].as<vector<std::string>>(); // default is length-zero vector with {}
+    vector<std::string> list_filenames = result["filelist"].as<vector<std::string>>(); // default is length-zero vector with {}
+    bool force_overwrite = result["force_overwrite"].as<bool>();
 
+    // add 
+    if (list_filenames.size() > 0) {
+        for (auto list_filename : list_filenames) {
+            std::ifstream infile(list_filename);
+            std::string file;
+            while (infile >> file)
+                in_filenames.push_back(file);
+        }
+    }
+
+    // Process samples config json
+    map<TString, SampleInfo> samples;
     for (auto config_filename : sample_config_filenames) { 
 
         std::ifstream config_file(config_filename);
@@ -135,41 +149,28 @@ int main(int argc, char ** argv) {
 
     // Process macro config json and invoke configured macros
     if (macro_filename == TString("")) {
-        cout << "Error! Need to specify a macro config json file. Exiting..." << endl;
+        cout << "Error! Need to specify a macro config json. Exiting..." << endl;
         printTimeElapsed(time_begin);
         return 1;
     }
     std::ifstream macro_config_file(macro_filename.Data());
     json macro_configs;
     macro_config_file >> macro_configs;
-
-    //for (auto const & [macro, cfg] : macro_configs.items()) {
     for (auto const & item : macro_configs) {
-
         auto macro = item["name"].get<std::string>();
         auto cfg = item["config"];
 
-        if (years != TString(""))
-            cfg["years"] = years;
-
+        cfg["years"] = years;
         cfg["outfilename"] = out_filename.Data();
         cfg["infilenames"] = in_filenames;
-
-        if (macro == "mSumGenWgts") {
-            if (sample_config_filenames.size() != 1) {
-                cout << "Can only run mSumGenWgts with 1 sample config!" << endl;
-                break;
-            }
-            cfg["sample_config_filename"] = sample_config_filenames[0];
-        }
-
-        if (macro == "mSaveCanvases")
-            cfg["outdir"] = out_filename.Data();
+        cfg["sample_config_filenames"] = sample_config_filenames;
+        if (cfg.find("force_overwrite") == cfg.end())
+            cfg["force_overwrite"] = force_overwrite;
 
         // Load macro .so dynamically
         void * handle;
         bool (*process)(map<TString, SampleInfo>, vector<CutInfo>, json);
-        if ( (handle = dlopen(Form("lib%s.so", macro.c_str()), RTLD_NOW)) == NULL) {
+        if ((handle = dlopen(Form("lib%s.so", macro.c_str()), RTLD_NOW)) == NULL) {
             cout << "Error! Could not find lib" << macro << ".so" << endl;
             cout << "dlerror(): " << dlerror() << endl;
             return 1;
@@ -186,11 +187,9 @@ int main(int argc, char ** argv) {
         cout << cfg.dump(4) << endl << endl;
         process(samples, cuts_info, cfg);
         dlclose(handle);
-
     }
 
     cout << endl;
     printTimeElapsed(time_begin);
-
     return 0;
 }

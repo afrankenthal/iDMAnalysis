@@ -39,11 +39,13 @@ namespace macro {
     extern "C" bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
 
         // macro options
-        TString in_filename_VR = TString(cfg["infilenames"].get<std::vector<std::string>>()[0]);
-        if (in_filename_VR == TString("")) {
-            cout << "ERROR! Need an input filename in config. Exiting..." << endl;
+        vector<std::string> in_filenames = cfg["infilenames"].get<vector<std::string>>();
+        if (in_filenames.size() == 0) {
+            cout << "ERROR! No input filename. Exiting..." << endl;
             return 0;
         }
+
+        TString in_filename_VR = TString(in_filenames[0]);
         TFile * in_file_VR = new TFile(in_filename_VR, "READ");
 
         TString out_filename = TString(cfg["outfilename"].get<std::string>());
@@ -95,4 +97,5 @@ namespace macro {
         out_file->Close();
         return 0;
     }
+    
 } // namespace macro

@@ -266,11 +266,11 @@ namespace macro {
                 for (auto & [cut, hist_vec] : cuts) {
                     THStack * hstack;
                     if (mode == common::BKG)
-                        hstack = new THStack(Form("%s_cut%d-BKG", plot_name.Data(), cut), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%02d-BKG", plot_name.Data(), cut), histos_info[plot_name]->title);
                     else if (mode == common::DATA)
-                        hstack = new THStack(Form("%s_cut%d-DATA", plot_name.Data(), cut), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%02d-DATA", plot_name.Data(), cut), histos_info[plot_name]->title);
                     else if (mode == common::SIGNAL)
-                        hstack = new THStack(Form("%s_cut%d-SIGNAL", plot_name.Data(), cut), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%02d-SIGNAL", plot_name.Data(), cut), histos_info[plot_name]->title);
                     
                     std::sort(hist_vec.begin(), hist_vec.end(), sortHists);
 
@@ -285,11 +285,11 @@ namespace macro {
                     if (!cuts_info[cut].efficiency.Contains("none")) {
                         THStack * hstack2 = new THStack(*hstack);
                         if (mode == common::BKG)
-                            hstack2->SetName(Form("%s_%scut%d-BKG", plot_name.Data(), cuts_info[cut].efficiency.Data(), cut));
+                            hstack2->SetName(Form("%s_%scut%02d-BKG", plot_name.Data(), cuts_info[cut].efficiency.Data(), cut));
                         else if (mode == common::DATA)
-                            hstack2->SetName(Form("%s_%scut%d-DATA", plot_name.Data(), cuts_info[cut].efficiency.Data(), cut));
+                            hstack2->SetName(Form("%s_%scut%02d-DATA", plot_name.Data(), cuts_info[cut].efficiency.Data(), cut));
                         else if (mode == common::SIGNAL)
-                            hstack2->SetName(Form("%s_%scut%d-SIGNAL", plot_name.Data(), cuts_info[cut].efficiency.Data(), cut));
+                            hstack2->SetName(Form("%s_%scut%02d-SIGNAL", plot_name.Data(), cuts_info[cut].efficiency.Data(), cut));
                         hstack2->Write();
                     }
                 }
@@ -300,11 +300,11 @@ namespace macro {
                 for (auto & [cut, hist_vec] : cuts) {
                     THStack * hstack;
                     if (mode == common::BKG)
-                        hstack = new THStack(Form("%s_cut%d-BKG", plot_name.Data(), cut), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%02d-BKG", plot_name.Data(), cut), histos_info[plot_name]->title);
                     else if (mode == common::DATA)
-                        hstack = new THStack(Form("%s_cut%d-DATA", plot_name.Data(), cut), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%02d-DATA", plot_name.Data(), cut), histos_info[plot_name]->title);
                     else if (mode == common::SIGNAL)
-                        hstack = new THStack(Form("%s_cut%d-SIGNAL", plot_name.Data(), cut), histos_info[plot_name]->title);
+                        hstack = new THStack(Form("%s_cut%02d-SIGNAL", plot_name.Data(), cut), histos_info[plot_name]->title);
                     
                     std::sort(hist_vec.begin(), hist_vec.end(), sortHists);
 
@@ -319,11 +319,11 @@ namespace macro {
                     if (!cuts_info[cut].efficiency.Contains("none")) {
                         THStack * hstack2 = new THStack(*hstack);
                         if (mode == common::BKG)
-                            hstack2->SetName(Form("%s_%scut%d-BKG", plot_name.Data(), cuts_info[cut].efficiency.Data(), cut));
+                            hstack2->SetName(Form("%s_%scut%02d-BKG", plot_name.Data(), cuts_info[cut].efficiency.Data(), cut));
                         else if (mode == common::DATA)
-                            hstack2->SetName(Form("%s_%scut%d-DATA", plot_name.Data(), cuts_info[cut].efficiency.Data(), cut));
+                            hstack2->SetName(Form("%s_%scut%02d-DATA", plot_name.Data(), cuts_info[cut].efficiency.Data(), cut));
                         else if (mode == common::SIGNAL)
-                            hstack2->SetName(Form("%s_%scut%d-SIGNAL", plot_name.Data(), cuts_info[cut].efficiency.Data(), cut));
+                            hstack2->SetName(Form("%s_%scut%02d-SIGNAL", plot_name.Data(), cuts_info[cut].efficiency.Data(), cut));
                         hstack2->Write();
                     }
                 }
@@ -379,7 +379,7 @@ namespace macro {
         for (auto const & [group, all_cut_numbers] : cutsGroupInclusive) {
             if (group == TString("data")) continue;
             cout << " " << group;
-            cutflow_file << " " << group;
+            cutflow_file << ", " << group;
         }
 
         first_vec = cutsGroupInclusive.begin();
@@ -397,15 +397,15 @@ namespace macro {
 
             Double_t total_data = (cutsGroupInclusive.find("data") != cutsGroupInclusive.end()) ? 
                 cutsGroupInclusive["data"][cut] : 0.0;
-            cutflow_file << " " << total_data;
-            cutflow_file << " " << total_background;
+            cutflow_file << ", " << total_data;
+            cutflow_file << ", " << total_background;
             cout << " " << total_data;
             cout << " " << total_background;
 
             for (auto const & [group, all_cut_numbers] : cutsGroupInclusive) {
                 if (group == TString("data")) continue;
                 cout << " " << all_cut_numbers[cut];
-                cutflow_file << " " << all_cut_numbers[cut];
+                cutflow_file << ", " << all_cut_numbers[cut];
             }
         }
 

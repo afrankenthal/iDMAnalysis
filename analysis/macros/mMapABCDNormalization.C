@@ -112,4 +112,5 @@ namespace macro {
         out_file->Close();
         return 0;
     }
+    
 } // namespace macro

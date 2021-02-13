@@ -1,9 +1,11 @@
 #include <algorithm>
+#include <filesystem>
+namespace fs = std::filesystem;
 #include <fstream>
 #include <iomanip>
 #include <iostream>
 #include <map>
-#include <string.h>
+#include <string>
 #include <vector>
 using std::cout, std::endl, std::map, std::vector;
 
@@ -55,8 +57,8 @@ namespace macro {
         // macro options
         vector<std::string> in_filenames = cfg["infilenames"].get<std::vector<std::string>>();
 
-        if (in_filenames.size() < 2) {
-            cout << "ERROR! Need at least 2 input files to merge. Exiting..." << endl;
+        if (in_filenames.size() < 1) {
+            cout << "ERROR! Need at least 2 input files or 1 directory to merge. Exiting..." << endl;
             return 0;
         }
 
@@ -66,9 +68,29 @@ namespace macro {
         	
         map<TString, THStack*> all_stacks;
 
-        for (auto in_filename : in_filenames) {
+        size_t num_files = in_filenames.size();
+        for (auto i = 0u; i < num_files; i++) {
+            auto in_filename = in_filenames[i];
+            if (!TString(in_filename).Contains(".root")) { // assume it's a directory
+                // traverse directory and add .root files to the end of in_filenames
+                std::string path = in_filename;
+                try
+                {
+                    for (const auto & entry : fs::directory_iterator(path)) {
+                        if (TString(entry.path()).Contains(".root")) {
+                            in_filenames.push_back(entry.path());
+                            num_files++;
+                        }
+                    }
+                }
+                catch (const std::filesystem::filesystem_error& e)
+                {
+                    std::cout << "Caught filesystem exception: likely not a directory. Continuing..." << std::endl;
+                }
+                continue;
+            }
             cout << endl << "Opening file " << in_filename << endl << endl;
-            auto * in_file = new TFile(in_filename.c_str());
+            auto * in_file = TFile::Open(in_filename.c_str());
             for (auto && keyAsObj : *in_file->GetListOfKeys()) {
                 auto key = (TKey*)keyAsObj;
                 if (TString(key->GetClassName()) != "THStack") continue;
@@ -105,4 +127,5 @@ namespace macro {
 
         return 0;
     }
-}
+
+} // end namespace macro

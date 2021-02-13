@@ -48,33 +48,36 @@ namespace macro {
             cout << "ERROR! Need at least 1 input file to process. Exiting..." << endl;
             return 0;
         }
+        TString in_filename = TString(in_filenames[0]);
         
-        //TString in_filename = TString(cfg["infilenames"].get<std::vector<std::string>>()[0]);
-        //if (in_filename == TString("")) {
-        //    cout << "ERROR! No input filename. Exiting..." << endl;
-        //    return 0;
-        //}
         TString out_filename = TString(cfg["outfilename"].get<std::string>());
         if (out_filename == TString(""))
-            out_filename = in_filenames[0];
+            out_filename = in_filename;
 
         TFile * in_file, * out_file;
-        if (out_filename == in_filenames[0]) {
-            in_file = new TFile(in_filenames[0].c_str(), "UPDATE");
+        if (out_filename == in_filename) {
+            in_file = TFile::Open(in_filename, "UPDATE");
             out_file = in_file;
         }
         else {
             //in_file = new TFile(in_filenames[0].c_str());
-            out_file = new TFile(out_filename, "RECREATE");
+            out_file = TFile::Open(out_filename, "RECREATE");
         }
 
-        TString years("");
-        if (cfg.find("years") != cfg.end())
-            years = TString(cfg["years"].get<std::string>());
-        else {
-            // TODO: extract years from filename itself
-            cout << "ERROR: Year(s) can only be specified as a macro config or in the command line currently (not via filename)! Exiting..." << endl;
-            return 0;
+        TString years = TString(cfg["years"].get<std::string>());
+        if (years == "") {
+            // Try to infer year from filename
+            vector<TString> year_set{"2016", "2017", "2018", "161718", "1617", "1618", "1718"};
+            for (auto year : year_set) {
+                if (in_filename.Contains(year)) {
+                    years = year;
+                    break;
+                }
+            }
+            if (years == "") {
+                cout << "ERROR: Year(s) must be specified! (Via macro config, command line, or filename.) Exiting..." << endl;
+                return 0;
+            }
         }
         	
         map<TString, std::unique_ptr<TCanvas>> canvases;
@@ -83,7 +86,7 @@ namespace macro {
             cout << endl << "Opening file " << in_filename << endl << endl;
             TFile * in_file_tmp;
             if (in_filename != out_filename)
-                in_file_tmp = new TFile(in_filename.c_str());
+                in_file_tmp = TFile::Open(in_filename.c_str());
             else
                 in_file_tmp = out_file;
 
