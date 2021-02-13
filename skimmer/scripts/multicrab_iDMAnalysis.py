@@ -83,6 +83,8 @@ def main():
 
     options = getOptions()
 
+    skimmer_base_dir = os.path.join(os.environ['CMSSW_BASE'], 'src/iDMAnalysis/skimmer')
+
     isData = False
     if options.sampleType == 'data' or options.sampleType == 'NoBPTX' or options.sampleType == 'trig':
         isData = True
@@ -106,7 +108,8 @@ def main():
         config.General.transferLogs = True
 
         config.JobType.pluginName = 'Analysis'
-        config.JobType.psetName = 'iDMAnalyzer_cfg.py'
+        config.JobType.psetName = os.path.join(skimmer_base_dir, 'test/run_ntuplizer_cfg.py')
+        config.JobType.allowUndistributedCMSSW = True
         #config.JobType.psetName = 'python/iDMAnalyzer_cfg.py'
         #config.JobType.maxMemoryMB = 4000
         #config.JobType.numCores = 1
@@ -116,7 +119,7 @@ def main():
             #config.Data.splitting = 'LumiBased'
             #config.Data.unitsPerJob = 100
             if options.sampleType == 'NoBPTX':
-                config.Data.lumiMask = '../data/CosmicJSON_E_D_UGMT_bottomOnly.txt'
+                config.Data.lumiMask = os.path.join(skimmer_base_dir, 'data/CosmicJSON_E_D_UGMT_bottomOnly.txt')
             elif year == '2018':
                 config.Data.lumiMask = 'https://cms-service-dqm.web.cern.ch/cms-service-dqm/CAF/certification/Collisions18/13TeV/ReReco/Cert_314472-325175_13TeV_17SeptEarlyReReco2018ABC_PromptEraD_Collisions18_JSON.txt'
             elif year == '2017':
@@ -156,7 +159,7 @@ def main():
 
         total = {}
 
-        with open('../data/dataset_db_%s.json' % year, 'r') as db:
+        with open(os.path.join(skimmer_base_dir, 'data/dataset_db_%s.json' % year), 'r') as db:
             data = json.load(db)
 
             QCD = data['QCD_' + year]
@@ -276,7 +279,25 @@ def main():
                 #total = {'DYJetsToLL_M-50_HT-400to600_2017': '/DYJetsToLL_M-50_HT-400to600_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-94X_mc2017_realistic_v10_ext1-v1/AODSIM'}
                 #total = {'ZJetsToNuNu_HT-200To400_2018': '/ZJetsToNuNu_HT-200To400_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
                 #total = {'WJetsToLNu_HT-2500ToInf_2018': '/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
-                total = {'QCD_HT500to700_2018': '/QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
+                #total = {'QCD_HT500to700_2018': '/QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
+                #total = {'DYJetsToLL_M-50toInfo_2017': '/DYJetsToLL_M-50_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIFall17DRPremix-RECOSIMstep_94X_mc2017_realistic_v10_ext1-v1/AODSIM'}
+                #total = {'WJetsToLNu_HT-1200To2500': '/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
+                #total = {'ZJetsToNuNu_HT-200To400': '/ZJetsToNuNu_HT-200To400_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+                #        'ZJetsToNuNu_HT-600To800': '/ZJetsToNuNu_HT-600To800_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+                #        'ZJetsToNuNu_HT-2500ToInf': '/ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
+                #total = {'QCD_HT500to700_2018': '/QCD_HT500to700_TuneCP5_13TeV-madgraphMLM-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'}
+                total = {'ZJetsToNuNu_HT-400To600_2017': '/ZJetsToNuNu_HT-400To600_13TeV-madgraph/RunIIFall17DRPremix-94X_mc2017_realistic_v10-v1/AODSIM'}
+                #total = {'DYJetsToLL_M-50toInfo_2016': '/DYJetsToLL_M-50_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/AODSIM'}
+                #total = {
+                #        'ST_s-channel_2018': '/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15_ext1-v4/AODSIM',
+                #        'ST_t-channel_top_2018': '/ST_t-channel_top_5f_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM',
+                #        'ST_t-channel_antitop_2018': '/ST_t-channel_antitop_5f_TuneCP5_13TeV-powheg-pythia8/RunIIAutumn18DRPremix-102X_upgrade2018_realistic_v15-v1/AODSIM'
+                #        }
+                # total = {
+                #         'ZJetsToNuNu_HT-800To1200_2016': '/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/AODSIM',
+                #         'WJetsToLNu_HT-200To400_2016': '/WJetsToLNu_HT-200To400_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6_ext2-v1/AODSIM',
+                #         'WJetsToLNu_HT-1200To2500_2016': '/WJetsToLNu_HT-1200To2500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/RunIISummer16DR80Premix-PUMoriond17_80X_mcRun2_asymptotic_2016_TrancheIV_v6-v1/AODSIM'
+                #         }
                 #total = merge_dicts() # -------------------------------> put here the custom samples you want!!!
             else:
                 print "ERROR! SampleType option %s not recoginzed." % options.sampleType
