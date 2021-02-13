@@ -431,7 +431,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     chain_ = chain;
 
-    int num_cores = 3; // default is 3 cores to still fit comfortably within condor's 2 GB memory limit
+    int num_cores = 4; // default is now 3 or 4 cores to still fit within condor's 2 GB memory limit
     if (macro_info_.find("num_cores") != macro_info_.end())
         num_cores = macro_info_["num_cores"].get<int>();
 
@@ -906,6 +906,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     };
 
     auto calcVtxSignificance = [&](float reco_vtx_vxy, float reco_vtx_sigmavxy) { return reco_vtx_vxy/reco_vtx_sigmavxy; };
+    auto calcVtxResolution = [&](float reco_vtx_vxy, float reco_vtx_sigmavxy) { return reco_vtx_sigmavxy/reco_vtx_vxy; };
 
     // NOTE: this passMuonID is wrong! It assumes the same ID for GM as the one used for dSA --> not correct. passGMMuonID below is the right one.
     auto passMuonID = [&](RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_chi2, RVec<float> pt, RVec<float> eta, RVec<float> pt_err) {
@@ -953,7 +954,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         size_t best_index = dsa_index_0; // if no match, just return dsa index
         float min_dR = 999999.f;
         for (size_t j = 0; j < 4; j++) {
-            if (dsagm_match[4 * dsa_index_0 + j] == 1 && vtx_pass_dsagm[4 * dsa_index_1 + j] == 1 && abs(dsagm_dR[4 * dsa_index_0 + j]) < min_dR) {
+            // if (dsagm_match[4 * dsa_index_0 + j] == 1 && vtx_pass_dsagm[4 * dsa_index_1 + j] == 1 && abs(dsagm_dR[4 * dsa_index_0 + j]) < min_dR) {
+            // test with dR < 0.2 instead of 0.1:
+            if (abs(dsagm_dR[4 * dsa_index_0 + j]) < 0.2 && vtx_pass_dsagm[4 * dsa_index_1 + j] == 1 && abs(dsagm_dR[4 * dsa_index_0 + j]) < min_dR) {
                 min_dR = abs(dsagm_dR[4 * dsa_index_0 + j]);
                 best_index = 4 + j;
             }
@@ -966,13 +969,17 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         float min_dR = 999999.f;
         for (size_t j = 0; j < 4; j++) {
             if (best_muon_0 > 3) {
-                if (dsagm_match[4 * dsa_index_1 + j] == 1 && vtx_pass_gmgm[4 * (best_muon_0-4) + j] == 1 && 4 + j != best_muon_0 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
+                // if (dsagm_match[4 * dsa_index_1 + j] == 1 && vtx_pass_gmgm[4 * (best_muon_0-4) + j] == 1 && 4 + j != best_muon_0 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
+                // test with dR < 0.2 instead of 0.1:
+                if (abs(dsagm_dR[4 * dsa_index_1 + j]) < 0.2 && vtx_pass_gmgm[4 * (best_muon_0-4) + j] == 1 && 4 + j != best_muon_0 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
                     min_dR = abs(dsagm_dR[4 * dsa_index_1 + j]);
                     best_index = 4 + j;
                 }
             }
             else {
-                if (dsagm_match[4 * dsa_index_1 + j] == 1 && vtx_pass_dsagm[4 * best_muon_0 + j] == 1 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
+                // if (dsagm_match[4 * dsa_index_1 + j] == 1 && vtx_pass_dsagm[4 * best_muon_0 + j] == 1 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
+                // test with dR < 0.2 instead of 0.1:
+                if (abs(dsagm_dR[4 * dsa_index_1 + j]) < 0.2 && vtx_pass_dsagm[4 * best_muon_0 + j] == 1 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
                     min_dR = abs(dsagm_dR[4 * dsa_index_1 + j]);
                     best_index = 4 + j; // make gm index offset by 4
                 }
@@ -1101,6 +1108,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         Define("matched_muon_vtx_reduced_chi2", takeMatchedVtxQuantity, {"reco_vtx_dsadsa_reduced_chi2", "reco_vtx_gmgm_reduced_chi2", "reco_vtx_dsagm_reduced_chi2", "best_muon_0", "best_muon_1"}).
         Define("matched_muon_vtx_dR", takeMatchedVtxQuantity, {"reco_vtx_dsadsa_dR", "reco_vtx_gmgm_dR", "reco_vtx_dsagm_dR", "best_muon_0", "best_muon_1"}).
         Define("matched_muon_vtx_sign", calcVtxSignificance, {"matched_muon_vtx_vxy", "matched_muon_vtx_sigmavxy"}).
+        Define("matched_muon_vtx_res", calcVtxResolution, {"matched_muon_vtx_vxy", "matched_muon_vtx_sigmavxy"}).
         Define("reco_sel_mu_pt0", takeMatchedMuonQuantity, {"reco_dsa_pt", "reco_gm_pt", "best_muon_0"}).
         Define("reco_sel_mu_pt1", takeMatchedMuonQuantity, {"reco_dsa_pt", "reco_gm_pt", "best_muon_1"}).
         Define("reco_sel_mu_eta0", takeMatchedMuonQuantity, {"reco_dsa_eta", "reco_gm_eta", "best_muon_0"}).
