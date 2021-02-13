@@ -1,12 +1,18 @@
 #!/bin/env python3
-import sys
+import sys, os, subprocess
 import json
 from pathlib import Path
 
 if __name__ == '__main__':
 
+    if len(sys.argv) < 2:
+        print("Error! Need one argument, the sample filename to process.")
+        exit(2)
+
     sample_filename = Path(sys.argv[1])
-    sample_db_file = Path("../data/sample_info_table_short.json").open('r')
+    repo_path = subprocess.check_output(['git', 'rev-parse', '--show-toplevel']).decode('utf-8').strip('\n')
+    sample_db_file = Path(repo_path + "/skimmer/data/sample_info_table_short.json").open('r')
+    print(sample_db_file)
     sample_db = json.load(sample_db_file)
 
     print(f'Processing sample file {sample_filename}')
