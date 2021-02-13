@@ -1,0 +1,14 @@
+{
+    "TTJets_NLO_2018": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_fourteenthrun/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_iDMAnalysis_TTJets_NLO_2018/200727_034934/0000/merged",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_fourteenthrun/TTJets_TuneCP5_13TeV-amcatnloFXFX-pythia8/crab_iDMAnalysis_TTJets_NLO_2018/200727_034934/0001"
+        ],
+        "group": "Top",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 312013700140.1174,
+        "xsec": 831.76,
+        "year": 2018
+    }
+}

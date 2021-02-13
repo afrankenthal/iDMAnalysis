@@ -1,0 +1,79 @@
+{
+    "ZJetsToNuNu_HT-100To200_2018": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_fourteenthrun/ZJetsToNuNu_HT-100To200_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-100To200_2018/200831_021140/0000/merged"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 24087815.509768214,
+        "xsec": 280.35,
+        "year": 2018
+    },
+    "ZJetsToNuNu_HT-1200To2500_2018": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_fourteenthrun/ZJetsToNuNu_HT-1200To2500_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-1200To2500_2018/200831_020824/0000/merged"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 323249.254279227,
+        "xsec": 0.28833,
+        "year": 2018
+    },
+    "ZJetsToNuNu_HT-200To400": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_fourteenthrun/ZJetsToNuNu_HT-200To400_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-200To400/210130_065828/0000/merged"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 23706556.547235094,
+        "xsec": 77.67,
+        "year": 2018
+    },
+    "ZJetsToNuNu_HT-2500ToInf": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_fourteenthrun/ZJetsToNuNu_HT-2500ToInf_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-2500ToInf/210130_065915/0000/merged"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 0.0,
+        "xsec": 0.006945,
+        "year": 2018
+    },
+    "ZJetsToNuNu_HT-400To600_2018": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_fourteenthrun/ZJetsToNuNu_HT-400To600_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-400To600_2018/200727_032738/0000/merged"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 9661363.641463194,
+        "xsec": 10.73,
+        "year": 2018
+    },
+    "ZJetsToNuNu_HT-600To800": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_fourteenthrun/ZJetsToNuNu_HT-600To800_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-600To800/210130_070000/0000/merged"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 1943291.6660420664,
+        "xsec": 2.559,
+        "year": 2018
+    },
+    "ZJetsToNuNu_HT-800To1200_2018": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_fourteenthrun/ZJetsToNuNu_HT-800To1200_13TeV-madgraph/crab_iDMAnalysis_ZJetsToNuNu_HT-800To1200_2018/200831_020559/0000/merged"
+        ],
+        "group": "ZJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 1033759.9768305699,
+        "xsec": 1.1796,
+        "year": 2018
+    }
+}
