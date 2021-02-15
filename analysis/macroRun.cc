@@ -119,29 +119,21 @@ int main(int argc, char ** argv) {
             auto cut = TString(item["cut"].get<std::string>());
             auto description = TString(item["description"].get<std::string>());
 
-            TString inclusive;
+            TString inclusive("yes");
             if (item.find("inclusive") != item.end())
                 inclusive = TString(item["inclusive"].get<std::string>());
-            else
-                inclusive = TString("yes");
 
-            TString efficiency;
+            TString efficiency("none");
             if (item.find("efficiency") != item.end())
                 efficiency = TString(item["efficiency"].get<std::string>());
-            else
-                efficiency = TString("none");
 
-            TString special;
+            TString special("no");
             if (item.find("special") != item.end())
                 special = TString(item["special"].get<std::string>());
-            else
-                special = TString("no");
 
-            TString book_plot;
+            TString book_plot("yes");
             if (item.find("book_plot") != item.end())
                 book_plot = TString(item["book_plot"].get<std::string>());
-            else
-                book_plot = TString("yes");
 
             cuts_info.push_back(CutInfo{cut, description, inclusive, efficiency, special, book_plot});
         }

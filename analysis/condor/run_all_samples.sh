@@ -11,13 +11,15 @@ eosdir="Baseline"
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2018/bkgs_DY.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2018/bkgs_QCD_1.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2018/bkgs_QCD_2.json $eosdir
+./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2018/bkgs_QCD_3.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2018/bkgs_Top_1.json $eosdir
-./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2018/bkgs_Top_2.json $eosdir
+# ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2018/bkgs_Top_2.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2018/bkgs_WJets.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2018/bkgs_ZJets.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2018/bkgs_DY.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2018/bkgs_QCD_1.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2018/bkgs_QCD_2.json $eosdir
+# ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2018/bkgs_QCD_3.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2018/bkgs_Top_1.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2018/bkgs_Top_2.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2018/bkgs_WJets.json $eosdir
@@ -32,13 +34,15 @@ eosdir="Baseline"
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2017/bkgs_DY.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2017/bkgs_QCD_1.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2017/bkgs_QCD_2.json $eosdir
+./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2017/bkgs_QCD_3.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2017/bkgs_Top_1.json $eosdir
-./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2017/bkgs_Top_2.json $eosdir
+# ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2017/bkgs_Top_2.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2017/bkgs_WJets.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2017/bkgs_ZJets.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2017/bkgs_DY.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2017/bkgs_QCD_1.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2017/bkgs_QCD_2.json $eosdir
+# ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2017/bkgs_QCD_3.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2017/bkgs_Top_1.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2017/bkgs_Top_2.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2017/bkgs_WJets.json $eosdir
@@ -54,13 +58,15 @@ eosdir="Baseline"
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2016/bkgs_DY.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2016/bkgs_QCD_1.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2016/bkgs_QCD_2.json $eosdir
+./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2016/bkgs_QCD_3.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2016/bkgs_Top_1.json $eosdir
-./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2016/bkgs_Top_2.json $eosdir
+# ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2016/bkgs_Top_2.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2016/bkgs_WJets.json $eosdir
 ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/SR.json configs/samples/fourteenthrun/2016/bkgs_ZJets.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2016/bkgs_DY.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2016/bkgs_QCD_1.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2016/bkgs_QCD_2.json $eosdir
+# ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2016/bkgs_QCD_3.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2016/bkgs_Top_1.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2016/bkgs_Top_2.json $eosdir
 # ./submit_condor.sh configs/macros/Run2DCutflowVertexError.json configs/cuts/CRnJets.json configs/samples/fourteenthrun/2016/bkgs_WJets.json $eosdir
