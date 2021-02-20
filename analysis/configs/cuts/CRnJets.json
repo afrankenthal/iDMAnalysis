@@ -59,8 +59,8 @@
         "book_plot": "no"
     },
     {
-        "cut": "reco_n_bTag_jets == 0",
-        "description": "0 b-tagged jets",
+        "cut": "reco_n_bTag_jets < 3",
+        "description": "0 b-tagged jets (w SF)",
         "book_plot": "no"
     },
     {

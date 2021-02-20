@@ -8,6 +8,7 @@
 #ifndef RDFAnalysis_h
 #define RDFAnalysis_h
 
+#include <algorithm>
 #include <map>
 #include <vector>
 
@@ -24,6 +25,7 @@ using RDFResultPtr1D = RDFResultPtr<TH1D>;
 using RDFResultPtr2D = RDFResultPtr<TH2D>;
 #include <TChain.h>
 #include <TH1F.h>
+#include <TFormula.h>
 
 #include "../utils/common.h"
 #include "../utils/json.hpp"
@@ -152,6 +154,18 @@ public :
    TH1F * sf_pu;
    TH1F * pileup_2016, * pileup_2017, * pileup_2018;
    std::map<TString, TH1F*> pileup_ZJets_2017;
+
+   typedef struct bTagSF_t {
+      float lower_pt_edge, upper_pt_edge;
+      std::unique_ptr<TFormula> formula;
+   } bTagSF_t;
+
+   static bool compareBTagLowerEdge(const bTagSF_t &a, const float &b) { return (a.lower_pt_edge < b); }
+   static bool compareBTagUpperEdge(const bTagSF_t &a, const float &b) { return (a.upper_pt_edge < b); }
+
+   std::vector<bTagSF_t> bTagSF_2016, bTagSF_2017, bTagSF_2018;
+   std::vector<bTagSF_t> * bTagSF;
+
    //TH2D * gm_sf_2016, * gm_sf_2017, * gm_sf_2018;
    //TH2D * gm_sf;
    //TH2D * el_sf_2016, * el_sf_2017, * el_sf_2018;

@@ -8,13 +8,12 @@ using namespace ROOT::VecOps;
 #include <TROOT.h>
 #include <TStyle.h>
 
+#include "../../utils/rapidcsv.h"
 #include "RDFAnalysis.h"
 
 using std::map, std::vector, std::cout, std::endl;
 
 Bool_t RDFAnalysis::Begin() {
-
-    TFile * pileup_file;
 
     const char* data_path_c = std::getenv("ANALYSIS_DATA_PATH");
     if (!data_path_c) {
@@ -22,7 +21,74 @@ Bool_t RDFAnalysis::Begin() {
         return false;
     }
     TString data_path(data_path_c);
+
+    rapidcsv::Document bTagSF_file_2016(std::string(data_path + "/bTagSF_2016.csv"));
+    rapidcsv::Document bTagSF_file_2017(std::string(data_path + "/bTagSF_2017.csv"));
+    rapidcsv::Document bTagSF_file_2018(std::string(data_path + "/bTagSF_2018.csv"));
+
+    for (size_t i = 0; i < bTagSF_file_2016.GetRowCount(); i++) {
+        int OperatingPoint = bTagSF_file_2016.GetCell<int>(0, i);
+        std::string measurementType = bTagSF_file_2016.GetCell<std::string>(1, i);
+        std::string sysType = bTagSF_file_2016.GetCell<std::string>(2, i);
+        int jetFlavor = bTagSF_file_2016.GetCell<int>(3, i);
+        float etaMin = bTagSF_file_2016.GetCell<float>(4, i);
+        float etaMax = bTagSF_file_2016.GetCell<float>(5, i);
+        float ptMin = bTagSF_file_2016.GetCell<float>(6, i);
+        float ptMax = bTagSF_file_2016.GetCell<float>(7, i);
+        int discrMin = bTagSF_file_2016.GetCell<int>(8, i);
+        int discrMax = bTagSF_file_2016.GetCell<int>(9, i);
+        TString formula = TString(bTagSF_file_2016.GetCell<std::string>(10, i));
+        formula.ReplaceAll(" ", "").ReplaceAll("\"", "");
+        // TODO: add "up" and "down" for systematics
+        if (OperatingPoint == 1 && measurementType == " comb" && sysType == " central" && jetFlavor == 0) {
+            std::unique_ptr<TFormula> f = std::make_unique<TFormula>("f", formula.Data());
+            bTagSF_2016.push_back({ptMin, ptMax, std::move(f)});
+        }
+    }
+
+    for (size_t i = 0; i < bTagSF_file_2017.GetRowCount(); i++) {
+        int OperatingPoint = bTagSF_file_2017.GetCell<int>(0, i);
+        std::string measurementType = bTagSF_file_2017.GetCell<std::string>(1, i);
+        std::string sysType = bTagSF_file_2017.GetCell<std::string>(2, i);
+        int jetFlavor = bTagSF_file_2017.GetCell<int>(3, i);
+        float etaMin = bTagSF_file_2017.GetCell<float>(4, i);
+        float etaMax = bTagSF_file_2017.GetCell<float>(5, i);
+        float ptMin = bTagSF_file_2017.GetCell<float>(6, i);
+        float ptMax = bTagSF_file_2017.GetCell<float>(7, i);
+        int discrMin = bTagSF_file_2017.GetCell<int>(8, i);
+        int discrMax = bTagSF_file_2017.GetCell<int>(9, i);
+        TString formula = TString(bTagSF_file_2017.GetCell<std::string>(10, i));
+        formula.ReplaceAll(" ", "").ReplaceAll("\"", "");
+        // TODO: add "up" and "down" for systematics
+        if (OperatingPoint == 1 && measurementType == " comb" && sysType == " central" && jetFlavor == 0) {
+            std::unique_ptr<TFormula> f = std::make_unique<TFormula>("f", formula.Data());
+            bTagSF_2017.push_back({ptMin, ptMax, std::move(f)});
+        }
+    }
     
+    for (size_t i = 0; i < bTagSF_file_2018.GetRowCount(); i++) {
+        int OperatingPoint = bTagSF_file_2018.GetCell<int>(0, i);
+        std::string measurementType = bTagSF_file_2018.GetCell<std::string>(1, i);
+        std::string sysType = bTagSF_file_2018.GetCell<std::string>(2, i);
+        int jetFlavor = bTagSF_file_2018.GetCell<int>(3, i);
+        float etaMin = bTagSF_file_2018.GetCell<float>(4, i);
+        float etaMax = bTagSF_file_2018.GetCell<float>(5, i);
+        float ptMin = bTagSF_file_2018.GetCell<float>(6, i);
+        float ptMax = bTagSF_file_2018.GetCell<float>(7, i);
+        int discrMin = bTagSF_file_2018.GetCell<int>(8, i);
+        int discrMax = bTagSF_file_2018.GetCell<int>(9, i);
+        TString formula = TString(bTagSF_file_2018.GetCell<std::string>(10, i));
+        formula.ReplaceAll(" ", "").ReplaceAll("\"", "");
+        // TODO: add " up" and " down" for systematics
+        if (OperatingPoint == 1 && measurementType == " comb" && sysType == " central" && jetFlavor == 0) {
+            std::unique_ptr<TFormula> f = std::make_unique<TFormula>("f", formula.Data());
+            bTagSF_2018.push_back({ptMin, ptMax, std::move(f)});
+        }
+    }
+    
+    
+    TFile * pileup_file;
+
     //pileup_file = TFile::Open("../data/puWeights_80x_37ifb.root");
     pileup_file = TFile::Open(data_path + TString("/pileup/PUWeights_2016.root"));
     pileup_2016 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
@@ -361,10 +427,12 @@ void RDFAnalysis::SetSampleConfig(common::SampleInfo sample_info) {
         //}
         //else {
         sf_pu = pileup_2017;
+        bTagSF = &bTagSF_2017;
         //}
     }
     else if (year_ == 2016) {
         sf_pu = pileup_2016;
+        bTagSF = &bTagSF_2016;
         lumi_ = 35.92 * 1000;
         trig_sf = trig_hist_2016;
         gm_sf = gm_hist_2016;//->Add(gm_hist_2016GH);
@@ -390,6 +458,7 @@ void RDFAnalysis::SetSampleConfig(common::SampleInfo sample_info) {
     }
     else if (year_ == 2018) {
         sf_pu = pileup_2018;
+        bTagSF = &bTagSF_2018;
         lumi_ = 59.74 * 1000;
         trig_sf = trig_hist_2018;
         gm_sf = gm_hist_2018;
@@ -496,6 +565,39 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         return sf;
     };
     */
+
+    auto calcBTagsf = [&](int n_btagged_jets, RVec<float> jets_pt, RVec<float> jets_eta, RVec<bool> jets_btag_pass) {
+        if (jets_pt.size() < 2)
+            return 1.0f;
+        // for our purposes the sf does not change between eta -2.5 and 2.5
+        float w = 1.0f;
+        if (n_btagged_jets == 2) {
+            float pt = jets_pt[0];
+            auto it = std::lower_bound(bTagSF->begin(), bTagSF->end(), pt, compareBTagLowerEdge);
+            // if pt is greater than the highest lower edge, use this last entry to compute sf
+            if (it == bTagSF->end())
+                it--;
+            float sf1 = it->formula->Eval(pt);
+
+            pt = jets_pt[1];
+            it = std::lower_bound(bTagSF->begin(), bTagSF->end(), pt, compareBTagLowerEdge);
+            if (it == bTagSF->end())
+                it--;
+            float sf2 = it->formula->Eval(pt);
+
+            w = (1.0f - sf1) * (1.0f - sf2);
+        }
+        else if (n_btagged_jets == 1) {
+            float pt = (jets_btag_pass[0] ? jets_pt[0] : jets_pt[1]);
+            auto it = std::lower_bound(bTagSF->begin(), bTagSF->end(), pt, compareBTagLowerEdge);
+            if (it == bTagSF->end())
+                it--;
+            float sf = it->formula->Eval(pt);
+
+            w = (1.0f - sf);
+        }
+        return w;
+    };
 
     auto calcZsf = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
         if ((group_ != "ZJets" && group_ != "DY") || gen_pt.size() != gen_ID.size()) return 1.0f;
@@ -812,8 +914,10 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         return wgt_e*wgt_p;
     };
 
-    auto calcTotalWgt = [&](float veto_wgt, float reco_dsa_wgt, float dsa_wgt, float gm_wgt, float Zwgt, float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt) {
-        double weight =  veto_wgt * reco_dsa_wgt * dsa_wgt * gm_wgt * Zwgt * Wwgt * PUwgt * trig_wgt * xsec_ * lumi_ * gen_wgt / sum_gen_wgt_;
+    auto calcTotalWgt = [&](float veto_wgt, float reco_dsa_wgt, float dsa_wgt, float gm_wgt, float Zwgt, 
+                        float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt, float bTag_wgt) {
+        double weight =  veto_wgt * reco_dsa_wgt * dsa_wgt * gm_wgt * Zwgt * 
+                        Wwgt * PUwgt * trig_wgt * xsec_ * lumi_ * gen_wgt * bTag_wgt / sum_gen_wgt_;
     //auto calcTotalWgt = [&](float ph_sf_wgt, float el_sf_wgt, float gm_sf_wgt, float Zwgt, float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt) {
     //    double weight =  trig_wgt * ph_sf_wgt * el_sf_wgt * gm_sf_wgt * Zwgt * Wwgt * PUwgt * xsec_ * lumi_ * gen_wgt / sum_gen_wgt_;
         // Warn if large weight *due only* to PU, Z, W, or genwgt / sum_gen_wgt_, but not due to xsec or lumi
@@ -832,12 +936,23 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         return (year_ == 2018 ? !hem_veto : true);
     };
 
-    auto calcNBTag = [&](RVec<float> jets_btag_id) {
-        // pfDeepCSVJetTags:probb+probbb medium working points for 2018/17 and 2016
-        float bTag_wp = (year_ == 2016 ? 0.6324 : 0.4184);
-        auto jets_btagged = jets_btag_id[jets_btag_id > bTag_wp];
-        return (int)jets_btagged.size();
-    }; 
+    auto calcBTagPass = [&](RVec<float> jets_btag_id) {
+        // pfDeepCSVJetTags:probb+probbb medium working points for 18+17+16
+        float bTag_wp = 1.0f;
+        if (year_ == 2016)
+            bTag_wp = 0.6324;
+        else if (year_ == 2017)
+            bTag_wp = 0.4941;
+        else if (year_ == 2018)
+            bTag_wp = 0.4184;
+        RVec<bool> jets_btag_pass = jets_btag_id > bTag_wp;
+        return jets_btag_pass;
+    };
+
+    auto calcNBTag = [&](RVec<float> jets_btag_id, RVec<bool> jets_btag_pass) {
+        return (int)jets_btag_id[jets_btag_pass].size();
+    };
+
 
     // Need these to not segfault in case collection is empty
     // Also, RDataFrame.Histo1D() doesn't accept indexed vectors, so need to rename
@@ -1155,7 +1270,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         Define("fake_MET_fraction", findFakeMETCut, {"MET_pt", "MET_phi", "reco_Calo_MET_pt", "reco_Calo_MET_phi", "reco_Calo_MET_pt"}).
         Define("reco_PF_MetNoMu_pt", findMetNoMu, {"MET_pt", "MET_phi", "reco_pass_gm_pt", "reco_pass_gm_phi"}).
         Define("hem_veto", calcHemVeto, {"reco_PF_HEM_flag"}).
-        Define("reco_n_bTag_jets", calcNBTag, {"reco_PF_jet_corr_BTag"}).
+        Define("reco_bTag_pass", calcBTagPass, {"reco_PF_jet_corr_BTag"}).
+        Define("reco_n_bTag_jets", calcNBTag, {"reco_PF_jet_corr_BTag", "reco_bTag_pass"}).
         Define("reco_METmu_dphi_v2", calcRecoMETmuDphi, {"reco_sel_mu_pt0", "reco_sel_mu_phi0", "reco_sel_mu_pt1", "reco_sel_mu_phi1", "MET_phi"}).
         Define("CaloPFMETRatio", Form("abs(reco_Calo_MET_pt - %s)/reco_Calo_MET_pt", "MET_pt"));
 
@@ -1179,7 +1295,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
             Define("dsa_wgt", calcDSAsf, {"reco_dsa_pt", "reco_dsa_eta","reco_dsa_dxy", "best_dsa_0", "best_dsa_1"}).
             Define("reco_dsa_wgt", calcrecoDSAsf, {"reco_dsa_pt", "reco_dsa_eta","reco_dsa_dxy", "best_dsa_0", "best_dsa_1"}).
             Define("gm_wgt", calcGMsf, {"reco_gm_pt", "reco_gm_eta", "best_muon_0", "best_muon_1"}).
-            Define("wgt", calcTotalWgt, {"veto_wgt", "reco_dsa_wgt","dsa_wgt", "gm_wgt", "Zwgt", "Wwgt", "Twgt", "PUwgt", "trig_wgt", "gen_wgt"});
+            Define("bTag_wgt", calcBTagsf, {"reco_n_bTag_jets", jet_pt.Data(), jet_eta.Data(), "reco_bTag_pass"}).
+            Define("wgt", calcTotalWgt, {"veto_wgt", "reco_dsa_wgt","dsa_wgt", "gm_wgt", "Zwgt", 
+                                            "Wwgt", "Twgt", "PUwgt", "trig_wgt", "gen_wgt", "bTag_wgt"});
             //Define("wgt", "1.0");
             //Define("wgt", calcTotalWgt, {"ph_sf_wgt", "el_sf_wgt", "gm_sf_wgt", "Zwgt", "Wwgt", "Twgt", "PUwgt", "trig_wgt", "gen_wgt"});
     }
