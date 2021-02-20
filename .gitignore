@@ -11,12 +11,6 @@
 *tmp*
 messages.txt
 nohup.out
-washAOD/python/201*
-washAOD/python/crab/*
-washAOD/python/*.pyc
 bin/
 studies/
 build/
-washAOD/macros/bin
-washAOD/macros/build
-washAOD/macros/plots

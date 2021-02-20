@@ -1,0 +1,14 @@
+{
+    "Mchi-6p0_dMchi-2p0_ctau-100": {
+        "dir": [
+            "/uscms/homes/a/as2872/nobackup/iDM/AndreAnalysis/CMSSW_10_2_18/src/iDMAnalysis/skimmer/test_new_sigmavxy_signal_2018.root"
+        ],
+        "group": "sig_6p0_100",
+        "limit_num_files": -1,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 45121.0,
+        "xsec": 0.14,
+        "lumi": 58.523,
+        "year": 2018
+    }
+}

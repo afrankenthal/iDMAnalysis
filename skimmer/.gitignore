@@ -1,0 +1,4 @@
+!data/*.root
+!data/**/*.root
+python/201*
+python/crab/*

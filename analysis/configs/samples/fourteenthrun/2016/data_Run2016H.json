@@ -1,0 +1,14 @@
+{
+    "MET_2016RunH": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/data_fourteenthrun/MET/crab_iDMAnalysis_MET_2016RunH/200726_070317/0000/merged"
+        ],
+        "group": "data",
+        "mode": "DATA",
+        "limit_num_files": -1,
+        "sum_gen_wgt": 0.0,
+        "year": 2016,
+        "lumi": 35.92,
+        "xsec": -1
+    }
+}

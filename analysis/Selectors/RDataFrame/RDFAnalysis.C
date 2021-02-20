@@ -1,0 +1,1419 @@
+#include <math.h>
+#include <cstdlib>
+
+#include <ROOT/RVec.hxx>
+using namespace ROOT::VecOps;
+#include <TFile.h>
+#include <TH2.h>
+#include <TROOT.h>
+#include <TStyle.h>
+
+#include "../../utils/rapidcsv.h"
+#include "RDFAnalysis.h"
+
+using std::map, std::vector, std::cout, std::endl;
+
+Bool_t RDFAnalysis::Begin() {
+
+    const char* data_path_c = std::getenv("ANALYSIS_DATA_PATH");
+    if (!data_path_c) {
+        cout << "ERROR! Could not find environment variable $ANALYSIS_DATA_PATH. Make sure you have sourced setup.sh before proceeding." << endl;
+        return false;
+    }
+    TString data_path(data_path_c);
+
+    rapidcsv::Document bTagSF_file_2016(std::string(data_path + "/bTagSF_2016.csv"));
+    rapidcsv::Document bTagSF_file_2017(std::string(data_path + "/bTagSF_2017.csv"));
+    rapidcsv::Document bTagSF_file_2018(std::string(data_path + "/bTagSF_2018.csv"));
+
+    for (size_t i = 0; i < bTagSF_file_2016.GetRowCount(); i++) {
+        int OperatingPoint = bTagSF_file_2016.GetCell<int>(0, i);
+        std::string measurementType = bTagSF_file_2016.GetCell<std::string>(1, i);
+        std::string sysType = bTagSF_file_2016.GetCell<std::string>(2, i);
+        int jetFlavor = bTagSF_file_2016.GetCell<int>(3, i);
+        float etaMin = bTagSF_file_2016.GetCell<float>(4, i);
+        float etaMax = bTagSF_file_2016.GetCell<float>(5, i);
+        float ptMin = bTagSF_file_2016.GetCell<float>(6, i);
+        float ptMax = bTagSF_file_2016.GetCell<float>(7, i);
+        int discrMin = bTagSF_file_2016.GetCell<int>(8, i);
+        int discrMax = bTagSF_file_2016.GetCell<int>(9, i);
+        TString formula = TString(bTagSF_file_2016.GetCell<std::string>(10, i));
+        formula.ReplaceAll(" ", "").ReplaceAll("\"", "");
+        // TODO: add "up" and "down" for systematics
+        if (OperatingPoint == 1 && measurementType == " comb" && sysType == " central" && jetFlavor == 0) {
+            std::unique_ptr<TFormula> f = std::make_unique<TFormula>("f", formula.Data());
+            bTagSF_2016.push_back({ptMin, ptMax, std::move(f)});
+        }
+    }
+
+    for (size_t i = 0; i < bTagSF_file_2017.GetRowCount(); i++) {
+        int OperatingPoint = bTagSF_file_2017.GetCell<int>(0, i);
+        std::string measurementType = bTagSF_file_2017.GetCell<std::string>(1, i);
+        std::string sysType = bTagSF_file_2017.GetCell<std::string>(2, i);
+        int jetFlavor = bTagSF_file_2017.GetCell<int>(3, i);
+        float etaMin = bTagSF_file_2017.GetCell<float>(4, i);
+        float etaMax = bTagSF_file_2017.GetCell<float>(5, i);
+        float ptMin = bTagSF_file_2017.GetCell<float>(6, i);
+        float ptMax = bTagSF_file_2017.GetCell<float>(7, i);
+        int discrMin = bTagSF_file_2017.GetCell<int>(8, i);
+        int discrMax = bTagSF_file_2017.GetCell<int>(9, i);
+        TString formula = TString(bTagSF_file_2017.GetCell<std::string>(10, i));
+        formula.ReplaceAll(" ", "").ReplaceAll("\"", "");
+        // TODO: add "up" and "down" for systematics
+        if (OperatingPoint == 1 && measurementType == " comb" && sysType == " central" && jetFlavor == 0) {
+            std::unique_ptr<TFormula> f = std::make_unique<TFormula>("f", formula.Data());
+            bTagSF_2017.push_back({ptMin, ptMax, std::move(f)});
+        }
+    }
+    
+    for (size_t i = 0; i < bTagSF_file_2018.GetRowCount(); i++) {
+        int OperatingPoint = bTagSF_file_2018.GetCell<int>(0, i);
+        std::string measurementType = bTagSF_file_2018.GetCell<std::string>(1, i);
+        std::string sysType = bTagSF_file_2018.GetCell<std::string>(2, i);
+        int jetFlavor = bTagSF_file_2018.GetCell<int>(3, i);
+        float etaMin = bTagSF_file_2018.GetCell<float>(4, i);
+        float etaMax = bTagSF_file_2018.GetCell<float>(5, i);
+        float ptMin = bTagSF_file_2018.GetCell<float>(6, i);
+        float ptMax = bTagSF_file_2018.GetCell<float>(7, i);
+        int discrMin = bTagSF_file_2018.GetCell<int>(8, i);
+        int discrMax = bTagSF_file_2018.GetCell<int>(9, i);
+        TString formula = TString(bTagSF_file_2018.GetCell<std::string>(10, i));
+        formula.ReplaceAll(" ", "").ReplaceAll("\"", "");
+        // TODO: add " up" and " down" for systematics
+        if (OperatingPoint == 1 && measurementType == " comb" && sysType == " central" && jetFlavor == 0) {
+            std::unique_ptr<TFormula> f = std::make_unique<TFormula>("f", formula.Data());
+            bTagSF_2018.push_back({ptMin, ptMax, std::move(f)});
+        }
+    }
+    
+    
+    TFile * pileup_file;
+
+    //pileup_file = TFile::Open("../data/puWeights_80x_37ifb.root");
+    pileup_file = TFile::Open(data_path + TString("/pileup/PUWeights_2016.root"));
+    pileup_2016 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
+    pileup_2016->SetDirectory(0);
+    pileup_file->Close();
+
+    pileup_file = TFile::Open(data_path + TString("/puWeights_90x_41ifb.root"));
+    //pileup_file = TFile::Open("../data/pileup/PUWeights_2017.root");
+    pileup_2017 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
+    pileup_2017->SetDirectory(0);
+    pileup_file->Close();
+    
+    //pileup_file = TFile::Open("../data/puWeights_10x_56ifb.root");
+    pileup_file = TFile::Open(data_path + TString("/pileup/PUWeights_2018.root"));
+    pileup_2018 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
+    pileup_2018->SetDirectory(0);
+    pileup_file->Close();
+
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio100.root"));
+    pileup_ZJets_2017["HT-100To200"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
+    pileup_ZJets_2017["HT-100To200"]->SetDirectory(0);
+    pileup_file->Close();
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio200.root"));
+    pileup_ZJets_2017["HT-200To400"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
+    pileup_ZJets_2017["HT-200To400"]->SetDirectory(0);
+    pileup_file->Close();
+    ////// FIXME FIXME FIXME zjetratio400.root does not exist!
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio200.root"));
+    pileup_ZJets_2017["HT-400To600"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
+    pileup_ZJets_2017["HT-400To600"]->SetDirectory(0);
+    pileup_file->Close();
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio600.root"));
+    pileup_ZJets_2017["HT-600To800"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
+    pileup_ZJets_2017["HT-600To800"]->SetDirectory(0);
+    pileup_file->Close();
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio800.root"));
+    pileup_ZJets_2017["HT-800To1200"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
+    pileup_ZJets_2017["HT-800To1200"]->SetDirectory(0);
+    pileup_file->Close();
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio1200.root"));
+    pileup_ZJets_2017["HT-1200To2500"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
+    pileup_ZJets_2017["HT-1200To2500"]->SetDirectory(0);
+    pileup_file->Close();
+    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio2500.root"));
+    pileup_ZJets_2017["HT-2500ToInf"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
+    pileup_ZJets_2017["HT-2500ToInf"]->SetDirectory(0);
+    pileup_file->Close();
+    
+    // Set up QCD and EWK corrections
+    TFile * kfactors = TFile::Open(data_path + TString("/kfactors.root"));
+    TH1F * z_nlo = (TH1F*)kfactors->Get("ZJets_012j_NLO/nominal");
+    TH1F * z_ewk = (TH1F*)kfactors->Get("EWKcorr/Z");
+    TH1F * z_lo = (TH1F*)kfactors->Get("ZJets_LO/inv_pt");
+    sf_z_qcd = (TH1F*)z_nlo->Clone();
+    sf_z_qcd->Divide(z_lo);
+    sf_z_ewk = (TH1F*)z_ewk->Clone();
+    sf_z_ewk->Divide(z_lo);
+    TH1F * w_nlo = (TH1F*)kfactors->Get("WJets_012j_NLO/nominal");
+    TH1F * w_ewk = (TH1F*)kfactors->Get("EWKcorr/W");
+    TH1F * w_lo = (TH1F*)kfactors->Get("WJets_LO/inv_pt");
+    sf_w_qcd = (TH1F*)w_nlo->Clone();
+    sf_w_qcd->Divide(w_lo);
+    sf_w_ewk = (TH1F*)w_ewk->Clone();
+    sf_w_ewk->Divide(w_lo);
+    sf_z_qcd->SetDirectory(0);
+    sf_z_ewk->SetDirectory(0);
+    sf_w_qcd->SetDirectory(0);
+    sf_w_ewk->SetDirectory(0);
+    kfactors->Close();
+
+    // Set electron veto weights
+    TFile * veto_e_wgt_2016 = TFile::Open(data_path + TString("/ElectronWPVeto_80X_2016.root"));
+    TFile * veto_e_wgt_2017 = TFile::Open(data_path + TString("/ElectronWPVeto_Fall17V2_2017.root"));
+    TFile * veto_e_wgt_2018 = TFile::Open(data_path + TString("/ElectronWPVeto_Fall17V2_2018.root"));
+    veto_e_hist_2016 = (TH2F*)(((TH2F*)veto_e_wgt_2016->Get("EGamma_SF2D"))->Clone());
+    veto_e_hist_2017 = (TH2F*)(((TH2F*)veto_e_wgt_2017->Get("EGamma_SF2D"))->Clone());
+    veto_e_hist_2018 = (TH2F*)(((TH2F*)veto_e_wgt_2018->Get("EGamma_SF2D"))->Clone());
+    veto_e_hist_2016->SetDirectory(0);
+    veto_e_hist_2017->SetDirectory(0);
+    veto_e_hist_2018->SetDirectory(0);
+    veto_e_wgt_2016->Close();
+    veto_e_wgt_2017->Close();
+    veto_e_wgt_2018->Close();
+
+
+    // Set photon veto weights
+    TFile * veto_p_wgt_2016 = TFile::Open(data_path + TString("/PhotonsLoose_2016_Fall17V2.root"));
+    TFile * veto_p_wgt_2017 = TFile::Open(data_path + TString("/PhotonsLoose_2017.root"));
+    TFile * veto_p_wgt_2018 = TFile::Open(data_path + TString("/PhotonsLoose_2018.root"));
+    veto_p_hist_2016 = (TH2F*)(((TH2F*)veto_p_wgt_2016->Get("EGamma_SF2D"))->Clone());
+    veto_p_hist_2017 = (TH2F*)(((TH2F*)veto_p_wgt_2017->Get("EGamma_SF2D"))->Clone());
+    veto_p_hist_2018 = (TH2F*)(((TH2F*)veto_p_wgt_2018->Get("EGamma_SF2D"))->Clone());
+    veto_p_hist_2016->SetDirectory(0);
+    veto_p_hist_2017->SetDirectory(0);
+    veto_p_hist_2018->SetDirectory(0);
+    veto_p_wgt_2016->Close();
+    veto_p_wgt_2017->Close();
+    veto_p_wgt_2018->Close();
+
+    // Set global muon weights
+    TFile * gm_wgt_2016 = TFile::Open(data_path + TString("/idm_gm_scalefactors/GM_SF_2016sys.root"));
+    TFile * gm_wgt_2016GH = TFile::Open(data_path + TString("/idm_gm_scalefactors/GM_SF_2016sys_GH.root"));
+    TFile * gm_wgt_2017 = TFile::Open(data_path + TString("/idm_gm_scalefactors/GM_SF_2017sys.root"));
+    TFile * gm_wgt_2018 = TFile::Open(data_path + TString("/idm_gm_scalefactors/GM_SF_2018ID.root"));
+    gm_hist_2016 = (TH2F*)(((TH2F*)gm_wgt_2016->Get("NUM_LooseID_DEN_genTracks_eta_pt"))->Clone());
+    gm_hist_2016GH = (TH2F*)(((TH2F*)gm_wgt_2016GH->Get("NUM_LooseID_DEN_genTracks_eta_pt"))->Clone());
+    gm_hist_2017 = (TH2F*)(((TH2F*)gm_wgt_2017->Get("NUM_LooseID_DEN_genTracks_pt_abseta"))->Clone());
+    gm_hist_2018 = (TH2F*)(((TH2F*)gm_wgt_2018->Get("NUM_LooseID_DEN_TrackerMuons_pt_abseta"))->Clone()); // !!!!! FIXME: check this
+    gm_hist_2016stat = (TH2F*)(((TH2F*)gm_wgt_2016->Get("NUM_LooseID_DEN_genTracks_eta_pt_stat"))->Clone());
+    gm_hist_2016statGH = (TH2F*)(((TH2F*)gm_wgt_2016GH->Get("NUM_LooseID_DEN_genTracks_eta_pt_stat"))->Clone());
+    gm_hist_2017stat = (TH2F*)(((TH2F*)gm_wgt_2017->Get("NUM_LooseID_DEN_genTracks_pt_abseta_stat"))->Clone()); 
+    gm_hist_2018stat = (TH2F*)(((TH2F*)gm_wgt_2018->Get("NUM_LooseID_DEN_TrackerMuons_pt_abseta_stat"))->Clone()); // !!!!! FIXME: check this
+    gm_hist_2016sys = (TH2F*)(((TH2F*)gm_wgt_2016->Get("NUM_LooseID_DEN_genTracks_eta_pt_syst"))->Clone());
+    gm_hist_2016sysGH = (TH2F*)(((TH2F*)gm_wgt_2016GH->Get("NUM_LooseID_DEN_genTracks_eta_pt_syst"))->Clone());
+    gm_hist_2017sys = (TH2F*)(((TH2F*)gm_wgt_2017->Get("NUM_LooseID_DEN_genTracks_pt_abseta_syst"))->Clone());
+    gm_hist_2018sys = (TH2F*)(((TH2F*)gm_wgt_2018->Get("NUM_LooseID_DEN_TrackerMuons_pt_abseta_syst"))->Clone()); // !!!!! FIXME: check this
+    gm_hist_2016->SetDirectory(0);
+    gm_hist_2016GH->SetDirectory(0);
+    gm_hist_2017->SetDirectory(0);
+    gm_hist_2018->SetDirectory(0);
+    gm_hist_2016stat->SetDirectory(0);
+    gm_hist_2016statGH->SetDirectory(0);
+    gm_hist_2017stat->SetDirectory(0);
+    gm_hist_2018stat->SetDirectory(0);
+    gm_hist_2016sys->SetDirectory(0);
+    gm_hist_2016sysGH->SetDirectory(0);
+    gm_hist_2017sys->SetDirectory(0);
+    gm_hist_2018sys->SetDirectory(0);
+    gm_wgt_2016->Close();
+    gm_wgt_2016GH->Close();
+    gm_wgt_2017->Close();
+    gm_wgt_2018->Close();
+
+    // Set dsa muon weights
+    TFile * dsa_wgt_2016 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root"));
+    TFile * dsa_wgt_2017 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root"));
+    TFile * dsa_wgt_2018 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root"));
+    dsa_hist_2016 = (TH2F*)(((TH2F*)dsa_wgt_2016->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
+    dsa_hist_2017 = (TH2F*)(((TH2F*)dsa_wgt_2017->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
+    dsa_hist_2018 = (TH2F*)(((TH2F*)dsa_wgt_2018->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
+    dsa_hist_2016stat = (TH2F*)(((TH2F*)dsa_wgt_2016->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
+    dsa_hist_2017stat = (TH2F*)(((TH2F*)dsa_wgt_2017->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
+    dsa_hist_2018stat = (TH2F*)(((TH2F*)dsa_wgt_2018->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
+    dsa_hist_2016sys = (TH2F*)(((TH2F*)dsa_wgt_2016->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
+    dsa_hist_2017sys = (TH2F*)(((TH2F*)dsa_wgt_2017->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
+    dsa_hist_2018sys = (TH2F*)(((TH2F*)dsa_wgt_2018->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
+    dsa_hist_2016->SetDirectory(0);
+    dsa_hist_2017->SetDirectory(0);
+    dsa_hist_2018->SetDirectory(0);
+    dsa_hist_2016stat->SetDirectory(0);
+    dsa_hist_2017stat->SetDirectory(0);
+    dsa_hist_2018stat->SetDirectory(0);
+    dsa_hist_2016sys->SetDirectory(0);
+    dsa_hist_2017sys->SetDirectory(0);
+    dsa_hist_2018sys->SetDirectory(0);
+    dsa_wgt_2016->Close();
+    dsa_wgt_2017->Close();
+    dsa_wgt_2018->Close();
+    TFile * dsa_wgt_2016_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root"));
+    TFile * dsa_wgt_2017_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root"));
+    TFile * dsa_wgt_2018_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root"));
+    dsa_hist_2016_low = (TH2F*)(((TH2F*)dsa_wgt_2016_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
+    dsa_hist_2017_low = (TH2F*)(((TH2F*)dsa_wgt_2017_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
+    dsa_hist_2018_low = (TH2F*)(((TH2F*)dsa_wgt_2018_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
+    dsa_hist_2016stat_low = (TH2F*)(((TH2F*)dsa_wgt_2016_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
+    dsa_hist_2017stat_low = (TH2F*)(((TH2F*)dsa_wgt_2017_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
+    dsa_hist_2018stat_low = (TH2F*)(((TH2F*)dsa_wgt_2018_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
+    dsa_hist_2016sys_low = (TH2F*)(((TH2F*)dsa_wgt_2016_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
+    dsa_hist_2017sys_low = (TH2F*)(((TH2F*)dsa_wgt_2017_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
+    dsa_hist_2018sys_low = (TH2F*)(((TH2F*)dsa_wgt_2018_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
+    dsa_hist_2016_low->SetDirectory(0);
+    dsa_hist_2017_low->SetDirectory(0);
+    dsa_hist_2018_low->SetDirectory(0);
+    dsa_hist_2016stat_low->SetDirectory(0);
+    dsa_hist_2017stat_low->SetDirectory(0);
+    dsa_hist_2018stat_low->SetDirectory(0);
+    dsa_hist_2016sys_low->SetDirectory(0);
+    dsa_hist_2017sys_low->SetDirectory(0);
+    dsa_hist_2018sys_low->SetDirectory(0);
+    dsa_wgt_2016_low->Close();
+    dsa_wgt_2017_low->Close();
+    dsa_wgt_2018_low->Close();
+
+    // Set dsa muon reco weights
+    TFile * reco_dsa_wgt_2016 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root"));
+    TFile * reco_dsa_wgt_2017 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root"));
+    TFile * reco_dsa_wgt_2018 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root"));
+    reco_dsa_hist_2016 = (TH2F*)(((TH2F*)reco_dsa_wgt_2016->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
+    reco_dsa_hist_2017 = (TH2F*)(((TH2F*)reco_dsa_wgt_2017->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
+    reco_dsa_hist_2018 = (TH2F*)(((TH2F*)reco_dsa_wgt_2018->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
+    reco_dsa_hist_2016stat = (TH2F*)(((TH2F*)reco_dsa_wgt_2016->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
+    reco_dsa_hist_2017stat = (TH2F*)(((TH2F*)reco_dsa_wgt_2017->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
+    reco_dsa_hist_2018stat = (TH2F*)(((TH2F*)reco_dsa_wgt_2018->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
+    reco_dsa_hist_2016sys = (TH2F*)(((TH2F*)reco_dsa_wgt_2016->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
+    reco_dsa_hist_2017sys = (TH2F*)(((TH2F*)reco_dsa_wgt_2017->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
+    reco_dsa_hist_2018sys = (TH2F*)(((TH2F*)reco_dsa_wgt_2018->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
+    reco_dsa_hist_2016->SetDirectory(0);
+    reco_dsa_hist_2017->SetDirectory(0);
+    reco_dsa_hist_2018->SetDirectory(0);
+    reco_dsa_hist_2016stat->SetDirectory(0);
+    reco_dsa_hist_2017stat->SetDirectory(0);
+    reco_dsa_hist_2018stat->SetDirectory(0);
+    reco_dsa_hist_2016sys->SetDirectory(0);
+    reco_dsa_hist_2017sys->SetDirectory(0);
+    reco_dsa_hist_2018sys->SetDirectory(0);
+    reco_dsa_wgt_2016->Close();
+    reco_dsa_wgt_2017->Close();
+    reco_dsa_wgt_2018->Close();
+    TFile * reco_dsa_wgt_2016_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root"));
+    TFile * reco_dsa_wgt_2017_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root"));
+    TFile * reco_dsa_wgt_2018_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root"));
+    reco_dsa_hist_2016_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2016_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
+    reco_dsa_hist_2017_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2017_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
+    reco_dsa_hist_2018_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2018_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
+    reco_dsa_hist_2016stat_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2016_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
+    reco_dsa_hist_2017stat_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2017_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
+    reco_dsa_hist_2018stat_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2018_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
+    reco_dsa_hist_2016sys_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2016_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
+    reco_dsa_hist_2017sys_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2017_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
+    reco_dsa_hist_2018sys_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2018_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
+    reco_dsa_hist_2016_low->SetDirectory(0);
+    reco_dsa_hist_2017_low->SetDirectory(0);
+    reco_dsa_hist_2018_low->SetDirectory(0);
+    reco_dsa_hist_2016stat_low->SetDirectory(0);
+    reco_dsa_hist_2017stat_low->SetDirectory(0);
+    reco_dsa_hist_2018stat_low->SetDirectory(0);
+    reco_dsa_hist_2016sys_low->SetDirectory(0);
+    reco_dsa_hist_2017sys_low->SetDirectory(0);
+    reco_dsa_hist_2018sys_low->SetDirectory(0);
+    reco_dsa_wgt_2016_low->Close();
+    reco_dsa_wgt_2017_low->Close();
+    reco_dsa_wgt_2018_low->Close();
+
+    // Set trig weights
+    TFile * trig_wgt_2016 = TFile::Open(data_path + TString("/trig_weights/trig_weights_2016.root"));
+    TFile * trig_wgt_2017 = TFile::Open(data_path + TString("/trig_weights/trig_weights_2017.root"));
+    TFile * trig_wgt_2018 = TFile::Open(data_path + TString("/trig_weights/trig_weights_2018.root"));
+
+    //trig_hist_2016 = (TH1F*)(((TH1F*)trig_wgt_2016->Get("weigts_reco_PF_MetNoMu_pt_2016_MCTotal_2016_Dlow"))->Clone());
+    //trig_hist_2017 = (TH1F*)(((TH1F*)trig_wgt_2017->Get("weigts_reco_PF_MetNoMu_pt_2017_MCTotal_2017_Dlow"))->Clone());
+    //trig_hist_2018 = (TH1F*)(((TH1F*)trig_wgt_2018->Get("weigts_reco_PF_MetNoMu_pt_2018_MCTotal_2018_Dlow"))->Clone());
+    trig_hist_2016 = (TH1F*)(((TH1F*)trig_wgt_2016->Get("weights_reco_PF_MET_pt_2016_MCTotal_2016_ratio"))->Clone());
+    trig_hist_2017 = (TH1F*)(((TH1F*)trig_wgt_2017->Get("weights_reco_PF_MET_pt_2017_MCTotal_2017_ratio"))->Clone());
+    trig_hist_2018 = (TH1F*)(((TH1F*)trig_wgt_2018->Get("weights_reco_PF_MET_pt_2018_MCTotal_2018_ratio"))->Clone());
+
+    trig_hist_2016->SetDirectory(0);
+    trig_hist_2017->SetDirectory(0);
+    trig_hist_2018->SetDirectory(0);
+
+    trig_wgt_2016->Close();
+    trig_wgt_2017->Close();
+    trig_wgt_2018->Close();
+
+    // Set muon GM loose ID sf
+    /* ANDRE: commented out for now but TRES, check LooseID vs genTracks and TrackerMuons on yours
+    TFile * gm_sf_2016_file = TFile::Open("../data/muon_ID_SF_2016.root");
+    TFile * gm_sf_2017_file = TFile::Open("../data/muon_ID_SF_2017.root");
+    TFile * gm_sf_2018_file = TFile::Open("../data/muon_ID_SF_2018.root");
+
+    gm_sf_2016 = (TH2D*)gm_sf_2016_file->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
+    gm_sf_2017 = (TH2D*)gm_sf_2017_file->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
+    gm_sf_2018 = (TH2D*)gm_sf_2018_file->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
+
+    gm_sf_2016->SetDirectory(0);
+    gm_sf_2017->SetDirectory(0);
+    gm_sf_2018->SetDirectory(0);
+
+    gm_sf_2016_file->Close();
+    gm_sf_2017_file->Close();
+    gm_sf_2018_file->Close();
+    */
+    return true;
+}
+
+void RDFAnalysis::SetMacroConfig(json macro_info) {
+    macro_info_ = macro_info;
+}
+
+void RDFAnalysis::SetHistoConfig(map<TString, common::THInfo*> histos_info) {
+    histos_info_ = histos_info;
+}
+
+void RDFAnalysis::SetCutConfig(vector<common::CutInfo> cuts_info) {
+    cuts_info_ = cuts_info;
+}
+
+void RDFAnalysis::SetSampleConfig(common::SampleInfo sample_info) {
+    sample_info_ = sample_info;
+    name_ = sample_info_.label;
+    mode_ = sample_info_.mode;
+    group_ = sample_info_.group;
+    sum_gen_wgt_ = sample_info_.sum_gen_wgt;
+    xsec_ = sample_info_.xsec;
+    year_ = sample_info_.year;
+    custom_lumi_ = sample_info_.lumi;
+
+    if (year_ == 2017) {
+        lumi_ = 41.53 * 1000;
+        trig_sf = trig_hist_2017;
+        gm_sf = gm_hist_2017;
+        gm_sf_sys = gm_hist_2017sys;
+        gm_sf_stat = gm_hist_2017stat;
+        dsa_sf_low = dsa_hist_2017_low;
+        dsa_sf_sys_low = dsa_hist_2017sys_low;
+        dsa_sf_stat_low = dsa_hist_2017stat_low;
+        dsa_sf = dsa_hist_2017;
+        dsa_sf_sys = dsa_hist_2017sys;
+        dsa_sf_stat = dsa_hist_2017stat;
+        reco_dsa_sf_low = reco_dsa_hist_2017_low;
+        reco_dsa_sf_sys_low = reco_dsa_hist_2017sys_low;
+        reco_dsa_sf_stat_low = reco_dsa_hist_2017stat_low;
+        reco_dsa_sf = reco_dsa_hist_2017;
+        reco_dsa_sf_sys = reco_dsa_hist_2017sys;
+        reco_dsa_sf_stat = reco_dsa_hist_2017stat;
+        veto_e_sf = veto_e_hist_2017;
+        veto_p_sf = veto_p_hist_2017;
+        //if (group_ == "ZJets") {
+        //    if (name_.Contains("HT-100To200"))
+        //        sf_pu = pileup_ZJets_2017["HT-100To200"];
+        //    else if (name_.Contains("HT-200To400"))
+        //        sf_pu = pileup_ZJets_2017["HT-200To400"];
+        //    else if (name_.Contains("HT-400To600"))
+        //        sf_pu = pileup_ZJets_2017["HT-400To600"];
+        //    else if (name_.Contains("HT-600To800"))
+        //        sf_pu = pileup_ZJets_2017["HT-600To800"];
+        //    else if (name_.Contains("HT-800To1200"))
+        //        sf_pu = pileup_ZJets_2017["HT-800To1200"];
+        //    else if (name_.Contains("HT-1200To2500"))
+        //        sf_pu = pileup_ZJets_2017["HT-1200To2500"];
+        //    else if (name_.Contains("HT-2500ToInf"))
+        //        sf_pu = pileup_ZJets_2017["HT-2500ToInf"];
+        //    else {
+        //        cout << "WARNING! Sample is from ZJets group but no pileup file could be found. Using HT-100To200 by default." << endl;
+        //        sf_pu = pileup_ZJets_2017["HT-100To200"];
+        //    }
+        //}
+        //else {
+        sf_pu = pileup_2017;
+        bTagSF = &bTagSF_2017;
+        //}
+    }
+    else if (year_ == 2016) {
+        sf_pu = pileup_2016;
+        bTagSF = &bTagSF_2016;
+        lumi_ = 35.92 * 1000;
+        trig_sf = trig_hist_2016;
+        gm_sf = gm_hist_2016;//->Add(gm_hist_2016GH);
+        gm_sf_sys = gm_hist_2016sys;
+        gm_sf_stat = gm_hist_2016stat;
+        gm_sf2 = gm_hist_2016GH;//->Add(gm_hist_2016GH);
+        gm_sf_sys2 = gm_hist_2016sysGH;
+        gm_sf_stat2 = gm_hist_2016statGH;
+        dsa_sf = dsa_hist_2016;
+        dsa_sf_sys = dsa_hist_2016sys;
+        dsa_sf_stat = dsa_hist_2016stat;
+        dsa_sf_low = dsa_hist_2016_low;
+        dsa_sf_sys_low = dsa_hist_2016sys_low;
+        dsa_sf_stat_low = dsa_hist_2016stat_low;
+        reco_dsa_sf = reco_dsa_hist_2016;
+        reco_dsa_sf_sys = reco_dsa_hist_2016sys;
+        reco_dsa_sf_stat = reco_dsa_hist_2016stat;
+        reco_dsa_sf_low = reco_dsa_hist_2016_low;
+        reco_dsa_sf_sys_low = reco_dsa_hist_2016sys_low;
+        reco_dsa_sf_stat_low = reco_dsa_hist_2016stat_low;
+        veto_e_sf = veto_e_hist_2016;
+        veto_p_sf = veto_p_hist_2016;
+    }
+    else if (year_ == 2018) {
+        sf_pu = pileup_2018;
+        bTagSF = &bTagSF_2018;
+        lumi_ = 59.74 * 1000;
+        trig_sf = trig_hist_2018;
+        gm_sf = gm_hist_2018;
+        gm_sf_sys = gm_hist_2018sys;
+        gm_sf_stat = gm_hist_2018stat;
+        dsa_sf = dsa_hist_2018;
+        dsa_sf_sys = dsa_hist_2018sys;
+        dsa_sf_stat = dsa_hist_2018stat;
+        dsa_sf_low = dsa_hist_2018_low;
+        dsa_sf_sys_low = dsa_hist_2018sys_low;
+        dsa_sf_stat_low = dsa_hist_2018stat_low;
+        reco_dsa_sf = reco_dsa_hist_2018;
+        reco_dsa_sf_sys = reco_dsa_hist_2018sys;
+        reco_dsa_sf_stat = reco_dsa_hist_2018stat;
+        reco_dsa_sf_low = reco_dsa_hist_2018_low;
+        reco_dsa_sf_sys_low = reco_dsa_hist_2018sys_low;
+        reco_dsa_sf_stat_low = reco_dsa_hist_2018stat_low;
+        veto_e_sf = veto_e_hist_2018;
+        veto_p_sf = veto_p_hist_2018;
+    }
+    else {
+        cout << "ERROR! Year not one of 2016/2017/2018. Exiting..." << endl;
+    }
+    // Check if we have a luminosity override
+    if (custom_lumi_ > 0) 
+        lumi_ = custom_lumi_ * 1000;
+
+    cout << 
+        "year: " << year_ << 
+        ", sum_gen_wgt: " << sum_gen_wgt_ << 
+        ", xsec: " << xsec_ << 
+        " [pb], lumi: " << lumi_ << 
+        " [1/pb] " << endl;
+}
+
+Bool_t RDFAnalysis::Process(TChain * chain) {
+
+    if (sum_gen_wgt_ < 1e-10 && mode_ != common::DATA) return kFALSE;
+
+    chain_ = chain;
+
+    int num_cores = 4; // default is now 3 or 4 cores to still fit within condor's 2 GB memory limit
+    if (macro_info_.find("num_cores") != macro_info_.end())
+        num_cores = macro_info_["num_cores"].get<int>();
+
+    cout << "Creating dataframe..." << endl;
+
+    ROOT::EnableImplicitMT(num_cores);
+    ROOT::RDataFrame df(*chain_);
+
+    const auto poolSize = ROOT::GetThreadPoolSize();
+    const auto nSlots = poolSize == 0 ? 1 : poolSize;
+    int nEvents = chain_->GetEntries();
+    std::string progressBar;
+    //std::mutex barMutex; // Only one thread at a time can lock a mutex. Let's use this to avoid concurrent printing.
+    // Magic numbers that yield good progress bars for nSlots = 1,2,4,8
+    //const auto everyN = nSlots == 8 ? 1000 : 100ull * nSlots;
+    const auto barWidth = 100; //nEvents / everyN;
+    const int everyN = (nEvents / nSlots) / barWidth;
+    cout << "everyN " << everyN << ", nSlots " << nSlots << endl;
+
+    cout << "Total number of events to process: " << std::scientific << nEvents << endl;
+
+    // First, define all the relevant weights
+
+    /* ANDRE: commented out for now. TODO: remove
+    auto calcGMsf = [&](RVec<float> gm_pt, RVec<float> gm_eta, RVec<bool> gm_pass_ID) {
+        float sf = 1.0;
+        for (size_t i = 0; i < gm_pt.size(); i++) {
+            if (!gm_pass_ID[i]) continue;
+            int binX = gm_sf->GetXaxis()->FindBin(gm_pt[i]);
+            int binY = gm_sf->GetYaxis()->FindBin(abs(gm_eta[i]));
+            float temp_sf = gm_sf->GetBinContent(binX, binY);
+            if (temp_sf < 1e-5)
+                temp_sf = 1.0;
+            sf *= temp_sf;
+        }
+        return sf;
+    };
+    auto calcElectronsf = [&](RVec<float> el_pt, RVec<float> el_eta, RVec<int> el_pass_ID) {
+        float sf = 1.0;
+        for (size_t i = 0; i < el_pt.size(); i++) {
+            if (el_pass_ID[i] % 2 != 1 || el_pt[i] < 10.0 || abs(el_eta[i]) > 2.5) continue;
+            int binX = el_sf->GetXaxis()->FindBin(abs(el_eta[i]));
+            int binY = el_sf->GetYaxis()->FindBin(el_pt[i]);
+            float temp_sf = el_sf->GetBinContent(binX, binY);
+            if (temp_sf < 1e-5)
+                temp_sf = 1.0;
+            sf *= temp_sf;
+        }
+        return sf;
+    };
+    auto calcPhotonsf = [&](RVec<float> ph_pt, RVec<float> ph_eta, RVec<int> ph_pass_ID) {
+        float sf = 1.0;
+        for (size_t i = 0; i < ph_pt.size(); i++) {
+            if (ph_pass_ID[i] != 1 || ph_pt[i] < 15.0 || abs(ph_eta[i]) > 2.5) continue;
+            int binX = ph_sf->GetXaxis()->FindBin(abs(ph_eta[i]));
+            int binY = ph_sf->GetYaxis()->FindBin(ph_pt[i]);
+            float temp_sf = ph_sf->GetBinContent(binX, binY);
+            if (temp_sf < 1e-5)
+                temp_sf = 1.0;
+            sf *= temp_sf;
+        }
+        return sf;
+    };
+    */
+
+    auto calcBTagsf = [&](int n_btagged_jets, RVec<float> jets_pt, RVec<float> jets_eta, RVec<bool> jets_btag_pass) {
+        if (jets_pt.size() < 2)
+            return 1.0f;
+        // for our purposes the sf does not change between eta -2.5 and 2.5
+        float w = 1.0f;
+        if (n_btagged_jets == 2) {
+            float pt = jets_pt[0];
+            auto it = std::lower_bound(bTagSF->begin(), bTagSF->end(), pt, compareBTagLowerEdge);
+            // if pt is greater than the highest lower edge, use this last entry to compute sf
+            if (it == bTagSF->end())
+                it--;
+            float sf1 = it->formula->Eval(pt);
+
+            pt = jets_pt[1];
+            it = std::lower_bound(bTagSF->begin(), bTagSF->end(), pt, compareBTagLowerEdge);
+            if (it == bTagSF->end())
+                it--;
+            float sf2 = it->formula->Eval(pt);
+
+            w = (1.0f - sf1) * (1.0f - sf2);
+        }
+        else if (n_btagged_jets == 1) {
+            float pt = (jets_btag_pass[0] ? jets_pt[0] : jets_pt[1]);
+            auto it = std::lower_bound(bTagSF->begin(), bTagSF->end(), pt, compareBTagLowerEdge);
+            if (it == bTagSF->end())
+                it--;
+            float sf = it->formula->Eval(pt);
+
+            w = (1.0f - sf);
+        }
+        return w;
+    };
+
+    auto calcZsf = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
+        if ((group_ != "ZJets" && group_ != "DY") || gen_pt.size() != gen_ID.size()) return 1.0f;
+        return 1.23f;
+        // TURNED OFF FOR NOW
+        float Zpt = -1.0f; 
+        Zpt = Min(gen_pt[abs(gen_ID) == 23]);
+        if (Zpt < 0) return 1.0f;
+        int binNum = sf_z_qcd->FindBin(Zpt);
+        if (binNum == 0) binNum++;
+        else if (binNum == sf_z_qcd->GetNbinsX()) binNum--;
+        float sf = (float)sf_z_qcd->GetBinContent(binNum) * (float)sf_z_ewk->GetBinContent(binNum);
+        return sf;
+    };
+
+    auto calcWsf = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
+        if (group_ != "WJets" || gen_pt.size() != gen_ID.size()) return 1.0f;
+        return 1.21f;
+        // TURNED OFF FOR NOW
+        float Wpt = -1.0f; 
+        Wpt = Min(gen_pt[abs(gen_ID) == 24]);
+        if (Wpt < 0) return 1.0f;
+        int binNum = sf_w_qcd->FindBin(Wpt);
+        if (binNum == 0) binNum++;
+        else if (binNum == sf_w_qcd->GetNbinsX()+1) binNum--;
+        float sf = (float)sf_w_qcd->GetBinContent(binNum) * (float)sf_w_ewk->GetBinContent(binNum);
+        // scale down WJets MC by 15% to match with data
+        // (currently not enabled, just multiply by 1)
+        sf *= 1.0;
+        return sf; 
+    };
+
+    auto calcTsf = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
+        if (group_ != "Top" || gen_pt.size() != gen_ID.size()) return 1.0f;
+        int n_top = (abs(gen_ID) == 6).size();
+        if (n_top != 2) return 1.0f;
+        auto mask = gen_pt[abs(gen_ID)==6 && (gen_pt > 0 && gen_pt < 800)];
+        auto sfs1 = Map(gen_pt[mask], [](float pt){ return exp(0.0615-0.0005*pt); });
+        mask = gen_pt[abs(gen_ID)==6 && gen_pt >= 800];
+        auto sfs2 = Map(gen_pt[mask], [](float pt){ return exp(0.0615-0.0005*800); });
+        mask = gen_pt[abs(gen_ID)==6 && gen_pt <= 0];
+        auto sfs3 = Map(gen_pt[mask], [](float pt){ return exp(0.0615-0.0005*0); });
+        auto sfs = Concatenate(Concatenate(sfs1, sfs2), sfs3);
+        float sf = sqrt(sfs[0] * sfs[1]);
+        return sf;
+    };
+
+    auto calcTrigsf = [&](float met) {
+        if (met < 100.0)
+            return 1.0f;
+            //return 0.3f;
+        if (met > 800.0)
+            return 1.0f;
+        return (float)trig_sf->GetBinContent(trig_sf->FindBin(met));
+    };
+
+    auto calcPUsf = [&](int pileup) { 
+        return (float)sf_pu->GetBinContent(sf_pu->FindBin((double)pileup)); 
+    };
+    
+    auto gm_lowpt_lookup = [&](int eta, int err, int year) {
+        float sf = 1.0;
+        float downerr = 0.;
+        float uperr = 0.;
+        if (year == 2018) {
+          if ((eta > -2.4) && (eta < -1.6)) {sf = 0.986; downerr=0.013; uperr=0.014;}
+          if ((eta > -1.6) && (eta < -0.9)) {sf = 0.991; downerr=0.006; uperr=0.005;}
+          if ((eta > -0.9) && (eta < -0.3)) {sf = 0.996; downerr=0.004; uperr=0.004;}
+          if ((eta > -0.3) && (eta < 0.3))  {sf = 0.995; downerr=0.005; uperr=0.004;}
+          if ((eta > 0.3) && (eta < 0.9))   {sf = 0.997; downerr=0.005; uperr=0.004;}
+          if ((eta > 0.9) && (eta < 1.6))   {sf = 0.985; downerr=0.007; uperr=0.007;}
+          if ((eta > 1.6) && (eta < 2.4))   {sf = 0.996; downerr=0.013; uperr=0.014;}
+        }
+        else if (year == 2017) {
+          if ((eta > -2.4) && (eta < -1.8)) {sf = 0.986; downerr=0.006; uperr=0.007;}
+          if ((eta > -1.8) && (eta < -1.2)) {sf = 0.997; downerr=0.002; uperr=0.003;}
+          if ((eta > -1.2) && (eta < -0.8)) {sf = 0.994; downerr=0.003; uperr=0.004;}
+          if ((eta > -0.8) && (eta < -0.3)) {sf = 0.995; downerr=0.002; uperr=0.002;}
+          if ((eta > -0.3) && (eta < 0.3))  {sf = 0.996; downerr=0.002; uperr=0.002;}
+          if ((eta > 0.3) && (eta < 0.8))   {sf = 0.997; downerr=0.002; uperr=0.002;}
+          if ((eta > 0.8) && (eta < 1.2))   {sf = 0.995; downerr=0.003; uperr=0.003;}
+          if ((eta > 1.2) && (eta < 1.8))   {sf = 0.997; downerr=0.002; uperr=0.003;}
+          if ((eta > 1.8) && (eta < 2.4))   {sf = 0.996; downerr=0.005; uperr=0.007;}
+        }
+        else if (year == 2016) {
+          if ((eta > -2.4) && (eta < -1.8)) {sf = 1.003; downerr=0.025; uperr=0.013;}
+          if ((eta > -1.8) && (eta < -1.2)) {sf = 0.983; downerr=0.010; uperr=0.008;}
+          if ((eta > -1.2) && (eta < -0.8)) {sf = 0.998; downerr=0.006; uperr=0.008;}
+          if ((eta > -0.8) && (eta < -0.3)) {sf = 1.003; downerr=0.004; uperr=0.005;}
+          if ((eta > -0.3) && (eta < 0.3))  {sf = 0.999; downerr=0.004; uperr=0.004;}
+          if ((eta > 0.3) && (eta < 0.8))   {sf = 1.005; downerr=0.004; uperr=0.004;}
+          if ((eta > 0.8) && (eta < 1.2))   {sf = 0.996; downerr=0.007; uperr=0.006;}
+          if ((eta > 1.2) && (eta < 1.8))   {sf = 1.001; downerr=0.008; uperr=0.008;}
+          if ((eta > 1.8) && (eta < 2.4))   {sf = 0.954; downerr=0.049; uperr=0.029;}
+        }
+        float full_sf = 1.0;
+        if (err == 0) {full_sf = sf;}
+        if (err == 1) {full_sf = sf + uperr;}
+        if (err == 2) {full_sf = sf - downerr;}
+        return full_sf;
+    };
+
+    auto calcrecoDSAsf = [&](RVec<float> muonpt_dsa, RVec<float> muoneta_dsa, RVec<float> dxy_dsa, size_t id1, size_t id2) {
+
+          int err_type = 0; // 0: normal, 1: uperr, 2: down err
+          float sf1 = 1.0;
+          float sf2 = 1.0;
+          float sf1_stat = 0.;
+          float sf2_stat = 0.;
+          float sf1_sys = 0.;
+          float sf2_sys = 0.;
+          float sf1_err = 0.;
+          float sf2_err = 0.;
+          if (muonpt_dsa.size() == 0) return 0.f;
+          //x is eta and y is pt
+          if(muonpt_dsa[id1] < 3){ sf1=0;}
+          else if(muonpt_dsa[id1] < 20){ 
+            sf1 = reco_dsa_sf_low->GetBinContent(reco_dsa_sf_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_sys = reco_dsa_sf_sys_low->GetBinError(reco_dsa_sf_sys_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_stat = reco_dsa_sf_stat_low->GetBinError(reco_dsa_sf_stat_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+
+            sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf1 = sf1 + sf1_err;}
+            if (err_type == 2) {sf1 = sf1 - sf1_err;}
+          }
+
+          else{
+            sf1 = reco_dsa_sf->GetBinContent(reco_dsa_sf->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_sys = reco_dsa_sf_sys->GetBinError(reco_dsa_sf_sys->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_stat = reco_dsa_sf_stat->GetBinError(reco_dsa_sf_stat->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            //std::cout<<"sf1 "<<sf1<<" "<<sf1_sys<<" "<<sf1_stat<<std::endl;
+            sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf1 = sf1 + sf1_err;}
+            if (err_type == 2) {sf1 = sf1 - sf1_err;}
+          }
+          if(muonpt_dsa[id2] < 3){ sf2=0;}
+          else if(muonpt_dsa[id2] < 20){
+            sf2 = reco_dsa_sf_low->GetBinContent(reco_dsa_sf_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_sys = reco_dsa_sf_sys_low->GetBinError(reco_dsa_sf_sys_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_stat = reco_dsa_sf_stat_low->GetBinError(reco_dsa_sf_stat_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+
+            sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf2 = sf2 + sf2_err;}
+            if (err_type == 2) {sf2 = sf2 - sf2_err;}
+          }
+
+          else{
+            sf2 = reco_dsa_sf->GetBinContent(reco_dsa_sf->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_sys = reco_dsa_sf_sys->GetBinError(reco_dsa_sf_sys->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_stat = reco_dsa_sf_stat->GetBinError(reco_dsa_sf_stat->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+
+            sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf2 = sf2 + sf2_err;}
+            if (err_type == 2) {sf2 = sf2 - sf2_err;}
+          }
+         // // efficiency from displacement
+         // float slope = 0.00035; 
+         // //float slope = 0.00035*1.02; 
+         // //float slope = 0.00035*.98; 
+         // float dis1 = (1- slope* dxy_dsa[id1]);
+         // float dis2 = (1- slope* dxy_dsa[id2]);
+          return sf1*sf2;//*dis1*dis2;
+    };
+    auto calcDSAsf = [&](RVec<float> muonpt_dsa, RVec<float> muoneta_dsa, RVec<float> dxy_dsa, size_t id1, size_t id2) {
+
+          int err_type = 0; // 0: normal, 1: uperr, 2: down err
+          float sf1 = 1.0;
+          float sf2 = 1.0;
+          float sf1_stat = 0.;
+          float sf2_stat = 0.;
+          float sf1_sys = 0.;
+          float sf2_sys = 0.;
+          float sf1_err = 0.;
+          float sf2_err = 0.;
+          if (muonpt_dsa.size() == 0) return 0.f;
+          //x is eta and y is pt
+          if(muonpt_dsa[id1] < 3){ sf1=0;}
+          else if(muonpt_dsa[id1] < 20){ 
+            sf1 = dsa_sf_low->GetBinContent(dsa_sf_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_sys = dsa_sf_sys_low->GetBinError(dsa_sf_sys_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_stat = dsa_sf_stat_low->GetBinError(dsa_sf_stat_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+
+            sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf1 = sf1 + sf1_err;}
+            if (err_type == 2) {sf1 = sf1 - sf1_err;}
+          }
+
+          else{
+            sf1 = dsa_sf->GetBinContent(dsa_sf->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_sys = dsa_sf_sys->GetBinError(dsa_sf_sys->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+            sf1_stat = dsa_sf_stat->GetBinError(dsa_sf_stat->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
+
+            sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf1 = sf1 + sf1_err;}
+            if (err_type == 2) {sf1 = sf1 - sf1_err;}
+          }
+          if(muonpt_dsa[id2] < 3){ sf2=0;}
+          else if(muonpt_dsa[id2] < 20){
+            sf2 = dsa_sf_low->GetBinContent(dsa_sf_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_sys = dsa_sf_sys_low->GetBinError(dsa_sf_sys_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_stat = dsa_sf_stat_low->GetBinError(dsa_sf_stat_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+
+            sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf2 = sf2 + sf2_err;}
+            if (err_type == 2) {sf2 = sf2 - sf2_err;}
+          }
+
+          else{
+            sf2 = dsa_sf->GetBinContent(dsa_sf->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_sys = dsa_sf_sys->GetBinError(dsa_sf_sys->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+            sf2_stat = dsa_sf_stat->GetBinError(dsa_sf_stat->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
+
+            sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat);
+            //printf("SF: %f, err: %f",sf1,sf1_err);
+            if (err_type == 1) {sf2 = sf2 + sf2_err;}
+            if (err_type == 2) {sf2 = sf2 - sf2_err;}
+          }
+          // efficiency from displacement
+          float slope = 0.00035; 
+          //float slope = 0.00035*1.02; 
+          //float slope = 0.00035*.98; 
+          float dis1 = (1- slope* dxy_dsa[id1]);
+          float dis2 = (1- slope* dxy_dsa[id2]);
+          return sf1*sf2*dis1*dis2;
+    };
+    auto calcGMsf = [&](RVec<float> muonpt_gm, RVec<float> muoneta_gm, size_t id1, size_t id2) {
+
+          int err_type = 2; // 0: normal, 1: uperr, 2: down err
+          float sf1 = 1.0;
+          float sf2 = 1.0;
+          float sf1_stat = 0.;
+          float sf2_stat = 0.;
+          float sf1_sys = 0.;
+          float sf2_sys = 0.;
+          float sf1_err = 0.;
+          float sf2_err = 0.;
+          if( id1 >3) {// global muon
+            //x is pt and y is eta
+            if(muonpt_gm[id1-4] < 20){ sf1 = gm_lowpt_lookup(muoneta_gm[id1-4],err_type,year_);}
+            else{
+              sf1 = gm_sf->GetBinContent(gm_sf->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
+              sf1_sys = gm_sf_sys->GetBinError(gm_sf_sys->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
+              sf1_stat = gm_sf_stat->GetBinError(gm_sf_stat->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
+              if (year_ == 2016){ 
+              sf1 = sf1*(20./35.92);
+              float sf1x = (15./35.92)*gm_sf2->GetBinContent(gm_sf2->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
+              sf1_sys = ((20./35.92)*sf1_sys);
+              float sf1_sysx =(15./35.92)*gm_sf_sys2->GetBinError(gm_sf_sys2->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
+              sf1_stat = (20./35.92)*sf1_stat;
+              float sf1_statx = (15./35.92)*gm_sf_stat2->GetBinError(gm_sf_stat2->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
+
+              sf1 = sf1 + sf1x;
+              sf1_sys = sqrt(sf1_sys*sf1_sys + sf1_sysx*sf1_sysx);
+              sf1_stat = sqrt(sf1_stat*sf1_stat + sf1_statx*sf1_statx);
+              }
+              sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
+              //printf("SF: %f, err: %f",sf1,sf1_err);
+              if (err_type == 1) {sf1 = sf1 + sf1_err;}
+              if (err_type == 2) {sf1 = sf1 - sf1_err;}
+            }
+          }
+          if(id2 > 3) { 
+            if(muonpt_gm[id2-4] < 20){ sf2 = gm_lowpt_lookup(muoneta_gm[id2-4],err_type,year_);}
+            else{
+              sf2 = gm_sf->GetBinContent(gm_sf->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
+              sf2_sys = gm_sf_sys->GetBinError(gm_sf_sys->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
+              sf2_stat = gm_sf_stat->GetBinError(gm_sf_stat->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
+              if (year_ == 2016){ 
+              sf2 = sf2*(20./35.92);
+              float sf2x = (15./35.92)*gm_sf2->GetBinContent(gm_sf2->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
+              sf2_sys = ((20./35.92)*sf2_sys);
+              float sf2_sysx =(15./35.92)*gm_sf_sys2->GetBinError(gm_sf_sys2->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
+              sf2_stat = (20./35.92)*sf2_stat;
+              float sf2_statx = (15./35.92)*gm_sf_stat2->GetBinError(gm_sf_stat2->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
+
+              sf2 = sf2 + sf2x;
+              sf2_sys = sqrt(sf2_sys*sf2_sys + sf2_sysx*sf2_sysx);
+              sf2_stat = sqrt(sf2_stat*sf2_stat + sf2_statx*sf2_statx);
+              }
+              sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat); 
+              if (err_type == 1) {sf2 = sf2 + sf2_err;}
+              if (err_type == 2) {sf2 = sf2 - sf2_err;}
+            }
+          }
+          return sf1*sf2;
+    };
+
+    auto calcVetosf = [&](RVec<int> good_e, RVec<float> eta_e, RVec<float> pt_e, RVec<int> good_p, RVec<float> eta_p, RVec<float> pt_p) { 
+        float wgt_e = 1.;
+        float wgt_p = 1.;
+        for (size_t i = 0; i < eta_e.size(); i++) {
+          if (good_e[i] && pt_e[i] > 10 && abs(eta_e[i]) < 2.5) {
+            float sf_e = veto_e_sf->GetBinContent(veto_e_sf->FindBin(eta_e[i],pt_e[i]));
+            float sf_eerr = veto_e_sf->GetBinError(veto_e_sf->FindBin(eta_e[i],pt_e[i]));
+            wgt_e *= (1.0 - (sf_e));
+            //wgt_e *= (1.0 - (sf_e+sf_eerr));
+          }
+        }
+        for (size_t i = 0; i < eta_p.size(); i++) {
+          if (good_p[i] == 1 && pt_p[i] > 15 && abs(eta_p[i]) < 2.5) {
+            float sf_p = veto_p_sf->GetBinContent(veto_p_sf->FindBin(eta_p[i],pt_p[i]));
+            float sf_perr = veto_p_sf->GetBinError(veto_p_sf->FindBin(eta_p[i],pt_p[i]));
+            wgt_p *= (1.0 - (sf_p));
+            //wgt_p *= (1.0 - (sf_p+sf_perr));
+          }
+        }
+        return wgt_e*wgt_p;
+    };
+
+    auto calcTotalWgt = [&](float veto_wgt, float reco_dsa_wgt, float dsa_wgt, float gm_wgt, float Zwgt, 
+                        float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt, float bTag_wgt) {
+        double weight =  veto_wgt * reco_dsa_wgt * dsa_wgt * gm_wgt * Zwgt * 
+                        Wwgt * PUwgt * trig_wgt * xsec_ * lumi_ * gen_wgt * bTag_wgt / sum_gen_wgt_;
+    //auto calcTotalWgt = [&](float ph_sf_wgt, float el_sf_wgt, float gm_sf_wgt, float Zwgt, float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt) {
+    //    double weight =  trig_wgt * ph_sf_wgt * el_sf_wgt * gm_sf_wgt * Zwgt * Wwgt * PUwgt * xsec_ * lumi_ * gen_wgt / sum_gen_wgt_;
+        // Warn if large weight *due only* to PU, Z, W, or genwgt / sum_gen_wgt_, but not due to xsec or lumi
+        //if (trig_wgt > 3.0 || Zwgt > 3.0 || Wwgt > 3.0 || PUwgt > 3.0 || gen_wgt / sum_gen_wgt_ > 0.1) {
+        //    cout << "WARNING! Very large weight: " << weight << endl;
+        //    cout << "Trig wgt: " << trig_wgt << endl;
+        //    cout << "Zwgt: " << Zwgt << endl;
+        //    cout << "Wwgt: " << Wwgt << endl;
+        //    cout << "PUwgt: " << PUwgt << endl;
+        //    cout << "genwgt: " << gen_wgt << endl;
+        //}
+        return weight;
+    };
+
+    auto calcHemVeto = [&](bool hem_veto) { 
+        return (year_ == 2018 ? !hem_veto : true);
+    };
+
+    auto calcBTagPass = [&](RVec<float> jets_btag_id) {
+        // pfDeepCSVJetTags:probb+probbb medium working points for 18+17+16
+        float bTag_wp = 1.0f;
+        if (year_ == 2016)
+            bTag_wp = 0.6324;
+        else if (year_ == 2017)
+            bTag_wp = 0.4941;
+        else if (year_ == 2018)
+            bTag_wp = 0.4184;
+        RVec<bool> jets_btag_pass = jets_btag_id > bTag_wp;
+        return jets_btag_pass;
+    };
+
+    auto calcNBTag = [&](RVec<float> jets_btag_id, RVec<bool> jets_btag_pass) {
+        return (int)jets_btag_id[jets_btag_pass].size();
+    };
+
+
+    // Need these to not segfault in case collection is empty
+    // Also, RDataFrame.Histo1D() doesn't accept indexed vectors, so need to rename
+    // e.g.: reco_PF_jet_pt[0] --> reco_PF_jet_pt0
+    auto takeQuantity0 = [&](RVec<float> quant_vec) { return quant_vec.size() > 0 ? quant_vec[0] : -9999.f; };
+    auto takeQuantity1 = [&](RVec<float> quant_vec) { return quant_vec.size() > 1 ? quant_vec[1] : -9999.f; };
+
+    auto calcMETJetDphi = [&](RVec<float> jets_phi, float MET_phi) { 
+        return !jets_phi.size() ? RVec<float>{-5.f} : abs(DeltaPhi(jets_phi, MET_phi));
+    };
+
+    auto findMetNoMu = [&](float MET_pt, float MET_phi, RVec<float> muons_pt, RVec<float> muons_phi) { 
+        float metnomu_x = MET_pt * cos(MET_phi);
+        float metnomu_y = MET_pt * sin(MET_phi);
+        metnomu_x += Dot(muons_pt, cos(muons_phi));
+        metnomu_y += Dot(muons_pt, sin(muons_phi));
+        return sqrt(metnomu_x*metnomu_x + metnomu_y*metnomu_y);
+    };
+
+    auto findFakeMETCut = [&](float MET_pt, float MET_phi, float calomet_pt, float calomet_phi, float recoil) {
+        return sqrt(
+                ((MET_pt*cos(MET_phi) - calomet_pt*cos(calomet_phi)) *
+                 (MET_pt*cos(MET_phi) - calomet_pt*cos(calomet_phi))) + 
+                ((MET_pt*sin(MET_phi) - calomet_pt*sin(calomet_phi)) *
+                 (MET_pt*sin(MET_phi) - calomet_pt*sin(calomet_phi)))
+                )/recoil;
+    };
+
+    auto correct_EE_MET_pt = [&](float MET_pt,float MET_phi,float EE_px,float EE_py){
+        float return_pt = MET_pt;
+        if(year_==2017){
+           float corr_px = MET_pt*cos(MET_phi) + EE_px;
+           float corr_py = MET_pt*sin(MET_phi) + EE_py;
+           return_pt = sqrt(corr_px*corr_px + corr_py*corr_py);
+        }
+        return return_pt;
+
+    };
+    auto correct_EE_MET_phi = [&](float MET_pt,float MET_phi,float EE_px,float EE_py){
+        float return_phi = MET_phi;
+        if(year_==2017){
+           float corr_px = MET_pt*cos(MET_phi) + EE_px;
+           float corr_py = MET_pt*sin(MET_phi) + EE_py;
+           return_phi =  atan2(corr_py,corr_px);
+        }
+        return return_phi;
+    };
+
+    auto takeGenMuVxy = [&](RVec<float> gen_vxy, RVec<int> gen_ID) {
+        if ((abs(gen_ID) == 13).size() == 0) return -9999.f;
+        return float(Mean(gen_vxy[abs(gen_ID) == 13]));
+    }; 
+
+    auto calcGenMETmuDphi = [&](RVec<float> gen_pt, RVec<float> gen_phi, RVec<int> gen_ID, float MET_phi) {
+        float px = Sum(gen_pt[gen_ID == 13] * cos(gen_phi[gen_ID == 13]));
+        float py = Sum(gen_pt[gen_ID == 13] * sin(gen_phi[gen_ID == 13]));
+        float mu_phi = atan2(py, px);
+        return abs(DeltaPhi(MET_phi, mu_phi));
+    };
+
+    auto calcRecoMETmuDphi = [&](float sel_mu_pt0, float sel_mu_phi0, float sel_mu_pt1, float sel_mu_phi1, float MET_phi) {
+        float px = sel_mu_pt0 * cos(sel_mu_phi0) + sel_mu_pt1 * cos(sel_mu_phi1);
+        float py = sel_mu_pt0 * sin(sel_mu_phi0) + sel_mu_pt1 * sin(sel_mu_phi1);
+        float mu_phi = atan2(py, px);
+        return abs(DeltaPhi(MET_phi, mu_phi));
+    };
+
+    auto calcVtxSignificance = [&](float reco_vtx_vxy, float reco_vtx_sigmavxy) { return reco_vtx_vxy/reco_vtx_sigmavxy; };
+    auto calcVtxResolution = [&](float reco_vtx_vxy, float reco_vtx_sigmavxy) { return reco_vtx_sigmavxy/reco_vtx_vxy; };
+
+    // NOTE: this passMuonID is wrong! It assumes the same ID for GM as the one used for dSA --> not correct. passGMMuonID below is the right one.
+    auto passMuonID = [&](RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_chi2, RVec<float> pt, RVec<float> eta, RVec<float> pt_err) {
+        RVec<bool> pass = (trk_n_planes > 1) && (trk_n_hits > 12) && (trk_chi2 < 2.5) && (pt > 5) && (abs(eta) < 2.4) && (pt_err/pt < 1);
+        return pass;
+    };
+
+    auto passGMMuonID = [&](RVec<bool> isPF, RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_chi2, RVec<float> pt, RVec<float> eta) {
+        RVec<bool> pass = (isPF == 1) && (trk_n_planes > 1) && (trk_n_hits > 0) && (trk_chi2 < 10) && (pt > 5) && (abs(eta) < 2.4);
+        return pass;
+    };
+
+    auto passVtxID = [&](RVec<bool> muon_pass0, RVec<bool> muon_pass1, RVec<int> q0, RVec<int> q1, RVec<float> vtx_chi2) {
+        // construct vertex id mask from each muon id mask
+        // vertex index is 4 * muon0 + muon1
+        RVec<bool> vtx_pass(16, 0);
+        auto comb_idx = Combinations(4, 4);
+        for (size_t i = 0; i < comb_idx[0].size(); i++)
+            if (comb_idx[0][i] < muon_pass0.size() && comb_idx[1][i] < muon_pass1.size())
+                vtx_pass[i] = (muon_pass0[comb_idx[0][i]] == 1) && (muon_pass1[comb_idx[1][i]] == 1); // && (q0[comb_idx[0][i]] + q1[comb_idx[1][i]] == 0) && (vtx_chi2[i] < 4);
+        return vtx_pass;
+    };
+
+    auto pickBestVtx = [&](RVec<float> vtx_chi2, RVec<bool> vtx_pass) {
+        // return the index in the collection with minimum chi2
+        //RVec<float> inf(16, 100000.f);
+        auto vtx_chi2_inf = Where(vtx_pass == 1, vtx_chi2, 999999.f);
+        return ArgMin(vtx_chi2_inf); 
+    };
+   
+    auto goodQuantity = [&](RVec<float> quantity, RVec<bool> pass){
+      return quantity[pass];
+    };
+    auto takegoodeta = [&](RVec<float> quantity, RVec<float> q2){
+      bool good = true;
+      for (size_t i=0; i < quantity.size() ; i++){
+      if (q2[i] < 30) {continue;}
+      if (abs(quantity[i]) > 2.4) { good=false;}
+      }
+      return good;
+    };
+
+    // for each dsa muon in best vtx, look for *best* gm match in dr
+    auto findMuonMatch0 = [&](RVec<int> dsagm_match, RVec<float> dsagm_dR, RVec<bool> vtx_pass_dsagm, size_t dsa_index_0, size_t dsa_index_1) {
+        size_t best_index = dsa_index_0; // if no match, just return dsa index
+        float min_dR = 999999.f;
+        for (size_t j = 0; j < 4; j++) {
+            // if (dsagm_match[4 * dsa_index_0 + j] == 1 && vtx_pass_dsagm[4 * dsa_index_1 + j] == 1 && abs(dsagm_dR[4 * dsa_index_0 + j]) < min_dR) {
+            // test with dR < 0.2 instead of 0.1:
+            if (abs(dsagm_dR[4 * dsa_index_0 + j]) < 0.2 && vtx_pass_dsagm[4 * dsa_index_1 + j] == 1 && abs(dsagm_dR[4 * dsa_index_0 + j]) < min_dR) {
+                min_dR = abs(dsagm_dR[4 * dsa_index_0 + j]);
+                best_index = 4 + j;
+            }
+        }
+        return best_index;
+    };
+
+    auto findMuonMatch1 = [&](RVec<int> dsagm_match, RVec<float> dsagm_dR, RVec<bool> vtx_pass_dsagm, RVec<bool> vtx_pass_gmgm, size_t dsa_index_1, size_t best_muon_0) {
+        size_t best_index = dsa_index_1; // if no match, just return dsa index
+        float min_dR = 999999.f;
+        for (size_t j = 0; j < 4; j++) {
+            if (best_muon_0 > 3) {
+                // if (dsagm_match[4 * dsa_index_1 + j] == 1 && vtx_pass_gmgm[4 * (best_muon_0-4) + j] == 1 && 4 + j != best_muon_0 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
+                // test with dR < 0.2 instead of 0.1:
+                if (abs(dsagm_dR[4 * dsa_index_1 + j]) < 0.2 && vtx_pass_gmgm[4 * (best_muon_0-4) + j] == 1 && 4 + j != best_muon_0 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
+                    min_dR = abs(dsagm_dR[4 * dsa_index_1 + j]);
+                    best_index = 4 + j;
+                }
+            }
+            else {
+                // if (dsagm_match[4 * dsa_index_1 + j] == 1 && vtx_pass_dsagm[4 * best_muon_0 + j] == 1 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
+                // test with dR < 0.2 instead of 0.1:
+                if (abs(dsagm_dR[4 * dsa_index_1 + j]) < 0.2 && vtx_pass_dsagm[4 * best_muon_0 + j] == 1 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
+                    min_dR = abs(dsagm_dR[4 * dsa_index_1 + j]);
+                    best_index = 4 + j; // make gm index offset by 4
+                }
+            }
+        }
+        return best_index;
+    };
+
+    auto takeMatchedVtxQuantity = [&](RVec<float> quant_dsadsa, RVec<float> quant_gmgm, RVec<float> quant_dsagm, size_t best_muon_0, size_t best_muon_1) {
+        if (quant_dsadsa.size() == 0) return -9999.f;
+        float final_quant;
+        // Check for each best muon to see if it's gm (offset by 4) or dsa
+        if (best_muon_0 > 3 && best_muon_1 > 3)
+            final_quant = quant_gmgm[4 * (best_muon_0-4) + (best_muon_1-4)];
+        else if (best_muon_0 > 3)
+            final_quant = quant_dsagm[4 * (best_muon_1) + (best_muon_0-4)];
+        else if (best_muon_1 > 3)
+            final_quant = quant_dsagm[4 * (best_muon_0) + (best_muon_1-4)];
+        else
+            final_quant = quant_dsadsa[4 * best_muon_0 + best_muon_1];
+        return final_quant;
+    };
+
+    auto calcCosAlpha = [&](RVec<float> mu_pt, RVec<float> mu_eta, RVec<float> mu_phi, RVec<bool> muon_pass) {
+        // Calculate cos_alpha for all combinations of muons in the event (up to 4).
+        // The default impossible value is -10k, so e.g. diagonal elements in the
+        // 4x4 matrix (refer to the same muon) have that value, or if there are
+        // fewer muons than 4 in the dSA collection, the remaining elements also
+        // get -10k. Also require that the tag muon (the row in the matrix) passes
+        // the tight (tag) ID
+        RVec<float> vtx_cosalpha(16, 10000);
+        auto comb_idx = Combinations(4, 4);
+        for (size_t i = 0; i < comb_idx[0].size(); i++) {
+            size_t idx0 = comb_idx[0][i];
+            size_t idx1 = comb_idx[1][i];
+            if (idx0 == idx1) continue;
+            if (idx0 >= muon_pass.size() || idx1 >= muon_pass.size())
+                continue;
+            if (!muon_pass[idx0]) continue;
+            float mu1_pt = mu_pt[idx0];
+            float mu1_eta = mu_eta[idx0];
+            float mu1_phi = mu_phi[idx0];
+            float mu2_pt = mu_pt[idx1];
+            float mu2_eta = mu_eta[idx1];
+            float mu2_phi = mu_phi[idx1];
+            float mu1_px = mu1_pt * cos(mu1_phi);
+            float mu1_py = mu1_pt * sin(mu1_phi);
+            float mu1_pz = mu1_pt * sinh(mu1_eta);
+            float mu2_px = mu2_pt * cos(mu2_phi);
+            float mu2_py = mu2_pt * sin(mu2_phi);
+            float mu2_pz = mu2_pt * sinh(mu2_eta);
+            float dot_product = mu1_px*mu2_px + mu1_py*mu2_py + mu1_pz*mu2_pz;
+            float mu1_p = sqrt(mu1_px*mu1_px + mu1_py*mu1_py + mu1_pz*mu1_pz);
+            float mu2_p = sqrt(mu2_px*mu2_px + mu2_py*mu2_py + mu2_pz*mu2_pz);
+            vtx_cosalpha[i] = dot_product / (mu1_p * mu2_p);
+        }
+        return vtx_cosalpha;
+    };
+
+    auto takeMatchedMuonQuantity = [&](RVec<float> quant_dsa, RVec<float> quant_gm, size_t best_muon) {
+        if (quant_dsa.size() == 0) return -9999.f;
+        return (best_muon > 3) ? quant_gm[best_muon-4] : quant_dsa[best_muon];
+    };
+
+    auto takeMatchedMuonQuantityInt = [&](RVec<int> quant_dsa, RVec<int> quant_gm, size_t best_muon) {
+        if (quant_dsa.size() == 0) return -9999;
+        return (best_muon > 3) ? quant_gm[best_muon-4] : quant_dsa[best_muon];
+    };
+
+    auto calcMatchedMuonMT = [&](float muon_pt, float muon_phi, float MET_pt, float MET_phi) {
+        float dphi = DeltaPhi(muon_phi, MET_phi);
+        return sqrt(2.0f * muon_pt * MET_pt * (1.0f - cos(dphi)));
+    };
+
+    auto calcMatchedMuonInvMass = [&](float mu1_pt, float mu1_eta, float mu1_phi, float mu2_pt, float mu2_eta, float mu2_phi) {
+        return sqrt(2.0f * mu1_pt * mu2_pt * (cosh(mu1_eta - mu2_eta) - cos(mu1_phi - mu2_phi)));
+    };
+
+  
+    TString jet_pt = "reco_PF_jet_corr_pt";
+    TString jet_eta = "reco_PF_jet_corr_eta";
+    TString jet_phi = "reco_PF_jet_corr_phi";
+    TString MET_pt_corr_noEE = "reco_PF_MET_corr_pt";
+    TString MET_phi_corr_noEE = "reco_PF_MET_corr_phi";
+    if (macro_info_.find("jet_systematic") != macro_info_.end()) {
+        std::string jet_syst = macro_info_["jet_systematic"].get<std::string>();
+        jet_pt = Form("reco_PF_jet_corr_%s_pt", jet_syst.c_str());
+        jet_eta = Form("reco_PF_jet_corr_%s_eta", jet_syst.c_str());
+        jet_phi = Form("reco_PF_jet_corr_%s_phi", jet_syst.c_str());
+        MET_pt_corr_noEE = Form("reco_PF_MET_corr_%s_pt", jet_syst.c_str());
+        MET_phi_corr_noEE = Form("reco_PF_MET_corr_%s_phi", jet_syst.c_str());
+    }
+
+    auto df_wgts = df.
+        Define("MET_pt", correct_EE_MET_pt,{MET_pt_corr_noEE.Data(),MET_phi_corr_noEE.Data(),"reco_PF_MET_EE_delta_px","reco_PF_MET_EE_delta_py"}).
+        Define("MET_phi", correct_EE_MET_phi,{MET_pt_corr_noEE.Data(),MET_phi_corr_noEE.Data(),"reco_PF_MET_EE_delta_px","reco_PF_MET_EE_delta_py"}).
+        Define("reco_dsa_pt_res", "reco_dsa_pt_err/reco_dsa_pt").
+        Define("reco_gm_pt_res", "reco_gm_pt_err/reco_gm_pt").
+        Define("dsa_pass_ID", passMuonID, {"reco_dsa_trk_n_planes", "reco_dsa_trk_n_hits", "reco_dsa_trk_chi2", "reco_dsa_pt", "reco_dsa_eta", "reco_dsa_pt_err"}).
+        // Define("gm_pass_ID", passMuonID, {"reco_gm_trk_n_planes", "reco_gm_trk_n_hits", "reco_gm_trk_chi2", "reco_gm_pt", "reco_gm_eta", "reco_gm_pt_err"}).
+        Define("gm_pass_ID", passGMMuonID, {"reco_gm_isPF", "reco_gm_trk_n_planes", "reco_gm_trk_n_hits", "reco_gm_trk_chi2", "reco_gm_pt", "reco_gm_eta"}).
+        Define("reco_pass_dsa_pt", goodQuantity, {"reco_dsa_pt","dsa_pass_ID"}).
+        Define("reco_pass_dsa_eta", goodQuantity, {"reco_dsa_eta","dsa_pass_ID"}).
+        Define("reco_pass_dsa_phi", goodQuantity, {"reco_dsa_phi","dsa_pass_ID"}).
+        Define("reco_pass_gm_pt", goodQuantity, {"reco_gm_pt","gm_pass_ID"}).
+        Define("reco_pass_gm_eta", goodQuantity, {"reco_gm_eta","gm_pass_ID"}).
+        Define("reco_pass_gm_phi", goodQuantity, {"reco_gm_phi","gm_pass_ID"}).
+        Define("n_good_dsa", "(int)Nonzero(dsa_pass_ID).size()").
+        Define("n_good_gm", "(int)Nonzero(gm_pass_ID).size()").
+        Define("good_vtx_dsadsa", passVtxID, {"dsa_pass_ID", "dsa_pass_ID", "reco_dsa_charge", "reco_dsa_charge", "reco_vtx_dsadsa_reduced_chi2"}).
+        Define("good_vtx_gmgm", passVtxID, {"gm_pass_ID", "gm_pass_ID", "reco_gm_charge", "reco_gm_charge", "reco_vtx_gmgm_reduced_chi2"}).
+        Define("good_vtx_dsagm", passVtxID, {"dsa_pass_ID", "gm_pass_ID", "reco_dsa_charge", "reco_gm_charge", "reco_vtx_dsagm_reduced_chi2"}).
+        Define("best_vtx_dsadsa", pickBestVtx, {"reco_vtx_dsadsa_reduced_chi2", "good_vtx_dsadsa"}).
+        Define("best_dsa_0", "best_vtx_dsadsa / 4").
+        Define("best_dsa_1", "best_vtx_dsadsa % 4").
+        Define("cosalphas", calcCosAlpha, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_phi", "dsa_pass_ID"}).
+        Define("min_cosalpha", "Min(cosalphas)").//[best_dsa_0*4 + best_dsa_1]").
+        Define("reco_dsa_pt_res0", "reco_dsa_pt_res.size() > 0 ? reco_dsa_pt_res[best_dsa_0] : -9999.f").
+        Define("reco_dsa_pt_res1", "reco_dsa_pt_res.size() > 1 ? reco_dsa_pt_res[best_dsa_1] : -9999.f").
+        Define("best_muon_0", findMuonMatch0, {"reco_gbmdsa_match", "reco_gbmdsa_dR", "good_vtx_dsagm", "best_dsa_0", "best_dsa_1"}).
+        Define("best_muon_1", findMuonMatch1, {"reco_gbmdsa_match", "reco_gbmdsa_dR", "good_vtx_dsagm", "good_vtx_gmgm", "best_dsa_1", "best_muon_0"}).
+        Define("n_matched", "(int)(best_muon_0>3) + (int)(best_muon_1>3)").
+        Define("matched_muon_vtx_vxy", takeMatchedVtxQuantity, {"reco_vtx_dsadsa_vxy", "reco_vtx_gmgm_vxy", "reco_vtx_dsagm_vxy", "best_muon_0", "best_muon_1"}).
+        Define("matched_muon_vtx_vz", takeMatchedVtxQuantity, {"reco_vtx_dsadsa_vz", "reco_vtx_gmgm_vz", "reco_vtx_dsagm_vz", "best_muon_0", "best_muon_1"}).
+        Define("matched_muon_vtx_sigmavxy", takeMatchedVtxQuantity, {"reco_vtx_dsadsa_sigmavxy", "reco_vtx_gmgm_sigmavxy", "reco_vtx_dsagm_sigmavxy", "best_muon_0", "best_muon_1"}).
+        Define("matched_muon_vtx_reduced_chi2", takeMatchedVtxQuantity, {"reco_vtx_dsadsa_reduced_chi2", "reco_vtx_gmgm_reduced_chi2", "reco_vtx_dsagm_reduced_chi2", "best_muon_0", "best_muon_1"}).
+        Define("matched_muon_vtx_dR", takeMatchedVtxQuantity, {"reco_vtx_dsadsa_dR", "reco_vtx_gmgm_dR", "reco_vtx_dsagm_dR", "best_muon_0", "best_muon_1"}).
+        Define("matched_muon_vtx_sign", calcVtxSignificance, {"matched_muon_vtx_vxy", "matched_muon_vtx_sigmavxy"}).
+        Define("matched_muon_vtx_res", calcVtxResolution, {"matched_muon_vtx_vxy", "matched_muon_vtx_sigmavxy"}).
+        Define("reco_sel_mu_pt0", takeMatchedMuonQuantity, {"reco_dsa_pt", "reco_gm_pt", "best_muon_0"}).
+        Define("reco_sel_mu_pt1", takeMatchedMuonQuantity, {"reco_dsa_pt", "reco_gm_pt", "best_muon_1"}).
+        Define("reco_sel_mu_eta0", takeMatchedMuonQuantity, {"reco_dsa_eta", "reco_gm_eta", "best_muon_0"}).
+        Define("reco_sel_mu_eta1", takeMatchedMuonQuantity, {"reco_dsa_eta", "reco_gm_eta", "best_muon_1"}).
+        Define("reco_sel_mu_phi0", takeMatchedMuonQuantity, {"reco_dsa_phi", "reco_gm_phi", "best_muon_0"}).
+        Define("reco_sel_mu_phi1", takeMatchedMuonQuantity, {"reco_dsa_phi", "reco_gm_phi", "best_muon_1"}).
+        Define("reco_sel_mu_dxy0", takeMatchedMuonQuantity, {"reco_dsa_dxy", "reco_gm_dxy", "best_muon_0"}).
+        Define("reco_sel_mu_dxy1", takeMatchedMuonQuantity, {"reco_dsa_dxy", "reco_gm_dxy", "best_muon_1"}).
+        Define("reco_sel_mu_dxy_err0", takeMatchedMuonQuantity, {"reco_dsa_dxy_err", "reco_gm_dxy_err", "best_muon_0"}).
+        Define("reco_sel_mu_dxy_err1", takeMatchedMuonQuantity, {"reco_dsa_dxy_err", "reco_gm_dxy_err", "best_muon_1"}).
+        Define("reco_sel_mu_dxy_sign0", "reco_sel_mu_dxy0/reco_sel_mu_dxy_err0").
+        Define("reco_sel_mu_dxy_sign1", "reco_sel_mu_dxy1/reco_sel_mu_dxy_err1").
+        Define("reco_sel_mu_dz0", takeMatchedMuonQuantity, {"reco_dsa_dz", "reco_gm_dz", "best_muon_0"}).
+        Define("reco_sel_mu_dz1", takeMatchedMuonQuantity, {"reco_dsa_dz", "reco_gm_dz", "best_muon_1"}).
+        Define("reco_sel_mu_q0", takeMatchedMuonQuantityInt, {"reco_dsa_charge", "reco_gm_charge", "best_muon_0"}).
+        Define("reco_sel_mu_q1", takeMatchedMuonQuantityInt, {"reco_dsa_charge", "reco_gm_charge", "best_muon_1"}).
+        Define("reco_dsa_pt_sign", "reco_dsa_pt/reco_dsa_pt_err").
+        Define("reco_gm_pt_sign", "reco_gm_pt/reco_gm_pt_err").
+        Define("reco_sel_mu_pt_sign0", takeMatchedMuonQuantity, {"reco_dsa_pt_sign", "reco_gm_pt_sign", "best_muon_0"}).
+        Define("reco_sel_mu_pt_sign1", takeMatchedMuonQuantity, {"reco_dsa_pt_sign", "reco_gm_pt_sign", "best_muon_1"}).
+        Define("reco_sel_mu_pt_res0", takeMatchedMuonQuantity, {"reco_dsa_pt_res", "reco_gm_pt_res", "best_muon_0"}).
+        Define("reco_sel_mu_pt_res1", takeMatchedMuonQuantity, {"reco_dsa_pt_res", "reco_gm_pt_res", "best_muon_1"}).
+        Define("matched_muon_MT", calcMatchedMuonMT, {"reco_sel_mu_pt0", "reco_sel_mu_phi0", "MET_pt", "MET_phi"}).
+        Define("matched_muon_Mmumu", calcMatchedMuonInvMass, {"reco_sel_mu_pt0", "reco_sel_mu_eta0", "reco_sel_mu_phi0", "reco_sel_mu_pt1", "reco_sel_mu_eta1", "reco_sel_mu_phi1"}).
+        Define("n_highpt_corr_jets", Form("(int)%s.size()", jet_pt.Data())).
+        Define("reco_PF_jet_pt0", takeQuantity0, {jet_pt.Data()}).
+        Define("reco_PF_jet_pt1", takeQuantity1, {jet_pt.Data()}).
+        Define("reco_PF_jet_eta0", takeQuantity0, {jet_eta.Data()}).
+        Define("reco_PF_jet_eta1", takeQuantity1, {jet_eta.Data()}).
+        Define("good_eta", takegoodeta, {jet_eta.Data(), jet_pt.Data()}).
+        Define("reco_PF_jet_phi0", takeQuantity0, {jet_phi.Data()}).
+        Define("reco_PF_jet_phi1", takeQuantity1, {jet_phi.Data()}).
+        Define("reco_dsa0_trk_chi2", takeQuantity0, {"reco_dsa_trk_chi2"}).
+        Define("reco_dsa1_trk_chi2", takeQuantity1, {"reco_dsa_trk_chi2"}).
+        Define("reco_dsa_muon_pt0", takeQuantity0, {"reco_dsa_pt"}).
+        Define("reco_dsa_muon_eta0", takeQuantity0, {"reco_dsa_eta"}).
+        Define("reco_dsa_trk_n_hits0", takeQuantity0, {"reco_dsa_trk_n_hits"}).
+        Define("reco_dsa_trk_n_planes0", takeQuantity0, {"reco_dsa_trk_n_planes"}).
+        Define("reco_gm_muon_pt0", takeQuantity0, {"reco_pass_gm_pt"}).
+        Define("reco_gm_muon_eta0", takeQuantity0, {"reco_pass_gm_eta"}).
+        Define("MET_jet_dphi", calcMETJetDphi, {jet_phi.Data(), "MET_phi"}).
+        Define("MET_jet_dphi0", takeQuantity0, {"MET_jet_dphi"}).
+        Define("recoil_jet_phi_dphi", calcMETJetDphi, {jet_phi.Data(), "reco_PF_recoil_phi"}).
+        Define("fake_MET_fraction", findFakeMETCut, {"MET_pt", "MET_phi", "reco_Calo_MET_pt", "reco_Calo_MET_phi", "reco_Calo_MET_pt"}).
+        Define("reco_PF_MetNoMu_pt", findMetNoMu, {"MET_pt", "MET_phi", "reco_pass_gm_pt", "reco_pass_gm_phi"}).
+        Define("hem_veto", calcHemVeto, {"reco_PF_HEM_flag"}).
+        Define("reco_bTag_pass", calcBTagPass, {"reco_PF_jet_corr_BTag"}).
+        Define("reco_n_bTag_jets", calcNBTag, {"reco_PF_jet_corr_BTag", "reco_bTag_pass"}).
+        Define("reco_METmu_dphi_v2", calcRecoMETmuDphi, {"reco_sel_mu_pt0", "reco_sel_mu_phi0", "reco_sel_mu_pt1", "reco_sel_mu_phi1", "MET_phi"}).
+        Define("CaloPFMETRatio", Form("abs(reco_Calo_MET_pt - %s)/reco_Calo_MET_pt", "MET_pt"));
+
+
+    if (mode_ == common::DATA) 
+        df_wgts = df_wgts.Define("wgt", "1.0");
+    else {
+        df_wgts = df_wgts.
+            Define("gen_muon_vxy", takeGenMuVxy, {"gen_vxy", "gen_ID"}).
+            Define("gen_METmu_dphi", calcGenMETmuDphi, {"gen_pt", "gen_phi", "gen_ID", "gen_MET_phi"}).
+            //Define("gm_sf_wgt", calcGMsf, {"reco_gm_pt", "reco_gm_eta", "gm_pass_ID"}).
+            //Define("el_sf_wgt", calcElectronsf, {"reco_electron_pt", "reco_electron_eta", "reco_electron_id_result"}).
+            //Define("ph_sf_wgt", calcPhotonsf, {"reco_photon_pt", "reco_photon_eta", "reco_photon_id_result"}).
+            Define("Zwgt", calcZsf, {"gen_ID", "gen_pt"}).
+            Define("Wwgt", calcWsf, {"gen_ID", "gen_pt"}).
+            Define("Twgt", calcTsf, {"gen_ID", "gen_pt"}).
+            Define("PUwgt", calcPUsf, {"gen_pu_true"}).
+            Define("trig_wgt", calcTrigsf, {"reco_PF_MetNoMu_pt"}).
+            Define("veto_wgt", calcVetosf, {"reco_electron_id_result", "reco_electron_eta", "reco_electron_pt", 
+                                            "reco_photon_id_result", "reco_photon_eta", "reco_photon_pt"}).
+            Define("dsa_wgt", calcDSAsf, {"reco_dsa_pt", "reco_dsa_eta","reco_dsa_dxy", "best_dsa_0", "best_dsa_1"}).
+            Define("reco_dsa_wgt", calcrecoDSAsf, {"reco_dsa_pt", "reco_dsa_eta","reco_dsa_dxy", "best_dsa_0", "best_dsa_1"}).
+            Define("gm_wgt", calcGMsf, {"reco_gm_pt", "reco_gm_eta", "best_muon_0", "best_muon_1"}).
+            Define("bTag_wgt", calcBTagsf, {"reco_n_bTag_jets", jet_pt.Data(), jet_eta.Data(), "reco_bTag_pass"}).
+            Define("wgt", calcTotalWgt, {"veto_wgt", "reco_dsa_wgt","dsa_wgt", "gm_wgt", "Zwgt", 
+                                            "Wwgt", "Twgt", "PUwgt", "trig_wgt", "gen_wgt", "bTag_wgt"});
+            //Define("wgt", "1.0");
+            //Define("wgt", calcTotalWgt, {"ph_sf_wgt", "el_sf_wgt", "gm_sf_wgt", "Zwgt", "Wwgt", "Twgt", "PUwgt", "trig_wgt", "gen_wgt"});
+    }
+
+
+    // Beginning of cuts
+
+    vector<TString> cut_strings;
+
+    all_histos_1D_.clear();
+    all_histos_2D_.clear();
+    cutflow_.clear();
+
+    auto df_filters = df_wgts.Filter(cuts_info_[0].cut.Data(), Form("Cut0"));
+    cutflow_.push_back(df_filters.Sum<double>("wgt"));
+    for (size_t cut = 1; cut < cuts_info_.size(); cut++) {
+
+        // Some cuts are not inclusive, so make copy to restore later in case
+        auto temp_df = df_filters;
+
+        df_filters = df_filters.Filter(cuts_info_[cut].cut.Data(), Form("Cut%d", cut));
+        cutflow_.push_back(df_filters.Sum<double>("wgt"));
+
+        // make all requested histograms for each cut, IFF book_plot is true for that cut
+        if (cuts_info_[cut].book_plot == TString("no")) {
+            // before continue restore df if it's one of the 3 SR definitions (or a otherwise non-inclusive cut)
+            if (cuts_info_[cut].inclusive == TString("no")) 
+                df_filters = temp_df;
+            continue;
+        }
+
+        for (auto & [histo_name, histo_info] : histos_info_) {
+            // if current sample's group is included in histo's list of groups to exclude, continue
+            if (std::find(histo_info->groups_to_exclude.begin(), histo_info->groups_to_exclude.end(), group_) != histo_info->groups_to_exclude.end())
+                continue;
+
+            // split into 1D and 2D, and int and float cases
+
+            if (histo_info->type == "float1D") {
+                // std::map auto-initializes if no element found
+                if (histo_info->binEdgesX[0] != -1) { // bin edges provided
+                    double bin_edges[histo_info->binEdgesX.size()];
+                    std::copy(histo_info->binEdgesX.begin(), histo_info->binEdgesX.end(), bin_edges);
+                    all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
+                }
+                else { // just number of bins and low and high X
+                    all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+                }
+            }
+            else if (histo_info->type == "int1D") {
+                // std::map auto-initializes if no element found
+                if (histo_info->binEdgesX[0] != -1) { // bin edges provided
+                    double bin_edges[histo_info->binEdgesX.size()];
+                    std::copy(histo_info->binEdgesX.begin(), histo_info->binEdgesX.end(), bin_edges);
+                    all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
+                }
+                else // just number of bins and low and high X
+                    all_histos_1D_[histo_name][cut] = df_filters.Histo1D<int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+            }
+            else if (histo_info->type == "float2D") 
+                all_histos_2D_[histo_name][cut] = df_filters.Histo2D<float,float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+            else if (histo_info->type == "int2D")
+                all_histos_2D_[histo_name][cut] = df_filters.Histo2D<int,int,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX, histo_info->nbinsY, histo_info->lowY, histo_info->highY}, histo_info->quantity.Data(), histo_info->quantity2.Data(), "wgt");
+            else
+                cout << "Hist type not recognized!" << endl;
+        }
+
+        // restore df if it's one of the 3 SR definitions (or a otherwise non-inclusive cut)
+        if (cuts_info_[cut].inclusive == "no") 
+            df_filters = temp_df;
+    }
+
+    TString wgt = (mode_ != common::DATA) ? "gen_wgt" : "reco_PF_MET_corr_phi";
+
+    auto df_sumgenwgts = df_wgts.Sum(wgt.Data());
+
+    if (mode_ != common::SIGNAL)
+        df_sumgenwgts.OnPartialResult(everyN, [&barWidth, &progressBar/*, &barMutex*/](double &) {
+                //std::lock_guard<std::mutex> l(barMutex); // lock_guard locks the mutex at construction, releases it at destruction
+                progressBar.push_back('#');
+                // re-print the line with the progress bar
+                std::cout << "\r[" << std::left << std::setw(barWidth) << progressBar << ']' << std::flush;
+                });
+
+    cout << "Triggering event loop..." << endl;
+    auto value = *df_sumgenwgts;
+    cout << endl << "RDF sum_gen_wgts (dummy MET phi if running on data): " << value << endl;
+
+    df_filters.Report()->Print();
+
+    return kTRUE;
+}
+
+Bool_t RDFAnalysis::Terminate() {
+    //delete sf_pu;
+    delete pileup_2018;
+    delete pileup_2017;
+    delete pileup_2016;
+    for (std::pair<TString, TH1F *> pileup : pileup_ZJets_2017)
+        delete pileup.second;
+    delete sf_z_qcd;
+    delete sf_z_ewk;
+    delete sf_w_qcd;
+    delete sf_w_ewk;
+    delete trig_hist_2018;
+    delete trig_hist_2017;
+    delete trig_hist_2016;
+    /*delete gm_sf_2018;
+    delete gm_sf_2017;
+    delete gm_sf_2016;
+    delete el_sf_2018;
+    delete el_sf_2017;
+    delete el_sf_2016;
+    delete ph_sf_2018;
+    delete ph_sf_2017;
+    delete ph_sf_2016;*/
+    
+    return true;
+}

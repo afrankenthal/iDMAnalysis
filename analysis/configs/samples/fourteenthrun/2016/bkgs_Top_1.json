@@ -1,0 +1,58 @@
+{
+    "ST_s-channel_2016": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_fourteenthrun/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/crab_iDMAnalysis_ST_s-channel_2016/210131_070504/0000/merged"
+        ],
+        "group": "Top",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 3368390.6060757637,
+        "xsec": 10.11,
+        "year": 2016
+    },
+    "ST_t-channel_antitop_4f_2016": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_fourteenthrun/ST_t-channel_antitop_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/crab_iDMAnalysis_ST_t-channel_antitop_4f_2016/200728_201916/0000/merged"
+        ],
+        "group": "Top",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 40134706.0,
+        "xsec": 80.95,
+        "year": 2016
+    },
+    "ST_t-channel_top_4f_2016": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_fourteenthrun/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/crab_iDMAnalysis_ST_t-channel_top_4f_2016/200728_204808/0000/merged",
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_fourteenthrun/ST_t-channel_top_4f_inclusiveDecays_13TeV-powhegV2-madspin-pythia8_TuneCUETP8M1/crab_iDMAnalysis_ST_t-channel_top_4f_2016/200728_204808/0001"
+        ],
+        "group": "Top",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 71382347.0,
+        "xsec": 136.02,
+        "year": 2016
+    },
+    "ST_tW_antitop_2016": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_fourteenthrun/ST_tW_antitop_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/crab_iDMAnalysis_ST_tW_antitop_2016/200728_203506/0000/merged"
+        ],
+        "group": "Top",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 6678170.0,
+        "xsec": 35.6,
+        "year": 2016
+    },
+    "ST_tW_top_2016": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_fourteenthrun/ST_tW_top_5f_inclusiveDecays_13TeV-powheg-pythia8_TuneCUETP8M1/crab_iDMAnalysis_ST_tW_top_2016/200728_202200/0000/merged"
+        ],
+        "group": "Top",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 7356858.0,
+        "xsec": 35.6,
+        "year": 2016
+    }
+}

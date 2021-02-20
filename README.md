@@ -1,5 +1,6 @@
-# iDMSkimmer
-iDM Analysis repository (skimming, trigger/reco efficiency, and analysis)
+# iDMAnalysis
+
+iDM Analysis repository (includes skimmer, analysis, and limits computation)
 
 ## Environment setup
 
@@ -8,53 +9,43 @@ iDM Analysis repository (skimming, trigger/reco efficiency, and analysis)
 $ cmsrel CMSSW_10_2_18
 $ cd CMSSW_10_2_18/src
 $ cmsenv
+$ git cms-init
 ```
 
-## Pull and compile packages
+## Cloning the repository
 
-Pull KalmanVertexFit and VertexTools packages to extend the native Kalman Filter range limit:
+To contribute development, fork this repository on GitHub and then clone from your own fork:
 
 ```bash
-$ git cms-addpkg RecoVertex/VertexTools
-$ git cms-addpkg RecoVertex/KalmanVertexFit
+git clone git@github.com:[you]/iDMAnalysis.git
 ```
-and apply the following git patch:
+
+Otherwise, just directly clone this repository:
 
 ```bash
-$ curl https://home.fnal.gov/~as2872/extendTrackerDimensions.patch | git apply
+git clone git@github.com:afrankenthal/iDMAnalysis.git
 ```
 
-Now clone the iDM repo and compile everything:
+or via HTTPS if you don't have SSH keys set up:
 
 ```bash
-$ git clone git@github.com:afrankenthal/iDMSkimmer.git
-$ scram b -j 8
-$ cd iDMSkimmer/washAOD
+git clone https://github.com/afrankenthal/iDMAnalysis.git
 ```
 
-or clone using HTTPS instead of SSH if you don't have SSH keys set up:
+Follow the README files below depending on what you want to do.
 
-```bash
-$ git clone https://github.com/afrankenthal/iDMSkimmer.git
-```
+## Running ntuplizer to make flat trees from AODs
 
-## Running ntuplizer to make flat trees from AODs:
+Check out the instructions in the [README](skimmer/) file inside skimmer/.
 
-Might need to renew your proxy first:
+## Running the analysis on top of flat ntuples
 
-```bash
-$ voms-proxy-init -voms cms -valid 192:00
-```
+Check out the instructions in the [README](analysis/) file inside analysis/.
 
-For a local test run:
+## Running limits computations
 
-```bash
-$ cmsRun python/iDMAnalyzer_cfg.py test=1
-```
+Check out the instructions in the [README](limits/) file inside limits/.
 
-Call multicrab to run over more samples in EOS:
+## Contributing
 
-```bash
-$ cd python
-$ ./multicrab_iDMAnalyzer -c submit -w WORKAREA -s X # where X = {data,MC,custom}
-```
+To contribute code, create a Pull Request from your fork (either the master/main branch or a feature branch) to this repository. Don't forget to merge in or rebase (preferred) any upstream changes before making the PR.

@@ -1,0 +1,37 @@
+<library name="iDMAnalyzers" file="*.cc">
+    <flags EDM_PLUGIN="1"/>
+</library>
+
+<use name="iDMAnalysis/skimmer"/>
+
+<use name="boost"/>
+
+<use name="CommonTools/UtilAlgos"/>
+<use name="CommonTools/RecoAlgos"/>
+
+<use name="DataFormats/Common"/>
+<use name="DataFormats/HepMCCandidate"/>
+<use name="DataFormats/RecoCandidate"/>
+<use name="DataFormats/TrackReco"/>
+<use name="DataFormats/MuonReco"/>
+<use name="DataFormats/ParticleFlowCandidate"/>
+<use name="DataFormats/EgammaCandidates"/>
+
+<use name="FWCore/Framework"/>
+<use name="FWCore/PluginManager"/>
+<use name="FWCore/ParameterSet"/>
+<use name="FWCore/Common"/>
+
+<use name="HLTrigger/HLTcore"/>
+
+<use name="JetMETCorrections/Modules"/>
+
+<use name="PhysicsTools/UtilAlgos"/>
+<use name="PhysicsTools/HepMCCandAlgos"/>
+
+<use name="RecoVertex/VertexPrimitives"/>
+<use name="RecoVertex/KalmanVertexFit"/>
+
+<use name="TrackingTools/TransientTrack"/>
+<use name="TrackingTools/Records"/>
+

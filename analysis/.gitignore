@@ -1,0 +1,6 @@
+!data/*.root
+!data/**/*.root
+plots
+bin
+lib
+build

@@ -1,0 +1,24 @@
+{
+    "QCD_HT200To300_2016": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_fourteenthrun/QCD_HT200to300_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_QCD_HT200To300_2016/200728_202258/0000/merged"
+        ],
+        "group": "QCD",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 19167277.0,
+        "xsec": 1735000,
+        "year": 2016
+    },
+    "QCD_HT300To500_2016": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_fourteenthrun/QCD_HT300to500_TuneCUETP8M1_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_QCD_HT300To500_2016/200728_201724/0000/merged"
+        ],
+        "group": "QCD",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 18414218.0,
+        "xsec": 367000,
+        "year": 2016
+    }
+}
