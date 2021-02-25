@@ -63,20 +63,32 @@ process.load('Configuration.StandardSequences.MagneticField_38T_cff')
 process.load('Configuration.StandardSequences.FrontierConditions_GlobalTag_condDBv2_cff')
 
 globaltag = ''
-if options.year == 2016:
-    globaltag = '80X_dataRun2_2016SeptRepro_v7' if options.data else '80X_mcRun2_asymptotic_2016_TrancheIV_v8'
-elif options.year == 2017:
-    globaltag = '94X_dataRun2_v11' if options.data else '94X_mc2017_realistic_v17'
-elif options.year == 2018:
-    # Check if it's 2018 D data
-    if options.data and options.Run2018D:
-        globaltag = '102X_dataRun2_Prompt_v15'
-    # or 2018 A, B, or C data
-    elif options.data:
-        globaltag = '102X_dataRun2_v12'
-    # else it's MC
+if options.Run2018D:
+    globaltag = '102X_dataRun2_Prompt_v16'
+else:
+    if options.data:
+        globaltag = '102X_dataRun2_v13'
     else:
-        globaltag = '102X_upgrade2018_realistic_v20'
+        if options.year == 2016:
+            globaltag = '102X_mcRun2_asymptotic_v8'
+        elif options.year == 2017:
+            globaltag = '102X_mc2017_realistic_v8'
+        elif options.year == 2018:
+            globaltag = '102X_upgrade2018_realistic_v21'
+# if options.year == 2016:
+#     globaltag = '80X_dataRun2_2016SeptRepro_v7' if options.data else '80X_mcRun2_asymptotic_2016_TrancheIV_v8'
+# elif options.year == 2017:
+#     globaltag = '94X_dataRun2_v11' if options.data else '94X_mc2017_realistic_v17'
+# elif options.year == 2018:
+#     # Check if it's 2018 D data
+#     if options.data and options.Run2018D:
+#         globaltag = '102X_dataRun2_Prompt_v15'
+#     # or 2018 A, B, or C data
+#     elif options.data:
+#         globaltag = '102X_dataRun2_v12'
+#     # else it's MC
+#     else:
+#         globaltag = '102X_upgrade2018_realistic_v20'
 
 process.GlobalTag.globaltag = globaltag
 
