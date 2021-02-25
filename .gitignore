@@ -1,5 +1,7 @@
 *.pyc
 *.log
+*.err
+*.out
 *.root
 *.so
 *.pcm

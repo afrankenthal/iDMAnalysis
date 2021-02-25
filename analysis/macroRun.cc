@@ -45,6 +45,7 @@ int main(int argc, char ** argv) {
         ("i,infile", "Input file(s) (for macros that use results of other macros)", cxxopts::value<vector<std::string>>()->default_value({}))
         ("l,filelist", "File(s) with list of input files (one input file per line)", cxxopts::value<vector<std::string>>()->default_value({}))
         ("k,force_overwrite", "Force overwrite of plot directory", cxxopts::value<bool>()->default_value("false")->implicit_value("false"))
+        ("t,systematic", "Systematic variation (please refer to utils/ScaleFactors.h for options)", cxxopts::value<int>()->default_value("0"))
         ("h,help", "Print help and exit.")
     ;
     auto result = options.parse(argc, argv);
@@ -63,6 +64,7 @@ int main(int argc, char ** argv) {
     vector<std::string> in_filenames = result["infile"].as<vector<std::string>>(); // default is length-zero vector with {}
     vector<std::string> list_filenames = result["filelist"].as<vector<std::string>>(); // default is length-zero vector with {}
     bool force_overwrite = result["force_overwrite"].as<bool>();
+    int systematic = result["systematic"].as<int>();
 
     // add 
     if (list_filenames.size() > 0) {
@@ -153,6 +155,7 @@ int main(int argc, char ** argv) {
         auto cfg = item["config"];
 
         cfg["years"] = years;
+        cfg["systematic"] = systematic;
         cfg["outfilename"] = out_filename.Data();
         cfg["infilenames"] = in_filenames;
         cfg["sample_config_filenames"] = sample_config_filenames;

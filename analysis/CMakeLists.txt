@@ -48,7 +48,7 @@ file(GLOB macro_files "macros/*.C")
 foreach (macro_file ${macro_files})
     get_filename_component(macro_lib ${macro_file} NAME_WLE)
     if ("x_${macro_lib}" STREQUAL "x_mMainAnalysis") # OR "x_${macro_lib}" STREQUAL "x_mSaveCanvases")
-        add_library(${macro_lib} SHARED ${macro_file} utils/tdrstyle.C utils/CMS_lumi.C
+        add_library(${macro_lib} SHARED ${macro_file} utils/tdrstyle.C utils/CMS_lumi.C utils/ScaleFactors.cc
             Selectors/RDataFrame/RDFAnalysis.C Selectors/RDataFrame/nMinus1Selector.C
             Selectors/RDataFrame/CosmicMuonAnalysis.C)
         # Selectors/TSelectors/mainAnalysisSelector.C "${CMAKE_SOURCE_DIR}/Selectors/TSelectors/mainAnalysisSelectorDict.cxx"
