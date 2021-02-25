@@ -13,353 +13,10 @@ using namespace ROOT::VecOps;
 
 using std::map, std::vector, std::cout, std::endl;
 
-Bool_t RDFAnalysis::Begin() {
-
-    const char* data_path_c = std::getenv("ANALYSIS_DATA_PATH");
-    if (!data_path_c) {
-        cout << "ERROR! Could not find environment variable $ANALYSIS_DATA_PATH. Make sure you have sourced setup.sh before proceeding." << endl;
-        return false;
-    }
-    TString data_path(data_path_c);
-
-    rapidcsv::Document bTagSF_file_2016(std::string(data_path + "/bTagSF_2016.csv"));
-    rapidcsv::Document bTagSF_file_2017(std::string(data_path + "/bTagSF_2017.csv"));
-    rapidcsv::Document bTagSF_file_2018(std::string(data_path + "/bTagSF_2018.csv"));
-
-    for (size_t i = 0; i < bTagSF_file_2016.GetRowCount(); i++) {
-        int OperatingPoint = bTagSF_file_2016.GetCell<int>(0, i);
-        std::string measurementType = bTagSF_file_2016.GetCell<std::string>(1, i);
-        std::string sysType = bTagSF_file_2016.GetCell<std::string>(2, i);
-        int jetFlavor = bTagSF_file_2016.GetCell<int>(3, i);
-        float etaMin = bTagSF_file_2016.GetCell<float>(4, i);
-        float etaMax = bTagSF_file_2016.GetCell<float>(5, i);
-        float ptMin = bTagSF_file_2016.GetCell<float>(6, i);
-        float ptMax = bTagSF_file_2016.GetCell<float>(7, i);
-        int discrMin = bTagSF_file_2016.GetCell<int>(8, i);
-        int discrMax = bTagSF_file_2016.GetCell<int>(9, i);
-        TString formula = TString(bTagSF_file_2016.GetCell<std::string>(10, i));
-        formula.ReplaceAll(" ", "").ReplaceAll("\"", "");
-        // TODO: add "up" and "down" for systematics
-        if (OperatingPoint == 1 && measurementType == " comb" && sysType == " central" && jetFlavor == 0) {
-            std::unique_ptr<TFormula> f = std::make_unique<TFormula>("f", formula.Data());
-            bTagSF_2016.push_back({ptMin, ptMax, std::move(f)});
-        }
-    }
-
-    for (size_t i = 0; i < bTagSF_file_2017.GetRowCount(); i++) {
-        int OperatingPoint = bTagSF_file_2017.GetCell<int>(0, i);
-        std::string measurementType = bTagSF_file_2017.GetCell<std::string>(1, i);
-        std::string sysType = bTagSF_file_2017.GetCell<std::string>(2, i);
-        int jetFlavor = bTagSF_file_2017.GetCell<int>(3, i);
-        float etaMin = bTagSF_file_2017.GetCell<float>(4, i);
-        float etaMax = bTagSF_file_2017.GetCell<float>(5, i);
-        float ptMin = bTagSF_file_2017.GetCell<float>(6, i);
-        float ptMax = bTagSF_file_2017.GetCell<float>(7, i);
-        int discrMin = bTagSF_file_2017.GetCell<int>(8, i);
-        int discrMax = bTagSF_file_2017.GetCell<int>(9, i);
-        TString formula = TString(bTagSF_file_2017.GetCell<std::string>(10, i));
-        formula.ReplaceAll(" ", "").ReplaceAll("\"", "");
-        // TODO: add "up" and "down" for systematics
-        if (OperatingPoint == 1 && measurementType == " comb" && sysType == " central" && jetFlavor == 0) {
-            std::unique_ptr<TFormula> f = std::make_unique<TFormula>("f", formula.Data());
-            bTagSF_2017.push_back({ptMin, ptMax, std::move(f)});
-        }
-    }
-    
-    for (size_t i = 0; i < bTagSF_file_2018.GetRowCount(); i++) {
-        int OperatingPoint = bTagSF_file_2018.GetCell<int>(0, i);
-        std::string measurementType = bTagSF_file_2018.GetCell<std::string>(1, i);
-        std::string sysType = bTagSF_file_2018.GetCell<std::string>(2, i);
-        int jetFlavor = bTagSF_file_2018.GetCell<int>(3, i);
-        float etaMin = bTagSF_file_2018.GetCell<float>(4, i);
-        float etaMax = bTagSF_file_2018.GetCell<float>(5, i);
-        float ptMin = bTagSF_file_2018.GetCell<float>(6, i);
-        float ptMax = bTagSF_file_2018.GetCell<float>(7, i);
-        int discrMin = bTagSF_file_2018.GetCell<int>(8, i);
-        int discrMax = bTagSF_file_2018.GetCell<int>(9, i);
-        TString formula = TString(bTagSF_file_2018.GetCell<std::string>(10, i));
-        formula.ReplaceAll(" ", "").ReplaceAll("\"", "");
-        // TODO: add " up" and " down" for systematics
-        if (OperatingPoint == 1 && measurementType == " comb" && sysType == " central" && jetFlavor == 0) {
-            std::unique_ptr<TFormula> f = std::make_unique<TFormula>("f", formula.Data());
-            bTagSF_2018.push_back({ptMin, ptMax, std::move(f)});
-        }
-    }
-    
-    
-    TFile * pileup_file;
-
-    //pileup_file = TFile::Open("../data/puWeights_80x_37ifb.root");
-    pileup_file = TFile::Open(data_path + TString("/pileup/PUWeights_2016.root"));
-    pileup_2016 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
-    pileup_2016->SetDirectory(0);
-    pileup_file->Close();
-
-    pileup_file = TFile::Open(data_path + TString("/puWeights_90x_41ifb.root"));
-    //pileup_file = TFile::Open("../data/pileup/PUWeights_2017.root");
-    pileup_2017 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
-    pileup_2017->SetDirectory(0);
-    pileup_file->Close();
-    
-    //pileup_file = TFile::Open("../data/puWeights_10x_56ifb.root");
-    pileup_file = TFile::Open(data_path + TString("/pileup/PUWeights_2018.root"));
-    pileup_2018 = (TH1F*)(((TH1F*)pileup_file->Get("puWeights"))->Clone());
-    pileup_2018->SetDirectory(0);
-    pileup_file->Close();
-
-    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio100.root"));
-    pileup_ZJets_2017["HT-100To200"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
-    pileup_ZJets_2017["HT-100To200"]->SetDirectory(0);
-    pileup_file->Close();
-    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio200.root"));
-    pileup_ZJets_2017["HT-200To400"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
-    pileup_ZJets_2017["HT-200To400"]->SetDirectory(0);
-    pileup_file->Close();
-    ////// FIXME FIXME FIXME zjetratio400.root does not exist!
-    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio200.root"));
-    pileup_ZJets_2017["HT-400To600"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
-    pileup_ZJets_2017["HT-400To600"]->SetDirectory(0);
-    pileup_file->Close();
-    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio600.root"));
-    pileup_ZJets_2017["HT-600To800"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
-    pileup_ZJets_2017["HT-600To800"]->SetDirectory(0);
-    pileup_file->Close();
-    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio800.root"));
-    pileup_ZJets_2017["HT-800To1200"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
-    pileup_ZJets_2017["HT-800To1200"]->SetDirectory(0);
-    pileup_file->Close();
-    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio1200.root"));
-    pileup_ZJets_2017["HT-1200To2500"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
-    pileup_ZJets_2017["HT-1200To2500"]->SetDirectory(0);
-    pileup_file->Close();
-    pileup_file = TFile::Open(data_path + TString("/zjetpileup/zjetratio2500.root"));
-    pileup_ZJets_2017["HT-2500ToInf"] = (TH1F*)(((TH1F*)pileup_file->Get("PUwgt_cut1_data_yr2017"))->Clone());
-    pileup_ZJets_2017["HT-2500ToInf"]->SetDirectory(0);
-    pileup_file->Close();
-    
-    // Set up QCD and EWK corrections
-    TFile * kfactors = TFile::Open(data_path + TString("/kfactors.root"));
-    TH1F * z_nlo = (TH1F*)kfactors->Get("ZJets_012j_NLO/nominal");
-    TH1F * z_ewk = (TH1F*)kfactors->Get("EWKcorr/Z");
-    TH1F * z_lo = (TH1F*)kfactors->Get("ZJets_LO/inv_pt");
-    sf_z_qcd = (TH1F*)z_nlo->Clone();
-    sf_z_qcd->Divide(z_lo);
-    sf_z_ewk = (TH1F*)z_ewk->Clone();
-    sf_z_ewk->Divide(z_lo);
-    TH1F * w_nlo = (TH1F*)kfactors->Get("WJets_012j_NLO/nominal");
-    TH1F * w_ewk = (TH1F*)kfactors->Get("EWKcorr/W");
-    TH1F * w_lo = (TH1F*)kfactors->Get("WJets_LO/inv_pt");
-    sf_w_qcd = (TH1F*)w_nlo->Clone();
-    sf_w_qcd->Divide(w_lo);
-    sf_w_ewk = (TH1F*)w_ewk->Clone();
-    sf_w_ewk->Divide(w_lo);
-    sf_z_qcd->SetDirectory(0);
-    sf_z_ewk->SetDirectory(0);
-    sf_w_qcd->SetDirectory(0);
-    sf_w_ewk->SetDirectory(0);
-    kfactors->Close();
-
-    // Set electron veto weights
-    TFile * veto_e_wgt_2016 = TFile::Open(data_path + TString("/ElectronWPVeto_80X_2016.root"));
-    TFile * veto_e_wgt_2017 = TFile::Open(data_path + TString("/ElectronWPVeto_Fall17V2_2017.root"));
-    TFile * veto_e_wgt_2018 = TFile::Open(data_path + TString("/ElectronWPVeto_Fall17V2_2018.root"));
-    veto_e_hist_2016 = (TH2F*)(((TH2F*)veto_e_wgt_2016->Get("EGamma_SF2D"))->Clone());
-    veto_e_hist_2017 = (TH2F*)(((TH2F*)veto_e_wgt_2017->Get("EGamma_SF2D"))->Clone());
-    veto_e_hist_2018 = (TH2F*)(((TH2F*)veto_e_wgt_2018->Get("EGamma_SF2D"))->Clone());
-    veto_e_hist_2016->SetDirectory(0);
-    veto_e_hist_2017->SetDirectory(0);
-    veto_e_hist_2018->SetDirectory(0);
-    veto_e_wgt_2016->Close();
-    veto_e_wgt_2017->Close();
-    veto_e_wgt_2018->Close();
-
-
-    // Set photon veto weights
-    TFile * veto_p_wgt_2016 = TFile::Open(data_path + TString("/PhotonsLoose_2016_Fall17V2.root"));
-    TFile * veto_p_wgt_2017 = TFile::Open(data_path + TString("/PhotonsLoose_2017.root"));
-    TFile * veto_p_wgt_2018 = TFile::Open(data_path + TString("/PhotonsLoose_2018.root"));
-    veto_p_hist_2016 = (TH2F*)(((TH2F*)veto_p_wgt_2016->Get("EGamma_SF2D"))->Clone());
-    veto_p_hist_2017 = (TH2F*)(((TH2F*)veto_p_wgt_2017->Get("EGamma_SF2D"))->Clone());
-    veto_p_hist_2018 = (TH2F*)(((TH2F*)veto_p_wgt_2018->Get("EGamma_SF2D"))->Clone());
-    veto_p_hist_2016->SetDirectory(0);
-    veto_p_hist_2017->SetDirectory(0);
-    veto_p_hist_2018->SetDirectory(0);
-    veto_p_wgt_2016->Close();
-    veto_p_wgt_2017->Close();
-    veto_p_wgt_2018->Close();
-
-    // Set global muon weights
-    TFile * gm_wgt_2016 = TFile::Open(data_path + TString("/idm_gm_scalefactors/GM_SF_2016sys.root"));
-    TFile * gm_wgt_2016GH = TFile::Open(data_path + TString("/idm_gm_scalefactors/GM_SF_2016sys_GH.root"));
-    TFile * gm_wgt_2017 = TFile::Open(data_path + TString("/idm_gm_scalefactors/GM_SF_2017sys.root"));
-    TFile * gm_wgt_2018 = TFile::Open(data_path + TString("/idm_gm_scalefactors/GM_SF_2018ID.root"));
-    gm_hist_2016 = (TH2F*)(((TH2F*)gm_wgt_2016->Get("NUM_LooseID_DEN_genTracks_eta_pt"))->Clone());
-    gm_hist_2016GH = (TH2F*)(((TH2F*)gm_wgt_2016GH->Get("NUM_LooseID_DEN_genTracks_eta_pt"))->Clone());
-    gm_hist_2017 = (TH2F*)(((TH2F*)gm_wgt_2017->Get("NUM_LooseID_DEN_genTracks_pt_abseta"))->Clone());
-    gm_hist_2018 = (TH2F*)(((TH2F*)gm_wgt_2018->Get("NUM_LooseID_DEN_TrackerMuons_pt_abseta"))->Clone()); // !!!!! FIXME: check this
-    gm_hist_2016stat = (TH2F*)(((TH2F*)gm_wgt_2016->Get("NUM_LooseID_DEN_genTracks_eta_pt_stat"))->Clone());
-    gm_hist_2016statGH = (TH2F*)(((TH2F*)gm_wgt_2016GH->Get("NUM_LooseID_DEN_genTracks_eta_pt_stat"))->Clone());
-    gm_hist_2017stat = (TH2F*)(((TH2F*)gm_wgt_2017->Get("NUM_LooseID_DEN_genTracks_pt_abseta_stat"))->Clone()); 
-    gm_hist_2018stat = (TH2F*)(((TH2F*)gm_wgt_2018->Get("NUM_LooseID_DEN_TrackerMuons_pt_abseta_stat"))->Clone()); // !!!!! FIXME: check this
-    gm_hist_2016sys = (TH2F*)(((TH2F*)gm_wgt_2016->Get("NUM_LooseID_DEN_genTracks_eta_pt_syst"))->Clone());
-    gm_hist_2016sysGH = (TH2F*)(((TH2F*)gm_wgt_2016GH->Get("NUM_LooseID_DEN_genTracks_eta_pt_syst"))->Clone());
-    gm_hist_2017sys = (TH2F*)(((TH2F*)gm_wgt_2017->Get("NUM_LooseID_DEN_genTracks_pt_abseta_syst"))->Clone());
-    gm_hist_2018sys = (TH2F*)(((TH2F*)gm_wgt_2018->Get("NUM_LooseID_DEN_TrackerMuons_pt_abseta_syst"))->Clone()); // !!!!! FIXME: check this
-    gm_hist_2016->SetDirectory(0);
-    gm_hist_2016GH->SetDirectory(0);
-    gm_hist_2017->SetDirectory(0);
-    gm_hist_2018->SetDirectory(0);
-    gm_hist_2016stat->SetDirectory(0);
-    gm_hist_2016statGH->SetDirectory(0);
-    gm_hist_2017stat->SetDirectory(0);
-    gm_hist_2018stat->SetDirectory(0);
-    gm_hist_2016sys->SetDirectory(0);
-    gm_hist_2016sysGH->SetDirectory(0);
-    gm_hist_2017sys->SetDirectory(0);
-    gm_hist_2018sys->SetDirectory(0);
-    gm_wgt_2016->Close();
-    gm_wgt_2016GH->Close();
-    gm_wgt_2017->Close();
-    gm_wgt_2018->Close();
-
-    // Set dsa muon weights
-    TFile * dsa_wgt_2016 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root"));
-    TFile * dsa_wgt_2017 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root"));
-    TFile * dsa_wgt_2018 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root"));
-    dsa_hist_2016 = (TH2F*)(((TH2F*)dsa_wgt_2016->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
-    dsa_hist_2017 = (TH2F*)(((TH2F*)dsa_wgt_2017->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
-    dsa_hist_2018 = (TH2F*)(((TH2F*)dsa_wgt_2018->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
-    dsa_hist_2016stat = (TH2F*)(((TH2F*)dsa_wgt_2016->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
-    dsa_hist_2017stat = (TH2F*)(((TH2F*)dsa_wgt_2017->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
-    dsa_hist_2018stat = (TH2F*)(((TH2F*)dsa_wgt_2018->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
-    dsa_hist_2016sys = (TH2F*)(((TH2F*)dsa_wgt_2016->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
-    dsa_hist_2017sys = (TH2F*)(((TH2F*)dsa_wgt_2017->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
-    dsa_hist_2018sys = (TH2F*)(((TH2F*)dsa_wgt_2018->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
-    dsa_hist_2016->SetDirectory(0);
-    dsa_hist_2017->SetDirectory(0);
-    dsa_hist_2018->SetDirectory(0);
-    dsa_hist_2016stat->SetDirectory(0);
-    dsa_hist_2017stat->SetDirectory(0);
-    dsa_hist_2018stat->SetDirectory(0);
-    dsa_hist_2016sys->SetDirectory(0);
-    dsa_hist_2017sys->SetDirectory(0);
-    dsa_hist_2018sys->SetDirectory(0);
-    dsa_wgt_2016->Close();
-    dsa_wgt_2017->Close();
-    dsa_wgt_2018->Close();
-    TFile * dsa_wgt_2016_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2016.root"));
-    TFile * dsa_wgt_2017_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2017.root"));
-    TFile * dsa_wgt_2018_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_DisplacedID_DEN_dSAMuons_abseta_pt_2018.root"));
-    dsa_hist_2016_low = (TH2F*)(((TH2F*)dsa_wgt_2016_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
-    dsa_hist_2017_low = (TH2F*)(((TH2F*)dsa_wgt_2017_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
-    dsa_hist_2018_low = (TH2F*)(((TH2F*)dsa_wgt_2018_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt"))->Clone());
-    dsa_hist_2016stat_low = (TH2F*)(((TH2F*)dsa_wgt_2016_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
-    dsa_hist_2017stat_low = (TH2F*)(((TH2F*)dsa_wgt_2017_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
-    dsa_hist_2018stat_low = (TH2F*)(((TH2F*)dsa_wgt_2018_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_stat"))->Clone());
-    dsa_hist_2016sys_low = (TH2F*)(((TH2F*)dsa_wgt_2016_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
-    dsa_hist_2017sys_low = (TH2F*)(((TH2F*)dsa_wgt_2017_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
-    dsa_hist_2018sys_low = (TH2F*)(((TH2F*)dsa_wgt_2018_low->Get("NUM_DisplacedID_DEN_dSAMuons_abseta_pt_syst"))->Clone());
-    dsa_hist_2016_low->SetDirectory(0);
-    dsa_hist_2017_low->SetDirectory(0);
-    dsa_hist_2018_low->SetDirectory(0);
-    dsa_hist_2016stat_low->SetDirectory(0);
-    dsa_hist_2017stat_low->SetDirectory(0);
-    dsa_hist_2018stat_low->SetDirectory(0);
-    dsa_hist_2016sys_low->SetDirectory(0);
-    dsa_hist_2017sys_low->SetDirectory(0);
-    dsa_hist_2018sys_low->SetDirectory(0);
-    dsa_wgt_2016_low->Close();
-    dsa_wgt_2017_low->Close();
-    dsa_wgt_2018_low->Close();
-
-    // Set dsa muon reco weights
-    TFile * reco_dsa_wgt_2016 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root"));
-    TFile * reco_dsa_wgt_2017 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root"));
-    TFile * reco_dsa_wgt_2018 = TFile::Open(data_path + TString("/idm_dsa_scalefactors/high_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root"));
-    reco_dsa_hist_2016 = (TH2F*)(((TH2F*)reco_dsa_wgt_2016->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
-    reco_dsa_hist_2017 = (TH2F*)(((TH2F*)reco_dsa_wgt_2017->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
-    reco_dsa_hist_2018 = (TH2F*)(((TH2F*)reco_dsa_wgt_2018->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
-    reco_dsa_hist_2016stat = (TH2F*)(((TH2F*)reco_dsa_wgt_2016->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
-    reco_dsa_hist_2017stat = (TH2F*)(((TH2F*)reco_dsa_wgt_2017->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
-    reco_dsa_hist_2018stat = (TH2F*)(((TH2F*)reco_dsa_wgt_2018->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
-    reco_dsa_hist_2016sys = (TH2F*)(((TH2F*)reco_dsa_wgt_2016->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
-    reco_dsa_hist_2017sys = (TH2F*)(((TH2F*)reco_dsa_wgt_2017->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
-    reco_dsa_hist_2018sys = (TH2F*)(((TH2F*)reco_dsa_wgt_2018->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
-    reco_dsa_hist_2016->SetDirectory(0);
-    reco_dsa_hist_2017->SetDirectory(0);
-    reco_dsa_hist_2018->SetDirectory(0);
-    reco_dsa_hist_2016stat->SetDirectory(0);
-    reco_dsa_hist_2017stat->SetDirectory(0);
-    reco_dsa_hist_2018stat->SetDirectory(0);
-    reco_dsa_hist_2016sys->SetDirectory(0);
-    reco_dsa_hist_2017sys->SetDirectory(0);
-    reco_dsa_hist_2018sys->SetDirectory(0);
-    reco_dsa_wgt_2016->Close();
-    reco_dsa_wgt_2017->Close();
-    reco_dsa_wgt_2018->Close();
-    TFile * reco_dsa_wgt_2016_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2016.root"));
-    TFile * reco_dsa_wgt_2017_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2017.root"));
-    TFile * reco_dsa_wgt_2018_low = TFile::Open(data_path + TString("/idm_dsa_scalefactors/low_pt/NUM_dSAMuons_DEN_genTracks_abseta_pt_2018.root"));
-    reco_dsa_hist_2016_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2016_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
-    reco_dsa_hist_2017_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2017_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
-    reco_dsa_hist_2018_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2018_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt"))->Clone());
-    reco_dsa_hist_2016stat_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2016_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
-    reco_dsa_hist_2017stat_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2017_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
-    reco_dsa_hist_2018stat_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2018_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_stat"))->Clone());
-    reco_dsa_hist_2016sys_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2016_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
-    reco_dsa_hist_2017sys_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2017_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
-    reco_dsa_hist_2018sys_low = (TH2F*)(((TH2F*)reco_dsa_wgt_2018_low->Get("NUM_dSAMuons_DEN_genTracks_abseta_pt_syst"))->Clone());
-    reco_dsa_hist_2016_low->SetDirectory(0);
-    reco_dsa_hist_2017_low->SetDirectory(0);
-    reco_dsa_hist_2018_low->SetDirectory(0);
-    reco_dsa_hist_2016stat_low->SetDirectory(0);
-    reco_dsa_hist_2017stat_low->SetDirectory(0);
-    reco_dsa_hist_2018stat_low->SetDirectory(0);
-    reco_dsa_hist_2016sys_low->SetDirectory(0);
-    reco_dsa_hist_2017sys_low->SetDirectory(0);
-    reco_dsa_hist_2018sys_low->SetDirectory(0);
-    reco_dsa_wgt_2016_low->Close();
-    reco_dsa_wgt_2017_low->Close();
-    reco_dsa_wgt_2018_low->Close();
-
-    // Set trig weights
-    TFile * trig_wgt_2016 = TFile::Open(data_path + TString("/trig_weights/trig_weights_2016.root"));
-    TFile * trig_wgt_2017 = TFile::Open(data_path + TString("/trig_weights/trig_weights_2017.root"));
-    TFile * trig_wgt_2018 = TFile::Open(data_path + TString("/trig_weights/trig_weights_2018.root"));
-
-    //trig_hist_2016 = (TH1F*)(((TH1F*)trig_wgt_2016->Get("weigts_reco_PF_MetNoMu_pt_2016_MCTotal_2016_Dlow"))->Clone());
-    //trig_hist_2017 = (TH1F*)(((TH1F*)trig_wgt_2017->Get("weigts_reco_PF_MetNoMu_pt_2017_MCTotal_2017_Dlow"))->Clone());
-    //trig_hist_2018 = (TH1F*)(((TH1F*)trig_wgt_2018->Get("weigts_reco_PF_MetNoMu_pt_2018_MCTotal_2018_Dlow"))->Clone());
-    trig_hist_2016 = (TH1F*)(((TH1F*)trig_wgt_2016->Get("weights_reco_PF_MET_pt_2016_MCTotal_2016_ratio"))->Clone());
-    trig_hist_2017 = (TH1F*)(((TH1F*)trig_wgt_2017->Get("weights_reco_PF_MET_pt_2017_MCTotal_2017_ratio"))->Clone());
-    trig_hist_2018 = (TH1F*)(((TH1F*)trig_wgt_2018->Get("weights_reco_PF_MET_pt_2018_MCTotal_2018_ratio"))->Clone());
-
-    trig_hist_2016->SetDirectory(0);
-    trig_hist_2017->SetDirectory(0);
-    trig_hist_2018->SetDirectory(0);
-
-    trig_wgt_2016->Close();
-    trig_wgt_2017->Close();
-    trig_wgt_2018->Close();
-
-    // Set muon GM loose ID sf
-    /* ANDRE: commented out for now but TRES, check LooseID vs genTracks and TrackerMuons on yours
-    TFile * gm_sf_2016_file = TFile::Open("../data/muon_ID_SF_2016.root");
-    TFile * gm_sf_2017_file = TFile::Open("../data/muon_ID_SF_2017.root");
-    TFile * gm_sf_2018_file = TFile::Open("../data/muon_ID_SF_2018.root");
-
-    gm_sf_2016 = (TH2D*)gm_sf_2016_file->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
-    gm_sf_2017 = (TH2D*)gm_sf_2017_file->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
-    gm_sf_2018 = (TH2D*)gm_sf_2018_file->Get("NUM_LooseID_DEN_genTracks_pt_abseta");
-
-    gm_sf_2016->SetDirectory(0);
-    gm_sf_2017->SetDirectory(0);
-    gm_sf_2018->SetDirectory(0);
-
-    gm_sf_2016_file->Close();
-    gm_sf_2017_file->Close();
-    gm_sf_2018_file->Close();
-    */
+Bool_t RDFAnalysis::Begin(int syst) {
+    syst_ = (ScaleFactors::SYST)syst;
+    scale_factors.buildScaleFactors(syst_);
+    nEvents_ = 0;
     return true;
 }
 
@@ -375,6 +32,10 @@ void RDFAnalysis::SetCutConfig(vector<common::CutInfo> cuts_info) {
     cuts_info_ = cuts_info;
 }
 
+long long RDFAnalysis::GetNEvents() {
+    return nEvents_;
+}
+
 void RDFAnalysis::SetSampleConfig(common::SampleInfo sample_info) {
     sample_info_ = sample_info;
     name_ = sample_info_.label;
@@ -385,103 +46,14 @@ void RDFAnalysis::SetSampleConfig(common::SampleInfo sample_info) {
     year_ = sample_info_.year;
     custom_lumi_ = sample_info_.lumi;
 
-    if (year_ == 2017) {
-        lumi_ = 41.53 * 1000;
-        trig_sf = trig_hist_2017;
-        gm_sf = gm_hist_2017;
-        gm_sf_sys = gm_hist_2017sys;
-        gm_sf_stat = gm_hist_2017stat;
-        dsa_sf_low = dsa_hist_2017_low;
-        dsa_sf_sys_low = dsa_hist_2017sys_low;
-        dsa_sf_stat_low = dsa_hist_2017stat_low;
-        dsa_sf = dsa_hist_2017;
-        dsa_sf_sys = dsa_hist_2017sys;
-        dsa_sf_stat = dsa_hist_2017stat;
-        reco_dsa_sf_low = reco_dsa_hist_2017_low;
-        reco_dsa_sf_sys_low = reco_dsa_hist_2017sys_low;
-        reco_dsa_sf_stat_low = reco_dsa_hist_2017stat_low;
-        reco_dsa_sf = reco_dsa_hist_2017;
-        reco_dsa_sf_sys = reco_dsa_hist_2017sys;
-        reco_dsa_sf_stat = reco_dsa_hist_2017stat;
-        veto_e_sf = veto_e_hist_2017;
-        veto_p_sf = veto_p_hist_2017;
-        //if (group_ == "ZJets") {
-        //    if (name_.Contains("HT-100To200"))
-        //        sf_pu = pileup_ZJets_2017["HT-100To200"];
-        //    else if (name_.Contains("HT-200To400"))
-        //        sf_pu = pileup_ZJets_2017["HT-200To400"];
-        //    else if (name_.Contains("HT-400To600"))
-        //        sf_pu = pileup_ZJets_2017["HT-400To600"];
-        //    else if (name_.Contains("HT-600To800"))
-        //        sf_pu = pileup_ZJets_2017["HT-600To800"];
-        //    else if (name_.Contains("HT-800To1200"))
-        //        sf_pu = pileup_ZJets_2017["HT-800To1200"];
-        //    else if (name_.Contains("HT-1200To2500"))
-        //        sf_pu = pileup_ZJets_2017["HT-1200To2500"];
-        //    else if (name_.Contains("HT-2500ToInf"))
-        //        sf_pu = pileup_ZJets_2017["HT-2500ToInf"];
-        //    else {
-        //        cout << "WARNING! Sample is from ZJets group but no pileup file could be found. Using HT-100To200 by default." << endl;
-        //        sf_pu = pileup_ZJets_2017["HT-100To200"];
-        //    }
-        //}
-        //else {
-        sf_pu = pileup_2017;
-        bTagSF = &bTagSF_2017;
-        //}
-    }
-    else if (year_ == 2016) {
-        sf_pu = pileup_2016;
-        bTagSF = &bTagSF_2016;
+    if (year_ == 2016)
         lumi_ = 35.92 * 1000;
-        trig_sf = trig_hist_2016;
-        gm_sf = gm_hist_2016;//->Add(gm_hist_2016GH);
-        gm_sf_sys = gm_hist_2016sys;
-        gm_sf_stat = gm_hist_2016stat;
-        gm_sf2 = gm_hist_2016GH;//->Add(gm_hist_2016GH);
-        gm_sf_sys2 = gm_hist_2016sysGH;
-        gm_sf_stat2 = gm_hist_2016statGH;
-        dsa_sf = dsa_hist_2016;
-        dsa_sf_sys = dsa_hist_2016sys;
-        dsa_sf_stat = dsa_hist_2016stat;
-        dsa_sf_low = dsa_hist_2016_low;
-        dsa_sf_sys_low = dsa_hist_2016sys_low;
-        dsa_sf_stat_low = dsa_hist_2016stat_low;
-        reco_dsa_sf = reco_dsa_hist_2016;
-        reco_dsa_sf_sys = reco_dsa_hist_2016sys;
-        reco_dsa_sf_stat = reco_dsa_hist_2016stat;
-        reco_dsa_sf_low = reco_dsa_hist_2016_low;
-        reco_dsa_sf_sys_low = reco_dsa_hist_2016sys_low;
-        reco_dsa_sf_stat_low = reco_dsa_hist_2016stat_low;
-        veto_e_sf = veto_e_hist_2016;
-        veto_p_sf = veto_p_hist_2016;
-    }
-    else if (year_ == 2018) {
-        sf_pu = pileup_2018;
-        bTagSF = &bTagSF_2018;
+    else if (year_ == 2017)
+        lumi_ = 41.53 * 1000;
+    else if (year_ == 2018)
         lumi_ = 59.74 * 1000;
-        trig_sf = trig_hist_2018;
-        gm_sf = gm_hist_2018;
-        gm_sf_sys = gm_hist_2018sys;
-        gm_sf_stat = gm_hist_2018stat;
-        dsa_sf = dsa_hist_2018;
-        dsa_sf_sys = dsa_hist_2018sys;
-        dsa_sf_stat = dsa_hist_2018stat;
-        dsa_sf_low = dsa_hist_2018_low;
-        dsa_sf_sys_low = dsa_hist_2018sys_low;
-        dsa_sf_stat_low = dsa_hist_2018stat_low;
-        reco_dsa_sf = reco_dsa_hist_2018;
-        reco_dsa_sf_sys = reco_dsa_hist_2018sys;
-        reco_dsa_sf_stat = reco_dsa_hist_2018stat;
-        reco_dsa_sf_low = reco_dsa_hist_2018_low;
-        reco_dsa_sf_sys_low = reco_dsa_hist_2018sys_low;
-        reco_dsa_sf_stat_low = reco_dsa_hist_2018stat_low;
-        veto_e_sf = veto_e_hist_2018;
-        veto_p_sf = veto_p_hist_2018;
-    }
-    else {
+    else
         cout << "ERROR! Year not one of 2016/2017/2018. Exiting..." << endl;
-    }
     // Check if we have a luminosity override
     if (custom_lumi_ > 0) 
         lumi_ = custom_lumi_ * 1000;
@@ -521,119 +93,82 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     cout << "everyN " << everyN << ", nSlots " << nSlots << endl;
 
     cout << "Total number of events to process: " << std::scientific << nEvents << endl;
+    nEvents_ = nEvents;
 
     // First, define all the relevant weights
 
-    /* ANDRE: commented out for now. TODO: remove
-    auto calcGMsf = [&](RVec<float> gm_pt, RVec<float> gm_eta, RVec<bool> gm_pass_ID) {
-        float sf = 1.0;
-        for (size_t i = 0; i < gm_pt.size(); i++) {
-            if (!gm_pass_ID[i]) continue;
-            int binX = gm_sf->GetXaxis()->FindBin(gm_pt[i]);
-            int binY = gm_sf->GetYaxis()->FindBin(abs(gm_eta[i]));
-            float temp_sf = gm_sf->GetBinContent(binX, binY);
-            if (temp_sf < 1e-5)
-                temp_sf = 1.0;
-            sf *= temp_sf;
-        }
-        return sf;
-    };
-    auto calcElectronsf = [&](RVec<float> el_pt, RVec<float> el_eta, RVec<int> el_pass_ID) {
-        float sf = 1.0;
-        for (size_t i = 0; i < el_pt.size(); i++) {
-            if (el_pass_ID[i] % 2 != 1 || el_pt[i] < 10.0 || abs(el_eta[i]) > 2.5) continue;
-            int binX = el_sf->GetXaxis()->FindBin(abs(el_eta[i]));
-            int binY = el_sf->GetYaxis()->FindBin(el_pt[i]);
-            float temp_sf = el_sf->GetBinContent(binX, binY);
-            if (temp_sf < 1e-5)
-                temp_sf = 1.0;
-            sf *= temp_sf;
-        }
-        return sf;
-    };
-    auto calcPhotonsf = [&](RVec<float> ph_pt, RVec<float> ph_eta, RVec<int> ph_pass_ID) {
-        float sf = 1.0;
-        for (size_t i = 0; i < ph_pt.size(); i++) {
-            if (ph_pass_ID[i] != 1 || ph_pt[i] < 15.0 || abs(ph_eta[i]) > 2.5) continue;
-            int binX = ph_sf->GetXaxis()->FindBin(abs(ph_eta[i]));
-            int binY = ph_sf->GetYaxis()->FindBin(ph_pt[i]);
-            float temp_sf = ph_sf->GetBinContent(binX, binY);
-            if (temp_sf < 1e-5)
-                temp_sf = 1.0;
-            sf *= temp_sf;
-        }
-        return sf;
-    };
-    */
-
-    auto calcBTagsf = [&](int n_btagged_jets, RVec<float> jets_pt, RVec<float> jets_eta, RVec<bool> jets_btag_pass) {
+    auto calcBTagWgt = [&](int n_btagged_jets, RVec<float> jets_pt, RVec<float> jets_eta, RVec<bool> jets_btag_pass) {
+        auto & sfs = scale_factors.btag_sfs[year_];
         if (jets_pt.size() < 2)
             return 1.0f;
         // for our purposes the sf does not change between eta -2.5 and 2.5
         float w = 1.0f;
         if (n_btagged_jets == 2) {
             float pt = jets_pt[0];
-            auto it = std::lower_bound(bTagSF->begin(), bTagSF->end(), pt, compareBTagLowerEdge);
+            auto it = std::lower_bound(sfs.begin(), sfs.end(), pt, ScaleFactors::compareBTagLowerEdge);
             // if pt is greater than the highest lower edge, use this last entry to compute sf
-            if (it == bTagSF->end())
+            if (it == sfs.end())
                 it--;
             float sf1 = it->formula->Eval(pt);
-
             pt = jets_pt[1];
-            it = std::lower_bound(bTagSF->begin(), bTagSF->end(), pt, compareBTagLowerEdge);
-            if (it == bTagSF->end())
+            it = std::lower_bound(sfs.begin(), sfs.end(), pt, ScaleFactors::compareBTagLowerEdge);
+            if (it == sfs.end())
                 it--;
             float sf2 = it->formula->Eval(pt);
-
             w = (1.0f - sf1) * (1.0f - sf2);
         }
         else if (n_btagged_jets == 1) {
             float pt = (jets_btag_pass[0] ? jets_pt[0] : jets_pt[1]);
-            auto it = std::lower_bound(bTagSF->begin(), bTagSF->end(), pt, compareBTagLowerEdge);
-            if (it == bTagSF->end())
+            auto it = std::lower_bound(sfs.begin(), sfs.end(), pt, ScaleFactors::compareBTagLowerEdge);
+            if (it == sfs.end())
                 it--;
             float sf = it->formula->Eval(pt);
-
             w = (1.0f - sf);
         }
         return w;
     };
 
-    auto calcZsf = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
+    auto calcZWgt = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
         if ((group_ != "ZJets" && group_ != "DY") || gen_pt.size() != gen_ID.size()) return 1.0f;
         return 1.23f;
         // TURNED OFF FOR NOW
-        float Zpt = -1.0f; 
-        Zpt = Min(gen_pt[abs(gen_ID) == 23]);
-        if (Zpt < 0) return 1.0f;
-        int binNum = sf_z_qcd->FindBin(Zpt);
-        if (binNum == 0) binNum++;
-        else if (binNum == sf_z_qcd->GetNbinsX()) binNum--;
-        float sf = (float)sf_z_qcd->GetBinContent(binNum) * (float)sf_z_ewk->GetBinContent(binNum);
-        return sf;
+        // float Zpt = -1.0f;
+        // sf_z_qcd = scale_factors.all_sfs["z_qcd"][-1];
+        // sf_z_ewk = scale_factors.all_sfs["z_ewk"][-1]; 
+        // Zpt = Min(gen_pt[abs(gen_ID) == 23]);
+        // if (Zpt < 0) return 1.0f;
+        // int binNum = sf_z_qcd->FindBin(Zpt);
+        // if (binNum == 0) binNum++;
+        // else if (binNum == sf_z_qcd->GetNbinsX()) binNum--;
+        // float sf = (float)sf_z_qcd->GetBinContent(binNum) * (float)sf_z_ewk->GetBinContent(binNum);
+        // return sf;
     };
 
-    auto calcWsf = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
+    auto calcWWgt = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
         if (group_ != "WJets" || gen_pt.size() != gen_ID.size()) return 1.0f;
         return 1.21f;
         // TURNED OFF FOR NOW
-        float Wpt = -1.0f; 
-        Wpt = Min(gen_pt[abs(gen_ID) == 24]);
-        if (Wpt < 0) return 1.0f;
-        int binNum = sf_w_qcd->FindBin(Wpt);
-        if (binNum == 0) binNum++;
-        else if (binNum == sf_w_qcd->GetNbinsX()+1) binNum--;
-        float sf = (float)sf_w_qcd->GetBinContent(binNum) * (float)sf_w_ewk->GetBinContent(binNum);
-        // scale down WJets MC by 15% to match with data
-        // (currently not enabled, just multiply by 1)
-        sf *= 1.0;
-        return sf; 
+        // float Wpt = -1.0f;
+        // sf_w_qcd = scale_factors.all_sfs["w_qcd"][-1]
+        // sf_w_ewk = scale_factors.all_sfs["w_ewk"][-1] 
+        // Wpt = Min(gen_pt[abs(gen_ID) == 24]);
+        // if (Wpt < 0) return 1.0f;
+        // int binNum = sf_w_qcd->FindBin(Wpt);
+        // if (binNum == 0) binNum++;
+        // else if (binNum == sf_w_qcd->GetNbinsX()+1) binNum--;
+        // float sf = (float)sf_w_qcd->GetBinContent(binNum) * (float)sf_w_ewk->GetBinContent(binNum);
+        // // scale down WJets MC by 15% to match with data
+        // // (currently not enabled, just multiply by 1)
+        // sf *= 1.0;
+        // return sf; 
     };
 
-    auto calcTsf = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
-        if (group_ != "Top" || gen_pt.size() != gen_ID.size()) return 1.0f;
+    auto calcTWgt = [&](RVec<int> gen_ID, RVec<float> gen_pt) { 
+        if (group_ != "Top" || gen_pt.size() != gen_ID.size())
+            return 1.0f;
         int n_top = (abs(gen_ID) == 6).size();
-        if (n_top != 2) return 1.0f;
+        if (n_top != 2)
+            return 1.0f;
         auto mask = gen_pt[abs(gen_ID)==6 && (gen_pt > 0 && gen_pt < 800)];
         auto sfs1 = Map(gen_pt[mask], [](float pt){ return exp(0.0615-0.0005*pt); });
         mask = gen_pt[abs(gen_ID)==6 && gen_pt >= 800];
@@ -645,290 +180,136 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         return sf;
     };
 
-    auto calcTrigsf = [&](float met) {
-        if (met < 100.0)
+    auto calcTrigWgt = [&](float met) {
+        if (met < 100.0 || met > 800.0)
             return 1.0f;
-            //return 0.3f;
-        if (met > 800.0)
+        auto & sf = scale_factors.all_sfs["trigger"][year_];
+        return (float)sf->GetBinContent(sf->FindBin(met));
+    };
+
+    auto calcPUWgt = [&](int pileup) { 
+        auto & sf = scale_factors.all_sfs["pileup"][year_];
+        return (float)sf->GetBinContent(sf->FindBin((double)pileup)); 
+    };
+
+    auto calcDSAIDWgt = [&](RVec<float> pt, RVec<float> eta, RVec<float> dxy, size_t id) {
+        if (pt.size() < 2)
             return 1.0f;
-        return (float)trig_sf->GetBinContent(trig_sf->FindBin(met));
-    };
-
-    auto calcPUsf = [&](int pileup) { 
-        return (float)sf_pu->GetBinContent(sf_pu->FindBin((double)pileup)); 
-    };
-    
-    auto gm_lowpt_lookup = [&](int eta, int err, int year) {
-        float sf = 1.0;
-        float downerr = 0.;
-        float uperr = 0.;
-        if (year == 2018) {
-          if ((eta > -2.4) && (eta < -1.6)) {sf = 0.986; downerr=0.013; uperr=0.014;}
-          if ((eta > -1.6) && (eta < -0.9)) {sf = 0.991; downerr=0.006; uperr=0.005;}
-          if ((eta > -0.9) && (eta < -0.3)) {sf = 0.996; downerr=0.004; uperr=0.004;}
-          if ((eta > -0.3) && (eta < 0.3))  {sf = 0.995; downerr=0.005; uperr=0.004;}
-          if ((eta > 0.3) && (eta < 0.9))   {sf = 0.997; downerr=0.005; uperr=0.004;}
-          if ((eta > 0.9) && (eta < 1.6))   {sf = 0.985; downerr=0.007; uperr=0.007;}
-          if ((eta > 1.6) && (eta < 2.4))   {sf = 0.996; downerr=0.013; uperr=0.014;}
+        auto & sfs_Z = scale_factors.all_sfs["dsa_ID_Z"][year_];
+        auto & sfs_Z_stat = scale_factors.all_sfs["dsa_ID_Z_stat"][year_];
+        auto & sfs_Z_syst = scale_factors.all_sfs["dsa_ID_Z_syst"][year_];
+        auto & sfs_JPsi = scale_factors.all_sfs["dsa_ID_JPsi"][year_];
+        auto & sfs_JPsi_stat = scale_factors.all_sfs["dsa_ID_JPsi_stat"][year_];
+        auto & sfs_JPsi_syst = scale_factors.all_sfs["dsa_ID_JPsi_syst"][year_];
+        float wgt = 1.0f;
+        if (pt[id] > 20) {
+            auto bin = sfs_Z->FindBin(abs(eta[id]), pt[id]);
+            wgt = sfs_Z->GetBinContent(bin);
+            if (syst_ == ScaleFactors::DSA_ID_DOWN)
+                wgt -= sqrt(pow(sfs_Z_stat->GetBinContent(bin), 2) + pow(sfs_Z_syst->GetBinContent(bin), 2));
+            else if (syst_ == ScaleFactors::DSA_ID_UP)
+                wgt += sqrt(pow(sfs_Z_stat->GetBinContent(bin), 2) + pow(sfs_Z_syst->GetBinContent(bin), 2));
         }
-        else if (year == 2017) {
-          if ((eta > -2.4) && (eta < -1.8)) {sf = 0.986; downerr=0.006; uperr=0.007;}
-          if ((eta > -1.8) && (eta < -1.2)) {sf = 0.997; downerr=0.002; uperr=0.003;}
-          if ((eta > -1.2) && (eta < -0.8)) {sf = 0.994; downerr=0.003; uperr=0.004;}
-          if ((eta > -0.8) && (eta < -0.3)) {sf = 0.995; downerr=0.002; uperr=0.002;}
-          if ((eta > -0.3) && (eta < 0.3))  {sf = 0.996; downerr=0.002; uperr=0.002;}
-          if ((eta > 0.3) && (eta < 0.8))   {sf = 0.997; downerr=0.002; uperr=0.002;}
-          if ((eta > 0.8) && (eta < 1.2))   {sf = 0.995; downerr=0.003; uperr=0.003;}
-          if ((eta > 1.2) && (eta < 1.8))   {sf = 0.997; downerr=0.002; uperr=0.003;}
-          if ((eta > 1.8) && (eta < 2.4))   {sf = 0.996; downerr=0.005; uperr=0.007;}
+        else if (pt[id] > 5) {
+            auto bin = sfs_JPsi->FindBin(abs(eta[id]), pt[id]);
+            wgt = sfs_JPsi->GetBinContent(bin);
+            if (syst_ == ScaleFactors::DSA_ID_DOWN)
+                wgt -= sqrt(pow(sfs_JPsi_stat->GetBinContent(bin), 2) + pow(sfs_JPsi_syst->GetBinContent(bin), 2));
+            else if (syst_ == ScaleFactors::DSA_ID_UP)
+                wgt += sqrt(pow(sfs_JPsi_stat->GetBinContent(bin), 2) + pow(sfs_JPsi_syst->GetBinContent(bin), 2));
         }
-        else if (year == 2016) {
-          if ((eta > -2.4) && (eta < -1.8)) {sf = 1.003; downerr=0.025; uperr=0.013;}
-          if ((eta > -1.8) && (eta < -1.2)) {sf = 0.983; downerr=0.010; uperr=0.008;}
-          if ((eta > -1.2) && (eta < -0.8)) {sf = 0.998; downerr=0.006; uperr=0.008;}
-          if ((eta > -0.8) && (eta < -0.3)) {sf = 1.003; downerr=0.004; uperr=0.005;}
-          if ((eta > -0.3) && (eta < 0.3))  {sf = 0.999; downerr=0.004; uperr=0.004;}
-          if ((eta > 0.3) && (eta < 0.8))   {sf = 1.005; downerr=0.004; uperr=0.004;}
-          if ((eta > 0.8) && (eta < 1.2))   {sf = 0.996; downerr=0.007; uperr=0.006;}
-          if ((eta > 1.2) && (eta < 1.8))   {sf = 1.001; downerr=0.008; uperr=0.008;}
-          if ((eta > 1.8) && (eta < 2.4))   {sf = 0.954; downerr=0.049; uperr=0.029;}
+        // efficiency from displacement
+        float slope = 0.00035; 
+        float disp = 1.0 - slope * abs(dxy[id]);
+        return wgt * disp;
+    };
+
+    auto calcDSARecoWgt = [&](RVec<float> pt, RVec<float> eta, RVec<float> dxy, size_t id) {
+        if (pt.size() < 2)
+            return 1.0f;
+        auto & sfs_Z = scale_factors.all_sfs["dsa_reco_Z"][year_];
+        auto & sfs_Z_stat = scale_factors.all_sfs["dsa_reco_Z_stat"][year_];
+        auto & sfs_Z_syst = scale_factors.all_sfs["dsa_reco_Z_syst"][year_];
+        auto & sfs_JPsi = scale_factors.all_sfs["dsa_reco_JPsi"][year_];
+        auto & sfs_JPsi_stat = scale_factors.all_sfs["dsa_reco_JPsi_stat"][year_];
+        auto & sfs_JPsi_syst = scale_factors.all_sfs["dsa_reco_JPsi_syst"][year_];
+        float wgt = 1.0f;
+        if (pt[id] > 20) {
+            auto bin = sfs_Z->FindBin(abs(eta[id]), pt[id]);
+            wgt = sfs_Z->GetBinContent(bin);
+            if (syst_ == ScaleFactors::DSA_RECO_DOWN)
+                wgt -= sqrt(pow(sfs_Z_stat->GetBinContent(bin), 2) + pow(sfs_Z_syst->GetBinContent(bin), 2));
+            else if (syst_ == ScaleFactors::DSA_RECO_UP)
+                wgt += sqrt(pow(sfs_Z_stat->GetBinContent(bin), 2) + pow(sfs_Z_syst->GetBinContent(bin), 2));
         }
-        float full_sf = 1.0;
-        if (err == 0) {full_sf = sf;}
-        if (err == 1) {full_sf = sf + uperr;}
-        if (err == 2) {full_sf = sf - downerr;}
-        return full_sf;
+        else if (pt[id] > 5) {
+            auto bin = sfs_JPsi->FindBin(abs(eta[id]), pt[id]);
+            wgt = sfs_JPsi->GetBinContent(bin);
+            if (syst_ == ScaleFactors::DSA_RECO_DOWN)
+                wgt -= sqrt(pow(sfs_JPsi_stat->GetBinContent(bin), 2) + pow(sfs_JPsi_syst->GetBinContent(bin), 2));
+            else if (syst_ == ScaleFactors::DSA_RECO_UP)
+                wgt += sqrt(pow(sfs_JPsi_stat->GetBinContent(bin), 2) + pow(sfs_JPsi_syst->GetBinContent(bin), 2));
+        }
+        return wgt;
     };
 
-    auto calcrecoDSAsf = [&](RVec<float> muonpt_dsa, RVec<float> muoneta_dsa, RVec<float> dxy_dsa, size_t id1, size_t id2) {
-
-          int err_type = 0; // 0: normal, 1: uperr, 2: down err
-          float sf1 = 1.0;
-          float sf2 = 1.0;
-          float sf1_stat = 0.;
-          float sf2_stat = 0.;
-          float sf1_sys = 0.;
-          float sf2_sys = 0.;
-          float sf1_err = 0.;
-          float sf2_err = 0.;
-          if (muonpt_dsa.size() == 0) return 0.f;
-          //x is eta and y is pt
-          if(muonpt_dsa[id1] < 3){ sf1=0;}
-          else if(muonpt_dsa[id1] < 20){ 
-            sf1 = reco_dsa_sf_low->GetBinContent(reco_dsa_sf_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
-            sf1_sys = reco_dsa_sf_sys_low->GetBinError(reco_dsa_sf_sys_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
-            sf1_stat = reco_dsa_sf_stat_low->GetBinError(reco_dsa_sf_stat_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
-
-            sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
-            //printf("SF: %f, err: %f",sf1,sf1_err);
-            if (err_type == 1) {sf1 = sf1 + sf1_err;}
-            if (err_type == 2) {sf1 = sf1 - sf1_err;}
-          }
-
-          else{
-            sf1 = reco_dsa_sf->GetBinContent(reco_dsa_sf->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
-            sf1_sys = reco_dsa_sf_sys->GetBinError(reco_dsa_sf_sys->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
-            sf1_stat = reco_dsa_sf_stat->GetBinError(reco_dsa_sf_stat->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
-            //std::cout<<"sf1 "<<sf1<<" "<<sf1_sys<<" "<<sf1_stat<<std::endl;
-            sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
-            //printf("SF: %f, err: %f",sf1,sf1_err);
-            if (err_type == 1) {sf1 = sf1 + sf1_err;}
-            if (err_type == 2) {sf1 = sf1 - sf1_err;}
-          }
-          if(muonpt_dsa[id2] < 3){ sf2=0;}
-          else if(muonpt_dsa[id2] < 20){
-            sf2 = reco_dsa_sf_low->GetBinContent(reco_dsa_sf_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
-            sf2_sys = reco_dsa_sf_sys_low->GetBinError(reco_dsa_sf_sys_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
-            sf2_stat = reco_dsa_sf_stat_low->GetBinError(reco_dsa_sf_stat_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
-
-            sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat);
-            //printf("SF: %f, err: %f",sf1,sf1_err);
-            if (err_type == 1) {sf2 = sf2 + sf2_err;}
-            if (err_type == 2) {sf2 = sf2 - sf2_err;}
-          }
-
-          else{
-            sf2 = reco_dsa_sf->GetBinContent(reco_dsa_sf->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
-            sf2_sys = reco_dsa_sf_sys->GetBinError(reco_dsa_sf_sys->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
-            sf2_stat = reco_dsa_sf_stat->GetBinError(reco_dsa_sf_stat->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
-
-            sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat);
-            //printf("SF: %f, err: %f",sf1,sf1_err);
-            if (err_type == 1) {sf2 = sf2 + sf2_err;}
-            if (err_type == 2) {sf2 = sf2 - sf2_err;}
-          }
-         // // efficiency from displacement
-         // float slope = 0.00035; 
-         // //float slope = 0.00035*1.02; 
-         // //float slope = 0.00035*.98; 
-         // float dis1 = (1- slope* dxy_dsa[id1]);
-         // float dis2 = (1- slope* dxy_dsa[id2]);
-          return sf1*sf2;//*dis1*dis2;
-    };
-    auto calcDSAsf = [&](RVec<float> muonpt_dsa, RVec<float> muoneta_dsa, RVec<float> dxy_dsa, size_t id1, size_t id2) {
-
-          int err_type = 0; // 0: normal, 1: uperr, 2: down err
-          float sf1 = 1.0;
-          float sf2 = 1.0;
-          float sf1_stat = 0.;
-          float sf2_stat = 0.;
-          float sf1_sys = 0.;
-          float sf2_sys = 0.;
-          float sf1_err = 0.;
-          float sf2_err = 0.;
-          if (muonpt_dsa.size() == 0) return 0.f;
-          //x is eta and y is pt
-          if(muonpt_dsa[id1] < 3){ sf1=0;}
-          else if(muonpt_dsa[id1] < 20){ 
-            sf1 = dsa_sf_low->GetBinContent(dsa_sf_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
-            sf1_sys = dsa_sf_sys_low->GetBinError(dsa_sf_sys_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
-            sf1_stat = dsa_sf_stat_low->GetBinError(dsa_sf_stat_low->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
-
-            sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
-            //printf("SF: %f, err: %f",sf1,sf1_err);
-            if (err_type == 1) {sf1 = sf1 + sf1_err;}
-            if (err_type == 2) {sf1 = sf1 - sf1_err;}
-          }
-
-          else{
-            sf1 = dsa_sf->GetBinContent(dsa_sf->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
-            sf1_sys = dsa_sf_sys->GetBinError(dsa_sf_sys->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
-            sf1_stat = dsa_sf_stat->GetBinError(dsa_sf_stat->FindBin(abs(muoneta_dsa[id1]),muonpt_dsa[id1]));
-
-            sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
-            //printf("SF: %f, err: %f",sf1,sf1_err);
-            if (err_type == 1) {sf1 = sf1 + sf1_err;}
-            if (err_type == 2) {sf1 = sf1 - sf1_err;}
-          }
-          if(muonpt_dsa[id2] < 3){ sf2=0;}
-          else if(muonpt_dsa[id2] < 20){
-            sf2 = dsa_sf_low->GetBinContent(dsa_sf_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
-            sf2_sys = dsa_sf_sys_low->GetBinError(dsa_sf_sys_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
-            sf2_stat = dsa_sf_stat_low->GetBinError(dsa_sf_stat_low->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
-
-            sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat);
-            //printf("SF: %f, err: %f",sf1,sf1_err);
-            if (err_type == 1) {sf2 = sf2 + sf2_err;}
-            if (err_type == 2) {sf2 = sf2 - sf2_err;}
-          }
-
-          else{
-            sf2 = dsa_sf->GetBinContent(dsa_sf->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
-            sf2_sys = dsa_sf_sys->GetBinError(dsa_sf_sys->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
-            sf2_stat = dsa_sf_stat->GetBinError(dsa_sf_stat->FindBin(abs(muoneta_dsa[id2]),muonpt_dsa[id2]));
-
-            sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat);
-            //printf("SF: %f, err: %f",sf1,sf1_err);
-            if (err_type == 1) {sf2 = sf2 + sf2_err;}
-            if (err_type == 2) {sf2 = sf2 - sf2_err;}
-          }
-          // efficiency from displacement
-          float slope = 0.00035; 
-          //float slope = 0.00035*1.02; 
-          //float slope = 0.00035*.98; 
-          float dis1 = (1- slope* dxy_dsa[id1]);
-          float dis2 = (1- slope* dxy_dsa[id2]);
-          return sf1*sf2*dis1*dis2;
-    };
-    auto calcGMsf = [&](RVec<float> muonpt_gm, RVec<float> muoneta_gm, size_t id1, size_t id2) {
-
-          int err_type = 2; // 0: normal, 1: uperr, 2: down err
-          float sf1 = 1.0;
-          float sf2 = 1.0;
-          float sf1_stat = 0.;
-          float sf2_stat = 0.;
-          float sf1_sys = 0.;
-          float sf2_sys = 0.;
-          float sf1_err = 0.;
-          float sf2_err = 0.;
-          if( id1 >3) {// global muon
-            //x is pt and y is eta
-            if(muonpt_gm[id1-4] < 20){ sf1 = gm_lowpt_lookup(muoneta_gm[id1-4],err_type,year_);}
-            else{
-              sf1 = gm_sf->GetBinContent(gm_sf->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
-              sf1_sys = gm_sf_sys->GetBinError(gm_sf_sys->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
-              sf1_stat = gm_sf_stat->GetBinError(gm_sf_stat->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
-              if (year_ == 2016){ 
-              sf1 = sf1*(20./35.92);
-              float sf1x = (15./35.92)*gm_sf2->GetBinContent(gm_sf2->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
-              sf1_sys = ((20./35.92)*sf1_sys);
-              float sf1_sysx =(15./35.92)*gm_sf_sys2->GetBinError(gm_sf_sys2->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
-              sf1_stat = (20./35.92)*sf1_stat;
-              float sf1_statx = (15./35.92)*gm_sf_stat2->GetBinError(gm_sf_stat2->FindBin(muonpt_gm[id1-4],abs(muoneta_gm[id1-4])));
-
-              sf1 = sf1 + sf1x;
-              sf1_sys = sqrt(sf1_sys*sf1_sys + sf1_sysx*sf1_sysx);
-              sf1_stat = sqrt(sf1_stat*sf1_stat + sf1_statx*sf1_statx);
-              }
-              sf1_err = sqrt(sf1_sys*sf1_sys + sf1_stat*sf1_stat);
-              //printf("SF: %f, err: %f",sf1,sf1_err);
-              if (err_type == 1) {sf1 = sf1 + sf1_err;}
-              if (err_type == 2) {sf1 = sf1 - sf1_err;}
-            }
-          }
-          if(id2 > 3) { 
-            if(muonpt_gm[id2-4] < 20){ sf2 = gm_lowpt_lookup(muoneta_gm[id2-4],err_type,year_);}
-            else{
-              sf2 = gm_sf->GetBinContent(gm_sf->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
-              sf2_sys = gm_sf_sys->GetBinError(gm_sf_sys->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
-              sf2_stat = gm_sf_stat->GetBinError(gm_sf_stat->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
-              if (year_ == 2016){ 
-              sf2 = sf2*(20./35.92);
-              float sf2x = (15./35.92)*gm_sf2->GetBinContent(gm_sf2->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
-              sf2_sys = ((20./35.92)*sf2_sys);
-              float sf2_sysx =(15./35.92)*gm_sf_sys2->GetBinError(gm_sf_sys2->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
-              sf2_stat = (20./35.92)*sf2_stat;
-              float sf2_statx = (15./35.92)*gm_sf_stat2->GetBinError(gm_sf_stat2->FindBin(muonpt_gm[id2-4],abs(muoneta_gm[id2-4])));
-
-              sf2 = sf2 + sf2x;
-              sf2_sys = sqrt(sf2_sys*sf2_sys + sf2_sysx*sf2_sysx);
-              sf2_stat = sqrt(sf2_stat*sf2_stat + sf2_statx*sf2_statx);
-              }
-              sf2_err = sqrt(sf2_sys*sf2_sys + sf2_stat*sf2_stat); 
-              if (err_type == 1) {sf2 = sf2 + sf2_err;}
-              if (err_type == 2) {sf2 = sf2 - sf2_err;}
-            }
-          }
-          return sf1*sf2;
+    auto calcGMWgt = [&](RVec<float> pt, RVec<float> eta, size_t id) {
+        auto & sfs_highpt = scale_factors.all_sfs["gm_ID"][year_];
+        auto & sfs_highpt_stat = scale_factors.all_sfs["gm_ID_stat"][year_];
+        auto & sfs_highpt_syst = scale_factors.all_sfs["gm_ID_syst"][year_];
+        auto & sfs_lowpt = scale_factors.gmlowpt_sfs[year_]; // different structure since hard-coded
+        if (id < 4) // *not* a global muon
+            return 1.0f;
+        float wgt = 1.0f;
+        if (pt[id-4] > 20) {
+            auto bin = sfs_highpt->FindBin(pt[id-4], abs(eta[id-4]));
+            wgt = sfs_highpt->GetBinContent(bin);
+            if (syst_ == ScaleFactors::GM_ID_DOWN)
+                wgt -= sqrt(pow(sfs_highpt_stat->GetBinContent(bin), 2) + pow(sfs_highpt_syst->GetBinContent(bin), 2));
+            else if (syst_ == ScaleFactors::GM_ID_UP)
+                wgt += sqrt(pow(sfs_highpt_stat->GetBinContent(bin), 2) + pow(sfs_highpt_syst->GetBinContent(bin), 2));
+        }
+        else if (pt[id-4] > 5) {
+            auto it = std::lower_bound(sfs_lowpt.begin(), sfs_lowpt.end(), eta[id-4], ScaleFactors::compareGMLowerEdge);
+            // if eta is greater than the highest lower edge, use last entry to compute sf
+            if (it == sfs_lowpt.end())
+                it--;
+            wgt = it->central;
+            if (syst_ == ScaleFactors::GM_ID_UP)
+                wgt += it->up;
+            else if (syst_ == ScaleFactors::GM_ID_DOWN)
+                wgt -= it->down;
+        }
+        return wgt;
     };
 
-    auto calcVetosf = [&](RVec<int> good_e, RVec<float> eta_e, RVec<float> pt_e, RVec<int> good_p, RVec<float> eta_p, RVec<float> pt_p) { 
-        float wgt_e = 1.;
-        float wgt_p = 1.;
+    auto calcVetoWgt = [&](RVec<int> good_e, RVec<float> eta_e, RVec<float> pt_e, RVec<int> good_ph, RVec<float> eta_ph, RVec<float> pt_ph) { 
+        float wgt_e = 1.0, wgt_ph = 1.0;
+        auto & sfs_e = scale_factors.all_sfs["veto_e"][year_];
+        auto & sfs_ph = scale_factors.all_sfs["veto_ph"][year_];
         for (size_t i = 0; i < eta_e.size(); i++) {
-          if (good_e[i] && pt_e[i] > 10 && abs(eta_e[i]) < 2.5) {
-            float sf_e = veto_e_sf->GetBinContent(veto_e_sf->FindBin(eta_e[i],pt_e[i]));
-            float sf_eerr = veto_e_sf->GetBinError(veto_e_sf->FindBin(eta_e[i],pt_e[i]));
-            wgt_e *= (1.0 - (sf_e));
-            //wgt_e *= (1.0 - (sf_e+sf_eerr));
-          }
+          if (!good_e[i] || pt_e[i] < 10 || abs(eta_e[i]) > 2.5) 
+            continue;
+          float sf_e = sfs_e->GetBinContent(sfs_e->FindBin(eta_e[i], pt_e[i]));
+          float sf_eerr = sfs_e->GetBinError(sfs_e->FindBin(eta_e[i], pt_e[i]));
+          wgt_e *= (1.0 - sf_e);
+          //wgt_e *= (1.0 - (sf_e+sf_eerr));
         }
-        for (size_t i = 0; i < eta_p.size(); i++) {
-          if (good_p[i] == 1 && pt_p[i] > 15 && abs(eta_p[i]) < 2.5) {
-            float sf_p = veto_p_sf->GetBinContent(veto_p_sf->FindBin(eta_p[i],pt_p[i]));
-            float sf_perr = veto_p_sf->GetBinError(veto_p_sf->FindBin(eta_p[i],pt_p[i]));
-            wgt_p *= (1.0 - (sf_p));
-            //wgt_p *= (1.0 - (sf_p+sf_perr));
-          }
+        for (size_t i = 0; i < eta_ph.size(); i++) {
+          if (good_ph[i] != 1 || pt_ph[i] < 15 || abs(eta_ph[i]) > 2.5)
+            continue;
+          float sf_ph = sfs_ph->GetBinContent(sfs_ph->FindBin(eta_ph[i], pt_ph[i]));
+          float sf_pherr = sfs_ph->GetBinError(sfs_ph->FindBin(eta_ph[i], pt_ph[i]));
+          wgt_ph *= (1.0 - sf_ph);
+          //wgt_p *= (1.0 - (sf_p+sf_perr));
         }
-        return wgt_e*wgt_p;
+        return wgt_e * wgt_ph;
     };
 
-    auto calcTotalWgt = [&](float veto_wgt, float reco_dsa_wgt, float dsa_wgt, float gm_wgt, float Zwgt, 
+    auto calcTotalWgt = [&](float veto_wgt, float dsa_reco_wgt, float dsa_ID_wgt, float gm_wgt, float Zwgt, 
                         float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt, float bTag_wgt) {
-        double weight =  veto_wgt * reco_dsa_wgt * dsa_wgt * gm_wgt * Zwgt * 
+        double weight =  veto_wgt * dsa_reco_wgt * dsa_ID_wgt * gm_wgt * Zwgt * 
                         Wwgt * PUwgt * trig_wgt * xsec_ * lumi_ * gen_wgt * bTag_wgt / sum_gen_wgt_;
-    //auto calcTotalWgt = [&](float ph_sf_wgt, float el_sf_wgt, float gm_sf_wgt, float Zwgt, float Wwgt, float Twgt, float PUwgt, float trig_wgt, float gen_wgt) {
-    //    double weight =  trig_wgt * ph_sf_wgt * el_sf_wgt * gm_sf_wgt * Zwgt * Wwgt * PUwgt * xsec_ * lumi_ * gen_wgt / sum_gen_wgt_;
-        // Warn if large weight *due only* to PU, Z, W, or genwgt / sum_gen_wgt_, but not due to xsec or lumi
-        //if (trig_wgt > 3.0 || Zwgt > 3.0 || Wwgt > 3.0 || PUwgt > 3.0 || gen_wgt / sum_gen_wgt_ > 0.1) {
-        //    cout << "WARNING! Very large weight: " << weight << endl;
-        //    cout << "Trig wgt: " << trig_wgt << endl;
-        //    cout << "Zwgt: " << Zwgt << endl;
-        //    cout << "Wwgt: " << Wwgt << endl;
-        //    cout << "PUwgt: " << PUwgt << endl;
-        //    cout << "genwgt: " << gen_wgt << endl;
-        //}
         return weight;
     };
 
@@ -991,6 +372,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         return return_pt;
 
     };
+
     auto correct_EE_MET_phi = [&](float MET_pt,float MET_phi,float EE_px,float EE_py){
         float return_phi = MET_phi;
         if(year_==2017){
@@ -1055,6 +437,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     auto goodQuantity = [&](RVec<float> quantity, RVec<bool> pass){
       return quantity[pass];
     };
+
     auto takegoodeta = [&](RVec<float> quantity, RVec<float> q2){
       bool good = true;
       for (size_t i=0; i < quantity.size() ; i++){
@@ -1172,7 +555,6 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     auto calcMatchedMuonInvMass = [&](float mu1_pt, float mu1_eta, float mu1_phi, float mu2_pt, float mu2_eta, float mu2_phi) {
         return sqrt(2.0f * mu1_pt * mu2_pt * (cosh(mu1_eta - mu2_eta) - cos(mu1_phi - mu2_phi)));
     };
-
   
     TString jet_pt = "reco_PF_jet_corr_pt";
     TString jet_eta = "reco_PF_jet_corr_eta";
@@ -1282,24 +664,26 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         df_wgts = df_wgts.
             Define("gen_muon_vxy", takeGenMuVxy, {"gen_vxy", "gen_ID"}).
             Define("gen_METmu_dphi", calcGenMETmuDphi, {"gen_pt", "gen_phi", "gen_ID", "gen_MET_phi"}).
-            //Define("gm_sf_wgt", calcGMsf, {"reco_gm_pt", "reco_gm_eta", "gm_pass_ID"}).
-            //Define("el_sf_wgt", calcElectronsf, {"reco_electron_pt", "reco_electron_eta", "reco_electron_id_result"}).
-            //Define("ph_sf_wgt", calcPhotonsf, {"reco_photon_pt", "reco_photon_eta", "reco_photon_id_result"}).
-            Define("Zwgt", calcZsf, {"gen_ID", "gen_pt"}).
-            Define("Wwgt", calcWsf, {"gen_ID", "gen_pt"}).
-            Define("Twgt", calcTsf, {"gen_ID", "gen_pt"}).
-            Define("PUwgt", calcPUsf, {"gen_pu_true"}).
-            Define("trig_wgt", calcTrigsf, {"reco_PF_MetNoMu_pt"}).
-            Define("veto_wgt", calcVetosf, {"reco_electron_id_result", "reco_electron_eta", "reco_electron_pt", 
+            Define("Zwgt", calcZWgt, {"gen_ID", "gen_pt"}).
+            Define("Wwgt", calcWWgt, {"gen_ID", "gen_pt"}).
+            Define("Twgt", calcTWgt, {"gen_ID", "gen_pt"}).
+            Define("PUwgt", calcPUWgt, {"gen_pu_true"}).
+            Define("trig_wgt", calcTrigWgt, {"reco_PF_MetNoMu_pt"}).
+            Define("veto_wgt", calcVetoWgt, {"reco_electron_id_result", "reco_electron_eta", "reco_electron_pt", 
                                             "reco_photon_id_result", "reco_photon_eta", "reco_photon_pt"}).
-            Define("dsa_wgt", calcDSAsf, {"reco_dsa_pt", "reco_dsa_eta","reco_dsa_dxy", "best_dsa_0", "best_dsa_1"}).
-            Define("reco_dsa_wgt", calcrecoDSAsf, {"reco_dsa_pt", "reco_dsa_eta","reco_dsa_dxy", "best_dsa_0", "best_dsa_1"}).
-            Define("gm_wgt", calcGMsf, {"reco_gm_pt", "reco_gm_eta", "best_muon_0", "best_muon_1"}).
-            Define("bTag_wgt", calcBTagsf, {"reco_n_bTag_jets", jet_pt.Data(), jet_eta.Data(), "reco_bTag_pass"}).
-            Define("wgt", calcTotalWgt, {"veto_wgt", "reco_dsa_wgt","dsa_wgt", "gm_wgt", "Zwgt", 
+            Define("dsa_ID_wgt_0", calcDSAIDWgt, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_dxy", "best_dsa_0"}).
+            Define("dsa_ID_wgt_1", calcDSAIDWgt, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_dxy", "best_dsa_1"}).
+            Define("dsa_ID_wgt", "dsa_ID_wgt_0 * dsa_ID_wgt_1").
+            Define("dsa_reco_wgt_0", calcDSARecoWgt, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_dxy", "best_dsa_0"}).
+            Define("dsa_reco_wgt_1", calcDSARecoWgt, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_dxy", "best_dsa_1"}).
+            Define("dsa_reco_wgt", "dsa_reco_wgt_0 * dsa_reco_wgt_1").
+            Define("gm_wgt_0", calcGMWgt, {"reco_gm_pt", "reco_gm_eta", "best_muon_0"}).
+            Define("gm_wgt_1", calcGMWgt, {"reco_gm_pt", "reco_gm_eta", "best_muon_1"}).
+            Define("gm_wgt", "gm_wgt_0 * gm_wgt_1").
+            Define("bTag_wgt", calcBTagWgt, {"reco_n_bTag_jets", jet_pt.Data(), jet_eta.Data(), "reco_bTag_pass"}).
+            Define("wgt", calcTotalWgt, {"veto_wgt", "dsa_reco_wgt", "dsa_ID_wgt", "gm_wgt", "Zwgt", 
                                             "Wwgt", "Twgt", "PUwgt", "trig_wgt", "gen_wgt", "bTag_wgt"});
             //Define("wgt", "1.0");
-            //Define("wgt", calcTotalWgt, {"ph_sf_wgt", "el_sf_wgt", "gm_sf_wgt", "Zwgt", "Wwgt", "Twgt", "PUwgt", "trig_wgt", "gen_wgt"});
     }
 
 
@@ -1391,29 +775,6 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     return kTRUE;
 }
 
-Bool_t RDFAnalysis::Terminate() {
-    //delete sf_pu;
-    delete pileup_2018;
-    delete pileup_2017;
-    delete pileup_2016;
-    for (std::pair<TString, TH1F *> pileup : pileup_ZJets_2017)
-        delete pileup.second;
-    delete sf_z_qcd;
-    delete sf_z_ewk;
-    delete sf_w_qcd;
-    delete sf_w_ewk;
-    delete trig_hist_2018;
-    delete trig_hist_2017;
-    delete trig_hist_2016;
-    /*delete gm_sf_2018;
-    delete gm_sf_2017;
-    delete gm_sf_2016;
-    delete el_sf_2018;
-    delete el_sf_2017;
-    delete el_sf_2016;
-    delete ph_sf_2018;
-    delete ph_sf_2017;
-    delete ph_sf_2016;*/
-    
+Bool_t RDFAnalysis::Terminate() {    
     return true;
 }

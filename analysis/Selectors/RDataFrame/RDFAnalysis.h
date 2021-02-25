@@ -30,14 +30,16 @@ using RDFResultPtr2D = RDFResultPtr<TH2D>;
 #include "../utils/common.h"
 #include "../utils/json.hpp"
 using json = nlohmann::json;
+#include "../utils/ScaleFactors.h"
 
 
 class RDFAnalysis {
-public :
+public:
+
    RDFAnalysis() { }
    ~RDFAnalysis() { }
 
-   Bool_t    Begin();
+   Bool_t    Begin(int syst);
    Bool_t    Process(TChain * chain);
    Bool_t    Terminate();
 
@@ -45,10 +47,13 @@ public :
    void SetHistoConfig(std::map<TString, common::THInfo*> histos_info);
    void SetCutConfig(std::vector<common::CutInfo> cuts_info);
    void SetSampleConfig(common::SampleInfo sample_info);
+   long long GetNEvents();
 
    std::vector<RDFResultPtrSumType_d> GetCutflow() { return cutflow_; }
    std::map<TString, std::map<int, RDFResultPtr1D>> GetHistograms1D() { return all_histos_1D_; }
    std::map<TString, std::map<int, RDFResultPtr2D>> GetHistograms2D() { return all_histos_2D_; }
+
+private:
 
    TChain * chain_;
 
@@ -67,111 +72,15 @@ public :
    Double_t lumi_;
    Double_t custom_lumi_;
    int year_;
-   //float trig_wgt;
-   TH2F * veto_e_hist_2016;
-   TH2F * veto_e_hist_2017;
-   TH2F * veto_e_hist_2018;
-   TH2F * veto_e_sf;
-   TH2F * veto_p_hist_2016;
-   TH2F * veto_p_hist_2017;
-   TH2F * veto_p_hist_2018;
-   TH2F * veto_p_sf;
-   TH1F * trig_hist_2016;
-   TH1F * trig_hist_2017;
-   TH1F * trig_hist_2018;
-   TH1F * trig_sf;
-   TH2F * gm_hist_2016sys;
-   TH2F * gm_hist_2016sysGH;
-   TH2F * gm_hist_2017sys;
-   TH2F * gm_hist_2018sys;
-   TH2F * gm_hist_2016stat;
-   TH2F * gm_hist_2016statGH;
-   TH2F * gm_hist_2017stat;
-   TH2F * gm_hist_2018stat;
-   TH2F * gm_hist_2016;
-   TH2F * gm_hist_2016GH;
-   TH2F * gm_hist_2017;
-   TH2F * gm_hist_2018;
-   TH2F * gm_sf;
-   TH2F * gm_sf_sys;
-   TH2F * gm_sf_stat;
-   TH2F * gm_sf2;
-   TH2F * gm_sf_sys2;
-   TH2F * gm_sf_stat2;
-   TH2F * dsa_hist_2016sys;
-   TH2F * dsa_hist_2017sys;
-   TH2F * dsa_hist_2018sys;
-   TH2F * dsa_hist_2016stat;
-   TH2F * dsa_hist_2017stat;
-   TH2F * dsa_hist_2018stat;
-   TH2F * dsa_hist_2016;
-   TH2F * dsa_hist_2017;
-   TH2F * dsa_hist_2018;
-   TH2F * dsa_sf;
-   TH2F * dsa_sf_sys;
-   TH2F * dsa_sf_stat;
-   TH2F * dsa_hist_2016sys_low;
-   TH2F * dsa_hist_2017sys_low;
-   TH2F * dsa_hist_2018sys_low;
-   TH2F * dsa_hist_2016stat_low;
-   TH2F * dsa_hist_2017stat_low;
-   TH2F * dsa_hist_2018stat_low;
-   TH2F * dsa_hist_2016_low;
-   TH2F * dsa_hist_2017_low;
-   TH2F * dsa_hist_2018_low;
-   TH2F * dsa_sf_low;
-   TH2F * dsa_sf_sys_low;
-   TH2F * dsa_sf_stat_low;
-   TH2F * reco_dsa_hist_2016sys;
-   TH2F * reco_dsa_hist_2017sys;
-   TH2F * reco_dsa_hist_2018sys;
-   TH2F * reco_dsa_hist_2016stat;
-   TH2F * reco_dsa_hist_2017stat;
-   TH2F * reco_dsa_hist_2018stat;
-   TH2F * reco_dsa_hist_2016;
-   TH2F * reco_dsa_hist_2017;
-   TH2F * reco_dsa_hist_2018;
-   TH2F * reco_dsa_sf;
-   TH2F * reco_dsa_sf_sys;
-   TH2F * reco_dsa_sf_stat;
-   TH2F * reco_dsa_hist_2016sys_low;
-   TH2F * reco_dsa_hist_2017sys_low;
-   TH2F * reco_dsa_hist_2018sys_low;
-   TH2F * reco_dsa_hist_2016stat_low;
-   TH2F * reco_dsa_hist_2017stat_low;
-   TH2F * reco_dsa_hist_2018stat_low;
-   TH2F * reco_dsa_hist_2016_low;
-   TH2F * reco_dsa_hist_2017_low;
-   TH2F * reco_dsa_hist_2018_low;
-   TH2F * reco_dsa_sf_low;
-   TH2F * reco_dsa_sf_sys_low;
-   TH2F * reco_dsa_sf_stat_low;
+
+   ScaleFactors::SYST syst_;
+   ScaleFactors scale_factors;
+
    common::MODE mode_;
    TString group_;
 
-   TH1F * sf_z_qcd, * sf_z_ewk;
-   TH1F * sf_w_qcd, * sf_w_ewk;
-   TH1F * sf_pu;
-   TH1F * pileup_2016, * pileup_2017, * pileup_2018;
-   std::map<TString, TH1F*> pileup_ZJets_2017;
+   long long nEvents_;
 
-   typedef struct bTagSF_t {
-      float lower_pt_edge, upper_pt_edge;
-      std::unique_ptr<TFormula> formula;
-   } bTagSF_t;
-
-   static bool compareBTagLowerEdge(const bTagSF_t &a, const float &b) { return (a.lower_pt_edge < b); }
-   static bool compareBTagUpperEdge(const bTagSF_t &a, const float &b) { return (a.upper_pt_edge < b); }
-
-   std::vector<bTagSF_t> bTagSF_2016, bTagSF_2017, bTagSF_2018;
-   std::vector<bTagSF_t> * bTagSF;
-
-   //TH2D * gm_sf_2016, * gm_sf_2017, * gm_sf_2018;
-   //TH2D * gm_sf;
-   //TH2D * el_sf_2016, * el_sf_2017, * el_sf_2018;
-   //TH2D * el_sf;
-   //TH2D * ph_sf_2016, * ph_sf_2017, * ph_sf_2018;
-   //TH2D * ph_sf;
 };
 
-#endif
+#endif // RDFAnalysis_h

@@ -33,6 +33,8 @@ namespace macro {
 
         setTDRStyle();
 
+        long long nEventsTotal = 0;
+
         map<TString, vector<Double_t>> cutsInclusive;
         map<TString, vector<Double_t>> cutsGroupInclusive;
 
@@ -62,12 +64,15 @@ namespace macro {
 
         TString out_filename = TString(cfg["outfilename"].get<std::string>());
 
-        //map<TString, map<common::MODE, map<int, vector<TH1*>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
-        map<TString, map<common::MODE, map<int, vector<RDFResultPtr1D>>>> all_hstacks_1D; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
-        map<TString, map<common::MODE, map<int, vector<RDFResultPtr2D>>>> all_hstacks_2D; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
+        int systematic_ = cfg["systematic"].get<int>();
+
+        // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
+        map<TString, map<common::MODE, map<int, vector<RDFResultPtr1D>>>> all_hstacks_1D; 
+        map<TString, map<common::MODE, map<int, vector<RDFResultPtr2D>>>> all_hstacks_2D;
         
         //////********************* BEGIN OBSOLETE ***********************//////
-        //map<TString, map<common::MODE, map<int, vector<ROOT::RDF::RResultPtr<TH1D>>>>> all_hstacks; // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
+        // THStack objects, indices: name of hist, mode (bkg/data/sig), cut number
+        //map<TString, map<common::MODE, map<int, vector<ROOT::RDF::RResultPtr<TH1D>>>>> all_hstacks; 
         //for (auto & [name, info] : histos_info) {
         //    for (auto cut : info->cuts) {
         //        all_hstacks[name][common::BKG][cut] = vector<TH1*>();
@@ -75,7 +80,7 @@ namespace macro {
         //        all_hstacks[name][common::SIGNAL][cut] = vector<TH1*>();
         //    }
         //}
-        // This way just uses the new CMake build system which already compiles the selector (see CMakeLists.txt)
+        // This way just uses new CMake build system which already compiles the selector (see CMakeLists.txt)
         //mainAnalysisSelector * MCSelector = new mainAnalysisSelector();
         //mainAnalysisSelector * dataSelector = new mainAnalysisSelector();
         //MCSelector->SetMode(common::SIGNAL);
@@ -86,15 +91,7 @@ namespace macro {
 
 
         // Process each sample at a time (e.g. QCD_HT100-200)
-        // TODO make this parallel
-        // My first unsuccessful attempt:
-        //#pragma omp parallel for num_threads(4)
-        //for (int i = 0; i < samples.size(); i++) {
-        //    //std::cout << "Thread number " << omp_get_thread_num() << std::endl;
-        //    auto samplesIt = samples.begin();
-        //    advance(samplesIt, i);
-        //    auto & sample = samplesIt->first;
-        //    auto & props = samplesIt->second;
+        // TODO would be nice to make this parallel, but unclear how on top of RDF
         for (auto const & [sample, props] : samples) { 
             
             //bool isData = (props.sum_gen_wgt < 0);
@@ -129,7 +126,6 @@ namespace macro {
             if (!isData)
                 data_reco->AddFriend(data_gen);
 
-
             TString analysis_type = "main";
             if (cfg.find("analysis") != cfg.end())
                 analysis_type = cfg["analysis"];
@@ -142,13 +138,14 @@ namespace macro {
             map<TString, map<int, RDFResultPtr2D>> all_sample_histos_2D;
 
             if (analysis_type == TString("main")) {
-                    if (!dfAnalysis->Begin())
+                    if (!dfAnalysis->Begin(systematic_))
                         return false;
                     dfAnalysis->SetMacroConfig(cfg);
                     dfAnalysis->SetHistoConfig(histos_info);
                     dfAnalysis->SetCutConfig(cuts_info);
                     dfAnalysis->SetSampleConfig(props);
                     dfAnalysis->Process(data_reco);
+                    nEventsTotal += dfAnalysis->GetNEvents();
                     cutflow_ptr = dfAnalysis->GetCutflow();
                     all_sample_histos_1D = dfAnalysis->GetHistograms1D();
                     all_sample_histos_2D = dfAnalysis->GetHistograms2D();
@@ -409,6 +406,7 @@ namespace macro {
             }
         }
 
+        cout << endl << endl << "Total number of events processed by mMainAnalysis: " << nEventsTotal << endl;
         return 0;
     }
 }
