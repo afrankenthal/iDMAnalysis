@@ -35,18 +35,24 @@ using json = nlohmann::json;
 
 namespace macro {
 
-    void mergeStacks(THStack * hs1, THStack * hs2) {
-        TIter next((TList*)(((THStack*)hs1)->GetHists()));
-        TH1 * h;
-        while ((h = (TH1*)next())) {
+    void mergeStacks(THStack * hs2, THStack * hs1) {
+        TIter next1((TList*)(((THStack*)hs1)->GetHists()));
+        TH1 * h1;
+        while ((h1 = (TH1*)next1())) {
             TIter next2((TList*)(((THStack*)hs2)->GetHists()));
             TH1 * h2;
+            bool seen = false;
             while ((h2 = (TH1*)next2())) {
-                if (TString(h->GetName()) == TString(h2->GetName())) {
+                if (TString(h1->GetName()) == TString(h2->GetName())) {
                     TList * list = new TList();
-                    list->Add(h2);
-                    h->Merge(list);
+                    list->Add(h1);
+                    h2->Merge(list);
+                    seen = true;
+                    break;
                 }
+            }
+            if (!seen) {
+                hs2->Add(h1);
             }
         }
     }
