@@ -6,5 +6,5 @@ when_to_transfer_output = ON_EXIT
 Output = $(Cluster)_$(Process).out
 Error = $(Cluster)_$(Process).err
 Log = $(Cluster)_$(Process).log
-Arguments = XXmacroXX XXcutsXX XXsamplefileXX XXeosdirXX
-Queue 1
+Arguments = $(macro) $(plots) $(cuts) $(samplefile) $(eosdir)
+Queue macro,plots,cuts,samplefile,eosdir from condor_args.txt
