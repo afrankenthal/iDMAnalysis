@@ -1,12 +1,12 @@
 # Analysis
 
-This is a self-contained macro-based framework similar in spirit to cmsRun. One can write a new macro and dynamically load it into the framework at runtime. The point of entry is macroRun.cc. The MC and data samples to use, and the cuts and histograms to make can all be specified at runtime as well via a collection of json config files (see 'Running' below).
+This is a self-contained macro-based framework similar in spirit to cmsRun. One can write a new macro and dynamically load it into the framework at runtime. The point of entry is `macroRun.cc`. The MC and data samples to use, and the cuts and histograms to make can all be specified at runtime as well via a collection of json config files (see 'Running' below).
 
 The framework takes care of loading the samples and parsing them into a clean structure that can be easily used by any macro, to avoid code repetition and promote a uniform syntax across the codebase.
 
 ## Setting up the environment
 
-The framework is meant to be run on the LPC, though it probably works on lxplus without major changes. It uses RDataFrame which is a recent ROOT feature, so after logging into the LPC, first source the setup.sh script which sets up path locations and an LCG release with a recent version of ROOT (LCG_99):
+The framework is meant to be run on the LPC, though it probably works on lxplus without major changes. It uses RDataFrame which is a recent ROOT feature, so after logging into the LPC, first source the `setup.sh` script which sets up path locations and an LCG release with a recent version of ROOT (LCG_99):
 
 ```bash
 $ source setup.sh
@@ -15,7 +15,7 @@ The ROOT version set up by this LCG is 6.22.06, and the compiler is GCC 8.3.0.
 
 **NOTE**: this setup should not be used simultaneously with a CMSSW release, since cmsenv sets up conflicting software versions. Use a different session between running the skimmer and this code.
 
-**NOTE**: currently CMakeLists.txt is hard-coded for a particular major version of ROOT (i.e. 6.22), so there isn't actually flexibility on the LCG version.
+**NOTE**: currently `CMakeLists.txt` is hard-coded for a particular major version of ROOT (i.e. 6.22), so there isn't actually flexibility on the LCG version.
 
 ## Compiling
 
@@ -29,7 +29,7 @@ $ make -j8
 $ make install
 ```
 
-This will install the shared libraries under lib/ and the macroRun executable under bin/, as well as any needed ROOT dictionaries.
+This will install the shared libraries under `lib/` and the macroRun executable under `bin/`, as well as any needed ROOT dictionaries.
 
 ## Running
 
