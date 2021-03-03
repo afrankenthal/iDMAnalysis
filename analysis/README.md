@@ -37,7 +37,14 @@ To run, invoke macroRun with the desired set of configs (assuming you are in the
 
 ```bash
 $ cd ..
-$ macroRun -m configs/macros/[macro-config].json -c configs/cuts/[cuts-config].json -p configs/plots/[plot-config].json -s configs/samples/[ntuple-version]/[bkg-config].json -s configs/samples/[ntuple-version]/[data-config].json -s configs/samples/[ntuple-version]/[signal-config].json -o [out-file].root
+$ macroRun \
+-m configs/macros/[macro-config].json \
+-p configs/plots/[plot-config].json \
+-c configs/cuts/[cuts-config].json \
+-s configs/samples/[ntuple-version]/[bkg-config].json \
+-s configs/samples/[ntuple-version]/[data-config].json \
+-s configs/samples/[ntuple-version]/[signal-config].json \
+-o [out-file].root
 ```
 
 There are four sets of relevant configs depending on the workflow:
