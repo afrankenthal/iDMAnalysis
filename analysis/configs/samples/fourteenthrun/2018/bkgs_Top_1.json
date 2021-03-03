@@ -1,15 +1,4 @@
 {
-    "ST_s-channel_2018": {
-        "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_fourteenthrun/ST_s-channel_4f_leptonDecays_TuneCP5_13TeV-madgraph-pythia8/crab_iDMAnalysis_ST_s-channel_2018/210131_071659/0000/merged"
-        ],
-        "group": "Top",
-        "limit_num_files": -1,
-        "mode": "BKG",
-        "sum_gen_wgt": 74686957.73939131,
-        "xsec": 10.11,
-        "year": 2018
-    },
     "ST_t-channel_antitop_5f_2018": {
         "dir": [
             "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_fourteenthrun/ST_t-channel_antitop_5f_TuneCP5_13TeV-powheg-pythia8/crab_iDMAnalysis_ST_t-channel_antitop_2018/210206_005959/0000/merged"

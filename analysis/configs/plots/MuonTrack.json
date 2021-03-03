@@ -1,0 +1,102 @@
+[
+    {
+        "quantity": "reco_sel_mu_dxy0",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_sel_mu_dxy0",
+        "title": "Leading muon dxy [cm]",
+        "nbinsX": 10,
+        "lowX": 0,
+        "highX": 10
+    },
+    {
+        "quantity": "reco_sel_mu_dxy1",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_sel_mu_dxy1",
+        "title": "Subleading muon dxy [cm]",
+        "nbinsX": 10,
+        "lowX": 0,
+        "highX": 10
+    },
+    {
+        "quantity": "reco_sel_mu_dxy0",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_sel_mu_dxy0_zoom",
+        "title": "Leading muon dxy [cm]",
+        "nbinsX": 10,
+        "lowX": 0,
+        "highX": 1
+    },
+    {
+        "quantity": "reco_sel_mu_dxy1",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_sel_mu_dxy1_zoom",
+        "title": "Subleading muon dxy [cm]",
+        "nbinsX": 10,
+        "lowX": 0,
+        "highX": 1
+    },
+    {
+        "quantity": "reco_sel_mu_dxy0",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_sel_mu_dxy0_zoomzoom",
+        "title": "Leading muon dxy [cm]",
+        "nbinsX": 10,
+        "lowX": 0,
+        "highX": 0.1
+    },
+    {
+        "quantity": "reco_sel_mu_dxy1",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_sel_mu_dxy1_zoomzoom",
+        "title": "Subleading muon dxy [cm]",
+        "nbinsX": 10,
+        "lowX": 0,
+        "highX": 0.1
+    },
+    {
+        "quantity": "reco_sel_mu_dz0",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_sel_mu_dz0",
+        "title": "Leading muon dz [cm]",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 10
+    },
+    {
+        "quantity": "reco_sel_mu_dz1",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_sel_mu_dz1",
+        "title": "Subleading muon dz [cm]",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 10
+    },
+    {
+        "quantity": "reco_dsa0_trk_chi2",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_dsa0_trk_chi2",
+        "title": "Leading dSA muon track #chi^{2}",
+        "nbinsX": 20,
+        "lowX": 0,
+        "highX": 10
+    },
+    {
+        "quantity": "reco_dsa1_trk_chi2",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_dsa1_trk_chi2",
+        "title": "Subleading dSA muon track #chi^{2}",
+        "nbinsX": 20,
+        "lowX": 0,
+        "highX": 10
+    }
+]

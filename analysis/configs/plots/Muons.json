@@ -1,0 +1,112 @@
+[
+    {
+        "quantity": "reco_dsa_idx0_sigpt_by_pt",
+        "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+        "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+        "type": "float1D",
+        "name": "reco_dsa_idx0_sigpt_by_pt",
+        "title": "First dsa #sigma_{pT} / pT",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 10
+    },
+    {
+        "quantity": "reco_dsa_idx1_sigpt_by_pt",
+        "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+        "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+        "type": "float1D",
+        "name": "reco_dsa_idx1_sigpt_by_pt",
+        "title": "Second dsa #sigma_{pT} / pT",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 10
+    },
+    {
+        "quantity": "reco_sel_mu_pt0",
+        "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+        "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+        "type": "float1D",
+        "name": "reco_sel_mu_pt0",
+        "title": "Leading muon pT [GeV]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 300
+    },
+    {
+        "quantity": "reco_sel_mu_pt1",
+        "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+        "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+        "type": "float1D",
+        "name": "reco_sel_mu_pt1",
+        "title": "Subleading muon pT [GeV]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 300
+    },
+    {
+        "quantity": "reco_sel_mu_eta0",
+        "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+        "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+        "type": "float1D",
+        "name": "reco_sel_mu_eta0",
+        "title": "Leading muon #eta",
+        "nbinsX": 26,
+        "lowX": -4,
+        "highX": 4
+    },
+    {
+        "quantity": "reco_sel_mu_eta1",
+        "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+        "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+        "type": "float1D",
+        "name": "reco_sel_mu_eta1",
+        "title": "Subleading muon #eta",
+        "nbinsX": 26,
+        "lowX": -4,
+        "highX": 4
+    },
+    {
+        "quantity": "reco_sel_mu_phi0",
+        "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+        "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+        "type": "float1D",
+        "name": "reco_sel_mu_phi0",
+        "title": "Leading muon phi",
+        "nbinsX": 26,
+        "lowX": -3.2,
+        "highX": 3.2
+    },
+    {
+        "quantity": "reco_sel_mu_phi1",
+        "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+        "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+        "type": "float1D",
+        "name": "reco_sel_mu_phi1",
+        "title": "Subleading muon phi",
+        "nbinsX": 26,
+        "lowX": -3.2,
+        "highX": 3.2
+    },
+    {
+        "quantity": "reco_n_good_dsa",
+        "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+        "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+        "type": "int1D",
+        "name": "reco_n_good_dsa",
+        "title": "Number of good dSA muons",
+        "nbinsX": 10,
+        "lowX": 0,
+        "highX": 10
+    },
+    {
+        "quantity": "reco_n_gbmdsa_match",
+        "groups": [ "DY", "Multiboson", "QCD", "Top", "ZJets", "WJets", "sig_5p25_1000", "sig_60p0_1", "sig_52p5_100", "sig_6p0_10", "data" ],
+        "cuts": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22],
+        "type": "int1D",
+        "name": "reco_n_gbmdsa_match",
+        "title": "Number of matched dSA-GBM muons",
+        "nbinsX": 3,
+        "lowX": 0,
+        "highX": 3
+    }
+]

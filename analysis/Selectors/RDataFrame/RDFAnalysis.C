@@ -22,6 +22,13 @@ Bool_t RDFAnalysis::Begin(int syst) {
 
 void RDFAnalysis::SetMacroConfig(json macro_info) {
     macro_info_ = macro_info;
+    maxDrGMdSA_ = macro_info_["maxDrGMdSA"].get<float>();
+    num_cores_ = 4; // default is now 3 or 4 cores to still fit within condor's 2 GB memory limit
+    if (macro_info_.find("num_cores") != macro_info_.end())
+        num_cores_ = macro_info_["num_cores"].get<int>();
+    jet_syst_ = "";
+    if (macro_info_.find("jet_systematic") != macro_info_.end())
+        jet_syst_ = macro_info_["jet_systematic"].get<std::string>();
 }
 
 void RDFAnalysis::SetHistoConfig(map<TString, common::THInfo*> histos_info) {
@@ -72,13 +79,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     chain_ = chain;
 
-    int num_cores = 4; // default is now 3 or 4 cores to still fit within condor's 2 GB memory limit
-    if (macro_info_.find("num_cores") != macro_info_.end())
-        num_cores = macro_info_["num_cores"].get<int>();
-
     cout << "Creating dataframe..." << endl;
 
-    ROOT::EnableImplicitMT(num_cores);
+    ROOT::EnableImplicitMT(num_cores_);
     ROOT::RDataFrame df(*chain_);
 
     const auto poolSize = ROOT::GetThreadPoolSize();
@@ -99,7 +102,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     auto calcBTagWgt = [&](int n_btagged_jets, RVec<float> jets_pt, RVec<float> jets_eta, RVec<bool> jets_btag_pass) {
         auto & sfs = scale_factors.btag_sfs[year_];
-        if (jets_pt.size() < 2)
+        if (n_btagged_jets > 2)
             return 1.0f;
         // for our purposes the sf does not change between eta -2.5 and 2.5
         float w = 1.0f;
@@ -124,6 +127,9 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                 it--;
             float sf = it->formula->Eval(pt);
             w = (1.0f - sf);
+        }
+        else if (n_btagged_jets == 0) {
+            w = 1.0f;
         }
         return w;
     };
@@ -192,7 +198,7 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         return (float)sf->GetBinContent(sf->FindBin((double)pileup)); 
     };
 
-    auto calcDSAIDWgt = [&](RVec<float> pt, RVec<float> eta, RVec<float> dxy, size_t id) {
+    auto calcDisplacedIDWgt = [&](RVec<float> pt, RVec<float> eta, RVec<float> dxy, size_t id) {
         if (pt.size() < 2)
             return 1.0f;
         auto & sfs_Z = scale_factors.all_sfs["dsa_ID_Z"][year_];
@@ -405,14 +411,19 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     auto calcVtxSignificance = [&](float reco_vtx_vxy, float reco_vtx_sigmavxy) { return reco_vtx_vxy/reco_vtx_sigmavxy; };
     auto calcVtxResolution = [&](float reco_vtx_vxy, float reco_vtx_sigmavxy) { return reco_vtx_sigmavxy/reco_vtx_vxy; };
 
-    // NOTE: this passMuonID is wrong! It assumes the same ID for GM as the one used for dSA --> not correct. passGMMuonID below is the right one.
-    auto passMuonID = [&](RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_chi2, RVec<float> pt, RVec<float> eta, RVec<float> pt_err) {
-        RVec<bool> pass = (trk_n_planes > 1) && (trk_n_hits > 12) && (trk_chi2 < 2.5) && (pt > 5) && (abs(eta) < 2.4) && (pt_err/pt < 1);
+    auto passDisplacedID = [&](RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_n_csc_hits, 
+                                RVec<float> trk_chi2, RVec<float> pt, RVec<float> eta, RVec<float> pt_err) {
+        RVec<bool> pass = (trk_n_planes > 1) && 
+                          ((trk_n_hits > 12 && trk_n_csc_hits > 0) || (trk_n_hits > 18 && trk_n_csc_hits == 0)) && 
+                          (trk_chi2 < 2.5) &&
+                          (pt > 5) && 
+                          (abs(eta) < 2.4) && 
+                          (pt_err/pt < 1);
         return pass;
     };
 
-    auto passGMMuonID = [&](RVec<bool> isPF, RVec<float> trk_n_planes, RVec<float> trk_n_hits, RVec<float> trk_chi2, RVec<float> pt, RVec<float> eta) {
-        RVec<bool> pass = (isPF == 1) && (trk_n_planes > 1) && (trk_n_hits > 0) && (trk_chi2 < 10) && (pt > 5) && (abs(eta) < 2.4);
+    auto passLooseID = [&](RVec<bool> isPF, RVec<float> pt, RVec<float> eta) {
+        RVec<bool> pass = (isPF == 1) && (pt > 5) && (abs(eta) < 2.4);
         return pass;
     };
 
@@ -440,9 +451,11 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
 
     auto takegoodeta = [&](RVec<float> quantity, RVec<float> q2){
       bool good = true;
-      for (size_t i=0; i < quantity.size() ; i++){
-      if (q2[i] < 30) {continue;}
-      if (abs(quantity[i]) > 2.4) { good=false;}
+      for (size_t i=0; i < quantity.size() ; i++) {
+        if (q2[i] < 30)
+            continue;
+        if (abs(quantity[i]) > 2.4)
+            good = false;
       }
       return good;
     };
@@ -452,11 +465,10 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         size_t best_index = dsa_index_0; // if no match, just return dsa index
         float min_dR = 999999.f;
         for (size_t j = 0; j < 4; j++) {
-            // if (dsagm_match[4 * dsa_index_0 + j] == 1 && vtx_pass_dsagm[4 * dsa_index_1 + j] == 1 && abs(dsagm_dR[4 * dsa_index_0 + j]) < min_dR) {
-            // test with dR < 0.2 instead of 0.1:
-            if (abs(dsagm_dR[4 * dsa_index_0 + j]) < 0.2 && vtx_pass_dsagm[4 * dsa_index_1 + j] == 1 && abs(dsagm_dR[4 * dsa_index_0 + j]) < min_dR) {
+            // max dR threshold is now configurable (default 0.2), instead of checking (dsagm_match[4 * dsa_index_0 + j] == 1)
+            if (abs(dsagm_dR[4 * dsa_index_0 + j]) < maxDrGMdSA_ && abs(dsagm_dR[4 * dsa_index_0 + j]) < min_dR && vtx_pass_dsagm[4 * dsa_index_1 + j] == 1) {
                 min_dR = abs(dsagm_dR[4 * dsa_index_0 + j]);
-                best_index = 4 + j;
+                best_index = 4 + j; // make gm index offset by 4
             }
         }
         return best_index;
@@ -466,18 +478,16 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         size_t best_index = dsa_index_1; // if no match, just return dsa index
         float min_dR = 999999.f;
         for (size_t j = 0; j < 4; j++) {
-            if (best_muon_0 > 3) {
-                // if (dsagm_match[4 * dsa_index_1 + j] == 1 && vtx_pass_gmgm[4 * (best_muon_0-4) + j] == 1 && 4 + j != best_muon_0 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
-                // test with dR < 0.2 instead of 0.1:
-                if (abs(dsagm_dR[4 * dsa_index_1 + j]) < 0.2 && vtx_pass_gmgm[4 * (best_muon_0-4) + j] == 1 && 4 + j != best_muon_0 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
+            if (best_muon_0 > 3) { // a match was found for first dsa, check gmgm collections, also make sure same gm is not selected again
+                // max dR threshold is now configurable (default 0.2), instead of checking (dsagm_match[4 * dsa_index_1 + j] == 1)
+                if (abs(dsagm_dR[4 * dsa_index_1 + j]) < maxDrGMdSA_ && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR & vtx_pass_gmgm[4 * (best_muon_0-4) + j] == 1 && 4 + j != best_muon_0 ) {
                     min_dR = abs(dsagm_dR[4 * dsa_index_1 + j]);
-                    best_index = 4 + j;
+                    best_index = 4 + j; // make gm index offset by 4
                 }
             }
-            else {
-                // if (dsagm_match[4 * dsa_index_1 + j] == 1 && vtx_pass_dsagm[4 * best_muon_0 + j] == 1 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
-                // test with dR < 0.2 instead of 0.1:
-                if (abs(dsagm_dR[4 * dsa_index_1 + j]) < 0.2 && vtx_pass_dsagm[4 * best_muon_0 + j] == 1 && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR) {
+            else { // no match was found for first dsa, check dsagm collections
+                // max dR threshold is now configurable (default 0.2), instead of checking (dsagm_match[4 * dsa_index_1 + j] == 1)
+                if (abs(dsagm_dR[4 * dsa_index_1 + j]) < maxDrGMdSA_ && abs(dsagm_dR[4 * dsa_index_1 + j]) < min_dR && vtx_pass_dsagm[4 * best_muon_0 + j] == 1) {
                     min_dR = abs(dsagm_dR[4 * dsa_index_1 + j]);
                     best_index = 4 + j; // make gm index offset by 4
                 }
@@ -537,14 +547,43 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         return vtx_cosalpha;
     };
 
-    auto takeMatchedMuonQuantity = [&](RVec<float> quant_dsa, RVec<float> quant_gm, size_t best_muon) {
+    // RDF does not accept templated or overloaded functions...
+    auto takeSelectedMuonQuantityFloat = [&](RVec<float> quant_dsa, RVec<float> quant_gm, size_t best_muon) {
         if (quant_dsa.size() == 0) return -9999.f;
         return (best_muon > 3) ? quant_gm[best_muon-4] : quant_dsa[best_muon];
     };
-
-    auto takeMatchedMuonQuantityInt = [&](RVec<int> quant_dsa, RVec<int> quant_gm, size_t best_muon) {
+    auto takeSelectedMuonQuantityInt = [&](RVec<int> quant_dsa, RVec<int> quant_gm, size_t best_muon) {
         if (quant_dsa.size() == 0) return -9999;
         return (best_muon > 3) ? quant_gm[best_muon-4] : quant_dsa[best_muon];
+    };
+    
+    auto takeUnmatchedDSAQuantityFloat = [&](RVec<float> quant_dsa, size_t dsa_index_0, size_t best_muon_0, size_t dsa_index_1, size_t best_muon_1) {
+        if (quant_dsa.size() == 0) return quant_dsa;
+        RVec<float> unmatched{};
+        if (dsa_index_0 == best_muon_0)
+            unmatched.push_back(quant_dsa[dsa_index_0]);
+        if (dsa_index_1 == best_muon_1)
+            unmatched.push_back(quant_dsa[dsa_index_1]);
+        return unmatched;
+    };
+
+    auto takeMatchedDSAQuantityFloat = [&](RVec<float> quant_dsa, size_t dsa_index_0, size_t best_muon_0, size_t dsa_index_1, size_t best_muon_1) {
+        if (quant_dsa.size() == 0) return quant_dsa;
+        RVec<float> matched{};
+        if (dsa_index_0 != best_muon_0)
+            matched.push_back(quant_dsa[dsa_index_0]);
+        if (dsa_index_1 != best_muon_1)
+            matched.push_back(quant_dsa[dsa_index_1]);
+        return matched;
+    };
+    auto takeMatchedGMQuantityFloat = [&](RVec<float> quant_gm, size_t dsa_index_0, size_t best_muon_0, size_t dsa_index_1, size_t best_muon_1) {
+        if (quant_gm.size() == 0) return quant_gm;
+        RVec<float> matched{};
+        if (dsa_index_0 != best_muon_0 && best_muon_0 > 3)
+            matched.push_back(quant_gm[best_muon_0-4]);
+        if (dsa_index_1 != best_muon_1 && best_muon_1 > 3)
+            matched.push_back(quant_gm[best_muon_1-4]);
+        return matched;
     };
 
     auto calcMatchedMuonMT = [&](float muon_pt, float muon_phi, float MET_pt, float MET_phi) {
@@ -561,8 +600,21 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
     TString jet_phi = "reco_PF_jet_corr_phi";
     TString MET_pt_corr_noEE = "reco_PF_MET_corr_pt";
     TString MET_phi_corr_noEE = "reco_PF_MET_corr_phi";
-    if (macro_info_.find("jet_systematic") != macro_info_.end()) {
-        std::string jet_syst = macro_info_["jet_systematic"].get<std::string>();
+    std::string jet_syst = "";
+    switch (syst_) {
+        case ScaleFactors::JES_UP:
+            jet_syst = "JESUp";
+            break;
+        case ScaleFactors::JES_DOWN:
+            jet_syst = "JESDown";
+            break;
+        case ScaleFactors::JER_UP:
+            jet_syst = "JERUp";
+            break;
+        case ScaleFactors::JER_DOWN:
+            jet_syst = "JERDown";
+    }
+    if (jet_syst != "") {
         jet_pt = Form("reco_PF_jet_corr_%s_pt", jet_syst.c_str());
         jet_eta = Form("reco_PF_jet_corr_%s_eta", jet_syst.c_str());
         jet_phi = Form("reco_PF_jet_corr_%s_phi", jet_syst.c_str());
@@ -575,9 +627,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         Define("MET_phi", correct_EE_MET_phi,{MET_pt_corr_noEE.Data(),MET_phi_corr_noEE.Data(),"reco_PF_MET_EE_delta_px","reco_PF_MET_EE_delta_py"}).
         Define("reco_dsa_pt_res", "reco_dsa_pt_err/reco_dsa_pt").
         Define("reco_gm_pt_res", "reco_gm_pt_err/reco_gm_pt").
-        Define("dsa_pass_ID", passMuonID, {"reco_dsa_trk_n_planes", "reco_dsa_trk_n_hits", "reco_dsa_trk_chi2", "reco_dsa_pt", "reco_dsa_eta", "reco_dsa_pt_err"}).
-        // Define("gm_pass_ID", passMuonID, {"reco_gm_trk_n_planes", "reco_gm_trk_n_hits", "reco_gm_trk_chi2", "reco_gm_pt", "reco_gm_eta", "reco_gm_pt_err"}).
-        Define("gm_pass_ID", passGMMuonID, {"reco_gm_isPF", "reco_gm_trk_n_planes", "reco_gm_trk_n_hits", "reco_gm_trk_chi2", "reco_gm_pt", "reco_gm_eta"}).
+        Define("dsa_pass_ID", passDisplacedID, {"reco_dsa_trk_n_planes", "reco_dsa_trk_n_hits", "reco_dsa_trk_n_CSC_hits", "reco_dsa_trk_chi2", "reco_dsa_pt", "reco_dsa_eta", "reco_dsa_pt_err"}).
+        Define("gm_pass_ID", passLooseID, {"reco_gm_isPF", "reco_gm_pt", "reco_gm_eta"}).
         Define("reco_pass_dsa_pt", goodQuantity, {"reco_dsa_pt","dsa_pass_ID"}).
         Define("reco_pass_dsa_eta", goodQuantity, {"reco_dsa_eta","dsa_pass_ID"}).
         Define("reco_pass_dsa_phi", goodQuantity, {"reco_dsa_phi","dsa_pass_ID"}).
@@ -599,6 +650,19 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         Define("best_muon_0", findMuonMatch0, {"reco_gbmdsa_match", "reco_gbmdsa_dR", "good_vtx_dsagm", "best_dsa_0", "best_dsa_1"}).
         Define("best_muon_1", findMuonMatch1, {"reco_gbmdsa_match", "reco_gbmdsa_dR", "good_vtx_dsagm", "good_vtx_gmgm", "best_dsa_1", "best_muon_0"}).
         Define("n_matched", "(int)(best_muon_0>3) + (int)(best_muon_1>3)").
+        Define("matched_dsa_pt", takeMatchedDSAQuantityFloat, {"reco_dsa_pt", "best_dsa_0", "best_muon_0", "best_dsa_1", "best_muon_1"}).
+        Define("matched_gm_pt", takeMatchedGMQuantityFloat, {"reco_gm_pt", "best_dsa_0", "best_muon_0", "best_dsa_1", "best_muon_1"}).
+        Define("matched_dsa_eta", takeMatchedDSAQuantityFloat, {"reco_dsa_eta", "best_dsa_0", "best_muon_0", "best_dsa_1", "best_muon_1"}).
+        Define("matched_gm_eta", takeMatchedGMQuantityFloat, {"reco_gm_eta", "best_dsa_0", "best_muon_0", "best_dsa_1", "best_muon_1"}).
+        Define("matched_dsa_dxy", takeMatchedDSAQuantityFloat, {"reco_dsa_dxy", "best_dsa_0", "best_muon_0", "best_dsa_1", "best_muon_1"}).
+        Define("matched_gm_dxy", takeMatchedGMQuantityFloat, {"reco_gm_dxy", "best_dsa_0", "best_muon_0", "best_dsa_1", "best_muon_1"}).
+        Define("unmatched_dsa_dxy", takeUnmatchedDSAQuantityFloat, {"reco_dsa_dxy", "best_dsa_0", "best_muon_0", "best_dsa_1", "best_muon_1"}).
+        Define("matched_dsa_dxy_err", takeMatchedDSAQuantityFloat, {"reco_dsa_dxy_err", "best_dsa_0", "best_muon_0", "best_dsa_1", "best_muon_1"}).
+        Define("matched_gm_dxy_err", takeMatchedGMQuantityFloat, {"reco_gm_dxy_err", "best_dsa_0", "best_muon_0", "best_dsa_1", "best_muon_1"}).
+        Define("unmatched_dsa_dxy_err", takeUnmatchedDSAQuantityFloat, {"reco_dsa_dxy_err", "best_dsa_0", "best_muon_0", "best_dsa_1", "best_muon_1"}).
+        Define("matched_dsa_dxy_res", "matched_dsa_dxy_err/matched_dsa_dxy").
+        Define("matched_gm_dxy_res", "matched_gm_dxy_err/matched_gm_dxy").
+        Define("unmatched_dsa_dxy_res", "unmatched_dsa_dxy_err/unmatched_dsa_dxy").
         Define("matched_muon_vtx_vxy", takeMatchedVtxQuantity, {"reco_vtx_dsadsa_vxy", "reco_vtx_gmgm_vxy", "reco_vtx_dsagm_vxy", "best_muon_0", "best_muon_1"}).
         Define("matched_muon_vtx_vz", takeMatchedVtxQuantity, {"reco_vtx_dsadsa_vz", "reco_vtx_gmgm_vz", "reco_vtx_dsagm_vz", "best_muon_0", "best_muon_1"}).
         Define("matched_muon_vtx_sigmavxy", takeMatchedVtxQuantity, {"reco_vtx_dsadsa_sigmavxy", "reco_vtx_gmgm_sigmavxy", "reco_vtx_dsagm_sigmavxy", "best_muon_0", "best_muon_1"}).
@@ -606,28 +670,28 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
         Define("matched_muon_vtx_dR", takeMatchedVtxQuantity, {"reco_vtx_dsadsa_dR", "reco_vtx_gmgm_dR", "reco_vtx_dsagm_dR", "best_muon_0", "best_muon_1"}).
         Define("matched_muon_vtx_sign", calcVtxSignificance, {"matched_muon_vtx_vxy", "matched_muon_vtx_sigmavxy"}).
         Define("matched_muon_vtx_res", calcVtxResolution, {"matched_muon_vtx_vxy", "matched_muon_vtx_sigmavxy"}).
-        Define("reco_sel_mu_pt0", takeMatchedMuonQuantity, {"reco_dsa_pt", "reco_gm_pt", "best_muon_0"}).
-        Define("reco_sel_mu_pt1", takeMatchedMuonQuantity, {"reco_dsa_pt", "reco_gm_pt", "best_muon_1"}).
-        Define("reco_sel_mu_eta0", takeMatchedMuonQuantity, {"reco_dsa_eta", "reco_gm_eta", "best_muon_0"}).
-        Define("reco_sel_mu_eta1", takeMatchedMuonQuantity, {"reco_dsa_eta", "reco_gm_eta", "best_muon_1"}).
-        Define("reco_sel_mu_phi0", takeMatchedMuonQuantity, {"reco_dsa_phi", "reco_gm_phi", "best_muon_0"}).
-        Define("reco_sel_mu_phi1", takeMatchedMuonQuantity, {"reco_dsa_phi", "reco_gm_phi", "best_muon_1"}).
-        Define("reco_sel_mu_dxy0", takeMatchedMuonQuantity, {"reco_dsa_dxy", "reco_gm_dxy", "best_muon_0"}).
-        Define("reco_sel_mu_dxy1", takeMatchedMuonQuantity, {"reco_dsa_dxy", "reco_gm_dxy", "best_muon_1"}).
-        Define("reco_sel_mu_dxy_err0", takeMatchedMuonQuantity, {"reco_dsa_dxy_err", "reco_gm_dxy_err", "best_muon_0"}).
-        Define("reco_sel_mu_dxy_err1", takeMatchedMuonQuantity, {"reco_dsa_dxy_err", "reco_gm_dxy_err", "best_muon_1"}).
+        Define("reco_sel_mu_pt1", takeSelectedMuonQuantityFloat, {"reco_dsa_pt", "reco_gm_pt", "best_muon_1"}).
+        Define("reco_sel_mu_pt0", takeSelectedMuonQuantityFloat, {"reco_dsa_pt", "reco_gm_pt", "best_muon_0"}).
+        Define("reco_sel_mu_eta0", takeSelectedMuonQuantityFloat, {"reco_dsa_eta", "reco_gm_eta", "best_muon_0"}).
+        Define("reco_sel_mu_eta1", takeSelectedMuonQuantityFloat, {"reco_dsa_eta", "reco_gm_eta", "best_muon_1"}).
+        Define("reco_sel_mu_phi0", takeSelectedMuonQuantityFloat, {"reco_dsa_phi", "reco_gm_phi", "best_muon_0"}).
+        Define("reco_sel_mu_phi1", takeSelectedMuonQuantityFloat, {"reco_dsa_phi", "reco_gm_phi", "best_muon_1"}).
+        Define("reco_sel_mu_dxy0", takeSelectedMuonQuantityFloat, {"reco_dsa_dxy", "reco_gm_dxy", "best_muon_0"}).
+        Define("reco_sel_mu_dxy1", takeSelectedMuonQuantityFloat, {"reco_dsa_dxy", "reco_gm_dxy", "best_muon_1"}).
+        Define("reco_sel_mu_dxy_err0", takeSelectedMuonQuantityFloat, {"reco_dsa_dxy_err", "reco_gm_dxy_err", "best_muon_0"}).
+        Define("reco_sel_mu_dxy_err1", takeSelectedMuonQuantityFloat, {"reco_dsa_dxy_err", "reco_gm_dxy_err", "best_muon_1"}).
         Define("reco_sel_mu_dxy_sign0", "reco_sel_mu_dxy0/reco_sel_mu_dxy_err0").
         Define("reco_sel_mu_dxy_sign1", "reco_sel_mu_dxy1/reco_sel_mu_dxy_err1").
-        Define("reco_sel_mu_dz0", takeMatchedMuonQuantity, {"reco_dsa_dz", "reco_gm_dz", "best_muon_0"}).
-        Define("reco_sel_mu_dz1", takeMatchedMuonQuantity, {"reco_dsa_dz", "reco_gm_dz", "best_muon_1"}).
-        Define("reco_sel_mu_q0", takeMatchedMuonQuantityInt, {"reco_dsa_charge", "reco_gm_charge", "best_muon_0"}).
-        Define("reco_sel_mu_q1", takeMatchedMuonQuantityInt, {"reco_dsa_charge", "reco_gm_charge", "best_muon_1"}).
+        Define("reco_sel_mu_dz0", takeSelectedMuonQuantityFloat, {"reco_dsa_dz", "reco_gm_dz", "best_muon_0"}).
+        Define("reco_sel_mu_dz1", takeSelectedMuonQuantityFloat, {"reco_dsa_dz", "reco_gm_dz", "best_muon_1"}).
+        Define("reco_sel_mu_q0", takeSelectedMuonQuantityInt, {"reco_dsa_charge", "reco_gm_charge", "best_muon_0"}).
+        Define("reco_sel_mu_q1", takeSelectedMuonQuantityInt, {"reco_dsa_charge", "reco_gm_charge", "best_muon_1"}).
         Define("reco_dsa_pt_sign", "reco_dsa_pt/reco_dsa_pt_err").
         Define("reco_gm_pt_sign", "reco_gm_pt/reco_gm_pt_err").
-        Define("reco_sel_mu_pt_sign0", takeMatchedMuonQuantity, {"reco_dsa_pt_sign", "reco_gm_pt_sign", "best_muon_0"}).
-        Define("reco_sel_mu_pt_sign1", takeMatchedMuonQuantity, {"reco_dsa_pt_sign", "reco_gm_pt_sign", "best_muon_1"}).
-        Define("reco_sel_mu_pt_res0", takeMatchedMuonQuantity, {"reco_dsa_pt_res", "reco_gm_pt_res", "best_muon_0"}).
-        Define("reco_sel_mu_pt_res1", takeMatchedMuonQuantity, {"reco_dsa_pt_res", "reco_gm_pt_res", "best_muon_1"}).
+        Define("reco_sel_mu_pt_sign0", takeSelectedMuonQuantityFloat, {"reco_dsa_pt_sign", "reco_gm_pt_sign", "best_muon_0"}).
+        Define("reco_sel_mu_pt_sign1", takeSelectedMuonQuantityFloat, {"reco_dsa_pt_sign", "reco_gm_pt_sign", "best_muon_1"}).
+        Define("reco_sel_mu_pt_res0", takeSelectedMuonQuantityFloat, {"reco_dsa_pt_res", "reco_gm_pt_res", "best_muon_0"}).
+        Define("reco_sel_mu_pt_res1", takeSelectedMuonQuantityFloat, {"reco_dsa_pt_res", "reco_gm_pt_res", "best_muon_1"}).
         Define("matched_muon_MT", calcMatchedMuonMT, {"reco_sel_mu_pt0", "reco_sel_mu_phi0", "MET_pt", "MET_phi"}).
         Define("matched_muon_Mmumu", calcMatchedMuonInvMass, {"reco_sel_mu_pt0", "reco_sel_mu_eta0", "reco_sel_mu_phi0", "reco_sel_mu_pt1", "reco_sel_mu_eta1", "reco_sel_mu_phi1"}).
         Define("n_highpt_corr_jets", Form("(int)%s.size()", jet_pt.Data())).
@@ -671,8 +735,8 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
             Define("trig_wgt", calcTrigWgt, {"reco_PF_MetNoMu_pt"}).
             Define("veto_wgt", calcVetoWgt, {"reco_electron_id_result", "reco_electron_eta", "reco_electron_pt", 
                                             "reco_photon_id_result", "reco_photon_eta", "reco_photon_pt"}).
-            Define("dsa_ID_wgt_0", calcDSAIDWgt, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_dxy", "best_dsa_0"}).
-            Define("dsa_ID_wgt_1", calcDSAIDWgt, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_dxy", "best_dsa_1"}).
+            Define("dsa_ID_wgt_0", calcDisplacedIDWgt, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_dxy", "best_dsa_0"}).
+            Define("dsa_ID_wgt_1", calcDisplacedIDWgt, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_dxy", "best_dsa_1"}).
             Define("dsa_ID_wgt", "dsa_ID_wgt_0 * dsa_ID_wgt_1").
             Define("dsa_reco_wgt_0", calcDSARecoWgt, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_dxy", "best_dsa_0"}).
             Define("dsa_reco_wgt_1", calcDSARecoWgt, {"reco_dsa_pt", "reco_dsa_eta", "reco_dsa_dxy", "best_dsa_1"}).
@@ -729,6 +793,17 @@ Bool_t RDFAnalysis::Process(TChain * chain) {
                 }
                 else { // just number of bins and low and high X
                     all_histos_1D_[histo_name][cut] = df_filters.Histo1D<float,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
+                }
+            }
+            else if (histo_info->type == "vec_float1D") {
+                // std::map auto-initializes if no element found
+                if (histo_info->binEdgesX[0] != -1) { // bin edges provided
+                    double bin_edges[histo_info->binEdgesX.size()];
+                    std::copy(histo_info->binEdgesX.begin(), histo_info->binEdgesX.end(), bin_edges);
+                    all_histos_1D_[histo_name][cut] = df_filters.Histo1D<RVec<float>,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, bin_edges}, histo_info->quantity.Data(), "wgt");
+                }
+                else { // just number of bins and low and high X
+                    all_histos_1D_[histo_name][cut] = df_filters.Histo1D<RVec<float>,double>({Form("%s_cut%d_%s", histo_name.Data(), cut, group_.Data()), common::group_plot_info[group_].legend, histo_info->nbinsX, histo_info->lowX, histo_info->highX}, histo_info->quantity.Data(), "wgt");
                 }
             }
             else if (histo_info->type == "int1D") {

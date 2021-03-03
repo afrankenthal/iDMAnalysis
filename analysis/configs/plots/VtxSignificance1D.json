@@ -1,0 +1,12 @@
+[
+    {
+        "quantity": "matched_muon_vtx_sign",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "matched_muon_vtx_sign",
+        "title": "Muon pair vtx significance (vxy/sigma_vxy)",
+        "nbinsX": 30,
+        "lowX": 0,
+        "highX": 300
+    }
+]

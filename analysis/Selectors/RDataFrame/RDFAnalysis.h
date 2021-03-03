@@ -56,31 +56,35 @@ public:
 private:
 
    TChain * chain_;
+   long long nEvents_;
 
+   // Results
    std::map<TString, std::map<int, RDFResultPtr1D>> all_histos_1D_;
    std::map<TString, std::map<int, RDFResultPtr2D>> all_histos_2D_;
    std::vector<RDFResultPtrSumType_d> cutflow_;
 
+   // Macro information
    json macro_info_;
+   ScaleFactors::SYST syst_;
+   ScaleFactors scale_factors;
+   std::string jet_syst_;
+   int num_cores_;
+   float maxDrGMdSA_;
    std::map<TString, common::THInfo*> histos_info_;
-   std::vector<common::CutInfo> cuts_info_;
-   common::SampleInfo sample_info_;
 
+   // Cuts information
+   std::vector<common::CutInfo> cuts_info_;
+
+   // Sample information
+   common::SampleInfo sample_info_;
    TString name_;
+   TString group_;
+   common::MODE mode_;
    Double_t sum_gen_wgt_;
    Double_t xsec_;
    Double_t lumi_;
    Double_t custom_lumi_;
    int year_;
-
-   ScaleFactors::SYST syst_;
-   ScaleFactors scale_factors;
-
-   common::MODE mode_;
-   TString group_;
-
-   long long nEvents_;
-
 };
 
 #endif // RDFAnalysis_h

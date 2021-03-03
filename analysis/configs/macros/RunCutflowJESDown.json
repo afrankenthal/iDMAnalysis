@@ -1,0 +1,9 @@
+[
+    {
+        "name": "mMainAnalysis",
+        "config": {
+            "maxDrGMdSA": 0.2,
+            "systematic": 10
+        }
+    }
+]

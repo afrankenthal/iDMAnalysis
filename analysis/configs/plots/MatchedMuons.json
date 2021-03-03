@@ -1,0 +1,132 @@
+[
+    {
+        "quantity": "matched_dsa_pt",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_dsa_pt",
+        "title": "Matched dSA pT",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 300
+    },
+    {
+        "quantity": "matched_gm_pt",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_gm_pt",
+        "title": "Matched GM pT",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 300
+    },
+    {
+        "quantity": "matched_dsa_eta",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_dsa_eta",
+        "title": "Matched dSA #eta",
+        "nbinsX": 26,
+        "lowX": -4,
+        "highX": 4
+    },
+    {
+        "quantity": "matched_gm_eta",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_gm_eta",
+        "title": "Matched GM #eta",
+        "nbinsX": 26,
+        "lowX": -4,
+        "highX": 4
+    },
+    {
+        "quantity": "matched_dsa_dxy",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_dsa_dxy",
+        "title": "Matched dSA |dxy|",
+        "nbinsX": 30,
+        "lowX": 0,
+        "highX": 30
+    },
+    {
+        "quantity": "matched_gm_dxy",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_gm_dxy",
+        "title": "Matched GM |dxy|",
+        "nbinsX": 30,
+        "lowX": 0,
+        "highX": 30
+    },
+    {
+        "quantity": "matched_dsa_dxy",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_dsa_dxy_zoom",
+        "title": "Matched dSA |dxy|",
+        "nbinsX": 30,
+        "lowX": 0,
+        "highX": 3
+    },
+    {
+        "quantity": "matched_gm_dxy",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_gm_dxy_zoom",
+        "title": "Matched GM |dxy|",
+        "nbinsX": 30,
+        "lowX": 0,
+        "highX": 3
+    },
+    {
+        "quantity": "unmatched_dsa_dxy",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "unmatched_dsa_dxy",
+        "title": "Unmatched dSA |dxy|",
+        "nbinsX": 30,
+        "lowX": 0,
+        "highX": 30
+    },
+    {
+        "quantity": "unmatched_dsa_dxy",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "unmatched_dsa_dxy_zoom",
+        "title": "Unmatched dSA |dxy|",
+        "nbinsX": 30,
+        "lowX": 0,
+        "highX": 3
+    },
+    {
+        "quantity": "matched_dsa_dxy_res",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_dsa_dxy_res",
+        "title": "Matched dSA |dxy| resolution",
+        "nbinsX": 30,
+        "lowX": 0,
+        "highX": 3
+    },
+    {
+        "quantity": "matched_gm_dxy_res",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_gm_dxy_res",
+        "title": "Matched GM |dxy| resolution",
+        "nbinsX": 30,
+        "lowX": 0,
+        "highX": 3
+    },
+    {
+        "quantity": "unmatched_dsa_dxy_res",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "unmatched_dsa_dxy_res",
+        "title": "Unmatched dSA |dxy| resolution",
+        "nbinsX": 30,
+        "lowX": 0,
+        "highX": 3
+    }
+]

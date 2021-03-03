@@ -9,5 +9,16 @@
         "sum_gen_wgt": 10732455.0,
         "xsec": 831.76,
         "year": 2016
+    },
+    "ST_s-channel_2016": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/backgrounds_fourteenthrun/ST_s-channel_4f_leptonDecays_13TeV-amcatnlo-pythia8_TuneCUETP8M1/crab_iDMAnalysis_ST_s-channel_2016/210131_070504/0000/merged"
+        ],
+        "group": "Top",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 3368390.6060757637,
+        "xsec": 10.11,
+        "year": 2016
     }
 }

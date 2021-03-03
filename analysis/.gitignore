@@ -1,6 +1,7 @@
 !data/*.root
 !data/**/*.root
 plots
+!configs/plots
 bin
 lib
 build

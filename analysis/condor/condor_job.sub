@@ -1,0 +1,10 @@
+universe = vanilla
+Executable = condor_exec.sh
+should_transfer_files = YES
+Transfer_Input_Files = package.tar.gz
+when_to_transfer_output = ON_EXIT
+Output = $(Cluster)_$(Process).out
+Error = $(Cluster)_$(Process).err
+Log = $(Cluster)_$(Process).log
+Arguments = $(macro) $(plots) $(cuts) $(samplefile) $(eosdir)
+Queue macro,plots,cuts,samplefile,eosdir from condor_args.txt

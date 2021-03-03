@@ -1,0 +1,22 @@
+[
+    {
+        "quantity": "reco_METmu_dphi_v2",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_METmu_dphi_v2",
+        "title": "|#Delta#Phi(MET, muons)|",
+        "nbinsX": 16,
+        "lowX": 0,
+        "highX": 3.2
+    },
+    {
+        "quantity": "matched_muon_vtx_vxy",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "matched_muon_vtx_vxy",
+        "title": "Muon pair vxy [cm]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 500
+    }
+]

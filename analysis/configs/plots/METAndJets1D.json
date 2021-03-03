@@ -1,0 +1,162 @@
+[
+    {
+        "quantity": "reco_MT",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_MT",
+        "title": "MT [GeV]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 2500
+    },
+    {
+        "quantity": "reco_METmu_dphi",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_METmu_dphi",
+        "title": "|#Delta#Phi(MET, muons)|",
+        "nbinsX": 26,
+        "lowX": 0,
+        "highX": 3.2
+    },
+    {
+        "quantity": "reco_METmu_dphi_v2",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_METmu_dphi_v2",
+        "title": "|#Delta#Phi(MET, muons)|",
+        "nbinsX": 26,
+        "lowX": 0,
+        "highX": 3.2
+    },
+    {
+        "quantity": "gen_METmu_dphi",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "gen_METmu_dphi",
+        "title": "gen |#Delta#Phi(MET, muons)|",
+        "nbinsX": 26,
+        "lowX": 0,
+        "highX": 3.2
+    },
+    {
+        "quantity": "reco_PF_MET_pt",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_PF_MET_pt",
+        "title": "PF MET pT [GeV]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 1300 
+    },
+    {
+        "quantity": "reco_Calo_MET_pt",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_Calo_MET_pt",
+        "title": "Calo MET pT [GeV]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 1300 
+    },
+    {
+        "quantity": "CaloPFMETRatio",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "CaloPFMETRatio",
+        "title": "|CaloMET - PFMET|/CaloMET",
+        "nbinsX": 26,
+        "lowX": 0,
+        "highX": 5
+    },
+    {
+        "quantity": "reco_PF_MET_phi",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_PF_MET_phi",
+        "title": "MET phi",
+        "nbinsX": 26,
+        "lowX": -3.2,
+        "highX": 3.2 
+    },
+    {
+        "quantity": "MET_jet_dphi0",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "MET_jet_dphi0",
+        "title": "|#Delta#Phi(MET, leading jet)|",
+        "nbinsX": 26,
+        "lowX": 0,
+        "highX": 3.2
+    },
+    {
+        "quantity": "n_highpt_corr_jets",
+        "groups_to_exclude": [],
+        "type": "int1D",
+        "name": "n_highpt_corr_jets",
+        "title": "Number of jets with pT > 30 GeV",
+        "nbinsX": 10,
+        "lowX": 0,
+        "highX": 10
+    },
+    {
+        "quantity": "reco_PF_jet_pt0",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_PF_jet_pt0",
+        "title": "Leading jet pT [GeV]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 1500 
+    },
+    {
+        "quantity": "reco_PF_jet_pt1",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_PF_jet_pt1",
+        "title": "Subleading jet pT [GeV]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 1500
+    },
+    {
+        "quantity": "reco_PF_jet_eta0",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_PF_jet_eta0",
+        "title": "Leading jet #eta",
+        "nbinsX": 26,
+        "lowX": -5,
+        "highX": 5 
+    },
+    {
+        "quantity": "reco_PF_jet_eta1",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_PF_jet_eta1",
+        "title": "Subleading jet #eta",
+        "nbinsX": 26,
+        "lowX": -5,
+        "highX": 5 
+    },
+    {
+        "quantity": "reco_PF_jet_phi0",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_PF_jet_phi0",
+        "title": "Leading jet phi",
+        "nbinsX": 26,
+        "lowX": -3.2,
+        "highX": 3.2
+    },
+    {
+        "quantity": "reco_PF_jet_phi1",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_PF_jet_phi1",
+        "title": "Subleading jet phi",
+        "nbinsX": 26,
+        "lowX": -3.2,
+        "highX": 3.2
+    }
+]

@@ -1,0 +1,22 @@
+[
+    {
+        "quantity": "gen_pu_true",
+        "groups_to_exclude": [],
+        "type": "int1D",
+        "name": "gen_pu_true",
+        "title": "True pileup",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 100
+    },
+    {
+        "quantity": "npv",
+        "groups_to_exclude": [],
+        "type": "int1D",
+        "name": "pu_npv",
+        "title": "Pileup (Number of Primary Vertices)",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 200
+    }
+]
