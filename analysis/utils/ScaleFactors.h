@@ -18,14 +18,18 @@ public:
 
     enum SYST {
         NOMINAL, // == 0 
-        BTAG_DOWN, // == 1, and so on
-        BTAG_UP,
-        GM_ID_UP,
-        GM_ID_DOWN,
-        DSA_ID_UP,
-        DSA_ID_DOWN,
-        DSA_RECO_UP,
-        DSA_RECO_DOWN
+        BTAG_DOWN, // == 1
+        BTAG_UP, // == 2
+        GM_ID_UP, // == 3
+        GM_ID_DOWN, // == 4
+        DSA_ID_UP, // == 5
+        DSA_ID_DOWN, // == 6
+        DSA_RECO_UP, // == 7
+        DSA_RECO_DOWN, // == 8
+        JES_UP, // == 9
+        JES_DOWN, // == 10
+        JER_UP, // == 11
+        JER_DOWN // == 12
     };
 
     bool buildScaleFactors(SYST syst = NOMINAL);
