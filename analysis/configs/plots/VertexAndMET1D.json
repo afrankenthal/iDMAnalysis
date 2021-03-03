@@ -1,0 +1,22 @@
+[
+    {
+        "quantity": "reco_vtx_significance",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_vtx_significance",
+        "title": "Muon pair vtx significance (vxy/sigma_vxy)",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 50 
+    },
+    {
+        "quantity": "reco_PF_MET_pt",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_PF_MET_pt",
+        "title": "PF MET pT [GeV]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 1300 
+    }
+]

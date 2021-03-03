@@ -1,12 +1,10 @@
 [
     {
         "name": "mMake1DCanvasFromStacks",
-        "config": {
-        }
+        "config": {}
     },   
     {  
-   	"name": "mMake2DCanvasFromStacks",
-        "config": {
-        }
+        "name": "mMake2DCanvasFromStacks",
+        "config": {}
     }
 ]

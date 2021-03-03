@@ -3,7 +3,7 @@
         "name": "mMainAnalysis",
         "config": {
             "maxDrGMdSA": 0.2,
-            "systematic": 9
+            "systematic": 10
         }
     }
 ]

@@ -37,9 +37,10 @@ int main(int argc, char ** argv) {
 
     cxxopts::Options options("macroRun", "Run configurable macros with common IO interface");
     options.add_options()
-        ("s,sample", "Sample config file(s), if any", cxxopts::value<vector<std::string>>()->default_value("")) //configs/thirdrun/signal.json"))
-        ("m,macro", "Macro config file to use", cxxopts::value<std::string>()->default_value("")) //configs/macros/nminus1.json"))
-        ("c,cuts", "Cuts config file to use", cxxopts::value<std::string>()->default_value("")) //configs/cuts/CR_nJets.json"))
+        ("s,sample", "Sample config json(s) to set MC/data samples, if any", cxxopts::value<vector<std::string>>()->default_value("")) //configs/thirdrun/signal.json"))
+        ("m,macro", "Macro config json to set the macros to invoke", cxxopts::value<std::string>()->default_value("")) //configs/macros/nminus1.json"))
+        ("c,cuts", "Cuts config json to set the cutflow", cxxopts::value<std::string>()->default_value("")) //configs/cuts/CR_nJets.json"))
+        ("p,plots", "Plots config json(s) to set which plots to produce, if any", cxxopts::value<vector<std::string>>()->default_value("")) // configs/plots/Nominal_2D.json"))
         ("y,years", "Year(s) to process: 2016, 2017, 2018, 161718, 1618, 1718, 1617", cxxopts::value<std::string>()->default_value(""))
         ("o,outfile", "Output file or directory (depends on macro)", cxxopts::value<std::string>()->default_value(""))
         ("i,infile", "Input file(s) (for macros that use results of other macros)", cxxopts::value<vector<std::string>>()->default_value({}))
@@ -59,6 +60,7 @@ int main(int argc, char ** argv) {
     vector<std::string> sample_config_filenames = result["sample"].as<vector<std::string>>();
     TString macro_filename = TString(result["macro"].as<std::string>());
     TString cuts_filename = TString(result["cuts"].as<std::string>());
+    vector<std::string> plot_config_filenames = result["plots"].as<vector<std::string>>();
     TString years = TString(result["years"].as<std::string>());
     TString out_filename = TString(result["outfile"].as<std::string>()); // default is empty string ""
     vector<std::string> in_filenames = result["infile"].as<vector<std::string>>(); // default is length-zero vector with {}
@@ -141,6 +143,16 @@ int main(int argc, char ** argv) {
         }
     }
 
+    // Process plots config json
+    json plots_config = json::array();
+    for (auto plot_config_filename : plot_config_filenames) {
+        std::ifstream plots_config_file(plot_config_filename);
+        json j;
+        plots_config_file >> j;
+        for (json::iterator it = j.begin(); it != j.end(); ++it)
+            plots_config.push_back(*it);
+    }
+
     // Process macro config json and invoke configured macros
     if (macro_filename == TString("")) {
         cout << "Error! Need to specify a macro config json. Exiting..." << endl;
@@ -154,11 +166,13 @@ int main(int argc, char ** argv) {
         auto macro = item["name"].get<std::string>();
         auto cfg = item["config"];
 
+        cfg["plots"] = plots_config;
         cfg["years"] = years;
-        cfg["systematic"] = systematic;
         cfg["outfilename"] = out_filename.Data();
         cfg["infilenames"] = in_filenames;
         cfg["sample_config_filenames"] = sample_config_filenames;
+        if (cfg.find("systematic") == cfg.end())
+            cfg["systematic"] = systematic;
         if (cfg.find("force_overwrite") == cfg.end())
             cfg["force_overwrite"] = force_overwrite;
 

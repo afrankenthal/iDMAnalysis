@@ -1,0 +1,92 @@
+[
+    {
+        "quantity": "gen_muon_vxy",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "gen_muon_vxy",
+        "title": "Muon gen vxy [cm]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 1000 
+    },
+    {
+        "quantity": "reco_vtx_dR",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_vtx_dR",
+        "title": "muon #DeltaR",
+        "nbinsX": 26,
+        "lowX": 0,
+        "highX": 6.5
+    },
+    {
+        "quantity": "reco_vtx_vxy",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_vtx_vxy",
+        "title": "Muon pair vxy [cm]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 1000 
+    },
+    {
+        "quantity": "reco_vtx_vxy",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_vtx_vxy_zoom",
+        "title": "Muon pair vtx [cm]",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 100
+    },
+    {
+        "quantity": "reco_vtx_vxy",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_vtx_vxy_zoomzoom",
+        "title": "Muon pair vtx [cm]",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 10
+    },
+    {
+        "quantity": "reco_vtx_sigmavxy",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_vtx_sigmavxy",
+        "title": "Muon pair sigma vxy [cm]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 200 
+    },
+    {
+        "quantity": "reco_vtx_significance",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_vtx_significance",
+        "title": "Muon pair vtx significance (vxy/sigma_vxy)",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 1000 
+    },
+    {
+        "quantity": "reco_vtx_significance",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_vtx_significance_zoom",
+        "title": "Muon pair vtx significance (vxy/sigma_vxy)",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 100
+    },
+    {
+        "quantity": "reco_vtx_reduced_chi2",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_vtx_reduced_chi2",
+        "title": "Muon pair vtx #chi^{2}",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 50
+    }
+]

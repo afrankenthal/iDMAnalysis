@@ -1,0 +1,62 @@
+[
+    {
+        "quantity": "reco_MT",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_MT",
+        "title": "MT [GeV]",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 1000
+    },
+    {
+        "quantity": "reco_MT",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_MT_zoom",
+        "title": "MT [GeV]",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 100 
+    },
+    {
+        "quantity": "reco_MT",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_MT_zoomzoom",
+        "title": "MT [GeV]",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 10
+    },
+    {
+        "quantity": "reco_Mmumu",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_Mmumu",
+        "title": "Di-muon invariant mass M_{#mu#mu} [GeV]",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 1000
+    },
+    {
+        "quantity": "reco_Mmumu",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_Mmumu_zoom",
+        "title": "Di-muon invariant mass M_{#mu#mu} [GeV]",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 100
+    },
+    {
+        "quantity": "reco_Mmumu",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_Mmumu_zoomzoom",
+        "title": "Di-muon invariant mass M_{#mu#mu} [GeV]",
+        "nbinsX": 100,
+        "lowX": 0,
+        "highX": 10
+    }
+]

@@ -1,0 +1,12 @@
+[
+    {
+        "quantity": "reco_dsa_trk_n_planes0",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_dsa_trk_n_planes0",
+        "title": "Leading dsa muon trk nplanes",
+        "nbinsX": 10,
+        "lowX": 0,
+        "highX": 10
+    }
+]
