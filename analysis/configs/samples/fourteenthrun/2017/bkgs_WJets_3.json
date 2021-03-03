@@ -1,0 +1,24 @@
+{
+    "WJetsToLNu_HT-1200To2500_2017": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_fourteenthrun/WJetsToLNu_HT-1200To2500_TuneCP5_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_WJetsToLNu_HT-1200To2500_2017/200831_024649/0000/merged"
+        ],
+        "group": "WJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 14097724.0,
+        "xsec": 1.329,
+        "year": 2017
+    },
+    "WJetsToLNu_HT-2500ToInf_2017": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_fourteenthrun/WJetsToLNu_HT-2500ToInf_TuneCP5_13TeV-madgraphMLM-pythia8/crab_iDMAnalysis_WJetsToLNu_HT-2500ToInf_2017/200831_024346/0000/merged"
+        ],
+        "group": "WJets",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 20663143.0,
+        "xsec": 0.03216,
+        "year": 2017
+    }
+}
