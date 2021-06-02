@@ -1,0 +1,1142 @@
+{
+    "Mchi-10p5_dMchi-1p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-10p5_dMchi-1p0_ctau-1"
+        ],
+        "group": "sig_10p5_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 10.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.6053923040305855e-06,
+        "xsec": 4.84,
+        "year": 2016
+    },
+    "Mchi-10p5_dMchi-1p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-10p5_dMchi-1p0_ctau-10"
+        ],
+        "group": "sig_10p5_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 10.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.5954047703853807e-06,
+        "xsec": 0.484,
+        "year": 2016
+    },
+    "Mchi-10p5_dMchi-1p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-10p5_dMchi-1p0_ctau-100"
+        ],
+        "group": "sig_10p5_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 10.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.6040725591863258e-06,
+        "xsec": 0.0484,
+        "year": 2016
+    },
+    "Mchi-10p5_dMchi-1p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-10p5_dMchi-1p0_ctau-1000"
+        ],
+        "group": "sig_10p5_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 10.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.596867218926644e-06,
+        "xsec": 0.00484,
+        "year": 2016
+    },
+    "Mchi-12p0_dMchi-4p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-12p0_dMchi-4p0_ctau-1"
+        ],
+        "group": "sig_12p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 10.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.0009700809156836243,
+        "xsec": 0.005,
+        "year": 2016
+    },
+    "Mchi-12p0_dMchi-4p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-12p0_dMchi-4p0_ctau-10"
+        ],
+        "group": "sig_12p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 10.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.0009743006793865305,
+        "xsec": 0.0005,
+        "year": 2016
+    },
+    "Mchi-12p0_dMchi-4p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-12p0_dMchi-4p0_ctau-100"
+        ],
+        "group": "sig_12p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 10.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.000981314633106578,
+        "xsec": 5e-05,
+        "year": 2016
+    },
+    "Mchi-12p0_dMchi-4p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-12p0_dMchi-4p0_ctau-1000"
+        ],
+        "group": "sig_12p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 10.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.000983010176021537,
+        "xsec": 5e-06,
+        "year": 2016
+    },
+    "Mchi-1p2_dMchi-0p4_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-1p2_dMchi-0p4_ctau-1"
+        ],
+        "group": "sig_1p2_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 1.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 4.1507425541682384e-06,
+        "xsec": 0.045,
+        "year": 2016
+    },
+    "Mchi-1p2_dMchi-0p4_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-1p2_dMchi-0p4_ctau-10"
+        ],
+        "group": "sig_1p2_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 1.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 4.142619800587375e-06,
+        "xsec": 0.0045,
+        "year": 2016
+    },
+    "Mchi-1p2_dMchi-0p4_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-1p2_dMchi-0p4_ctau-100"
+        ],
+        "group": "sig_1p2_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 1.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 4.1310856310799635e-06,
+        "xsec": 0.00045,
+        "year": 2016
+    },
+    "Mchi-1p2_dMchi-0p4_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-1p2_dMchi-0p4_ctau-1000"
+        ],
+        "group": "sig_1p2_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 1.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 4.147894199246793e-06,
+        "xsec": 4.5e-05,
+        "year": 2016
+    },
+    "Mchi-21p0_dMchi-2p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-21p0_dMchi-2p0_ctau-1"
+        ],
+        "group": "sig_21p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 20.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.3701921970431135e-05,
+        "xsec": 3.61,
+        "year": 2016
+    },
+    "Mchi-21p0_dMchi-2p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-21p0_dMchi-2p0_ctau-10"
+        ],
+        "group": "sig_21p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 20.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.3703001965885314e-05,
+        "xsec": 0.361,
+        "year": 2016
+    },
+    "Mchi-21p0_dMchi-2p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-21p0_dMchi-2p0_ctau-100"
+        ],
+        "group": "sig_21p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 20.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.368939581925927e-05,
+        "xsec": 0.0361,
+        "year": 2016
+    },
+    "Mchi-21p0_dMchi-2p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-21p0_dMchi-2p0_ctau-1000"
+        ],
+        "group": "sig_21p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 20.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.3687353898550784e-05,
+        "xsec": 0.00361,
+        "year": 2016
+    },
+    "Mchi-24p0_dMchi-8p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-24p0_dMchi-8p0_ctau-1"
+        ],
+        "group": "sig_24p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 20.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.004727853616376065,
+        "xsec": 0.004,
+        "year": 2016
+    },
+    "Mchi-24p0_dMchi-8p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-24p0_dMchi-8p0_ctau-10"
+        ],
+        "group": "sig_24p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 20.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.004727281426187502,
+        "xsec": 0.0004,
+        "year": 2016
+    },
+    "Mchi-24p0_dMchi-8p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-24p0_dMchi-8p0_ctau-100"
+        ],
+        "group": "sig_24p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 20.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.004718859925755381,
+        "xsec": 4e-05,
+        "year": 2016
+    },
+    "Mchi-24p0_dMchi-8p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-24p0_dMchi-8p0_ctau-1000"
+        ],
+        "group": "sig_24p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 20.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.0047084589011058275,
+        "xsec": 4e-06,
+        "year": 2016
+    },
+    "Mchi-31p5_dMchi-3p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-31p5_dMchi-3p0_ctau-1"
+        ],
+        "group": "sig_31p5_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 30.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 260216.0,
+        "xsec": 150.0,
+        "year": 2016
+    },
+    "Mchi-31p5_dMchi-3p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-31p5_dMchi-3p0_ctau-10"
+        ],
+        "group": "sig_31p5_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 30.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 257741.0,
+        "xsec": 15.0,
+        "year": 2016
+    },
+    "Mchi-31p5_dMchi-3p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-31p5_dMchi-3p0_ctau-100"
+        ],
+        "group": "sig_31p5_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 30.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 218685.0,
+        "xsec": 1.5,
+        "year": 2016
+    },
+    "Mchi-31p5_dMchi-3p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-31p5_dMchi-3p0_ctau-1000"
+        ],
+        "group": "sig_31p5_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 30.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 216011.0,
+        "xsec": 0.15,
+        "year": 2016
+    },
+    "Mchi-36p0_dMchi-12p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-36p0_dMchi-12p0_ctau-1"
+        ],
+        "group": "sig_36p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 30.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 3.2993846290642104,
+        "xsec": 0.15,
+        "year": 2016
+    },
+    "Mchi-36p0_dMchi-12p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-36p0_dMchi-12p0_ctau-10"
+        ],
+        "group": "sig_36p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 30.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 3.2986072641701902,
+        "xsec": 0.015,
+        "year": 2016
+    },
+    "Mchi-36p0_dMchi-12p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-36p0_dMchi-12p0_ctau-100"
+        ],
+        "group": "sig_36p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 30.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 3.2942132272259634,
+        "xsec": 0.0015,
+        "year": 2016
+    },
+    "Mchi-36p0_dMchi-12p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-36p0_dMchi-12p0_ctau-1000"
+        ],
+        "group": "sig_36p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 30.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 3.2839112301528317,
+        "xsec": 0.00015,
+        "year": 2016
+    },
+    "Mchi-3p15_dMchi-0p3_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-3p15_dMchi-0p3_ctau-1"
+        ],
+        "group": "sig_3p15_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 3.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 2.118192374171464e-08,
+        "xsec": 15.8,
+        "year": 2016
+    },
+    "Mchi-3p15_dMchi-0p3_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-3p15_dMchi-0p3_ctau-10"
+        ],
+        "group": "sig_3p15_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 3.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 2.1179231722765536e-08,
+        "xsec": 1.58,
+        "year": 2016
+    },
+    "Mchi-3p15_dMchi-0p3_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-3p15_dMchi-0p3_ctau-100"
+        ],
+        "group": "sig_3p15_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 3.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 2.1137196200249106e-08,
+        "xsec": 0.158,
+        "year": 2016
+    },
+    "Mchi-3p15_dMchi-0p3_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-3p15_dMchi-0p3_ctau-1000"
+        ],
+        "group": "sig_3p15_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 3.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 2.1140365791708027e-08,
+        "xsec": 0.0158,
+        "year": 2016
+    },
+    "Mchi-3p6_dMchi-1p2_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-3p6_dMchi-1p2_ctau-1"
+        ],
+        "group": "sig_3p6_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 3.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 9.171897688729585e-05,
+        "xsec": 0.015,
+        "year": 2016
+    },
+    "Mchi-3p6_dMchi-1p2_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-3p6_dMchi-1p2_ctau-10"
+        ],
+        "group": "sig_3p6_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 3.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 9.192322222622792e-05,
+        "xsec": 0.0015,
+        "year": 2016
+    },
+    "Mchi-3p6_dMchi-1p2_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-3p6_dMchi-1p2_ctau-100"
+        ],
+        "group": "sig_3p6_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 3.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 9.138305296259872e-05,
+        "xsec": 0.00015,
+        "year": 2016
+    },
+    "Mchi-3p6_dMchi-1p2_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-3p6_dMchi-1p2_ctau-1000"
+        ],
+        "group": "sig_3p6_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 3.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 9.149141553153688e-05,
+        "xsec": 1.5e-05,
+        "year": 2016
+    },
+    "Mchi-42p0_dMchi-4p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-42p0_dMchi-4p0_ctau-1"
+        ],
+        "group": "sig_42p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 40.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 2.1941182743311273e-05,
+        "xsec": 0.95,
+        "year": 2016
+    },
+    "Mchi-42p0_dMchi-4p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-42p0_dMchi-4p0_ctau-10"
+        ],
+        "group": "sig_42p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 40.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 2.222937243511627e-05,
+        "xsec": 0.095,
+        "year": 2016
+    },
+    "Mchi-42p0_dMchi-4p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-42p0_dMchi-4p0_ctau-100"
+        ],
+        "group": "sig_42p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 40.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 2.2225141431735286e-05,
+        "xsec": 0.0095,
+        "year": 2016
+    },
+    "Mchi-42p0_dMchi-4p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-42p0_dMchi-4p0_ctau-1000"
+        ],
+        "group": "sig_42p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 40.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 2.2133944168896603e-05,
+        "xsec": 0.00095,
+        "year": 2016
+    },
+    "Mchi-48p0_dMchi-16p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-48p0_dMchi-16p0_ctau-1"
+        ],
+        "group": "sig_48p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 40.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.012642245333441,
+        "xsec": 0.0007,
+        "year": 2016
+    },
+    "Mchi-48p0_dMchi-16p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-48p0_dMchi-16p0_ctau-10"
+        ],
+        "group": "sig_48p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 40.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.012597354684561086,
+        "xsec": 7e-05,
+        "year": 2016
+    },
+    "Mchi-48p0_dMchi-16p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-48p0_dMchi-16p0_ctau-100"
+        ],
+        "group": "sig_48p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 40.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.012704258469407766,
+        "xsec": 7e-06,
+        "year": 2016
+    },
+    "Mchi-48p0_dMchi-16p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-48p0_dMchi-16p0_ctau-1000"
+        ],
+        "group": "sig_48p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 40.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.012585385169894651,
+        "xsec": 7e-07,
+        "year": 2016
+    },
+    "Mchi-52p5_dMchi-5p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-52p5_dMchi-5p0_ctau-1"
+        ],
+        "group": "sig_52p5_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 50.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 69553.0000069362,
+        "xsec": 0.22,
+        "year": 2016
+    },
+    "Mchi-52p5_dMchi-5p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-52p5_dMchi-5p0_ctau-10"
+        ],
+        "group": "sig_52p5_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 50.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 69549.00000687654,
+        "xsec": 0.022,
+        "year": 2016
+    },
+    "Mchi-52p5_dMchi-5p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-52p5_dMchi-5p0_ctau-100"
+        ],
+        "group": "sig_52p5_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 50.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 69533.00000667977,
+        "xsec": 0.0022,
+        "year": 2016
+    },
+    "Mchi-52p5_dMchi-5p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-52p5_dMchi-5p0_ctau-1000"
+        ],
+        "group": "sig_52p5_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 50.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 69130.00000661516,
+        "xsec": 0.00022,
+        "year": 2016
+    },
+    "Mchi-5p25_dMchi-0p5_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-5p25_dMchi-0p5_ctau-1"
+        ],
+        "group": "sig_5p25_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 5.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 26948.00000013235,
+        "xsec": 9.56,
+        "year": 2016
+    },
+    "Mchi-5p25_dMchi-0p5_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-5p25_dMchi-0p5_ctau-10"
+        ],
+        "group": "sig_5p25_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 5.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 26950.000000132375,
+        "xsec": 0.956,
+        "year": 2016
+    },
+    "Mchi-5p25_dMchi-0p5_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-5p25_dMchi-0p5_ctau-100"
+        ],
+        "group": "sig_5p25_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 5.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 26905.000000132208,
+        "xsec": 0.0956,
+        "year": 2016
+    },
+    "Mchi-5p25_dMchi-0p5_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-5p25_dMchi-0p5_ctau-1000"
+        ],
+        "group": "sig_5p25_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 5.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 26917.00000013224,
+        "xsec": 0.00956,
+        "year": 2016
+    },
+    "Mchi-60p0_dMchi-20p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-60p0_dMchi-20p0_ctau-1"
+        ],
+        "group": "sig_60p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 50.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 61243.004001446185,
+        "xsec": 0.0002,
+        "year": 2016
+    },
+    "Mchi-60p0_dMchi-20p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-60p0_dMchi-20p0_ctau-10"
+        ],
+        "group": "sig_60p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 50.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 61232.004018454136,
+        "xsec": 2e-05,
+        "year": 2016
+    },
+    "Mchi-60p0_dMchi-20p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-60p0_dMchi-20p0_ctau-100"
+        ],
+        "group": "sig_60p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 50.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 61114.0038964041,
+        "xsec": 2e-06,
+        "year": 2016
+    },
+    "Mchi-60p0_dMchi-20p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-60p0_dMchi-20p0_ctau-1000"
+        ],
+        "group": "sig_60p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 50.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 60890.00384677867,
+        "xsec": 2e-07,
+        "year": 2016
+    },
+    "Mchi-63p0_dMchi-6p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-63p0_dMchi-6p0_ctau-1"
+        ],
+        "group": "sig_63p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 60.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.0988276267971604e-05,
+        "xsec": 0.12,
+        "year": 2016
+    },
+    "Mchi-63p0_dMchi-6p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-63p0_dMchi-6p0_ctau-10"
+        ],
+        "group": "sig_63p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 60.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.0987797158646962e-05,
+        "xsec": 0.012,
+        "year": 2016
+    },
+    "Mchi-63p0_dMchi-6p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-63p0_dMchi-6p0_ctau-100"
+        ],
+        "group": "sig_63p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 60.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.0986186940813543e-05,
+        "xsec": 0.0012,
+        "year": 2016
+    },
+    "Mchi-63p0_dMchi-6p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-63p0_dMchi-6p0_ctau-1000"
+        ],
+        "group": "sig_63p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 60.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.097305146655429e-05,
+        "xsec": 0.00012,
+        "year": 2016
+    },
+    "Mchi-6p0_dMchi-2p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-6p0_dMchi-2p0_ctau-1"
+        ],
+        "group": "sig_6p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 5.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.0002604862873655349,
+        "xsec": 0.009,
+        "year": 2016
+    },
+    "Mchi-6p0_dMchi-2p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-6p0_dMchi-2p0_ctau-10"
+        ],
+        "group": "sig_6p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 5.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.00026048734502926926,
+        "xsec": 0.0009,
+        "year": 2016
+    },
+    "Mchi-6p0_dMchi-2p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-6p0_dMchi-2p0_ctau-100"
+        ],
+        "group": "sig_6p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 5.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.00025951817555526155,
+        "xsec": 9e-05,
+        "year": 2016
+    },
+    "Mchi-6p0_dMchi-2p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-6p0_dMchi-2p0_ctau-1000"
+        ],
+        "group": "sig_6p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 5.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.00025989239249047877,
+        "xsec": 9e-06,
+        "year": 2016
+    },
+    "Mchi-72p0_dMchi-24p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-72p0_dMchi-24p0_ctau-1"
+        ],
+        "group": "sig_72p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 60.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.0058544496241390714,
+        "xsec": 0.0001,
+        "year": 2016
+    },
+    "Mchi-72p0_dMchi-24p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-72p0_dMchi-24p0_ctau-10"
+        ],
+        "group": "sig_72p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 60.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.005853891080769294,
+        "xsec": 1e-05,
+        "year": 2016
+    },
+    "Mchi-72p0_dMchi-24p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-72p0_dMchi-24p0_ctau-100"
+        ],
+        "group": "sig_72p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 60.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.0058367722232021135,
+        "xsec": 1e-06,
+        "year": 2016
+    },
+    "Mchi-72p0_dMchi-24p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-72p0_dMchi-24p0_ctau-1000"
+        ],
+        "group": "sig_72p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 60.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.005826811637313703,
+        "xsec": 1e-07,
+        "year": 2016
+    },
+    "Mchi-84p0_dMchi-8p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-84p0_dMchi-8p0_ctau-1"
+        ],
+        "group": "sig_84p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 80.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.103157905915767e-05,
+        "xsec": 0.04,
+        "year": 2016
+    },
+    "Mchi-84p0_dMchi-8p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-84p0_dMchi-8p0_ctau-10"
+        ],
+        "group": "sig_84p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 80.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.051461951101632e-05,
+        "xsec": 0.004,
+        "year": 2016
+    },
+    "Mchi-84p0_dMchi-8p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-84p0_dMchi-8p0_ctau-100"
+        ],
+        "group": "sig_84p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 80.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.0623060395388041e-05,
+        "xsec": 0.0004,
+        "year": 2016
+    },
+    "Mchi-84p0_dMchi-8p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.1,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-84p0_dMchi-8p0_ctau-1000"
+        ],
+        "group": "sig_84p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 80.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 1.081238259694967e-05,
+        "xsec": 4e-05,
+        "year": 2016
+    },
+    "Mchi-96p0_dMchi-32p0_ctau-1": {
+        "ctau_cm": 0.1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-96p0_dMchi-32p0_ctau-1"
+        ],
+        "group": "sig_96p0_1",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 80.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.006663526184784274,
+        "xsec": 5e-05,
+        "year": 2016
+    },
+    "Mchi-96p0_dMchi-32p0_ctau-10": {
+        "ctau_cm": 1,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-96p0_dMchi-32p0_ctau-10"
+        ],
+        "group": "sig_96p0_10",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 80.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.006675358416028843,
+        "xsec": 5e-06,
+        "year": 2016
+    },
+    "Mchi-96p0_dMchi-32p0_ctau-100": {
+        "ctau_cm": 10,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-96p0_dMchi-32p0_ctau-100"
+        ],
+        "group": "sig_96p0_100",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 80.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.006648473918875908,
+        "xsec": 5e-07,
+        "year": 2016
+    },
+    "Mchi-96p0_dMchi-32p0_ctau-1000": {
+        "ctau_cm": 100,
+        "delta_fraction": 0.4,
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2016/signal/iDMAnalysis_fourteenthrun/Mchi-96p0_dMchi-32p0_ctau-1000"
+        ],
+        "group": "sig_96p0_1000",
+        "limit_num_files": -1,
+        "lumi": 35.92,
+        "m1": 80.0,
+        "mode": "SIGNAL",
+        "sum_gen_wgt": 0.006638618330892854,
+        "xsec": 5e-08,
+        "year": 2016
+    }
+}

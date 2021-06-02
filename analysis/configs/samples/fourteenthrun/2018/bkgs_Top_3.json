@@ -1,0 +1,13 @@
+{
+    "ST_t-channel_top_5f_2018": {
+        "dir": [
+            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2018/backgrounds_fourteenthrun/ST_t-channel_top_5f_TuneCP5_13TeV-powheg-pythia8/crab_iDMAnalysis_ST_t-channel_top_5f_2018/200905_170009/0000/merged"
+        ],
+        "group": "Top",
+        "limit_num_files": -1,
+        "mode": "BKG",
+        "sum_gen_wgt": 825518457.9832101,
+        "xsec": 136.02,
+        "year": 2018
+    }
+}

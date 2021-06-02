@@ -10,17 +10,6 @@
         "xsec": 80.95,
         "year": 2017
     },
-    "ST_t-channel_top_2017": {
-        "dir": [
-            "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_fourteenthrun/ST_t-channel_top_5f_TuneCP5_13TeV-powheg-pythia8/crab_iDMAnalysis_ST_t-channel_top_2017/210131_071116/0000/merged"
-        ],
-        "group": "Top",
-        "limit_num_files": -1,
-        "mode": "BKG",
-        "sum_gen_wgt": 711923508.475706,
-        "xsec": 136.02,
-        "year": 2017
-    },
     "ST_tW_antitop_2017": {
         "dir": [
             "root://cmseos.fnal.gov//store/group/lpcmetx/iDM/Ntuples/2017/backgrounds_fourteenthrun/ST_tW_antitop_5f_inclusiveDecays_TuneCP5_13TeV-powheg-pythia8/crab_iDMAnalysis_ST_tW_antitop_2017/200905_195607/0000/merged"
