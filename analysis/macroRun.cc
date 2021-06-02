@@ -139,7 +139,11 @@ int main(int argc, char ** argv) {
             if (item.find("book_plot") != item.end())
                 book_plot = TString(item["book_plot"].get<std::string>());
 
-            cuts_info.push_back(CutInfo{cut, description, inclusive, efficiency, special, book_plot});
+            TString print_events("no");
+            if (item.find("print_events") != item.end())
+                print_events = TString(item["print_events"].get<std::string>());
+
+            cuts_info.push_back(CutInfo{cut, description, inclusive, efficiency, special, book_plot, print_events});
         }
     }
 

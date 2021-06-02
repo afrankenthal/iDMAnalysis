@@ -108,6 +108,7 @@ namespace common {
         TString efficiency;
         TString special;
         TString book_plot;
+        TString print_events;
     } CutInfo;
 
     typedef struct SampleInfo {
