@@ -55,6 +55,19 @@ namespace macro {
                 hs2->Add(h1);
             }
         }
+
+        std::vector<TH1*> hist_vec;
+        TIter next2((TList*)(((THStack*)hs2)->GetHists()));
+        TH1 * h2;
+        while ((h2 = (TH1*)next2())) {
+            hist_vec.push_back(h2);
+            hs2->RecursiveRemove(h2);
+        }
+        //sort by "smallest integral first"
+        auto sortHists = [](auto a_hist_ptr, auto b_hist_ptr) { return a_hist_ptr->Integral() < b_hist_ptr->Integral(); };
+        std::sort(hist_vec.begin(), hist_vec.end(), sortHists);
+        for (auto hist : hist_vec)
+            hs2->Add(hist);
     }
 
     extern "C" bool process([[maybe_unused]] map<TString, SampleInfo> samples, vector<CutInfo> cuts_info, json cfg) {
