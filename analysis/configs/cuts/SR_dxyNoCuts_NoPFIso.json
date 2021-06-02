@@ -28,9 +28,15 @@
         "book_plot": "no"
     },
     {
-        "cut": "reco_PF_n_highPt_jets >= 3 && reco_PF_n_highPt_jets > 0",
-        "description": "nJets >= 3 (pT > 30 GeV)",
-        "special": "yes",
+        "cut": "reco_PF_n_highPt_jets < 3 && reco_PF_n_highPt_jets > 0",
+        "description": "0 < nJets < 3 (pT > 30 GeV)",
+        "book_plot": "no",
+        "special": "no"
+    },
+    {
+        "cut": "reco_n_bTag_jets == 0",
+        "description": "No b-tagged jets",
+        "special": "no",
         "book_plot": "no"
     },
     {
@@ -39,8 +45,8 @@
         "book_plot": "no"
     },
     {
-        "cut": "reco_PF_jet_corr_pt[0] > 250",
-        "description": "Leading jet pT > 250 GeV",
+        "cut": "reco_PF_jet_corr_pt[0] > 80",
+        "description": "Leading jet pT > 80 GeV",
         "book_plot": "no"
     },
     {
@@ -49,10 +55,11 @@
         "book_plot": "no"
     },
     {
-        "cut": "All(MET_jet_dphiN < 1.5)",
-        "description": "|#Delta#Phi(MET, other jets)| < 1.5",
+        "cut": "All(MET_jet_dphiN > 0.75)",
+        "description": "|#Delta#Phi(MET, other jets)| > 0.75",
         "book_plot": "no"
     },
+
     {
         "cut": "n_good_dsa >= 1",
         "description": "good dSA muons >= 1",
@@ -73,8 +80,8 @@
         "book_plot": "no"
     },
     {
-        "cut": "abs(matched_muon_vtx_reduced_chi2) < 1000",
-        "description": "Vertex #chi^{2} < 1000",
+        "cut": "abs(matched_muon_vtx_reduced_chi2) < 4",
+        "description": "Vertex #chi^{2} < 4",
         "book_plot": "no"
     },
     {
@@ -83,25 +90,17 @@
         "book_plot": "no"
     },
     {
-        "cut": "abs(matched_muon_Mmumu) < 1000",
-        "description": "M_{#mu#mu} < 1000 GeV",
+        "cut": "abs(matched_muon_Mmumu) < 30",
+        "description": "M_{#mu#mu} < 30 GeV",
         "book_plot": "no"
     },
     {
-        "cut": "abs(matched_muon_vtx_dR) < 6.0",
-        "description": "dR(muons) < 6.0"
+        "cut": "abs(matched_muon_vtx_dR) < 0.9",
+        "description": "dR(muons) < 0.9"
     },
     {
         "cut": "reco_sel_mu_q0 != reco_sel_mu_q1",
         "description": "muons: OSSF"
-    },
-    {
-        "cut": "abs(reco_sel_mu_dxy0) > 0.1", 
-        "description": "Selected muon 0 dxy > 0.1 cm"
-    },
-    {
-        "cut": "abs(reco_sel_mu_dxy1) > 0.1", 
-        "description": "Selected muon 1 dxy > 0.1 cm"
     },
     {
         "cut": "n_matched == 0",
@@ -111,7 +110,8 @@
     {
         "cut": "n_matched == 1",
         "description": "1 GM-dSA matched",
-        "inclusive": "no"
+        "inclusive": "no",
+        "print_events": "no"
     },
     {
         "cut": "n_matched == 2",

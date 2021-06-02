@@ -34,6 +34,12 @@
         "book_plot": "no"
     },
     {
+        "cut": "reco_n_bTag_jets == 0",
+        "description": "No b-tagged jets",
+        "special": "yes",
+        "book_plot": "no"
+    },
+    {
         "cut": "abs(reco_PF_jet_corr_eta[0]) < 2.4",
         "description": "leading jet |#eta| < 2.4",
         "book_plot": "no"
@@ -94,14 +100,6 @@
     {
         "cut": "reco_sel_mu_q0 != reco_sel_mu_q1",
         "description": "muons: OSSF"
-    },
-    {
-        "cut": "abs(reco_sel_mu_dxy0) > 0.1", 
-        "description": "Selected muon 0 dxy > 0.1 cm"
-    },
-    {
-        "cut": "abs(reco_sel_mu_dxy1) > 0.1", 
-        "description": "Selected muon 1 dxy > 0.1 cm"
     },
     {
         "cut": "n_matched == 0",
