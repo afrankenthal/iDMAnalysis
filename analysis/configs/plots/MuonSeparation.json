@@ -1,0 +1,70 @@
+[
+    {
+        "quantity": "reco_sel_pair_reduced_dphi",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_sel_pair_reduced_dphi",
+        "title": "Dimuon abs(dPhi)",
+        "nbinsX": 32,
+        "lowX": 0,
+        "highX": 3.15
+    },
+    {
+        "quantity": "reco_sel_pair_deta",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_sel_pair_deta",
+        "title": "Dimuon abs(dEta)",
+        "nbinsX": 48,
+        "lowX": 0,
+        "highX": 2.4
+    },
+    {
+        "quantity": "reco_sel_pair_cos_dEtaOdPhi",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_sel_pair_cos_dEtaOdPhi",
+        "title": "cos(dEta/dPhi)",
+        "nbinsX": 50,
+        "lowX": -1,
+        "highX": 1
+    },
+    {
+        "quantity": "reco_sel_pair_cos_dEtaOdPhi",
+        "groups_to_exclude": [],
+        "type": "float2D",
+        "name": "reco_sel_pair_cos_dEtaOdPhi_vs_reco_vtx_vxy",
+        "title": "cos(dEta/dPhi) vs muon vertex vxy [cm]",
+        "nbinsX": 50,
+        "lowX": -1,
+        "highX": 1,
+        "quantity2": "matched_muon_vtx_vxy",
+        "nbinsY": 100,
+        "lowY": 0,
+        "highY": 400 
+    },
+    {
+        "quantity": "reco_sel_pair_log_dEtaOdPhi",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "reco_sel_pair_log_dEtaOdPhi",
+        "title": "log_{10}(dEta/dPhi)",
+        "nbinsX": 50,
+        "lowX": -5,
+        "highX": 5
+    },
+    {
+        "quantity": "reco_sel_pair_log_dEtaOdPhi",
+        "groups_to_exclude": [],
+        "type": "float2D",
+        "name": "reco_sel_pair_log_dEtaOdPhi_vs_reco_vtx_vxy",
+        "title": "log_{10}(dEta/dPhi) vs muon vertex vxy [cm]",
+        "nbinsX": 50,
+        "lowX": -5,
+        "highX": 5,
+        "quantity2": "matched_muon_vtx_vxy",
+        "nbinsY": 100,
+        "lowY": 0,
+        "highY": 400 
+    }
+]

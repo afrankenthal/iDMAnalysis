@@ -7,7 +7,7 @@
         "title": "Matched dSA pT",
         "nbinsX": 50,
         "lowX": 0,
-        "highX": 300
+        "highX": 100
     },
     {
         "quantity": "matched_gm_pt",
@@ -17,7 +17,7 @@
         "title": "Matched GM pT",
         "nbinsX": 50,
         "lowX": 0,
-        "highX": 300
+        "highX": 100
     },
     {
         "quantity": "matched_dsa_eta",
@@ -25,7 +25,7 @@
         "type": "vec_float1D",
         "name": "matched_dsa_eta",
         "title": "Matched dSA #eta",
-        "nbinsX": 26,
+        "nbinsX": 40,
         "lowX": -4,
         "highX": 4
     },
@@ -35,98 +35,138 @@
         "type": "vec_float1D",
         "name": "matched_gm_eta",
         "title": "Matched GM #eta",
-        "nbinsX": 26,
+        "nbinsX": 40,
         "lowX": -4,
         "highX": 4
+    },
+    {
+        "quantity": "matched_dsa_phi",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_dsa_phi",
+        "title": "Matched dSA #phi",
+        "nbinsX": 26,
+        "lowX": -3.2,
+        "highX": 3.2
+    },
+    {
+        "quantity": "matched_gm_phi",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_gm_phi",
+        "title": "Matched GM #phi",
+        "nbinsX": 32,
+        "lowX": -3.2,
+        "highX": 3.2
+    },
+    {
+        "quantity": "matched_dsa_trk_chi2",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_dsa_trk_chi2",
+        "title": "Matched dSA track #chi^{2}",
+        "nbinsX": 20,
+        "lowX": 0,
+        "highX": 10
+    },
+    {
+        "quantity": "matched_gm_trk_chi2",
+        "groups_to_exclude": [],
+        "type": "vec_float1D",
+        "name": "matched_gm_trk_chi2",
+        "title": "Matched GM track #chi^{2}",
+        "nbinsX": 20,
+        "lowX": 0,
+        "highX": 10
     },
     {
         "quantity": "matched_dsa_dxy",
         "groups_to_exclude": [],
         "type": "vec_float1D",
         "name": "matched_dsa_dxy",
-        "title": "Matched dSA |dxy|",
-        "nbinsX": 30,
+        "title": "Matched dSA |d_{xy}| [cm]",
+        "nbinsX": 50,
         "lowX": 0,
-        "highX": 30
+        "highX": 50
     },
     {
         "quantity": "matched_gm_dxy",
         "groups_to_exclude": [],
         "type": "vec_float1D",
         "name": "matched_gm_dxy",
-        "title": "Matched GM |dxy|",
-        "nbinsX": 30,
+        "title": "Matched GM |d_{xy}| [cm]",
+        "nbinsX": 50,
         "lowX": 0,
-        "highX": 30
+        "highX": 50
     },
     {
         "quantity": "matched_dsa_dxy",
         "groups_to_exclude": [],
         "type": "vec_float1D",
         "name": "matched_dsa_dxy_zoom",
-        "title": "Matched dSA |dxy|",
-        "nbinsX": 30,
+        "title": "Matched dSA |d_{xy}| [cm]",
+        "nbinsX": 50,
         "lowX": 0,
-        "highX": 3
+        "highX": 5
     },
     {
         "quantity": "matched_gm_dxy",
         "groups_to_exclude": [],
         "type": "vec_float1D",
         "name": "matched_gm_dxy_zoom",
-        "title": "Matched GM |dxy|",
-        "nbinsX": 30,
+        "title": "Matched GM |d_{xy}| [cm]",
+        "nbinsX": 50,
         "lowX": 0,
-        "highX": 3
+        "highX": 5
     },
     {
         "quantity": "unmatched_dsa_dxy",
         "groups_to_exclude": [],
         "type": "vec_float1D",
         "name": "unmatched_dsa_dxy",
-        "title": "Unmatched dSA |dxy|",
-        "nbinsX": 30,
+        "title": "Unmatched dSA |d_{xy}| [cm]",
+        "nbinsX": 50,
         "lowX": 0,
-        "highX": 30
+        "highX": 50
     },
     {
         "quantity": "unmatched_dsa_dxy",
         "groups_to_exclude": [],
         "type": "vec_float1D",
         "name": "unmatched_dsa_dxy_zoom",
-        "title": "Unmatched dSA |dxy|",
-        "nbinsX": 30,
+        "title": "Unmatched dSA |d_{xy}| [cm]",
+        "nbinsX": 50,
         "lowX": 0,
-        "highX": 3
+        "highX": 5
     },
     {
         "quantity": "matched_dsa_dxy_res",
         "groups_to_exclude": [],
         "type": "vec_float1D",
         "name": "matched_dsa_dxy_res",
-        "title": "Matched dSA |dxy| resolution",
-        "nbinsX": 30,
+        "title": "Matched dSA |d_{xy}| resolution",
+        "nbinsX": 50,
         "lowX": 0,
-        "highX": 3
+        "highX": 5
     },
     {
         "quantity": "matched_gm_dxy_res",
         "groups_to_exclude": [],
         "type": "vec_float1D",
         "name": "matched_gm_dxy_res",
-        "title": "Matched GM |dxy| resolution",
-        "nbinsX": 30,
+        "title": "Matched GM |d_{xy}| resolution",
+        "nbinsX": 50,
         "lowX": 0,
-        "highX": 3
+        "highX": 5
     },
     {
         "quantity": "unmatched_dsa_dxy_res",
         "groups_to_exclude": [],
         "type": "vec_float1D",
         "name": "unmatched_dsa_dxy_res",
-        "title": "Unmatched dSA |dxy| resolution",
-        "nbinsX": 30,
+        "title": "Unmatched dSA |d_{xy}| resolution",
+        "nbinsX": 50,
         "lowX": 0,
-        "highX": 3
+        "highX": 5
     }
 ]

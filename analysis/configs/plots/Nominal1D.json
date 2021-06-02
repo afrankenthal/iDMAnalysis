@@ -1,43 +1,33 @@
 [
     {
-        "quantity": "reco_sel_mu_dxy0",
+        "quantity": "reco_sel_mu_dxy_min",
         "groups_to_exclude": [],
         "type": "float1D",
-        "name": "reco_sel_mu_dxy0_zoom",
-        "title": "Leading muon dxy [cm]",
+        "name": "muon_dxy_min",
+        "title": "min. muon d_{xy} [cm]",
         "nbinsX": 50,
         "lowX": 0,
-        "highX": 0.5 
+        "highX": 50
     },
     {
-        "quantity": "reco_sel_mu_dxy1",
+        "quantity": "reco_sel_mu_dxy_min",
         "groups_to_exclude": [],
         "type": "float1D",
-        "name": "reco_sel_mu_dxy1_zoom",
-        "title": "Subleading muon dxy [cm]",
+        "name": "muon_dxy_min_zoom",
+        "title": "min. muon d_{xy} [cm]",
         "nbinsX": 50,
         "lowX": 0,
         "highX": 0.5
     },
     {
-        "quantity": "reco_sel_mu_dxy0",
+        "quantity": "reco_sel_mu_dxy_min",
         "groups_to_exclude": [],
         "type": "float1D",
-        "name": "reco_sel_mu_dxy0",
-        "title": "Leading muon dxy [cm]",
-        "nbinsX": 100,
-        "lowX": 0,
-        "highX": 50
-    },
-    {
-        "quantity": "reco_sel_mu_dxy1",
-        "groups_to_exclude": [],
-        "type": "float1D",
-        "name": "reco_sel_mu_dxy1",
-        "title": "Subleading muon dxy [cm]",
+        "name": "muon_dxy_min_zoomzoom",
+        "title": "min. muon d_{xy} [cm]",
         "nbinsX": 50,
         "lowX": 0,
-        "highX": 50
+        "highX": 0.05
     },
     {
         "quantity": "matched_muon_MT",
@@ -100,6 +90,26 @@
         "nbinsX": 50,
         "lowX": 0,
         "highX": 500
+    },
+    {
+        "quantity": "matched_muon_vtx_vxy",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "matched_muon_vtx_vxy_zoom",
+        "title": "Muon pair vxy [cm]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 50
+    },
+    {
+        "quantity": "matched_muon_vtx_vxy",
+        "groups_to_exclude": [],
+        "type": "float1D",
+        "name": "matched_muon_vtx_vxy_zoomzoom",
+        "title": "Muon pair vxy [cm]",
+        "nbinsX": 50,
+        "lowX": 0,
+        "highX": 5
     },
     {
         "quantity": "matched_muon_vtx_sigmavxy",

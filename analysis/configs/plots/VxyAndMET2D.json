@@ -1,0 +1,44 @@
+[
+    {
+        "name": "reco_METmu_dphi_vs_matched_muon_vtx_vxy",
+        "title": "|#Delta#Phi(MET, muons)| vs Muon pair vertex vxy [cm]",
+        "groups_to_exclude": [],
+        "type": "float2D",
+        "quantity": "reco_METmu_dphi_v2",
+        "nbinsX": 32,
+        "lowX": 0,
+        "highX": 3.2,
+        "quantity2": "matched_muon_vtx_vxy",
+        "nbinsY": 60,
+        "lowY": 0,
+        "highY": 600 
+    },
+    {
+        "name": "reco_METmu_dphi_vs_matched_muon_vtx_vxy_zoom",
+        "title": "|#Delta#Phi(MET, muons)| vs Muon pair vertex vxy [cm]",
+        "groups_to_exclude": [],
+        "type": "float2D",
+        "quantity": "reco_METmu_dphi_v2",
+        "nbinsX": 32,
+        "lowX": 0,
+        "highX": 3.2,
+        "quantity2": "matched_muon_vtx_vxy",
+        "nbinsY": 100,
+        "lowY": 0,
+        "highY": 100 
+    },
+    {
+        "name": "reco_METmu_dphi_vs_matched_muon_vtx_vxy_zoomzoom",
+        "title": "|#Delta#Phi(MET, muons)| vs Muon pair vertex vxy [cm]",
+        "groups_to_exclude": [],
+        "type": "float2D",
+        "quantity": "reco_METmu_dphi_v2",
+        "nbinsX": 32,
+        "lowX": 0,
+        "highX": 3.2,
+        "quantity2": "matched_muon_vtx_vxy",
+        "nbinsY": 100,
+        "lowY": 0,
+        "highY": 10
+    }
+]

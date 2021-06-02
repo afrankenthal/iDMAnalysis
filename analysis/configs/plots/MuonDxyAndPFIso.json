@@ -1,0 +1,44 @@
+[
+    {
+        "name": "reco_sel_mu_mindxy_passPFIso_vs_muon_dxy_min",
+        "title": "Pass PF Loose Iso vs min. muon d_{xy} [cm]",
+        "groups_to_exclude": [],
+        "type": "float2D",
+        "quantity": "reco_sel_mu_mindxy_passPFIso",
+        "nbinsX": 3,
+        "lowX": -1,
+        "highX": 2,
+        "quantity2": "reco_sel_mu_dxy_min",
+        "nbinsY": 50,
+        "lowY": 0,
+        "highY": 50 
+    },
+    {
+        "name": "reco_sel_mu_mindxy_passPFIso_vs_muon_dxy_min_zoom",
+        "title": "Pass PF Loose Iso vs min. muon d_{xy} [cm]",
+        "groups_to_exclude": [],
+        "type": "float2D",
+        "quantity": "reco_sel_mu_mindxy_passPFIso",
+        "nbinsX": 3,
+        "lowX": -1,
+        "highX": 2,
+        "quantity2": "reco_sel_mu_dxy_min",
+        "nbinsY": 50,
+        "lowY": 0,
+        "highY": 0.5
+    },
+    {
+        "name": "reco_sel_mu_mindxy_passPFIso_vs_muon_dxy_min_zoomzoom",
+        "title": "Pass PF Loose Iso vs min. muon d_{xy} [cm]",
+        "groups_to_exclude": [],
+        "type": "float2D",
+        "quantity": "reco_sel_mu_mindxy_passPFIso",
+        "nbinsX": 3,
+        "lowX": -1,
+        "highX": 2,
+        "quantity2": "reco_sel_mu_dxy_min",
+        "nbinsY": 50,
+        "lowY": 0,
+        "highY": 0.05 
+    }
+]
