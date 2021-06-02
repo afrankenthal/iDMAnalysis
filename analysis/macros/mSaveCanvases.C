@@ -88,8 +88,8 @@ namespace macro {
 
             TCanvas * c = (TCanvas*)in_file->Get(canvas_name);
             canvas_name.ReplaceAll("-", "_");
-            c->Print(Form("plot_temp/%s.pdf", canvas_name.Data()));
             c->Print(Form("plot_temp/%s.png", canvas_name.Data()));
+            c->Print(Form("plot_temp/%s.pdf", canvas_name.Data()));
             c->SaveAs(Form("plot_temp/%s.root", canvas_name.Data()));
         }
 
